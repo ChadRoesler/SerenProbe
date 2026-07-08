@@ -1,0 +1,42 @@
+# SerenProbe systemd unit (sample)
+#
+# Install:
+#   1. Edit __TARGET_USER__ and paths below
+#   2. sudo cp serenprobe.service /etc/systemd/system/
+#   3. sudo systemctl daemon-reload
+#   4. sudo systemctl enable --now serenprobe
+#
+# Logs:  journalctl -u serenprobe -f
+#
+# Tip: you usually don't hand-roll this - the setup scripts generate it for you.
+# This sample is for understanding what they produce, or rolling your own.
+
+[Unit]
+Description=SerenProbe - RAG evaluation operator dashboard
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=__TARGET_USER__
+WorkingDirectory=/home/__TARGET_USER__/seren-probe
+
+# Use the venv's python. Adjust the venv path to wherever you installed.
+ExecStart=/home/__TARGET_USER__/seren-venvs/probe/bin/python -m serenprobe --config /home/__TARGET_USER__/seren-probe/serenprobe.yaml
+
+# Force UTF-8 stdio regardless of locale.
+Environment=PYTHONUTF8=1
+
+# Config can also come from env - uncomment + set as needed:
+# Environment=SERENPROBE_PORT=7430
+# Environment=SERENPROBE_BEARER_TOKEN=
+# Environment=SERENPROBE_MEMORY_URL=http://127.0.0.1:7420
+
+Restart=on-failure
+RestartSec=5
+
+# The probe viewer is a lightweight dashboard; minimal memory.
+MemoryMax=512M
+
+[Install]
+WantedBy=multi-user.target

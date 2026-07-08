@@ -1,0 +1,43 @@
+# ═══════════════════════════════════════════════════════════════════════
+#  serenprobe.yaml - config for SerenProbe (RAG Evaluation Viewer)
+# ═══════════════════════════════════════════════════════════════════════
+#
+#  Copy to seren-probe.yaml, edit, and run:
+#     python -m seren_probe --config seren-probe.yaml
+#
+#  Or just run with no config at all - the defaults below are baked in, so
+#  `python -m seren_probe` works zero-config for a local dev spin.
+#
+#  Env vars override file values (handy for Docker/systemd):
+#     SEREN_PROBE_PORT, SEREN_PROBE_HOST, SEREN_PROBE_BEARER_TOKEN,
+#     SEREN_PROBE_MEMORY_URL, SEREN_PROBE_LOCI_NV_URL, SEREN_PROBE_LOCI_V_URL,
+#     SEREN_PROBE_SCC_NV_URL, SEREN_PROBE_SCC_V_URL, SEREN_PROBE_CAPTURE_PATH,
+#     SEREN_PROBE_TRUST_SYSTEM_STORE
+#
+# ═══════════════════════════════════════════════════════════════════════
+
+server:
+  host: 127.0.0.1
+  port: 7430             # family convention: memory 7420, loci-vector 7421,
+                          # loci-nv 7422, scc-nv 7423, scc-vector 7424, probe 7430
+  bearer_token: ""
+
+stores:
+  # URLs for the live services the eval suite talks to.
+  memory_url: http://127.0.0.1:7420
+  loci_nv_url: http://127.0.0.1:7422    # Loci without vector (nano floor)
+  loci_v_url: http://127.0.0.1:7421     # Loci with vector (associative)
+  scc_nv_url: http://127.0.0.1:7423     # CorpusCallosum without vector (fans memory + loci-nv)
+  scc_v_url: http://127.0.0.1:7424      # CorpusCallosum with vector (fans memory + loci-v)
+  # Path for locomo sweep captures.
+  capture_path: /tmp/scc_capture2.json
+
+# -- Corporate / intercepting-proxy support (opt-in) ------------------------
+# If you're on a corporate network that does TLS interception (Zscaler,
+# Netskope, etc.), the proxy's root CA is in your OS trust store but not in
+# Python's bundled certs, so outbound HTTPS calls to store services fail.
+# Turn this on to route TLS through the OS trust store.
+#
+# Requires the corp extra:  pip install "seren-probe[corp]"
+# tls:
+#   trust_system_store: true

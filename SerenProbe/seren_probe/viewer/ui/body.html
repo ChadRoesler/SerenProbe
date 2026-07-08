@@ -1,0 +1,65 @@
+<!-- Each tab is a shell .view; its id MUST equal the tab's data-tab, because the
+     shell's showTab() shows/hides .view elements by id and auto-activates the
+     first on load. Inside each view sits one .panel card. -->
+
+<!-- Eval -->
+<section class="view" id="eval">
+  <div class="panel">
+    <div class="panel-header">
+      <div class="info" id="eval-info">—</div>
+      <div class="ctrls">
+        <button class="btn" id="run-eval" title="Run full evaluation against live stores">▶ Run Eval</button>
+        <button data-refresh="eval">↻</button>
+      </div>
+    </div>
+    <div class="note">
+      <span class="label">tip:</span>
+      Runs 90 queries (30 Loci, 30 Memory, 30 Corpus) against your running services.
+      Results update live.
+    </div>
+    <div id="eval-body" class="loading">loading…</div>
+  </div>
+</section>
+
+<!-- Docker Environment -->
+<section class="view" id="docker">
+  <div class="panel">
+    <div class="panel-header">
+      <div class="info" id="docker-info">—</div>
+      <div class="ctrls">
+        <button class="btn" id="docker-start" title="Build and start a Docker test environment">▶ Start</button>
+        <button class="btn" id="docker-stop" title="Stop and remove the Docker environment">■ Stop</button>
+        <button class="btn" id="docker-run-eval" title="One-shot: start, eval, tear down">⚡ Run Eval</button>
+        <button data-refresh="docker">↻</button>
+      </div>
+    </div>
+    <div class="note">
+      <span class="label">live store environment:</span>
+      Launches a Docker container with SerenMemory, SerenLoci, and SerenCorpusCallosum
+      pre-configured to talk to each other.  After startup, eval endpoints
+      automatically point at the container.  Use <b>▶ Start</b> to keep it running
+      for multiple evals, or <b>⚡ Run Eval</b> for a one-shot.
+    </div>
+    <!-- Docker config management -->
+    <div class="docker-config-section">
+      <details open>
+        <summary><b>Deployment Config</b> — <span id="docker-config-summary">loading…</span></summary>
+        <div class="docker-config-body" id="docker-config-body">
+          <div class="loading">loading configs…</div>
+        </div>
+      </details>
+    </div>
+    <div id="docker-body" class="loading">loading…</div>
+  </div>
+</section>
+
+<!-- Config -->
+<section class="view" id="config">
+  <div class="panel">
+    <div class="panel-header">
+      <div class="info" id="config-info">—</div>
+      <div class="ctrls"><button data-refresh="config">↻</button></div>
+    </div>
+    <div id="config-body" class="loading">loading…</div>
+  </div>
+</section>

@@ -1,0 +1,60 @@
+[build-system]
+requires = ["setuptools>=68", "setuptools-scm>=8", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "seren-probe"
+dynamic = ["version"]
+description = "RAG evaluation toolkit for Seren's memory architecture"
+readme = "README.md"
+requires-python = ">=3.10,<3.14"
+license = { text = "GPL-3.0-or-later" }
+authors = [{ name = "Chad Roesler" }]
+keywords = ["llm", "memory", "eval", "rag", "seren"]
+
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "pydantic>=2.9.0",
+    "pyyaml>=6.0.2",
+    "httpx>=0.27.0",
+    # The shared Seren core: token resolution, config/version helpers, the auth
+    # middleware, the viewer baseplate.
+    "seren-meninges>=1.0.0,<2",
+    # Shared request logging.
+    "seren-sinew>=1.0.0,<2",
+]
+
+[project.optional-dependencies]
+corp = [
+    # Corporate / intercepting-proxy support.
+    "truststore>=0.9",
+]
+mcp = [
+    # MCP server surface — FastMCP for connected models.
+    "mcp>=1.0.0",
+]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+]
+
+[project.scripts]
+seren-probe = "seren_probe.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["seren_probe*"]
+
+# Ship the viewer UI files inside the wheel so GET /viewer works on an
+# installed copy.
+[tool.setuptools.package-data]
+seren_probe = ["viewer/ui/*.html", "viewer/ui/*.css", "viewer/ui/*.js"]
+
+[tool.setuptools_scm]
+root = ".."
+version_scheme = "release-branch-semver"
+version_file = "seren_probe/_version.py"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
