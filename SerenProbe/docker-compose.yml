@@ -1,0 +1,123 @@
+# ═══════════════════════════════════════════════════════════════════════
+#  docker-compose.yml — Seren Live Store Environment
+#
+#  Five services across five containers for realistic network isolation.
+#  SerenProbe (or any client) connects from the host over mapped ports.
+#
+#  USAGE
+#    docker compose up -d
+#    # Wait ~15s, then configure SerenProbe to point at:
+#    #   memory  :7420  loci-v :7421  loci-nv :7422
+#    #   scc-nv  :7423  scc-v  :7424
+#
+#  To seed data before evaluating:
+#    docker compose exec memory python -m serenprobe.runner --seed-only
+# ═══════════════════════════════════════════════════════════════════════
+
+services:
+  # ── SerenMemory (right brain — 3-tier chroma) ──────────────────────
+  memory:
+    image: python:3.11-slim
+    hostname: memory
+    command: >
+      sh -c '
+        pip install --no-cache-dir seren-memory &&
+        python -m seren_memory
+      '
+    ports:
+      - "7420:7420"
+    environment:
+      SEREN_MEMORY_PORT: 7420
+      SEREN_MEMORY_HOST: 0.0.0.0
+      SEREN_MEMORY_PERSIST_DIR: /data/memory
+    volumes:
+      - memory-data:/data
+    restart: unless-stopped
+
+  # ── SerenLoci-Vector (left brain — with associative finder) ────────
+  loci-vector:
+    image: python:3.11-slim
+    hostname: loci-vector
+    command: >
+      sh -c '
+        pip install --no-cache-dir "seren-loci[vector]" &&
+        python -m seren_loci
+      '
+    ports:
+      - "7421:7421"
+    environment:
+      SEREN_LOCI_PORT: 7421
+      SEREN_LOCI_HOST: 0.0.0.0
+      SEREN_LOCI_DB_PATH: /data/loci-vector/loci.db
+      SEREN_LOCI_EMBEDDING_MODEL: sentence-transformers/all-MiniLM-L6-v2
+    volumes:
+      - loci-vector-data:/data
+    restart: unless-stopped
+
+  # ── SerenLoci (left brain — embedding-free floor) ──────────────────
+  loci:
+    image: python:3.11-slim
+    hostname: loci
+    command: >
+      sh -c '
+        pip install --no-cache-dir seren-loci &&
+        python -m seren_loci
+      '
+    ports:
+      - "7422:7422"
+    environment:
+      SEREN_LOCI_PORT: 7422
+      SEREN_LOCI_HOST: 0.0.0.0
+      SEREN_LOCI_DB_PATH: /data/loci/loci.db
+    volumes:
+      - loci-data:/data
+    restart: unless-stopped
+
+  # ── SerenCorpusCallosum (NV — fans memory + loci-nv) ───────────────
+  callosum:
+    image: python:3.11-slim
+    hostname: callosum
+    depends_on:
+      - memory
+      - loci
+    command: >
+      sh -c '
+        pip install --no-cache-dir seren-corpus-callosum &&
+        python -m seren_corpus_callosum
+      '
+    ports:
+      - "7423:7423"
+    environment:
+      SEREN_SCC_PORT: 7423
+      SEREN_SCC_HOST: 0.0.0.0
+      SEREN_SCC_STORES: >
+        [{"name":"memory","type":"seren_memory","url":"http://memory:7420","weight":1.0},
+         {"name":"loci","type":"seren_loci","url":"http://loci:7422","weight":1.0}]
+    restart: unless-stopped
+
+  # ── SerenCorpusCallosum-Vector (fans memory + loci-vector) ─────────
+  callosum-vector:
+    image: python:3.11-slim
+    hostname: callosum-vector
+    depends_on:
+      - memory
+      - loci-vector
+    command: >
+      sh -c '
+        pip install --no-cache-dir seren-corpus-callosum &&
+        python -m seren_corpus_callosum
+      '
+    ports:
+      - "7424:7424"
+    environment:
+      SEREN_SCC_PORT: 7424
+      SEREN_SCC_HOST: 0.0.0.0
+      SEREN_SCC_STORES: >
+        [{"name":"memory","type":"seren_memory","url":"http://memory:7420","weight":1.0},
+         {"name":"loci-vector","type":"seren_loci","url":"http://loci-vector:7421","weight":1.0}]
+    restart: unless-stopped
+
+volumes:
+  memory-data:
+  loci-vector-data:
+  loci-data:

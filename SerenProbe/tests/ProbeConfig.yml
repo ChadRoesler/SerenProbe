@@ -1,0 +1,63 @@
+# ProbeConfig — declare a RAG-eval topology; the compiler (serenprobe/topology.py)
+# turns it into a docker-compose with correct-by-construction corpus->store wiring.
+#
+# Per section:  Count-1 <= len(Configs) <= Count
+#   -> at most ONE auto-generated node fills the remainder (0 if you list all Count).
+# Node entries are name-as-FIELD:  '- Name: my-node' / Port / Flags   (NOT name-as-key).
+ProbeConfig:
+  # Floor for auto-allocated ports. Required only when a node omits Port OR a
+  # section auto-generates a remainder. Explicit ports are honored as-is;
+  # auto ports append upward from max(explicit)+1, type-grouped (loci|mem|corpus).
+  StartingPort: 7420
+
+  Loci:
+    LociCount: 5                    # required (>= 1). 4 named + 1 auto-gen.
+    LociConfigs:                    # Flags valid for Loci: vector, mcp
+      - Name: loci-vector-projectX
+        Port: 7421
+        Flags: [vector]
+      - Name: loci-vector-projectY
+        Port: 7422
+        Flags: [vector, mcp]
+      - Name: loci-vector-projectZ
+        Port: 7423
+        Flags: [mcp]
+      - Name: loci-vector-projectA  # no Port -> auto-allocated
+        Flags: [vector]
+    # 5th Loci auto-generates: no flags, name 'loci-<port>'.
+
+  Memory:
+    MemoryCount: 7                  # required (>= 1). 6 named + 1 auto-gen.
+    MemoryConfigs:                  # Flags valid for Memory: mcp (vector is meaningless)
+      - Name: memory-projectX
+        Port: 7425
+        Flags: [mcp]
+      - Name: memory-projectY
+        Port: 7426
+      - Name: memory-projectZ       # no Port -> auto-allocated
+      - Name: memory-projectA
+      - Name: memory-projectB
+      - Name: memory-projectC
+    # 7th Memory auto-generates: no flags, name 'memory-<port>'.
+
+  Corpus:
+    CorpusCount: 3                  # required (>= 1). 2 named + 1 auto CATCH-ALL.
+    # The catch-all sweeps every loci/memory NOT referenced below, at weight 1.0.
+    # Store refs resolve to declared node Names; type is inferred from the section.
+    CorpusConfigs:                  # Flags valid for Corpus: mcp
+      - Name: corpus-projectX
+        Port: 7427
+        Stores:
+          - Store: memory-projectX
+            Weight: 1.0
+          - Store: loci-vector-projectA
+            Weight: 1.0
+          - Store: loci-vector-projectZ
+            Weight: 1.0
+      - Name: corpus-projectY
+        Stores:
+          - Store: memory-projectY
+            Weight: 1.0
+          - Store: loci-vector-projectY
+            Weight: 1.0
+    # 3rd Corpus is the catch-all: name 'corpus-<port>', fans every unreferenced node.
