@@ -1,0 +1,96 @@
+# ═══════════════════════════════════════════════════════════════════════
+#  meridian.loci.yaml - the shipped example Loci seed
+# ═══════════════════════════════════════════════════════════════════════
+#  A FLAT list. Which store gets it (and therefore the kind) is decided in
+#  ProbeConfig via DefaultLociSeed / Seed - never in the file itself.
+#
+#  Loci item shape (mirrors the real FactWrite contract):
+#      { project?, key, value, why? }
+#  project defaults to "*" (fundamentals) when omitted.
+#
+#  "Meridian" is a small fictional web service. Deterministic, addressable
+#  facts live HERE; the things that HAPPENED to Meridian live in
+#  meridian.memory.yaml. That split is the whole point of the example: Loci
+#  is what is TRUE, Memory is what OCCURRED.
+#
+#  `why` is not decoration. It is the hard-won reason the fact is shaped this
+#  way, and it is searchable - so it doubles as a lexical bridge a retriever
+#  can actually walk. Facts whose `why` is empty are facts nothing can reach
+#  except by exact key.
+# ═══════════════════════════════════════════════════════════════════════
+
+- project: meridian
+  key: api_port
+  value: "8080"
+  why: the edge proxy terminates TLS, so the app itself serves plain HTTP
+
+- project: meridian
+  key: db_engine
+  value: PostgreSQL 16
+  why: chosen for partial indexes and native logical replication
+
+- project: meridian
+  key: cache_layer
+  value: Redis
+  why: the pricing endpoint reads the same rows on every request
+
+- project: meridian
+  key: deploy_target
+  value: Kubernetes
+  why: two regions with independent rollouts, so we needed per-region control
+
+- project: meridian
+  key: auth_scheme
+  value: OAuth2 with PKCE
+  why: the mobile client is a public client and cannot hold a secret
+
+- project: meridian
+  key: rate_limit
+  value: 100 requests per minute per API key
+  why: enforced at the EDGE, not in the app - an app-level limiter still lets
+       the herd reach the database
+
+- project: meridian
+  key: log_retention
+  value: 30 days
+  why: the compliance floor is 30; anything longer is cost with no owner
+
+- project: meridian
+  key: primary_region
+  value: us-east-2
+  why: closest to the payments provider, which dominates our tail latency
+
+- project: meridian
+  key: failover_region
+  value: eu-west-1
+  why: data residency for EU customers already forced a footprint there
+
+- project: meridian
+  key: ci_provider
+  value: GitHub Actions
+  why: the release workflow publishes via OIDC, so there is no long-lived token
+
+- project: meridian
+  key: container_registry
+  value: ghcr.io
+  why: same identity as CI, so image pulls need no separate credential
+
+- project: meridian
+  key: secret_store
+  value: HashiCorp Vault
+  why: replication to the failover region lags traffic cutover - plan for it
+
+- project: meridian
+  key: metrics_backend
+  value: Prometheus
+  why: counters and histograms only; it cannot tell you WHICH request was slow
+
+- project: meridian
+  key: tracing_backend
+  value: OpenTelemetry
+  why: adopted after Prometheus counters alone could not explain a latency spike
+
+- project: meridian
+  key: oncall_rotation
+  value: weekly, handoff on Thursday
+  why: Thursday is the quietest deploy day, so the handoff is never mid-incident

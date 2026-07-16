@@ -82,8 +82,7 @@ except ImportError as exc:  # SCC not installed in this environment
     _SCC_AVAILABLE = False
     _SCC_IMPORT_ERROR = exc
 
-from .dataset import seed_synthetic_dataset
-from .metrics import compute_metrics_batch, grade_against_content
+from ..core.metrics import compute_metrics_batch, grade_against_content
 
 
 def _require_scc() -> None:
@@ -117,6 +116,32 @@ CAPTURE_N = 50      # freeze the FULL candidate pool per store (Memory caps n_re
 EVAL_K    = 10      # metric depth (top-k) - FIXED across the n_results sweep so ranking
                     # metrics stay comparable. coverage is depth-independent (counts
                     # expected facts ANYWHERE in the packet), so it's the one that moves.
+
+# The default sweep grid as a dict - the reference values every knob takes when a
+# CorpusRegrades set doesn't override it. build_grid() merges a set's overrides
+# over this; sweep() takes the merged grid. Mirror of the constants above (and of
+# REGRADE_KNOBS in topology.py - keep the three in sync).
+DEFAULT_GRID: dict[str, list] = {
+    "rrf_k": RRF_KS, "loci_weight": LOCI_WEIGHTS, "loci_floor": LOCI_FLOORS,
+    "authority_margin": AUTHORITY_MARGINS, "min_per_store": MIN_PER_STORES,
+    "fusion_mode": FUSION_MODES, "n_results": N_RESULTS_GRID,
+    "fetch_multiplier": FETCH_MULTIPLIERS,
+}
+# the product order sweep() unpacks - MUST match the tuple unpacking in its loop
+_GRID_ORDER = ["rrf_k", "loci_weight", "loci_floor", "authority_margin",
+               "min_per_store", "fusion_mode", "n_results", "fetch_multiplier"]
+
+
+def build_grid(overrides: Optional[dict]) -> dict[str, list]:
+    """Merge a CorpusRegrades set's knob overrides over DEFAULT_GRID. Any knob the
+    set doesn't name keeps its full default sweep; an empty override list is
+    ignored (falls back to default). Unknown keys are dropped - the topology
+    compiler already warned on them at Set-Active time. Never mutates DEFAULT_GRID."""
+    grid = {k: list(v) for k, v in DEFAULT_GRID.items()}
+    for k, v in (overrides or {}).items():
+        if k in grid and v:
+            grid[k] = list(v)
+    return grid
 
 
 # ── transports: real for capture, recording, replay for regrade ──────────────
@@ -255,12 +280,14 @@ async def regrade_one(capture, fed_config: FederationConfig, queries,
 
 
 async def sweep(capture, base_stores: list[StoreConfig], queries,
-                eval_k: int = EVAL_K, sort_by: str = "ndcg") -> tuple[dict, list[dict]]:
-    """Full in-process grid sweep over the frozen capture. Returns (best, rows)."""
+                eval_k: int = EVAL_K, sort_by: str = "ndcg",
+                grid: Optional[dict] = None) -> tuple[dict, list[dict]]:
+    """Full in-process grid sweep over the frozen capture. `grid` is a knob->values
+    mapping (defaults to DEFAULT_GRID); a CorpusRegrades set narrows it via
+    build_grid(). Returns (best, rows)."""
     _require_scc()
-    combos = list(itertools.product(
-        RRF_KS, LOCI_WEIGHTS, LOCI_FLOORS, AUTHORITY_MARGINS,
-        MIN_PER_STORES, FUSION_MODES, N_RESULTS_GRID, FETCH_MULTIPLIERS))
+    g = grid or DEFAULT_GRID
+    combos = list(itertools.product(*(g[k] for k in _GRID_ORDER)))
     rows: list[dict] = []
     total_misses = 0
     for rrf_k, w, fl, auth, mps, mode, n_res, fmult in combos:
@@ -291,6 +318,78 @@ async def sweep(capture, base_stores: list[StoreConfig], queries,
     return best, rows
 
 
+# ── config-driven regrade: roll CorpusRegrades sets against the topology ─────
+class _RegradeQuery:
+    """The minimal query shape sweep()/grade_against_content need. Corpus questions
+    carry only expect_content (no keys/refs), so expected_ids stays empty."""
+    __slots__ = ("query", "expected_content", "expected_ids")
+
+    def __init__(self, query, expected_content, expected_ids=()):
+        self.query = query
+        self.expected_content = list(expected_content)
+        self.expected_ids = list(expected_ids)
+
+
+async def run_config_regrade(topology, url_of: dict, questions, *,
+                             capture_n: int = CAPTURE_N, eval_k: int = EVAL_K,
+                             sort_by: str = "ndcg") -> dict:
+    """Roll every CorpusRegrades set against every (non-catch-all) corpus in the
+    topology. Per corpus: capture its backing stores' candidate pools ONCE
+    (read-only /search on the eval containers - never live memory), then sweep
+    each set's grid over the frozen capture. Returns per-corpus best-per-set with
+    the delta vs the baseline set. Replays the REAL Federation, so it needs SCC
+    importable - raises via _require_scc() otherwise."""
+    _require_scc()
+    rqs = [_RegradeQuery(q.query, q.expect_content)
+           for q in questions
+           if getattr(q, "asks", "") == "corpus" and not getattr(q, "expect_empty", False)]
+    regrades = list(topology.corpus_regrades or [])
+    if not rqs:
+        return {"corpora": [], "note": "No corpus questions to regrade."}
+    if not regrades:
+        return {"corpora": [], "note": "No CorpusRegrades sets in the active ProbeConfig."}
+
+    flag_map = {n.name: (n.flags or []) for n in topology.loci}
+    _METRICS = ("ndcg", "docket_coverage", "docket_density", "recall",
+                "mrr", "hit_rate", "iou", "prec_omega")
+    transport = RealTransport()
+    corpora_out: list[dict] = []
+    try:
+        for corpus in topology.corpus:
+            if corpus.is_catchall or not corpus.stores:
+                continue
+            base_stores = [
+                StoreConfig(name=st.name, type=st.kind, url=url_of[st.name])
+                for st in corpus.stores if st.name in url_of
+            ]
+            if not base_stores:
+                continue
+            # ONE read-only capture per corpus, then sweep every set in-process.
+            capture = await capture_stores(base_stores, rqs, transport, capture_n)
+            set_rows: list[dict] = []
+            for rset in regrades:
+                best, _rows = await sweep(capture, base_stores, rqs, eval_k=eval_k,
+                                          sort_by=sort_by, grid=build_grid(rset.overrides))
+                set_rows.append({"name": rset.name,
+                                 "metrics": {m: best.get(m, 0.0) for m in _METRICS},
+                                 "params": best.get("params", {})})
+            baseline = next((r for r in set_rows if r["name"] == "baseline"),
+                            set_rows[0] if set_rows else None)
+            if baseline:
+                for r in set_rows:
+                    r["delta"] = {m: round(r["metrics"][m] - baseline["metrics"][m], 4)
+                                  for m in ("ndcg", "docket_coverage", "recall", "mrr")}
+            flavor = ("vector" if any("vector" in flag_map.get(st.name, [])
+                                      for st in corpus.stores) else "lexical")
+            corpora_out.append({"corpus": corpus.name, "flavor": flavor,
+                                "baseline": baseline["name"] if baseline else None,
+                                "sets": set_rows})
+    finally:
+        await transport.aclose()
+    return {"corpora": corpora_out, "sort_by": sort_by, "eval_k": eval_k,
+            "set_names": [r.name for r in regrades], "question_count": len(rqs)}
+
+
 # ── trace persistence (the regrade-trace: capture once, re-sweep offline) ────
 def save_capture(path: str, captures: dict[str, dict]) -> None:
     with open(path, "w", encoding="utf-8") as fh:
@@ -315,6 +414,28 @@ def _print_row(label: str, agg: dict) -> None:
 
 # ── CLI ──────────────────────────────────────────────────────────────────────
 async def _run(args) -> None:
+    # LAZY, and deliberately so. This is the ONLY thing in the whole module that needs
+    # dataset.py -- the synthetic corpus generator. As a MODULE-LEVEL import it dragged
+    # the fake corpus into the import graph of everything that merely wanted
+    # DEFAULT_GRID or build_grid, and when dataset.py got quarantined it took the whole
+    # file down with it -- and nine tests, which then SKIPPED instead of FAILING, and
+    # printed a green summary while not running.
+    #
+    # The grid, the sweep, the capture/replay transports and run_config_regrade are all
+    # clean. Only this legacy synthetic-corpus CLI mode wants it, and that mode is
+    # superseded by the config-driven path (run_config_regrade), which sweeps your REAL
+    # questions against containers the topology spun up. --load-capture offline
+    # re-sweeps don't need it either.
+    try:
+        from .dataset import seed_synthetic_dataset
+    except ImportError as exc:
+        raise RuntimeError(
+            "the synthetic-corpus CLI mode needs seren_probe.dataset, which is "
+            "quarantined in _attic/ (it generated a fake corpus, and its neighbours "
+            "knew the real store ports). Use the config-driven regrade instead -- it "
+            "sweeps your actual ProbeConfig questions against the containers SerenProbe "
+            "spun up itself.") from exc
+
     ds = seed_synthetic_dataset()                 # dataset only - NO store seeding here
     queries = ds.filter_by_source("corpus")
     print(f"Corpus queries: {len(queries)}")

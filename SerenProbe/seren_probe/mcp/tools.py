@@ -2,14 +2,14 @@
 seren_probe.mcp.tools
 ═════════════════════
 
-MCP tools for SerenProbe. Each tool wraps an evaluator function — the
+MCP tools for SerenProbe. Each tool wraps an evaluator function - the
 connected model can run evaluations and inspect results directly via MCP
 calls, without needing the HTTP API.
 
 Tool roster:
-    run_evaluation          — run full evaluation against live stores
-    get_eval_results        — latest evaluation results
-    get_store_config        — current store URL configuration
+    run_evaluation          - run full evaluation against live stores
+    get_eval_results        - latest evaluation results
+    get_store_config        - current store URL configuration
 """
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ class ProbeToolImpl:
     """The actual tool implementations, callable both via FastMCP decoration
     (in production) and directly (in unit tests).
 
-    Each method's return shape is JSON-serialisable — the FastMCP layer
+    Each method's return shape is JSON-serialisable - the FastMCP layer
     serialises it on the way out to the MCP client.
     """
 
@@ -40,7 +40,7 @@ class ProbeToolImpl:
         Returns metrics for each store and aggregate. Results are cached
         for retrieval via get_eval_results.
         """
-        from ..live_eval import run_live_evaluation
+        from ..runtime.live_eval import run_live_evaluation
         results = run_live_evaluation(
             memory_url=self.store_config["memory_url"],
             loci_nv_url=self.store_config["loci_nv_url"],

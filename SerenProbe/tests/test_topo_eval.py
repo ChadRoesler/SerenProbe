@@ -1,11 +1,11 @@
 """Tests for topology-driven evaluation (seren_probe.live_eval.run_topology_evaluation).
 
 Transport is injected (post/delete/get_params) so grading is proven without a
-live store stack — same discipline as the seed_stores tests.
+live store stack - same discipline as the seed_stores tests.
 """
-from seren_probe.topology import compile_topology
-from seren_probe.seed_dataset import Question, SeedResult
-from seren_probe.live_eval import run_topology_evaluation
+from seren_probe.core.topology import compile_topology
+from seren_probe.core.seed_dataset import Question, SeedResult
+from seren_probe.runtime.live_eval import run_topology_evaluation
 
 
 def _topo():

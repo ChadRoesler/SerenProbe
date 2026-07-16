@@ -1,0 +1,52 @@
+# ═══════════════════════════════════════════════════════════════════════
+#  ProbeConfig.yml - the shipped example topology
+# ═══════════════════════════════════════════════════════════════════════
+#  A fuller, multi-project topology: two "projects" (X and Y), each with a
+#  vector + a plain Loci and its own Memory and SCC, plus a pool of shared
+#  Memory stores and one auto-generated node. Everything not referenced by an
+#  explicit SCC falls into the auto-generated catch-all Corpus.
+#
+#  It exercises the whole compiler: flags, explicit + auto ports, node
+#  auto-generation, and the catch-all sweep - and compiles with zero warnings.
+#  For a minimal starting point to copy from, see ProbeConfig.template.yml.
+# ═══════════════════════════════════════════════════════════════════════
+
+ProbeConfig:
+  StartingPort: 7440
+
+  Loci:
+    LociCount: 5
+    LociConfigs:
+      - { Name: loci-vector-projectX, Port: 7441, Flags: [vector] }
+      - { Name: loci-plain-projectX,  Port: 7442 }
+      - { Name: loci-vector-projectY, Port: 7443, Flags: [vector] }
+      - { Name: loci-plain-projectY,  Port: 7444 }
+      # + 1 auto-generated Loci (no flags, auto port) to reach LociCount 5
+
+  Memory:
+    MemoryCount: 7
+    MemoryConfigs:
+      - { Name: memory-projectX, Port: 7445 }
+      - { Name: memory-projectY, Port: 7446 }
+      - { Name: memory-shared-a, Port: 7450 }
+      - { Name: memory-shared-b, Port: 7451 }
+      - { Name: memory-shared-c, Port: 7452 }
+      - { Name: memory-shared-d, Port: 7453 }
+      # + 1 auto-generated Memory to reach MemoryCount 7
+
+  Corpus:
+    CorpusCount: 3
+    CorpusConfigs:
+      - Name: corpus-projectX
+        Port: 7460
+        Stores:
+          - { Store: loci-vector-projectX }
+          - { Store: loci-plain-projectX }
+          - { Store: memory-projectX }
+      - Name: corpus-projectY
+        Port: 7461
+        Stores:
+          - { Store: loci-vector-projectY }
+          - { Store: memory-projectY }
+      # + 1 auto-generated catch-all Corpus fanning the 7 unreferenced stores:
+      #   loci-plain-projectY, the auto Loci, memory-shared-a..d, the auto Memory

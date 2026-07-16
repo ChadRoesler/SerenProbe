@@ -3,9 +3,9 @@ from pathlib import Path
 import pytest
 import yaml
 
-from seren_probe.topology import compile_topology, load_probe_config, TopologyError
+from seren_probe.core.topology import compile_topology, load_probe_config, TopologyError
 
-PROBECONFIG = Path(__file__).parent / "ProbeConfig.yml"
+PROBECONFIG = Path(__file__).parent.parent / "seren_probe" / "ProbeConfig.yml"
 
 
 def _wrap(pc: dict) -> dict:

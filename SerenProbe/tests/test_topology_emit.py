@@ -2,10 +2,10 @@
 from pathlib import Path
 import yaml
 
-from seren_probe.topology import load_probe_config, compile_topology
-from seren_probe.topology_emit import emit_compose
+from seren_probe.core.topology import load_probe_config, compile_topology
+from seren_probe.core.topology_emit import emit_compose
 
-PROBECONFIG = Path(__file__).parent / "ProbeConfig.yml"
+PROBECONFIG = Path(__file__).parent.parent / "seren_probe" / "ProbeConfig.yml"
 
 
 def test_vector_flag_becomes_embedder_env_and_extra():
@@ -63,8 +63,13 @@ def test_corpus_wiring_is_container_dns_not_loopback():
 
 
 def test_host_ports_published_for_eval():
+    # 7441, not 7421: the shipped example topology deliberately starts at 7440 to
+    # keep a test pod's published host ports OFF the range where the operator's REAL
+    # Seren stores live (memory 7420, loci 7421/7422, SCC 7423/7424). A probe pod
+    # that binds 7421 either collides with a live SerenLoci or, worse, quietly
+    # becomes the thing something else connects to.
     e = emit_compose(load_probe_config(PROBECONFIG))
-    assert e.compose["services"]["loci-vector-projectX"]["ports"] == ["7421:7421"]
+    assert e.compose["services"]["loci-vector-projectX"]["ports"] == ["7441:7441"]
 
 
 def test_corpus_depends_on_stores_healthy():
@@ -97,4 +102,9 @@ def test_build_services_get_lowercase_image_tag():
     # service key + container_name keep original casing (DNS is case-insensitive)
     assert "Loci-ProjectZ" in svc
     assert svc["Loci-ProjectZ"]["container_name"] == "Loci-ProjectZ"
-    assert svc["Loci-ProjectZ"]["image"] == "seren-probe-loci-projectz:local"
+    # image is signature-derived (kind+extras+version), NOT name-derived -- so an uppercase
+    # node name can't leak into the tag because the name isn't IN the tag at all. Same
+    # signature = same image = ONE build; a name-derived tag is the 113-store BuildKit
+    # cascade waiting to happen (see _build_sig). The 'project' tag idea that expected
+    # 'loci-projectz' here was abandoned -- name already disambiguates, corpus fuses across.
+    assert svc["Loci-ProjectZ"]["image"] == "seren-probe-loci:local"

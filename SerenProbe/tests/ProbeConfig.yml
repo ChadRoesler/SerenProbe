@@ -1,4 +1,4 @@
-# ProbeConfig — declare a RAG-eval topology; the compiler (serenprobe/topology.py)
+# ProbeConfig - declare a RAG-eval topology; the compiler (serenprobe/topology.py)
 # turns it into a docker-compose with correct-by-construction corpus->store wiring.
 #
 # Per section:  Count-1 <= len(Configs) <= Count

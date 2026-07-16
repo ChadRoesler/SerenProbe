@@ -1,0 +1,75 @@
+# ═══════════════════════════════════════════════════════════════════════
+#  meridian.questions.yaml - the shipped example question set
+# ═══════════════════════════════════════════════════════════════════════
+#  Every question needs `asks` (loci | memory | corpus), a `query`, and at
+#  least one way to be SCORED:
+#
+#    expect_key      -> a Loci fact by project/key. Re-resolved LIVE via
+#                       GET /fact, so it is retrieval-independent and stays
+#                       true forever.
+#    expect_ref      -> a Memory item by its seed handle. Resolves through the
+#                       minted-id map.
+#    expect_content  -> a phrase that must appear in a retrieved document.
+#                       RELATIVE ground truth: it can only mark hits you already
+#                       got, so it can never see a miss. Use it to measure
+#                       coverage, never to prove a store is broken.
+#    expect_empty    -> a BAIT. There is no right answer; PASS = the store
+#                       stays quiet. Mutually exclusive with the others.
+#
+#  Run `python -m seren_probe.lint_cli` over this before you trust a score.
+#  A question whose expectation isn't reachable from its query isn't a hard
+#  question - it's an unscoreable one, and it will look exactly like a low
+#  score until you check.
+# ═══════════════════════════════════════════════════════════════════════
+
+# ── loci: deterministic facts, scored by key ─────────────────────────────
+- asks: loci
+  query: what port does the meridian api listen on?
+  expect_key: [meridian/api_port]
+  expect_content: ["8080"]
+
+- asks: loci
+  query: which database engine does meridian use?
+  expect_key: [meridian/db_engine]
+  expect_content: ["PostgreSQL"]
+
+- asks: loci
+  query: where do meridian secrets live?
+  expect_key: [meridian/secret_store]
+  expect_content: ["Vault"]
+
+- asks: loci
+  query: what is the api rate limit per key?
+  expect_key: [meridian/rate_limit]
+
+# A BAIT. 'sharding' and 'ledger' appear in NO seed document, so a store that
+# answers this is hallucinating, not retrieving. PASS = silence. A raw vector
+# store cannot abstain (it always returns k) and will score 0 here -- that is
+# not a bug in the bait, it IS the finding.
+- asks: loci
+  query: which sharding key does meridian use for the ledger?
+  expect_empty: true
+
+# ── memory: episodes, scored by seed ref ─────────────────────────────────
+- asks: memory
+  query: what went wrong with the image pull during the rollout?
+  expect_ref: [evt-001]
+
+- asks: memory
+  query: what happened to the database connection pool?
+  expect_ref: [evt-002]
+
+- asks: memory
+  query: what did we decide about where rate limiting belongs?
+  expect_ref: [ep-002]
+
+# ── corpus: the SCC's job is to ASSEMBLE a briefing, not to win rank 1. ───
+# These span BOTH stores on purpose: the answer is not in either one alone.
+# Scored by coverage -- did the packet contain everything you needed?
+- asks: corpus
+  query: what should I know before failing meridian over to the other region?
+  expect_content: ["eu-west-1", "Vault"]
+
+- asks: corpus
+  query: how does meridian observe request latency?
+  expect_content: ["OpenTelemetry", "Prometheus"]

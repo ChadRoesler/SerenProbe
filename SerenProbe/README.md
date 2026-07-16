@@ -76,7 +76,53 @@ What it does for you:
 - **Compassion-first validation.** Bad flag for a store type, a Corpus that references another Corpus, a duplicate port, a store name that isn't declared, two Corpus nodes with identical store sets — every one of these fails *loud and kind*, naming the exact rule and the exact node, at compile time. Config bugs are the expensive kind; this catches them before a container ever starts.
 - **Deterministic, type-grouped ports.** Auto-assigned ports are stable run-to-run and grouped by kind, so a diff of two runs is a diff of your *intent*, not port-assignment noise.
 
-A full working `ProbeConfig.yml` ships in the package.
+A full working `ProbeConfig.yml` ships in the package, plus a heavily-commented `ProbeConfig.template.yml` to copy from.
+
+---
+
+## Bring your own corpus + questions
+
+The topology says *what stores* to stand up; **flat seed files** and a **question set** say what to put in them and what to ask — and you wire them into the ProbeConfig itself, so one config is self-contained. No separate dataset upload: hand SerenProbe the ProbeConfig and it seeds + scores from what the config points at.
+
+A **seed file** is a flat list of items (the store→data mapping lives in the config, not the file). Shapes are the real write contracts — Loci `{project?, key, value, why?}`, Memory `{content|intent, topic?, tier?, ref?}`:
+
+```yaml
+# meridian.loci.yaml
+- { project: meridian, key: api_port, value: "8080", why: "the REST API listens here" }
+# meridian.memory.yaml
+- { tier: short, ref: auth-incident, content: "auth threw 401s after a clock-skew bug", topic: auth }
+```
+
+Wire them into the ProbeConfig — a **shared** `Questions` (scored across every store, which is what keeps the comparison honest), per-kind default seeds, and optional per-node `Seed` overrides:
+
+```yaml
+ProbeConfig:
+  Questions:          examples/meridian.questions.yaml
+  DefaultLociSeed:    examples/meridian.loci.yaml      # every Loci without its own Seed
+  DefaultMemorySeed:  examples/meridian.memory.yaml    # every Memory without its own Seed
+  Loci:
+    LociConfigs:
+      - { Name: loci-v, Port: 7421, Flags: [vector] }
+      - { Name: decoy,  Port: 7429, NegativeTest: true, Seed: examples/unrelated.yaml }
+  # ... Memory / Corpus ...
+```
+
+A **question set** scores each query against honest ground truth — `expect_key` (Loci's canonical id, retrieval-independent), `expect_ref` (a Memory entry you tagged at seed time), or `expect_content` (a fuzzy substring):
+
+```yaml
+questions:
+  - { asks: loci,   query: "what port does the API use?", expect_key: ["meridian/api_port"] }
+  - { asks: corpus, query: "brief me on the auth setup",
+      expect_content: ["JWT bearer tokens", "15 minute", "100 requests per minute", "team-atlas"] }
+```
+
+The **corpus** questions are where docket coverage earns its keep: give each *several* expected facts that live across both Loci and Memory, and coverage becomes a real "did the briefing assemble all of it?" fraction instead of a binary hit.
+
+**Negative (decoy) stores.** Mark a store `NegativeTest: true` and give it an unrelated `Seed`, and it's seeded with *only* that decoy — never the defaults — so you can prove a store *stays quiet* on questions it shouldn't answer. It's kept out of the catch-all, and the Eval tab reads it as ✓ *stayed quiet* / ✗ *leaked* instead of a bare zero.
+
+A complete, validated example ships in [`examples/`](examples/): `meridian.loci.yaml` + `meridian.memory.yaml` + `meridian.questions.yaml` — a small interlocking fictional stack with three multi-fact briefing questions. Point the ProbeConfig's `Default*Seed` / `Questions` at them (or inline the content for a fully self-contained upload), then just `POST /eval/run` with an empty body.
+
+Validation is **compassion-first**, same as the compiler: an item with the wrong shape, a question with no way to score it, a negative store with no decoy — each fails loud and kind, all at once, naming the fix.
 
 ---
 
@@ -95,6 +141,22 @@ Every store gets the standard retrieval battery, computed at top-*k*:
 | **PΩ@k** | Rank-weighted precision — top ranks count for more |
 
 SCC additionally reports **docket_coverage** (fraction of expected facts found *anywhere* in the packet — did the briefing cover the ground?) and **docket_density** (fraction of the top-k that carry expected content — how much of the packet is signal?). These are the metrics that actually reflect SCC's job.
+
+### The docket comparison — with vs without edges
+
+Run a topology with both a vector SCC and a lexical one (the canonical `scc-v` / `scc-nv` pair) and SerenProbe doesn't just score them independently — it **pairs them and reports the delta**, answering the question an SCC exists for: *when the callosum fans a vector Loci (semantic edges between nodes) instead of a lexical, FTS5-only one (no edges), does the assembled briefing carry more of the relevant info?*
+
+The comparison rides in every `/eval/run` result under `result["docket"]` and renders in the Eval tab as a side-by-side block:
+
+```
+SCC Docket — with vs without edges     30 questions · k=10
+  without edges  scc-nv   coverage 0.5850   density 0.7033   recall 0.9544
+  with edges     scc-v    coverage 0.5331   density 0.6967   recall 0.9250
+  Δ edges (with − without)  coverage -0.0519 · density -0.0066 · recall -0.0294
+  → edges COST -0.0519 docket coverage
+```
+
+"Edges" is read authoritatively off the compiled topology — an SCC's flavor is whether the Loci it fans carries the `[vector]` flag — so the labels are never guessed. And mind the sign: in that run the semantic edges *hurt* coverage. Surfacing the delta is the whole point; two columns side by side make you do that subtraction in your head.
 
 > **On grading honesty:** content relevance is matched fuzzily (so `rate_limit`, `rate-limit`, and `rate limit` compare equal), which means the occasional false-positive on a shared phrase and false-negative on a paraphrase. Trust the *relative* numbers across configs; be cautious with absolutes. The harness never pretends to more precision than it has.
 
@@ -171,14 +233,17 @@ CI runs the full matrix on every push and publishes to PyPI (tokenless Trusted P
 seren_probe/
   topology.py        # ProbeConfig → validated CompiledTopology (the compiler)
   topology_emit.py   # CompiledTopology → docker compose + per-corpus wiring
-  seed_dataset.py    # pool-based seeding, ref→id capture, honest ground truth
+  seed_dataset.py    # flat seed items + questions, ref→id capture, honest ground truth
+  resolve.py         # ProbeConfig refs → per-store seed plan + shared questions
   live_eval.py       # topology-driven + legacy live-store evaluation
   metrics.py         # the retrieval + docket scoring math
+  docket.py          # pairs the SCC columns → the with/without-edges delta
   regrade.py         # capture-once / replay-many SCC fusion sweep
   runner.py          # in-process per-store evaluation runner
   app.py             # FastAPI dashboard: /eval, /docker, /viewer, /mcp
   viewer/            # the operator dashboard UI
 tests/               # transport-injected, no live stack required
+examples/            # a ready-to-upload seed dataset + question set
 ```
 
 ---

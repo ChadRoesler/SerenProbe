@@ -1,0 +1,94 @@
+# ═══════════════════════════════════════════════════════════════════════
+#  meridian.memory.yaml - the shipped example Memory seed
+# ═══════════════════════════════════════════════════════════════════════
+#  A FLAT list. Memory item shape:
+#      { content | intent, topic?, tier?, ref? }
+#      tier: short (default) | near | long
+#      near-tier uses `intent`, NOT `content` - it's a future loop, not a fact
+#
+#  `ref` is the uploader's HANDLE for an item, and questions score against it
+#  via expect_ref. It matters more than it looks: a Loci fact can be
+#  re-resolved live by (project/key) forever, but a Memory entry's real id is
+#  a UUID MINTED AT SEED TIME. Without a ref, an eval has no stable way to
+#  name the row it expects - and ground truth that can't be re-resolved isn't
+#  ground truth, it's a receipt.
+#
+#  This file is what HAPPENED to Meridian. meridian.loci.yaml is what is TRUE
+#  about Meridian. Keeping those apart is the whole point of the example:
+#  "what port do we serve on" is a fact; "the deploy stalled for 40 minutes"
+#  is an episode; "we don't rate-limit in the app anymore" is a lesson that
+#  EARNED its way into long-term.
+# ═══════════════════════════════════════════════════════════════════════
+
+# ── short: episodes. Things that occurred. ───────────────────────────────
+- ref: evt-001
+  tier: short
+  topic: deploy
+  content: >-
+    Rollout to us-east-2 stalled for 40 minutes. The image pull hit a registry
+    rate limit and every pod retried in lockstep, so the retries were the
+    outage.
+
+- ref: evt-002
+  tier: short
+  topic: database
+  content: >-
+    The Postgres connection pool went to zero during the Thursday handoff.
+    Raised max_connections as a stopgap; the real cause was a migration
+    holding a transaction open while it backfilled.
+
+- ref: evt-003
+  tier: short
+  topic: cache
+  content: >-
+    Cache stampede on the pricing endpoint after a Redis restart. Ten thousand
+    clients missed at the same instant and all went to the database. Added a
+    jitter window on expiry.
+
+- ref: evt-004
+  tier: short
+  topic: auth
+  content: >-
+    The mobile client was caught in a token refresh loop: it retried on 401
+    with no backoff, so an expired token became a self-inflicted denial of
+    service.
+
+# ── near: open loops. Things not yet done. ───────────────────────────────
+- ref: todo-1
+  tier: near
+  topic: secrets
+  intent: >-
+    Order a second Vault unseal key before the next rotation - we are one lost
+    laptop away from a very bad afternoon.
+
+- ref: todo-2
+  tier: near
+  topic: observability
+  intent: >-
+    Revisit the 30-day log retention once tracing is fully rolled out; spans
+    may make most of that log volume dead weight.
+
+# ── long: lessons. Things that earned their way into durable memory. ─────
+- ref: ep-001
+  tier: long
+  topic: observability
+  content: >-
+    Meridian standardised on OpenTelemetry after two incidents where Prometheus
+    counters showed a latency spike but could not say WHICH request was slow.
+    An aggregate cannot name a culprit.
+
+- ref: ep-002
+  tier: long
+  topic: rate-limiting
+  content: >-
+    Rate limiting belongs at the edge, never in the app. An app-level limiter
+    still lets the thundering herd reach the database - it just makes the app
+    the one that says no, after the damage.
+
+- ref: ep-003
+  tier: long
+  topic: failover
+  content: >-
+    Every region failover has run slower than planned, and every time the
+    reason was the same: secret replication to Vault lags the traffic cutover,
+    so the new region is serving before it can authenticate.
