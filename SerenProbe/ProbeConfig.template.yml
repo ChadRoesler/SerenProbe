@@ -1,0 +1,80 @@
+# ═══════════════════════════════════════════════════════════════════════
+#  ProbeConfig — declare the stores you want SerenProbe to stand up + grade
+# ═══════════════════════════════════════════════════════════════════════
+#
+#  This is a TEMPLATE, not the shipped example. Copy it, edit it, and hand it
+#  to SerenProbe (POST /docker/probeconfig, or the Config tab in the viewer).
+#  The compiler validates it and tells you — by name — anything it doesn't like
+#  before a single container starts.
+#
+#  You describe a SHAPE (how many of each store, which flavors, how the Corpus
+#  nodes fan) plus the DATA it runs on (seeds + questions, config-driven). One
+#  self-contained config: no separate dataset upload.
+#
+#  The layout below is the canonical comparison SerenProbe was built for: the
+#  same corpus retrieved five ways, scored side by side — Loci with and without
+#  vectors, and an SCC over each — plus a negative (decoy) store as a leak test.
+# ═══════════════════════════════════════════════════════════════════════
+
+ProbeConfig:
+
+  # Every auto-assigned port starts here and counts up. Required whenever any
+  # node omits its Port. Nodes that DO name a Port must name one >= StartingPort.
+  StartingPort: 7420
+
+  # ── Data plumbing (config-driven seeding) ──────────────────────────────
+  # Questions are SHARED across every store — that's what keeps the comparison
+  # honest (apples-to-apples). Seeds default per-kind; a node's own Seed
+  # overrides its kind default. Every ref is a path OR inline YAML — inline
+  # makes the whole config self-contained for upload.
+  # See examples/meridian.{loci,memory,questions}.yaml.
+  Questions:         examples/meridian.questions.yaml
+  DefaultLociSeed:   examples/meridian.loci.yaml
+  DefaultMemorySeed: examples/meridian.memory.yaml
+
+  # ── The episodic "right brain" (three-tier vector store) ───────────────
+  Memory:
+    MemoryCount: 1
+    MemoryConfigs:
+      - { Name: mem, Port: 7420 }
+      # A node's own Seed overrides DefaultMemorySeed:
+      #   - { Name: mem2, Port: 7425, Seed: examples/other.memory.yaml }
+      # Flags for Memory: [mcp] exposes the MCP surface. (Vector is always on.)
+
+  # ── The deterministic "left brain" (SQLite facts) ──────────────────────
+  # Two flavors of the SAME store, so you can measure what vectors add:
+  Loci:
+    LociCount: 3
+    LociConfigs:
+      - { Name: loci-v,  Port: 7421, Flags: [vector] }   # FTS5 + sqlite-vec hybrid
+      - { Name: loci-nv, Port: 7422 }                     # FTS5-only (the nano floor)
+      # A NEGATIVE (decoy) store: seeded with ONLY its own Seed (never the
+      # default corpus), it stands alone (don't fan it from a measured SCC), and
+      # the Eval tab reads it as ✓ stayed quiet / ✗ leaked — a leak test that
+      # proves off-topic data doesn't surface on your questions.
+      - { Name: decoy, Port: 7429, NegativeTest: true, Seed: examples/unrelated.yaml }
+      # Flags for Loci: [vector] adds sqlite-vec + an embedder (hybrid search);
+      # omit it for lexical-only. [mcp] exposes the MCP surface.
+
+  # ── The callosum (fuses Memory + Loci into one briefing packet) ────────
+  Corpus:
+    CorpusCount: 2
+    CorpusConfigs:
+      # ⚠ THE ONE LANDMINE: each SCC fans across its OWN Loci flavor.
+      #   scc-v  → loci-v   (vector vs vector)
+      #   scc-nv → loci-nv  (lexical vs lexical)
+      # Pointing both SCCs at the same Loci silently poisons the comparison —
+      # the compiler warns if two Corpus nodes end up with identical store sets.
+      - { Name: scc-v,  Port: 7424, Stores: [{ Store: loci-v },  { Store: mem }] }
+      - { Name: scc-nv, Port: 7423, Stores: [{ Store: loci-nv }, { Store: mem }] }
+      # Per-store fusion weight is optional and defaults to 1.0:
+      #   Stores: [{ Store: loci-v }, { Store: mem, Weight: 0.5 }]
+
+# ── Notes ──────────────────────────────────────────────────────────────
+#  • Names must be globally unique across ALL node types; ports too.
+#  • A Corpus can only reference Loci/Memory stores — never another Corpus.
+#  • Any NON-negative store you don't reference in a Corpus gets swept into an
+#    auto-generated catch-all Corpus, so nothing is silently stranded. A
+#    negative store stands alone (it's evaluated as its own column).
+#  • Declare a Count higher than the configs you list and the compiler fills
+#    the gap with auto-named, auto-ported nodes.

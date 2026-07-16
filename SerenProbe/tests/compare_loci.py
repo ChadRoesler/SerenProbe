@@ -1,16 +1,16 @@
 """
 Two-stage Loci retrieval comparison  (manual bench, not a pytest test).
 
-Stage 1 — FTS5-only (no [vector] flag):
+Stage 1 - FTS5-only (no [vector] flag):
     Loci installed without sqlite-vec.  Search is purely lexical via FTS5.
 
-Stage 2 — Hybrid (with [vector] flag):
+Stage 2 - Hybrid (with [vector] flag):
     Loci installed with sqlite-vec + embedding model.  Search is
     FTS5 + vector hybrid.
 
 Both stages share the same synthetic facts and Loci queries; metrics are
 printed side-by-side. This is a run-on-demand comparison, NOT part of the
-pytest suite — it needs a real seren-loci install to do anything, so it lives
+pytest suite - it needs a real seren-loci install to do anything, so it lives
 outside the `test_*` namespace on purpose (pytest won't collect it).
 
 Requires: pip install seren-probe seren-loci  (and seren-loci[vector] for Stage 2)
@@ -104,7 +104,7 @@ def main():
     print(f"Loci facts:   {len(LOCI_FACTS)}")
 
     # ─────────────────────────────────────────────────────────────────────
-    #  Stage 1 — FTS5-only (no [vector] flag)
+    #  Stage 1 - FTS5-only (no [vector] flag)
     # ─────────────────────────────────────────────────────────────────────
     print("\n── Stage 1: FTS5-only (no [vector] flag) ──")
     with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as tmp:
@@ -118,7 +118,7 @@ def main():
         os.unlink(db_a)
 
     # ─────────────────────────────────────────────────────────────────────
-    #  Stage 2 — Hybrid (with [vector] flag)
+    #  Stage 2 - Hybrid (with [vector] flag)
     # ─────────────────────────────────────────────────────────────────────
     print("── Stage 2: Hybrid (with [vector] flag) ──")
 
@@ -128,7 +128,7 @@ def main():
         hybrid_available = True
     except Exception as e:
         print(f"  [UNAVAILABLE] sqlite-vec / embedder not present: {e}")
-        print("  Skipping Stage 2 — install seren-loci[vector] to run.")
+        print("  Skipping Stage 2 - install seren-loci[vector] to run.")
         hybrid_available = False
 
     if hybrid_available:

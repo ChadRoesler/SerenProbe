@@ -13,7 +13,7 @@ Provides:
     externally).
 
 The image is expected to contain SerenMemory, SerenLoci, and
-SerenCorpusCallosum — no eval dashboard.  Eval runs from here.
+SerenCorpusCallosum - no eval dashboard.  Eval runs from here.
 """
 from __future__ import annotations
 
@@ -22,6 +22,7 @@ import logging
 import os
 import subprocess
 import tempfile
+import threading
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -45,9 +46,9 @@ class DockerDeployConfig:
 
     Each config lives in its own subdirectory under CONFIG_DIR:
         <CONFIG_DIR>/<name>/
-            Dockerfile          — required
-            docker-compose.yml  — optional (overrides Dockerfile if present)
-            metadata.json       — optional {description, tags, created_at}
+            Dockerfile          - required
+            docker-compose.yml  - optional (overrides Dockerfile if present)
+            metadata.json       - optional {description, tags, created_at}
     """
     name: str = ""
     description: str = ""
@@ -253,21 +254,98 @@ def get_config_path(name: str) -> Path | None:
 # ── Defaults ──────────────────────────────────────────────────────────
 DEFAULT_IMAGE = "seren-live-stores"
 DEFAULT_CONTAINER_NAME = "seren-probe-target"
-DEFAULT_MEMORY_PORT = 7420
-DEFAULT_LOCI_V_PORT = 7421
-DEFAULT_LOCI_NV_PORT = 7422
-DEFAULT_SCC_NV_PORT = 7423
-DEFAULT_SCC_V_PORT = 7424
+
+# NOT 7420-7424. Those are the OPERATOR'S REAL STORES (memory / loci-v / loci-nv /
+# scc-nv / scc-v), and start_container() publishes these straight to the host:
+#
+#     port_args = ["-p", f"{memory_port}:{memory_port}", ...]   ->  -p 7420:7420
+#
+# So a test container spun up on the defaults either COLLIDES with the live
+# SerenMemory, or -- if the real one happens to be down -- silently BECOMES the
+# thing listening on 7420. Anything reaching for "my memory" then gets a container
+# full of synthetic corpus instead. That is not a data bug, it is an IMPERSONATION
+# bug, and it is worse: nothing is corrupted, everything is just quietly wrong.
+#
+# 752x keeps the same readable 1:1 mapping (memory / loci-v / loci-nv / scc-nv /
+# scc-v) far away from anything real. tests/test_layering.py forbids 7420-7424
+# anywhere in this package's executable code -- do not put them back.
+DEFAULT_MEMORY_PORT = 7520
+DEFAULT_LOCI_V_PORT = 7521
+DEFAULT_LOCI_NV_PORT = 7522
+DEFAULT_SCC_NV_PORT = 7523
+DEFAULT_SCC_V_PORT = 7524
 
 # How long to wait for all services to respond before giving up.
-HEALTH_CHECK_TIMEOUT = 60.0
+# Generous ON PURPOSE: a 'vector' Loci downloads a sentence-transformers model
+# from HuggingFace on FIRST boot before it binds a socket, which can easily take
+# minutes on a cold cache or a busy box. 60s was too tight and produced the most
+# misleading failure we've had - a container answering /health in 0ms while the
+# harness insisted it never came up. A slow first boot is not a broken service.
+# (Compose's own healthcheck gets a matching start_period; see topology_emit.)
+HEALTH_CHECK_TIMEOUT = 300.0
+
+
+# ── topology state persistence (survive an app restart) ──────────────────
+# The running pod lives in DOCKER; the app's KNOWLEDGE of it lived only in
+# app.state - so restarting SerenProbe orphaned a perfectly good fleet and the
+# operator had to rebuild + reseed (an hour, on a big corpus) for nothing.
+# Persist the pod's identity so a restarted app can ADOPT what's already up.
+STATE_FILE = Path.home() / ".seren-probe" / "topology_state.json"
+
+
+def save_topology_state(state: dict) -> None:
+    """Write the running pod's identity to disk. Best-effort: never break a
+    working spin-up just because we couldn't write a convenience file."""
+    import json
+    try:
+        STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
+        STATE_FILE.write_text(json.dumps(state, indent=2), encoding="utf-8")
+    except OSError as exc:                                   # noqa: BLE001
+        logger.warning("could not persist topology state: %s", exc)
+
+
+def load_topology_state() -> dict | None:
+    import json
+    try:
+        if STATE_FILE.exists():
+            return json.loads(STATE_FILE.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:                     # noqa: BLE001
+        logger.warning("could not read topology state: %s", exc)
+    return None
+
+
+def clear_topology_state() -> None:
+    try:
+        STATE_FILE.unlink(missing_ok=True)
+    except OSError:
+        pass
+
+
+def adoptable_topology() -> dict | None:
+    """Is there a pod already running that this app could ADOPT instead of rebuild?
+
+    Returns the saved state enriched with a live `compose ps` reading, or None.
+    Adoption is only offered if containers are ACTUALLY up: a stale state file for
+    a fleet that's already gone must never tempt anyone into adopting a ghost.
+    (Verify, don't assume - the file is a memory, `compose ps` is the truth.)
+    """
+    st = load_topology_state()
+    if not st or not st.get("work_dir") or not st.get("project_name"):
+        return None
+    ps = compose_ps(st["work_dir"], st["project_name"])
+    if not (ps.get("ok") and ps.get("running")):
+        return None
+    return {**st, "services": ps["services"], "running_count": ps["running"],
+            "service_total": ps["total"]}
+
+
 # Poll interval while waiting for services to become healthy.
 HEALTH_CHECK_INTERVAL = 1.0
 
 
 @dataclass
 class DockerEnvState:
-    """Snapshot of a running Docker environment — URLs the eval suite hits.
+    """Snapshot of a running Docker environment - URLs the eval suite hits.
 
     All five service URLs are set when the container starts.  The NV
     (no-vector) and V (vector) variants are separate so the eval suite
@@ -405,7 +483,7 @@ def start_container(
 
     Returns a ``DockerEnvState`` with the container ID and the
     ``http://127.0.0.1:<port>`` URLs for each service.  The container
-    is not yet guaranteed healthy — call ``wait_for_healthy()`` or use
+    is not yet guaranteed healthy - call ``wait_for_healthy()`` or use
     ``DockerEnv`` which does both.
     """
     port_args = [
@@ -616,67 +694,37 @@ def launch_and_eval(
     run_longmem: bool = False,
     seed_first: bool = False,
 ) -> dict:
-    """One-shot: build → start → seed → eval → stop → remove.
+    """RETIRED. The fixed-five-store one-shot path.
 
-    Returns the full eval results dict (same shape as ``run_live_evaluation``).
+    It called `live_eval.run_live_evaluation()` and `dataset.seed_synthetic_dataset()`,
+    both of which are gone -- so this was already an ImportError waiting to be called,
+    and it would have surfaced as a cryptic ModuleNotFoundError from inside a Docker
+    route rather than as a fact about the design.
 
-    This is the primary integration point for CI::
+    Superseded by the topology path: compile a ProbeConfig -> spin_up_topology() ->
+    run_topology_evaluation(). That path assigns every port from the config, wires the
+    corpora correct-by-construction, and only ever addresses containers SerenProbe
+    spun up itself.
 
-        report = launch_and_eval(seed_first=True)
-        print(report["aggregate"])
+    Kept as a symbol (it is exported from __init__ and referenced by a Docker route)
+    so nothing breaks at IMPORT time -- but it fails LOUDLY and says why if called. A
+    dead function that dies with a clear sentence is worth more than one that dies
+    with a stack trace about a module you have never heard of.
     """
-    from .live_eval import run_live_evaluation
-
-    with DockerEnv(
-        image=image,
-        container_name=container_name,
-        memory_port=memory_port,
-        loci_v_port=loci_v_port,
-        loci_nv_port=loci_nv_port,
-        scc_nv_port=scc_nv_port,
-        scc_v_port=scc_v_port,
-        auto_build=True,
-        build_dir=build_dir,
-        health_timeout=health_timeout,
-    ) as state:
-        memory_url = state.memory_url
-        loci_nv_url = state.loci_nv_url
-        loci_v_url = state.loci_v_url
-        scc_nv_url = state.scc_nv_url
-        scc_v_url = state.scc_v_url
-
-        # Seed synthetic data if requested.
-        if seed_first:
-            logger.info("Seeding synthetic data ...")
-            from .dataset import seed_synthetic_dataset
-            seed_synthetic_dataset(
-                memory_url=memory_url,
-                loci_url=loci_nv_url,
-            )
-
-        # Run the full eval suite — NV and V variants go to separate stores.
-        logger.info("Running evaluation ...")
-        results = run_live_evaluation(
-            memory_url=memory_url,
-            loci_nv_url=loci_nv_url,
-            loci_v_url=loci_v_url,
-            scc_nv_url=scc_nv_url,
-            scc_v_url=scc_v_url,
-        )
-
-        if run_longmem:
-            logger.warning("LongMemEval not yet implemented — skipping")
-        if run_locomo:
-            logger.warning("LoCoMo sweep not yet implemented — skipping")
-
-    return results
+    raise RuntimeError(
+        "launch_and_eval() is retired. It drove the fixed-5-store single-image path, "
+        "which published its containers onto the operator's REAL store ports "
+        "(-p 7420:7420 and friends) and seeded them from the synthetic corpus. Use the "
+        "topology path instead: POST /docker/start with a ProbeConfig, then POST "
+        "/eval/run. It assigns every port from the config and only ever writes to "
+        "containers it created.")
 
 
 # ── Topology-driven lifecycle (compile → emit → compose up → health-gate) ──
 # Supersedes the fixed-5-store single-image path above: the compiler assigns
 # every port, the emitter bakes correct-by-construction corpus→store wiring into
 # each corpus's yaml, and we `docker compose up` the whole declared
-# constellation. The old _find_free_port remap is obsolete under this model —
+# constellation. The old _find_free_port remap is obsolete under this model -
 # ports are declared, not discovered.
 
 @dataclass
@@ -692,7 +740,7 @@ class TopologyEnvState:
 
 
 def host_url_map(topology) -> dict[str, str]:
-    """Every store's HOST-published URL — what the eval (on the host) hits.
+    """Every store's HOST-published URL - what the eval (on the host) hits.
     Deterministic from the compiled ports; no container inspection needed.
     (Distinct from the container-DNS URLs baked into the corpus yamls.)"""
     out: dict[str, str] = {}
@@ -726,11 +774,71 @@ def write_compose(emitted, work_dir: Path) -> Path:
     return compose_path
 
 
+def _run_docker_streamed(*args: str, timeout: int = 600) -> list[str]:
+    """Run a docker CLI command and STREAM its output to the log as it happens.
+
+    _run_docker captures everything and hands it back only on completion. For a
+    `compose up --build` that pulls torch twice, that is TEN MINUTES OF TOTAL
+    SILENCE followed by a wall of text -- and a build with no progress output is
+    indistinguishable from a hang. That ambiguity is not a cosmetic problem: it is
+    the difference between "wait, it's working" and "this is broken, kill it."
+    A long operation must narrate itself. Stream it.
+
+    The timeout is enforced by a watchdog thread rather than the read loop, because
+    a build that hangs producing NO output would never reach a deadline check that
+    only runs per-line -- the exact case the timeout exists to catch.
+    """
+    cmd = ["docker", *args]
+    logger.info("docker: %s", " ".join(cmd))
+    # BUILDKIT_PROGRESS=plain: BuildKit's default 'auto' renderer draws a fancy
+    # TTY progress widget, and when it detects it is NOT on a terminal (which is
+    # exactly our case -- we're piping it) it can go nearly silent. Plain mode emits
+    # one readable line per step, which is the entire point of streaming this.
+    proc = subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,   # BuildKit writes progress to stderr; fold it in
+        text=True,
+        errors="replace",
+        bufsize=1,
+        env={**os.environ, "BUILDKIT_PROGRESS": "plain"},
+    )
+    timed_out: list[bool] = []
+
+    def _kill():
+        timed_out.append(True)
+        proc.kill()
+
+    watchdog = threading.Timer(timeout, _kill)
+    watchdog.start()
+    lines: list[str] = []
+    try:
+        for raw in proc.stdout:                     # type: ignore[union-attr]
+            line = raw.rstrip()
+            if line:
+                lines.append(line)
+                logger.info("  | %s", line)
+    finally:
+        watchdog.cancel()
+        if proc.stdout:
+            proc.stdout.close()
+        rc = proc.wait()
+
+    if timed_out:
+        raise TimeoutError(f"docker {' '.join(args[:3])} exceeded {timeout}s and was killed")
+    if rc != 0:
+        tail = "\n".join(lines[-20:]) or "(no output)"
+        raise RuntimeError(f"docker {' '.join(args[:3])} failed (exit {rc}):\n{tail}")
+    return lines
+
+
 def compose_up(work_dir: Path, project_name: str, build: bool = True) -> None:
     args = ["compose", "-p", project_name, "-f", str(work_dir / "docker-compose.yml"), "up", "-d"]
     if build:
         args.append("--build")
-    _run_docker(*args, timeout=600)
+    # Streamed, not captured: this is the ten-minute one. The operator watching the
+    # probe log should see layers pulling, not a blinking cursor.
+    _run_docker_streamed(*args, timeout=1800)
 
 
 def compose_down(work_dir, project_name: str) -> None:
@@ -740,6 +848,39 @@ def compose_down(work_dir, project_name: str) -> None:
                     "-f", str(Path(work_dir) / "docker-compose.yml"), "down", "-v", timeout=120)
     except Exception as e:
         logger.warning("compose down: %s", e)
+
+
+def compose_ps(work_dir, project_name: str) -> dict:
+    """Best-effort liveness for the project's compose services. Returns
+    {ok, running, total, services:[{name,state}]}. NEVER raises - on any docker
+    error returns ok=False so the caller falls back to 'we started it' rather
+    than flashing a false 'stopped'. Handles both `docker compose ps --format
+    json` shapes: a JSON array, or NDJSON (one object per line), by compose ver."""
+    try:
+        raw = _run_docker("compose", "-p", project_name,
+                          "-f", str(Path(work_dir) / "docker-compose.yml"),
+                          "ps", "--format", "json", timeout=30)
+        out = raw.stdout.decode(errors="replace").strip()
+    except Exception as e:
+        logger.warning("compose ps: %s", e)
+        return {"ok": False, "running": 0, "total": 0, "services": []}
+    import json as _json
+    rows: list = []
+    try:
+        rows = _json.loads(out) if out.startswith("[") else [
+            _json.loads(l) for l in out.splitlines() if l.strip()]
+    except Exception:
+        rows = []
+    services = []
+    for r in rows:
+        if not isinstance(r, dict):
+            continue
+        name = r.get("Service") or r.get("Name") or "?"
+        state = str(r.get("State") or r.get("Status") or "").lower()
+        services.append({"name": name, "state": state})
+    running = sum(1 for s in services
+                  if any(t in s["state"] for t in ("run", "up", "healthy")))
+    return {"ok": True, "running": running, "total": len(services), "services": services}
 
 
 def wait_for_topology_healthy(url_of: dict[str, str], timeout: float = HEALTH_CHECK_TIMEOUT) -> None:
@@ -755,7 +896,7 @@ def spin_up_topology(topology, project_name: str = DEFAULT_CONTAINER_NAME,
     already-compiled CompiledTopology (compile at the route so errors surface to
     the operator before Docker ever runs). image_overrides (node-name or kind ->
     prebuilt image) skips the build for those services (bring-your-own)."""
-    from .topology_emit import emit_compose
+    from ..core.topology_emit import emit_compose
     emitted = emit_compose(topology, image_overrides=image_overrides)
     work_dir = topology_work_dir(project_name)
     write_compose(emitted, work_dir)

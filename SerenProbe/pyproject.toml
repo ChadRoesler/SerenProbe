@@ -31,7 +31,7 @@ corp = [
     "truststore>=0.9",
 ]
 mcp = [
-    # MCP server surface — FastMCP for connected models.
+    # MCP server surface - FastMCP for connected models.
     "mcp>=1.0.0",
 ]
 dev = [

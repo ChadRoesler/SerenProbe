@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════════════
-#  docker-compose.yml — Seren Live Store Environment
+#  docker-compose.yml - Seren Live Store Environment
 #
 #  Five services across five containers for realistic network isolation.
 #  SerenProbe (or any client) connects from the host over mapped ports.
@@ -15,7 +15,7 @@
 # ═══════════════════════════════════════════════════════════════════════
 
 services:
-  # ── SerenMemory (right brain — 3-tier chroma) ──────────────────────
+  # ── SerenMemory (right brain - 3-tier chroma) ──────────────────────
   memory:
     image: python:3.11-slim
     hostname: memory
@@ -34,7 +34,7 @@ services:
       - memory-data:/data
     restart: unless-stopped
 
-  # ── SerenLoci-Vector (left brain — with associative finder) ────────
+  # ── SerenLoci-Vector (left brain - with associative finder) ────────
   loci-vector:
     image: python:3.11-slim
     hostname: loci-vector
@@ -54,7 +54,7 @@ services:
       - loci-vector-data:/data
     restart: unless-stopped
 
-  # ── SerenLoci (left brain — embedding-free floor) ──────────────────
+  # ── SerenLoci (left brain - embedding-free floor) ──────────────────
   loci:
     image: python:3.11-slim
     hostname: loci
@@ -73,7 +73,7 @@ services:
       - loci-data:/data
     restart: unless-stopped
 
-  # ── SerenCorpusCallosum (NV — fans memory + loci-nv) ───────────────
+  # ── SerenCorpusCallosum (NV - fans memory + loci-nv) ───────────────
   callosum:
     image: python:3.11-slim
     hostname: callosum

@@ -1,13 +1,13 @@
 # ═══════════════════════════════════════════════════════════════════════
-#  Dockerfile — Seren Live Store Environment
+#  Dockerfile - Seren Live Store Environment
 #
 #  Five services in one image, pre-configured to talk to each other:
 #
-#     7420  SerenMemory              (right brain — 3-tier chroma)
-#     7421  SerenLoci-Vector         (left brain — exact + FTS5 + vector)
-#     7422  SerenLoci                (left brain — exact + FTS5 only)
-#     7423  SerenCorpusCallosum      (callosum — fans memory + loci-nv)
-#     7424  SerenCorpusCallosum-Vector (callosum — fans memory + loci-vector)
+#     7420  SerenMemory              (right brain - 3-tier chroma)
+#     7421  SerenLoci-Vector         (left brain - exact + FTS5 + vector)
+#     7422  SerenLoci                (left brain - exact + FTS5 only)
+#     7423  SerenCorpusCallosum      (callosum - fans memory + loci-nv)
+#     7424  SerenCorpusCallosum-Vector (callosum - fans memory + loci-vector)
 #
 #  SerenProbe (or any client) connects from the host or another container.
 #  The vector instances use sqlite-vec + sentence-transformers so the
@@ -62,7 +62,7 @@ RUN python3 -m venv /home/seren/venvs/loci && \
     /home/seren/venvs/loci/bin/pip check
 
 # ── Install SerenCorpusCallosum × 2 ──────────────────────────────────
-# Both NV (7423) and Vector (7424) use the same package — the
+# Both NV (7423) and Vector (7424) use the same package - the
 # difference is only which stores the YAML points to.  One venv is
 # enough; we launch two processes from it with different configs.
 RUN python3 -m venv /home/seren/venvs/callosum && \
@@ -88,7 +88,7 @@ consolidator:
   enabled: false
 CFG_EOF
 
-# seren-loci-vector.yaml — vector finder enabled
+# seren-loci-vector.yaml - vector finder enabled
 RUN cat > /home/seren/config/seren-loci-vector.yaml <<'CFG_EOF'
 server:
   host: 0.0.0.0
@@ -100,7 +100,7 @@ storage:
   embedding_device: cpu
 CFG_EOF
 
-# seren-loci.yaml — nano floor, no vector
+# seren-loci.yaml - nano floor, no vector
 RUN cat > /home/seren/config/seren-loci.yaml <<'CFG_EOF'
 server:
   host: 0.0.0.0
@@ -111,7 +111,7 @@ storage:
   embedding_model: null
 CFG_EOF
 
-# seren-corpus-callosum.yaml — fans memory + loci-nv (7422)
+# seren-corpus-callosum.yaml - fans memory + loci-nv (7422)
 RUN cat > /home/seren/config/seren-corpus-callosum.yaml <<'CFG_EOF'
 server:
   host: 0.0.0.0
@@ -142,7 +142,7 @@ federation:
       floor: 0.0
 CFG_EOF
 
-# seren-corpus-callosum-vector.yaml — fans memory + loci-vector (7421)
+# seren-corpus-callosum-vector.yaml - fans memory + loci-vector (7421)
 RUN cat > /home/seren/config/seren-corpus-callosum-vector.yaml <<'CFG_EOF'
 server:
   host: 0.0.0.0

@@ -4,12 +4,12 @@ seren_probe.mcp.server
 
 Wires the FastMCP server INTO the existing FastAPI app at /mcp.
 
-Same process, same port. The MCP tools call evaluators directly — no HTTP
+Same process, same port. The MCP tools call evaluators directly - no HTTP
 round-trip back to ourselves. One install, one approval surface, one set of
 logs. Mounted at /mcp by default; override via SEREN_PROBE_MCP_MOUNT.
 
 This is a near-exact sibling of seren_loci.mcp.server and
-seren_memory.mcp.server — the same three transport footguns bite any
+seren_memory.mcp.server - the same three transport footguns bite any
 FastMCP-into-FastAPI mount, so the same three fixes apply.
 """
 from __future__ import annotations
@@ -31,7 +31,7 @@ def mount_mcp_routes(app: FastAPI) -> object:
     Reads app.state.store_config and app.state._mcp_state_ref to wire tools to
     live state. Returns the FastMCP instance; the caller MUST enter
     ``mcp.session_manager.run()`` for the app's lifetime (the streamable-HTTP
-    transport's task group lives there) — see app.py's lifespan.
+    transport's task group lives there) - see app.py's lifespan.
     """
     # Imported here, not at module top, so an import failure of ``mcp`` bubbles
     # up to app.py's try/except (HTTP-only fallback) rather than crashing load.
@@ -126,7 +126,7 @@ def _resolve_transport_app(mcp) -> object:
         version = "unknown"
     raise RuntimeError(
         f"mcp SDK version {version} exposes neither streamable_http_app nor "
-        "sse_app on FastMCP — cannot mount HTTP transport. Try "
+        "sse_app on FastMCP - cannot mount HTTP transport. Try "
         "`pip install -U mcp` or pin a known-good version in extras."
     )
 

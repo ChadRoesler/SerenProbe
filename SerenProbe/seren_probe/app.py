@@ -75,7 +75,7 @@ def create_app(config: SerenProbeConfig | None = None) -> FastAPI:
             "scc_v_url": cfg.stores.scc_v_url,
             "capture_path": cfg.stores.capture_path,
         }
-        # MCP state ref — a dict the MCP tools mutate, same references as the
+        # MCP state ref - a dict the MCP tools mutate, same references as the
         # route handlers read. Both see the same values.
         app.state._mcp_state_ref = _mcp_state_ref
         _mcp_state_ref["eval_results"] = app.state.eval_results
@@ -94,7 +94,7 @@ def create_app(config: SerenProbeConfig | None = None) -> FastAPI:
             print(f"[seren-probe] MCP surface not available; HTTP-only mode ({exc})")
         except Exception as exc:  # noqa: BLE001
             mcp_server = None
-            print(f"[seren-probe] MCP mount failed: {exc!r} — continuing without MCP")
+            print(f"[seren-probe] MCP mount failed: {exc!r} - continuing without MCP")
 
         # Enter the MCP session manager's task group if mounted.
         async with AsyncExitStack() as _mcp_stack:
@@ -108,7 +108,7 @@ def create_app(config: SerenProbeConfig | None = None) -> FastAPI:
         docker_state = app.state.docker_state
         if docker_state and docker_state.get("container_id"):
             try:
-                from .docker_env import stop_container as _stop
+                from .runtime.docker_env import stop_container as _stop
                 _stop(docker_state)
             except Exception as e:
                 logger.warning("Docker teardown on shutdown: %s", e)
@@ -155,7 +155,7 @@ def create_app(config: SerenProbeConfig | None = None) -> FastAPI:
             title="SerenProbe",
             brand="Seren<b>Probe</b> · RAG Evaluation Suite",
             subtitle=f"v{APP_VERSION} · probe retrieval quality",
-            accent="#f59e3b",
+            accent="#8fffb4",
         )
         return HTMLResponse(html)
 

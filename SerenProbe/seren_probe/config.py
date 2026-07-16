@@ -21,7 +21,7 @@ from typing import Any, Optional
 
 import yaml
 
-# Shared server/tls config blocks from Meninges — ONE definition for the family.
+# Shared server/tls config blocks from Meninges - ONE definition for the family.
 from seren_meninges import ServerConfig, TlsConfig
 
 log = logging.getLogger(__name__)
@@ -29,24 +29,48 @@ log = logging.getLogger(__name__)
 
 @dataclass
 class StoreUrlsConfig:
-    """URLs for the live stores the eval suite talks to."""
-    memory_url: str = "http://127.0.0.1:7420"
-    loci_nv_url: str = "http://127.0.0.1:7422"
-    loci_v_url: str = "http://127.0.0.1:7421"
-    scc_nv_url: str = "http://127.0.0.1:7423"
-    scc_v_url: str = "http://127.0.0.1:7424"
-    capture_path: str = "/tmp/scc_capture2.json"
+    """URLs for live stores the operator may point the viewer at.
+
+    THE DEFAULTS ARE DELIBERATELY EMPTY. They used to be:
+
+        memory_url  = "http://127.0.0.1:7420"   <- the operator's REAL SerenMemory
+        loci_v_url  = "http://127.0.0.1:7421"   <- the operator's REAL SerenLoci
+        loci_nv_url = "http://127.0.0.1:7422"
+        scc_nv_url  = "http://127.0.0.1:7423"
+        scc_v_url   = "http://127.0.0.1:7424"
+
+    A tool whose job is to MANUFACTURE SYNTHETIC DATA shipped with the addresses of
+    the operator's live brain preloaded into its config. Those defaults fed
+    app.state.store_config, which fed the legacy /eval/run fallback, which SEEDED
+    those stores if it found them empty. Exactly one thing stood between that and a
+    contaminated memory store: the store happening to be non-empty.
+
+    An address you have to TYPE is a decision. An address that arrives as a default
+    is an accident waiting for a tired Tuesday.
+
+    Nothing in the topology path reads these anymore (eval and regrade only ever
+    address containers SerenProbe spun up itself, and write_guard refuses anything
+    else at the transport). They survive only as an operator-settable field on
+    /eval/config. tests/test_layering.py enforces that no module in this package
+    contains a live-store port literal -- do not put them back.
+    """
+    memory_url: str = ""
+    loci_nv_url: str = ""
+    loci_v_url: str = ""
+    scc_nv_url: str = ""
+    scc_v_url: str = ""
+    capture_path: str = ""
 
     @classmethod
     def from_dict(cls, d: Optional[dict[str, Any]]) -> "StoreUrlsConfig":
         d = d or {}
         return cls(
-            memory_url=str(d.get("memory_url", "http://127.0.0.1:7420")),
-            loci_nv_url=str(d.get("loci_nv_url", "http://127.0.0.1:7422")),
-            loci_v_url=str(d.get("loci_v_url", "http://127.0.0.1:7421")),
-            scc_nv_url=str(d.get("scc_nv_url", "http://127.0.0.1:7423")),
-            scc_v_url=str(d.get("scc_v_url", "http://127.0.0.1:7424")),
-            capture_path=str(d.get("capture_path", "/tmp/scc_capture2.json")),
+            memory_url=str(d.get("memory_url", "")),
+            loci_nv_url=str(d.get("loci_nv_url", "")),
+            loci_v_url=str(d.get("loci_v_url", "")),
+            scc_nv_url=str(d.get("scc_nv_url", "")),
+            scc_v_url=str(d.get("scc_v_url", "")),
+            capture_path=str(d.get("capture_path", "")),
         )
 
 
@@ -89,7 +113,7 @@ def _apply_env_overrides(cfg: SerenProbeConfig) -> SerenProbeConfig:
 
 
 def load_config(path: Optional[str] = None) -> SerenProbeConfig:
-    """Defaults -> yaml -> env (later wins). A missing file is fine — defaults
+    """Defaults -> yaml -> env (later wins). A missing file is fine - defaults
     + env is a valid zero-config run. YAML is imported lazily so the core
     import path stays light."""
     data: dict[str, Any] = {}
@@ -99,7 +123,7 @@ def load_config(path: Optional[str] = None) -> SerenProbeConfig:
         try:
             with open(cfg_path) as f:
                 data = yaml.safe_load(f) or {}
-        except Exception:  # noqa: BLE001 — unreadable degrades to defaults
+        except Exception:  # noqa: BLE001 - unreadable degrades to defaults
             data = {}
 
     server = ServerConfig.from_dict(data.get("server"), default_port=7430)

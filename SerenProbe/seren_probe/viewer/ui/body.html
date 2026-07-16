@@ -2,22 +2,33 @@
      shell's showTab() shows/hides .view elements by id and auto-activates the
      first on load. Inside each view sits one .panel card. -->
 
+<!-- Adopt banner host. Deliberately OUTSIDE every .view.
+     The banner used to be prepended into #docker-body, which is (a) inside the
+     Docker view, which is HIDDEN on load (Eval is the active tab), and (b) the
+     first thing refreshDocker() destroys with `innerHTML = 'loading…'`. So the
+     very click that revealed the tab also deleted the banner: it was never once
+     visible. This node is rendered into by offerAdoption() and by nothing else.
+     Do not move the banner back inside a .view. -->
+<div id="adopt-host"></div>
+
 <!-- Eval -->
 <section class="view" id="eval">
   <div class="panel">
     <div class="panel-header">
-      <div class="info" id="eval-info">—</div>
+      <div class="info" id="eval-info">-</div>
       <div class="ctrls">
         <button class="btn" id="run-eval" title="Run full evaluation against live stores">▶ Run Eval</button>
+        <button class="btn" id="run-regrade" title="Sweep the ProbeConfig's CorpusRegrades sets against the corpora">⚙ Regrades</button>
         <button data-refresh="eval">↻</button>
       </div>
     </div>
     <div class="note">
       <span class="label">tip:</span>
-      Runs 90 queries (30 Loci, 30 Memory, 30 Corpus) against your running services.
-      Results update live.
+      Scores your ProbeConfig's questions across every store - seeds are config-driven,
+      no separate upload. Negative-test stores read as ✓ stayed quiet / ✗ leaked.
     </div>
     <div id="eval-body" class="loading">loading…</div>
+    <div id="regrade-body"></div>
   </div>
 </section>
 
@@ -25,7 +36,7 @@
 <section class="view" id="docker">
   <div class="panel">
     <div class="panel-header">
-      <div class="info" id="docker-info">—</div>
+      <div class="info" id="docker-info">-</div>
       <div class="ctrls">
         <button class="btn" id="docker-start" title="Build and start a Docker test environment">▶ Start</button>
         <button class="btn" id="docker-stop" title="Stop and remove the Docker environment">■ Stop</button>
@@ -43,7 +54,7 @@
     <!-- Docker config management -->
     <div class="docker-config-section">
       <details open>
-        <summary><b>Deployment Config</b> — <span id="docker-config-summary">loading…</span></summary>
+        <summary><b>Deployment Config</b> - <span id="docker-config-summary">loading…</span></summary>
         <div class="docker-config-body" id="docker-config-body">
           <div class="loading">loading configs…</div>
         </div>
@@ -57,9 +68,19 @@
 <section class="view" id="config">
   <div class="panel">
     <div class="panel-header">
-      <div class="info" id="config-info">—</div>
-      <div class="ctrls"><button data-refresh="config">↻</button></div>
+      <div class="info" id="config-info">-</div>
+      <div class="ctrls">
+        <button class="btn" onclick="uploadProbeConfig()">✓ Validate &amp; Set Active</button>
+        <button class="btn-sm" onclick="document.getElementById('probeconfig-file').click()">📁 Load file…</button>
+        <button class="btn-sm" onclick="refreshConfig()">↻ Reload active</button>
+        <button data-refresh="config">↻</button>
+      </div>
     </div>
-    <div id="config-body" class="loading">loading…</div>
+    <div class="note">
+      <span class="label">ProbeConfig - topology:</span>
+    </div>
+    <div id="config-body" class="config-body">
+      <div class="loading">loading…</div>
+    </div>
   </div>
 </section>

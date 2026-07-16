@@ -1,5 +1,5 @@
 """
-Config route — /eval/config (GET/POST).
+Config route - /eval/config (GET/POST).
 
 Reads/writes the viewer's store URL configuration at runtime.
 """

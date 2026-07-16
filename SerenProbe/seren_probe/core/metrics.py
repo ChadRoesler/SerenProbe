@@ -102,9 +102,11 @@ def compute_metrics(
     # Hit Rate
     hit_rate = 1.0 if any(doc_id in relevant for doc_id in top_ids) else 0.0
 
-    # MRR
+    # MRR@k - reciprocal rank of the first relevant doc WITHIN top-k. Capped at
+    # k so it agrees with the other @k metrics: a relevant doc past rank k is a
+    # miss, not long-tail credit (it used to scan the full retrieved list).
     mrr = 0.0
-    for rank, (doc_id, _) in enumerate(retrieved, start=1):
+    for rank, (doc_id, _) in enumerate(top_k, start=1):
         if doc_id in relevant:
             mrr = 1.0 / rank
             break
@@ -126,7 +128,7 @@ def compute_metrics(
     union = len(retrieved_set | relevant)
     iou_k = inter / union if union > 0 else 0.0
 
-    # Precision Omega (PΩ@k) — rank-weighted precision
+    # Precision Omega (PΩ@k) - rank-weighted precision
     #   sum_{i=1..k} rel_i * log₂(1 + 1/i) / sum_{i=1..k} log₂(1 + 1/i)
     #   Higher weight to top ranks.
     omega_weights = [math.log2(1.0 + 1.0 / (i + 1)) for i in range(k)]
