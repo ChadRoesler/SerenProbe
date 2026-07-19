@@ -1,0 +1,81 @@
+# SerenProbe Questions - entity question set
+# Generated for world
+
+questions:
+- query: How many sites exist in this world?
+  asks: loci
+  expect_key:
+  - '*/num_sites'
+  hops: 1
+- query: How many eras span the history of this world?
+  asks: loci
+  expect_key:
+  - '*/num_eras'
+  hops: 1
+- query: How long is the recorded history of Pilorus?
+  asks: loci
+  expect_key:
+  - '*/world_year_span'
+  hops: 1
+- query: What is the name of the world?
+  asks: loci
+  expect_key:
+  - '*/world_name'
+  hops: 1
+- query: How many civilizations exist in this world?
+  asks: loci
+  expect_key:
+  - '*/num_civilizations'
+  hops: 1
+- query: How many artifacts exist in this world?
+  asks: loci
+  expect_key:
+  - '*/num_artifacts'
+  hops: 1
+- query: How many beasts exist in this world?
+  asks: loci
+  expect_key:
+  - '*/num_beasts'
+  hops: 1
+- query: How many historical figures exist in this world?
+  asks: loci
+  expect_key:
+  - '*/num_figures'
+  hops: 1
+- query: How many events are recorded in this world?
+  asks: loci
+  expect_key:
+  - '*/num_events'
+  hops: 1
+- query: What does Unknown intend to do about people whisper about dragon activity?
+  asks: memory
+  expect_ref:
+  - pilorus_0_near_6
+  hops: 1
+- query: What does Unknown intend to do about Falconcon civilization concerns about
+    border disputes?
+  asks: memory
+  expect_ref:
+  - pilorus_0_near_4
+  hops: 1
+- query: What has Unknown heard recently about Age of Radiant Aldrad became Sage?
+  asks: memory
+  expect_ref:
+  - pilorus_0_short_13
+  hops: 1
+- query: What is known about Velskudel's Last Stand?
+  asks: corpus
+  expect_empty: true
+  hops: 1
+- query: What is known about Zalthar the Unseen?
+  asks: corpus
+  expect_empty: true
+  hops: 1
+- query: What is the artifact the world of the deep material of Unknown, and what
+    does Unknown recall about Falconcon civilization concerns about border disputes?
+  asks: corpus
+  expect_key:
+  - '*/artifact_the_world_of_the_deep_material'
+  expect_ref:
+  - pilorus_0_near_4
+  hops: 2

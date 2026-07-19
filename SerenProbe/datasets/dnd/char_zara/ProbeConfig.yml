@@ -1,0 +1,49 @@
+# Auto-generated eval topology for 'char_zara' (D&D realm).
+ProbeConfig:
+  StartingPort: 7600
+  DefaultQuestions: [datasets/dnd/char_zara/questions.yaml]
+  Memory:
+    MemoryCount: 1
+    MemoryConfigs:
+      - Name: char_zara-mem
+        Port: 7600
+        Seed: [datasets/dnd/char_zara/memory.yaml]
+        Questions: [datasets/dnd/char_zara/questions.yaml]
+  Loci:
+    LociCount: 2
+    LociConfigs:
+      - Name: char_zara-loci-v
+        Port: 7601
+        Flags: [vector]
+        Seed: [datasets/dnd/char_zara/loci.yaml]
+        Questions: [datasets/dnd/char_zara/questions.yaml]
+      - Name: char_zara-loci-nv
+        Port: 7602
+        Seed: [datasets/dnd/char_zara/loci.yaml]
+        Questions: [datasets/dnd/char_zara/questions.yaml]
+  Corpus:
+    CorpusRegrades:
+      - Name: hop-sweep
+        hops: [1, 2, 3]
+      - Name: rrf-sweep
+        rrf_k: [30, 60, 100]
+      - Name: floor-sweep
+        loci_floor: [0.0, 0.1, 0.3]
+      - Name: weight-sweep
+        loci_weight: [0.3, 0.5, 0.7, 1.0]
+      - Name: packet-sweep
+        n_results: [10, 15, 20, 30]
+    CorpusCount: 2
+    CorpusConfigs:
+      - Name: char_zara-scc-v
+        Port: 7604
+        Stores:
+          - Store: char_zara-loci-v
+          - Store: char_zara-mem
+        Questions: [datasets/dnd/char_zara/questions.yaml]
+      - Name: char_zara-scc-nv
+        Port: 7603
+        Stores:
+          - Store: char_zara-loci-nv
+          - Store: char_zara-mem
+        Questions: [datasets/dnd/char_zara/questions.yaml]

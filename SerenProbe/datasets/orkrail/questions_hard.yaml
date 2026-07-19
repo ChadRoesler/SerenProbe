@@ -1,0 +1,325 @@
+questions:
+- asks: loci
+  query: wot interchange an zone fer gorkamork-central, dakka-junction, an teef-exchange?
+  expect_key:
+  - orkrail/station_gorkamork-central_interchange
+  - orkrail/station_gorkamork-central_zone
+  - orkrail/station_dakka-junction_interchange
+  - orkrail/station_dakka-junction_zone
+  - orkrail/station_teef-exchange_interchange
+  - orkrail/station_teef-exchange_zone
+  hops: 2
+- asks: loci
+  query: wot fuel an armor fer dakka-jet-0 an teef-train-0?
+  expect_key:
+  - orkrail/loco_dakka-jet-0_fuel
+  - orkrail/loco_dakka-jet-0_armor
+  - orkrail/loco_teef-train-0_fuel
+  - orkrail/loco_teef-train-0_armor
+  hops: 2
+- asks: loci
+  query: wot zone, line, an condition fer gorkamork-central an teef-exchange?
+  expect_key:
+  - orkrail/station_gorkamork-central_zone
+  - orkrail/station_gorkamork-central_line
+  - orkrail/station_gorkamork-central_condition
+  - orkrail/station_teef-exchange_zone
+  - orkrail/station_teef-exchange_line
+  - orkrail/station_teef-exchange_condition
+  hops: 2
+- asks: loci
+  query: wot cargo an warband fer srv-000, srv-001, an srv-002?
+  expect_key:
+  - orkrail/sched_srv-000_cargo
+  - orkrail/sched_srv-000_warband
+  - orkrail/sched_srv-001_cargo
+  - orkrail/sched_srv-001_warband
+  - orkrail/sched_srv-002_cargo
+  - orkrail/sched_srv-002_warband
+  hops: 2
+- asks: loci
+  query: wot type an equipment fer gork-forge, mork-foundry, an mekboy-yard?
+  expect_key:
+  - orkrail/depot_gork-forge_type
+  - orkrail/depot_gork-forge_equipment
+  - orkrail/depot_mork-foundry_type
+  - orkrail/depot_mork-foundry_equipment
+  - orkrail/depot_mekboy-yard_type
+  - orkrail/depot_mekboy-yard_equipment
+  hops: 2
+- asks: corpus
+  query: tell me about da full supply chain fer srv-000
+  expect_content:
+  - teef-train-3
+  hops: 4
+- asks: corpus
+  query: tell me about da warboss chain fer gorkamork-central station
+  expect_content:
+  - boss-promethium-lord
+  hops: 3
+- asks: memory
+  query: gimme evt-000 — bridge fell down deff-dread-halt
+  expect_ref:
+  - evt-000
+  hops: 2
+- asks: memory
+  query: gimme evt-001 — squigs stampeded promethium-pit Dusk
+  expect_ref:
+  - evt-001
+  hops: 2
+- asks: memory
+  query: gimme todo-000 — Fix loco goff-rock
+  expect_ref:
+  - todo-000
+  hops: 2
+- asks: corpus
+  query: tell me about da never-built grand-waagh-spur line
+  expect_empty: true
+- asks: corpus
+  query: tell me about da collapsed zogwort-tunnel-old station
+  expect_empty: true
+- asks: loci
+  query: wot zone fer gorkamork-central an teef-exchange?
+  expect_key:
+  - orkrail/station_gorkamork-central_zone
+  - orkrail/station_teef-exchange_zone
+  hops: 2
+- asks: loci
+  query: wot line fer gorkamork-central an teef-exchange?
+  expect_key:
+  - orkrail/station_gorkamork-central_line
+  - orkrail/station_teef-exchange_line
+  hops: 2
+- asks: loci
+  query: wot armor an fuel fer big-choppa-0 an dakka-jet-0?
+  expect_key:
+  - orkrail/loco_big-choppa-0_armor
+  - orkrail/loco_big-choppa-0_fuel
+  - orkrail/loco_dakka-jet-0_armor
+  - orkrail/loco_dakka-jet-0_fuel
+  hops: 2
+- asks: loci
+  query: what warboss runs gork-forge depot and what is its type?
+  expect_key:
+  - orkrail/depot_gork-forge_warboss
+  - orkrail/depot_gork-forge_type
+  hops: 2
+- asks: memory
+  query: gimme evt-002 — grots escaped zogwort-folly WAAAGH! plus gimme evt-003 — track broke kustom-keep Night
+  expect_ref:
+  - evt-002
+  - evt-003
+  hops: 2
+- asks: memory
+  query: gimme rep-001 — Q1 238.M41 dakka-junction kustom
+  expect_ref:
+  - rep-001
+  hops: 2
+- asks: corpus
+  query: tell me about da full chain from srv-003 ta its supplier's part
+  expect_content:
+  - battle-barge-0
+  hops: 4
+- asks: corpus
+  query: tell me about da warboss chain fer da dakka-line
+  expect_content:
+  - boss-grotkeeper
+  hops: 3
+- asks: loci
+  query: wot line runs ta wot zone — compare gorkamork-central an dakka-junction?
+  expect_key:
+  - orkrail/station_gorkamork-central_line
+  - orkrail/station_gorkamork-central_zone
+  - orkrail/station_dakka-junction_line
+  - orkrail/station_dakka-junction_zone
+  hops: 2
+- asks: loci
+  query: wot condition an dakka at gorkamork-central, dakka-junction, an teef-exchange?
+  expect_key:
+  - orkrail/station_gorkamork-central_condition
+  - orkrail/station_gorkamork-central_dakka
+  - orkrail/station_dakka-junction_condition
+  - orkrail/station_dakka-junction_dakka
+  - orkrail/station_teef-exchange_condition
+  - orkrail/station_teef-exchange_dakka
+  hops: 2
+- asks: loci
+  query: wot gauge an color fer da dakka-line, teef-railway, an waagh-express?
+  expect_key:
+  - orkrail/line_dakka-line_gauge
+  - orkrail/line_dakka-line_color
+  - orkrail/line_teef-railway_gauge
+  - orkrail/line_teef-railway_color
+  - orkrail/line_waagh-express_gauge
+  - orkrail/line_waagh-express_color
+  hops: 2
+- asks: loci
+  query: wot armor an gubbinz on big-choppa-0, dakka-jet-0, an teef-train-0?
+  expect_key:
+  - orkrail/loco_big-choppa-0_armor
+  - orkrail/loco_big-choppa-0_gubbinz
+  - orkrail/loco_dakka-jet-0_armor
+  - orkrail/loco_dakka-jet-0_gubbinz
+  - orkrail/loco_teef-train-0_armor
+  - orkrail/loco_teef-train-0_gubbinz
+  hops: 2
+- asks: loci
+  query: wot depot fer big-choppa-0, dakka-jet-0, an teef-train-0?
+  expect_key:
+  - orkrail/loco_big-choppa-0_depot
+  - orkrail/loco_dakka-jet-0_depot
+  - orkrail/loco_teef-train-0_depot
+  hops: 2
+- asks: loci
+  query: wot line fer big-choppa-0, dakka-jet-0, an teef-train-0?
+  expect_key:
+  - orkrail/loco_big-choppa-0_line
+  - orkrail/loco_dakka-jet-0_line
+  - orkrail/loco_teef-train-0_line
+  hops: 2
+- asks: loci
+  query: wot cargo an warband on srv-000, srv-001, srv-002, srv-003, srv-004?
+  expect_key:
+  - orkrail/sched_srv-000_cargo
+  - orkrail/sched_srv-000_warband
+  - orkrail/sched_srv-001_cargo
+  - orkrail/sched_srv-001_warband
+  - orkrail/sched_srv-002_cargo
+  - orkrail/sched_srv-002_warband
+  - orkrail/sched_srv-003_cargo
+  - orkrail/sched_srv-003_warband
+  - orkrail/sched_srv-004_cargo
+  - orkrail/sched_srv-004_warband
+  hops: 2
+- asks: loci
+  query: wot type, equipment, an supplier fer gork-forge, mork-foundry, an mekboy-yard?
+  expect_key:
+  - orkrail/depot_gork-forge_type
+  - orkrail/depot_gork-forge_equipment
+  - orkrail/depot_gork-forge_supplier
+  - orkrail/depot_mork-foundry_type
+  - orkrail/depot_mork-foundry_equipment
+  - orkrail/depot_mork-foundry_supplier
+  - orkrail/depot_mekboy-yard_type
+  - orkrail/depot_mekboy-yard_equipment
+  - orkrail/depot_mekboy-yard_supplier
+  hops: 2
+- asks: loci
+  query: wot part an zone fer squig-feeders, teef-traders, an promethium-peddlers?
+  expect_key:
+  - orkrail/supp_squig-feeders_part
+  - orkrail/supp_squig-feeders_zone
+  - orkrail/supp_teef-traders_part
+  - orkrail/supp_teef-traders_zone
+  - orkrail/supp_promethium-peddlers_part
+  - orkrail/supp_promethium-peddlers_zone
+  hops: 2
+- asks: loci
+  query: wot clan an rank fer boss-gitsnik, boss-skragbad, an boss-mogrok?
+  expect_key:
+  - orkrail/boss_boss-gitsnik_clan
+  - orkrail/boss_boss-gitsnik_rank
+  - orkrail/boss_boss-skragbad_clan
+  - orkrail/boss_boss-skragbad_rank
+  - orkrail/boss_boss-mogrok_clan
+  - orkrail/boss_boss-mogrok_rank
+  hops: 2
+- asks: corpus
+  query: tell me about da full supply chain fer srv-001 — loco, depot, supplier, part
+  expect_content:
+  - big-choppa-4
+  hops: 4
+- asks: corpus
+  query: tell me about da full supply chain fer srv-002 — loco, depot, supplier, part
+  expect_content:
+  - kustom-kroozer-2
+  hops: 4
+- asks: corpus
+  query: tell me about da full supply chain fer srv-004 — loco, depot, supplier, part
+  expect_content:
+  - big-choppa-0
+  hops: 4
+- asks: corpus
+  query: tell me about da full supply chain fer srv-007 — loco, depot, supplier, part
+  expect_content:
+  - battle-barge-1
+  hops: 4
+- asks: corpus
+  query: tell me about da full supply chain fer srv-008 — loco, depot, supplier, part
+  expect_content:
+  - squig-hauler-2
+  hops: 4
+- asks: corpus
+  query: tell me about da warboss chain fer teef-exchange station
+  expect_content:
+  - boss-rottenjaw
+  hops: 3
+- asks: corpus
+  query: tell me about da warboss chain fer da teef-railway
+  expect_content:
+  - boss-high-dakka
+  hops: 3
+- asks: corpus
+  query: tell me about da warboss chain fer mork-foundry depot
+  expect_content:
+  - boss-teefsnatcha
+  hops: 3
+- asks: corpus
+  query: tell me about boss-skragbad — clan, rank, an domain
+  expect_content:
+  - boss-skragbad
+  - mork
+  - weirdboy
+  - line
+  hops: 2
+- asks: corpus
+  query: tell me about boss-mogrok — clan, rank, an domain
+  expect_content:
+  - boss-mogrok
+  - goff
+  - mekboy
+  - station
+  hops: 2
+- asks: memory
+  query: gimme evt-004 — squigs stampeded mekboy-forge Midday plus gimme evt-005 — signals busted zogwort-folly WAAAGH!
+  expect_ref:
+  - evt-004
+  - evt-005
+  hops: 2
+- asks: memory
+  query: gimme rep-002 — Q4 238.M41 killa-kan-crossing promethium
+  expect_ref:
+  - rep-002
+  hops: 2
+- asks: memory
+  query: gimme rep-003 — Q1 234.M41 evil-sunz-spur grot
+  expect_ref:
+  - rep-003
+  hops: 2
+- asks: memory
+  query: gimme todo-001 — Raid station mekboy-station
+  expect_ref:
+  - todo-001
+  hops: 2
+- asks: memory
+  query: gimme todo-002 — Fix loco teef-tower
+  expect_ref:
+  - todo-002
+  hops: 2
+- asks: loci
+  query: wot loco does da fake srv-999 use?
+  expect_empty: true
+- asks: corpus
+  query: tell me about da never-built promethium-pipeline-rail
+  expect_empty: true
+- asks: corpus
+  query: tell me about da collapsed gork-crater station
+  expect_empty: true
+- asks: corpus
+  query: dossier on da phantom warboss boss-phantom-1
+  expect_empty: true
+- asks: memory
+  query: gimme evt-006 — signals busted deff-dread-halt Midday
+  expect_ref:
+  - evt-006
+  hops: 2

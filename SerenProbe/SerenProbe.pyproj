@@ -88,7 +88,6 @@
     <Compile Include="seren_probe\runtime\regrade_live.py" />
     <Compile Include="seren_probe\runtime\write_guard.py" />
     <Compile Include="seren_probe\runtime\__init__.py" />
-    <Compile Include="seren_probe\_version.py" />
     <Compile Include="seren_probe\__init__.py" />
     <Compile Include="seren_probe\__main__.py" />
     <Compile Include="tests\compare_loci.py" />

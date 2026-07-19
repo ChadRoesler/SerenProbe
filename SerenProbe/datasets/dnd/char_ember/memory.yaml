@@ -1,0 +1,272 @@
+- tier: short
+  ref: ember_short_00
+  topic: recent
+  content: Ember the Burner survived an ambush near Wyvern's Peak last week.
+- tier: short
+  ref: ember_short_01
+  topic: recent
+  content: Ember the Burner discovered a hidden passage in the old ruins.
+- tier: short
+  ref: ember_short_02
+  topic: recent
+  content: A traveling merchant told Ember the Burner of a rising threat in the east.
+- tier: short
+  ref: ember_short_03
+  topic: recent
+  content: Ember the Burner trained under a grizzled veteran for three days.
+- tier: short
+  ref: ember_short_04
+  topic: recent
+  content: Ember the Burner helped defend Wyvern's Peak from a goblin raid.
+- tier: short
+  ref: ember_short_05
+  topic: recent
+  content: A strange omen — a flock of ravens — was seen over Wyvern's Peak.
+- tier: short
+  ref: ember_short_06
+  topic: recent
+  content: Ember the Burner received a coded message from an old contact.
+- tier: short
+  ref: ember_short_07
+  topic: recent
+  content: During a storm, Ember the Burner lost a valuable map in the river.
+- tier: short
+  ref: ember_short_08
+  topic: recent
+  content: Ember the Burner overheard a plot to poison the well in Wyvern's Peak.
+- tier: short
+  ref: ember_short_09
+  topic: recent
+  content: A elf sage visited Ember the Burner seeking aid against the Shadow King.
+- tier: short
+  ref: ember_short_10
+  topic: recent
+  content: Ember the Burner found a wounded eagle and nursed it back to health.
+- tier: short
+  ref: ember_short_11
+  topic: recent
+  content: The local garrison offered a bounty for a dangerous outlaw.
+- tier: short
+  ref: ember_short_12
+  topic: recent
+  content: Ember the Burner participated in a council at Wyvern's Peak.
+- tier: short
+  ref: ember_short_13
+  topic: recent
+  content: A rival challenged Ember the Burner to a contest and lost.
+- tier: short
+  ref: ember_short_14
+  topic: recent
+  content: Ember the Burner deciphered an old prophecy mentioning the Shadow King.
+- tier: short
+  ref: ember_short_15
+  topic: recent
+  content: A mysterious fog rolled into Wyvern's Peak for three nights straight.
+- tier: short
+  ref: ember_short_16
+  topic: recent
+  content: Ember the Burner was marked by a wandering warlock.
+- tier: short
+  ref: ember_short_17
+  topic: recent
+  content: Ember the Burner unearthed a mosaic from an forgotten era.
+- tier: short
+  ref: ember_short_18
+  topic: recent
+  content: A quake damaged part of Wyvern's Peak.
+- tier: short
+  ref: ember_short_19
+  topic: recent
+  content: Ember the Burner swore a temporary truce with a former enemy.
+- tier: long
+  ref: ember_long_00
+  topic: lore
+  content: Ember the Burner was born under the sign of the Wolf.
+- tier: long
+  ref: ember_long_01
+  topic: lore
+  content: The Fire Gnome people believe Ember the Burner is a reborn hero.
+- tier: long
+  ref: ember_long_02
+  topic: lore
+  content: Ember the Burner's mother taught them the ways of the Pyromancer.
+- tier: long
+  ref: ember_long_03
+  topic: lore
+  content: In Ember the Burner's youth, they tamed a wild beast.
+- tier: long
+  ref: ember_long_04
+  topic: lore
+  content: Ember the Burner carries a scar shaped like a skull.
+- tier: long
+  ref: ember_long_05
+  topic: lore
+  content: A lich once offered Ember the Burner a bargain — power in exchange for years of life.
+- tier: long
+  ref: ember_long_06
+  topic: lore
+  content: Ember the Burner once burned a fortress.
+- tier: long
+  ref: ember_long_07
+  topic: lore
+  content: The Fire Gnome see Ember the Burner as a bridge between the old world and the new.
+- tier: long
+  ref: ember_long_08
+  topic: lore
+  content: Ember the Burner learned the bow from a secret order.
+- tier: long
+  ref: ember_long_09
+  topic: lore
+  content: In Ember the Burner's past, they crossed the burning desert.
+- tier: long
+  ref: ember_long_10
+  topic: lore
+  content: A staff was given to Ember the Burner.
+- tier: long
+  ref: ember_long_11
+  topic: lore
+  content: Ember the Burner once uncovered a lie.
+- tier: long
+  ref: ember_long_12
+  topic: lore
+  content: The Fire Gnome ancestors spoke of Ember the Burner in omens.
+- tier: long
+  ref: ember_long_13
+  topic: lore
+  content: Ember the Burner carries a curse from the elements.
+- tier: long
+  ref: ember_long_14
+  topic: lore
+  content: A battle in Ember the Burner's youth left a vow.
+- tier: long
+  ref: ember_long_15
+  topic: lore
+  content: Ember the Burner made a powerful enemy.
+- tier: long
+  ref: ember_long_16
+  topic: lore
+  content: The Fire Gnome elders honor Ember the Burner for their wisdom.
+- tier: long
+  ref: ember_long_17
+  topic: lore
+  content: Ember the Burner holds a royal claim.
+- tier: long
+  ref: ember_long_18
+  topic: lore
+  content: The Fire Gnome race originated in Wyvern's Peak long before the First Age.
+- tier: long
+  ref: ember_long_19
+  topic: lore
+  content: Fire Gnome tradition holds that their creator, Moradin, shaped them from clay.
+- tier: long
+  ref: ember_long_20
+  topic: lore
+  content: The Fire Gnome once fought a great war against the Fey Court.
+- tier: long
+  ref: ember_long_21
+  topic: lore
+  content: A sacred forest in Wyvern's Peak is the spiritual heart of the Fire Gnome.
+- tier: long
+  ref: ember_long_22
+  topic: lore
+  content: Fire Gnome smiths are known for crafting crystal armor.
+- tier: long
+  ref: ember_long_23
+  topic: lore
+  content: The Fire Gnome calendar marks 4 seasons, each tied to a elemental festival.
+- tier: long
+  ref: ember_long_24
+  topic: lore
+  content: Fire Gnome legends tell of a god who once ruled Wyvern's Peak.
+- tier: long
+  ref: ember_long_25
+  topic: lore
+  content: The Fire Gnome tongue has no word for betrayal.
+- tier: long
+  ref: ember_long_26
+  topic: lore
+  content: 'An ancient Fire Gnome prophecy says: ''When the star falls ...'''
+- tier: long
+  ref: ember_long_27
+  topic: lore
+  content: The Fire Gnome once allied with the Humans to defeat the Undead Legion.
+- tier: long
+  ref: ember_long_28
+  topic: lore
+  content: Wyvern's Peak was founded by a divine oracle.
+- tier: long
+  ref: ember_long_29
+  topic: lore
+  content: The first gate of Wyvern's Peak was laid in the Age of Blood.
+- tier: long
+  ref: ember_long_30
+  topic: lore
+  content: A dragon sleeps beneath Wyvern's Peak.
+- tier: long
+  ref: ember_long_31
+  topic: lore
+  content: The wells of Wyvern's Peak are said to be blessed by the fey.
+- tier: long
+  ref: ember_long_32
+  topic: lore
+  content: Every 10 years, a great pilgrimage is held in Wyvern's Peak.
+- tier: long
+  ref: ember_long_33
+  topic: lore
+  content: Wyvern's Peak exports enchanted goods to the rest of Aethelgard.
+- tier: long
+  ref: ember_long_34
+  topic: lore
+  content: A prophecy hangs over Wyvern's Peak — 'the stones remember'.
+- tier: long
+  ref: ember_long_35
+  topic: lore
+  content: The oldest part of Wyvern's Peak is the Great Hall.
+- tier: long
+  ref: ember_long_36
+  topic: lore
+  content: Wyvern's Peak was once besieged by the Bone Horde.
+- tier: long
+  ref: ember_long_37
+  topic: lore
+  content: A ancient forge lies beneath Wyvern's Peak.
+- tier: near
+  ref: ember_near_00
+  topic: upcoming
+  content: Ember the Burner plans to escort a caravan to Crossroads next week.
+- tier: near
+  ref: ember_near_01
+  topic: upcoming
+  content: A dream warns that the Shadow King will rise soon.
+- tier: near
+  ref: ember_near_02
+  topic: upcoming
+  content: Ember the Burner must gather allies before the next full moon.
+- tier: near
+  ref: ember_near_03
+  topic: upcoming
+  content: A noble has summoned Ember the Burner to Crossroads for a parley.
+- tier: near
+  ref: ember_near_04
+  topic: upcoming
+  content: Ember the Burner suspects a ambush brewing in Wyvern's Peak.
+- tier: near
+  ref: ember_near_05
+  topic: upcoming
+  content: The season of flame approaches, bringing blessing.
+- tier: near
+  ref: ember_near_06
+  topic: upcoming
+  content: Ember the Burner was offered a map in exchange for a dangerous quest.
+- tier: near
+  ref: ember_near_07
+  topic: upcoming
+  content: A rival threatened Ember the Burner, forcing a difficult choice.
+- tier: near
+  ref: ember_near_08
+  topic: upcoming
+  content: Ember the Burner will attend a coronation in Silverwood.
+- tier: near
+  ref: ember_near_09
+  topic: upcoming
+  content: A mysterious messenger arrived for Ember the Burner, hinting at a greater plot.

@@ -1,0 +1,44 @@
+questions:
+- asks: loci
+  query: which houses are loyal to the Crown?
+  expect_key:
+  - aldermoor/house_ostry_allegiance
+  - aldermoor/house_merrow_allegiance
+- asks: loci
+  query: which houses back the Iron Pact?
+  expect_key:
+  - aldermoor/house_vayne_allegiance
+  - aldermoor/house_belloc_allegiance
+- asks: memory
+  query: who defeated House Vayne, and where?
+  expect_ref:
+  - evt-frostford
+  expect_content:
+  - Ostry
+  - Frostford
+  - captured
+- asks: memory
+  query: how did House Merrow come under royal banners?
+  expect_ref:
+  - evt-thornhold-pact
+  expect_content:
+  - Thornhold Pact
+  - None Pass Us
+- asks: corpus
+  query: who is House Vayne's rival and how did their war end?
+  expect_content:
+  - House Ostry
+  - Frostford
+  - captured
+- asks: corpus
+  query: tell me about House Belloc's seat, sigil, and their siege
+  expect_content:
+  - Duskwater
+  - red kraken
+  - Siege of Duskwater
+- asks: loci
+  query: what is the seat of House Thornwood?
+  expect_empty: true
+- asks: corpus
+  query: tell me everything about House Blackmoor
+  expect_empty: true

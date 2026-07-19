@@ -1,0 +1,280 @@
+- tier: short
+  ref: silverwood_short_00
+  topic: recent
+  content: A caravan arrived at Silverwood last week.
+- tier: short
+  ref: silverwood_short_01
+  topic: recent
+  content: Silverwood suffered a fire in the temple ward.
+- tier: short
+  ref: silverwood_short_02
+  topic: recent
+  content: A guild master was assassinated in Silverwood.
+- tier: short
+  ref: silverwood_short_03
+  topic: recent
+  content: Silverwood held a grand festival last week.
+- tier: short
+  ref: silverwood_short_04
+  topic: recent
+  content: A dragon was sighted near Silverwood's gates.
+- tier: short
+  ref: silverwood_short_05
+  topic: recent
+  content: The ruling lord of Silverwood passed a new trade law.
+- tier: short
+  ref: silverwood_short_06
+  topic: recent
+  content: A meteor was seen over Silverwood at midnight.
+- tier: short
+  ref: silverwood_short_07
+  topic: recent
+  content: Silverwood's granaries were sealed.
+- tier: short
+  ref: silverwood_short_08
+  topic: recent
+  content: A messenger arrived from the Shadow Lands.
+- tier: short
+  ref: silverwood_short_09
+  topic: recent
+  content: Silverwood opened a rebuilt temple.
+- tier: short
+  ref: silverwood_short_10
+  topic: recent
+  content: A alchemist discovered a hidden vault near Silverwood.
+- tier: short
+  ref: silverwood_short_11
+  topic: recent
+  content: Silverwood hosted a moot of the neighboring realms.
+- tier: short
+  ref: silverwood_short_12
+  topic: recent
+  content: A famine struck Silverwood's livestock.
+- tier: short
+  ref: silverwood_short_13
+  topic: recent
+  content: The watch of Silverwood repelled a undead incursion.
+- tier: short
+  ref: silverwood_short_14
+  topic: recent
+  content: A prophet foretold a coming war for Silverwood.
+- tier: short
+  ref: silverwood_short_15
+  topic: recent
+  content: Silverwood celebrated the jubilee of its founding.
+- tier: short
+  ref: silverwood_short_16
+  topic: recent
+  content: A quarry near Silverwood was exhausted.
+- tier: short
+  ref: silverwood_short_17
+  topic: recent
+  content: Silverwood received a military reinforcement from Ironhold.
+- tier: short
+  ref: silverwood_short_18
+  topic: recent
+  content: A blizzard battered Silverwood for 3 days.
+- tier: short
+  ref: silverwood_short_19
+  topic: recent
+  content: Silverwood legalized necromancy.
+- tier: long
+  ref: silverwood_long_00
+  topic: lore
+  content: Silverwood was carved from ancient forest.
+- tier: long
+  ref: silverwood_long_01
+  topic: lore
+  content: The architect of Silverwood was guided by a prophecy.
+- tier: long
+  ref: silverwood_long_02
+  topic: lore
+  content: Silverwood is built atop the ruins of a dragon's lair.
+- tier: long
+  ref: silverwood_long_03
+  topic: lore
+  content: A ward protects Silverwood from magic.
+- tier: long
+  ref: silverwood_long_04
+  topic: lore
+  content: The hidden libraries of Silverwood hold secrets of the First Age.
+- tier: long
+  ref: silverwood_long_05
+  topic: lore
+  content: Silverwood was once a prison colony during the Dragon War.
+- tier: long
+  ref: silverwood_long_06
+  topic: lore
+  content: The architecture of Silverwood were influenced by Dwarven settlers.
+- tier: long
+  ref: silverwood_long_07
+  topic: lore
+  content: A unicorn was tamed by the people of Silverwood.
+- tier: long
+  ref: silverwood_long_08
+  topic: lore
+  content: Silverwood's crest is 'Through Stone and Steel'.
+- tier: long
+  ref: silverwood_long_09
+  topic: lore
+  content: The founding guild of Silverwood dates back 624 years.
+- tier: long
+  ref: silverwood_long_10
+  topic: lore
+  content: Silverwood was rebuilt after the Great Fire.
+- tier: long
+  ref: silverwood_long_11
+  topic: lore
+  content: A magical portal connects Silverwood to the Elemental Plane.
+- tier: long
+  ref: silverwood_long_12
+  topic: lore
+  content: The rivers of Silverwood are said to be linked to the sea god.
+- tier: long
+  ref: silverwood_long_13
+  topic: lore
+  content: Silverwood is home to a famous academy that attracts scholars from across Aethelgard.
+- tier: long
+  ref: silverwood_long_14
+  topic: lore
+  content: A alliance was signed in Silverwood that ended the Border War.
+- tier: long
+  ref: silverwood_long_15
+  topic: lore
+  content: The gates of Silverwood were built by a forgotten god.
+- tier: long
+  ref: silverwood_long_16
+  topic: lore
+  content: Silverwood has a secret weapon guarded by a magical seal.
+- tier: long
+  ref: silverwood_long_17
+  topic: lore
+  content: Every 91 years, a great migration occurs over Silverwood.
+- tier: long
+  ref: silverwood_long_18
+  topic: lore
+  content: Silverwood was visited by a wandering god who imposed a geas.
+- tier: long
+  ref: silverwood_long_19
+  topic: lore
+  content: The longest-ruling lord of Silverwood is remembered in statues.
+- tier: long
+  ref: silverwood_long_20
+  topic: lore
+  content: Silverwood is known for its soaring spires.
+- tier: long
+  ref: silverwood_long_21
+  topic: lore
+  content: A human quarter of Silverwood preserves traditions from the Dawn Era.
+- tier: long
+  ref: silverwood_long_22
+  topic: lore
+  content: The gates of Silverwood bear runes of the great siege.
+- tier: long
+  ref: silverwood_long_23
+  topic: lore
+  content: A sunken courtyard lies at the heart of Silverwood.
+- tier: long
+  ref: silverwood_long_24
+  topic: lore
+  content: Silverwood was once ruled by a fey queen before the rebellion.
+- tier: long
+  ref: silverwood_long_25
+  topic: lore
+  content: The royal scepter of Silverwood is kept in the Grand Temple.
+- tier: long
+  ref: silverwood_long_26
+  topic: lore
+  content: A curse of silence once swept through Silverwood.
+- tier: long
+  ref: silverwood_long_27
+  topic: lore
+  content: Silverwood is built on a floating island.
+- tier: long
+  ref: silverwood_long_28
+  topic: lore
+  content: The founder's sword rests in Silverwood.
+- tier: long
+  ref: silverwood_long_29
+  topic: lore
+  content: A celestial choir sounds nightly in Silverwood's great hall.
+- tier: long
+  ref: silverwood_long_30
+  topic: lore
+  content: The spirit paths connect Silverwood to the Astral Plane.
+- tier: long
+  ref: silverwood_long_31
+  topic: lore
+  content: Silverwood was marked by a dragon in the dawn age.
+- tier: long
+  ref: silverwood_long_32
+  topic: lore
+  content: A riddle of water lies beneath Silverwood.
+- tier: long
+  ref: silverwood_long_33
+  topic: lore
+  content: The guilds of Silverwood are bound by the Golden Pact.
+- tier: long
+  ref: silverwood_long_34
+  topic: lore
+  content: Silverwood is known for its enchanted smiths.
+- tier: long
+  ref: silverwood_long_35
+  topic: lore
+  content: A sanctuary of shadow beings is hidden near Silverwood.
+- tier: long
+  ref: silverwood_long_36
+  topic: lore
+  content: The oldest tree of Silverwood is a pilgrimage site.
+- tier: long
+  ref: silverwood_long_37
+  topic: lore
+  content: A exiled prince from Silverwood once saved the east.
+- tier: long
+  ref: silverwood_long_38
+  topic: lore
+  content: Silverwood celebrates a night of stars every 12 months.
+- tier: long
+  ref: silverwood_long_39
+  topic: lore
+  content: The first gate of Silverwood was planted by a mage.
+- tier: near
+  ref: silverwood_near_00
+  topic: upcoming
+  content: A caravan is expected to reach Silverwood within days.
+- tier: near
+  ref: silverwood_near_01
+  topic: upcoming
+  content: Silverwood plans to expand the market before winter.
+- tier: near
+  ref: silverwood_near_02
+  topic: upcoming
+  content: A grand tournament is scheduled in Silverwood next month.
+- tier: near
+  ref: silverwood_near_03
+  topic: upcoming
+  content: Silverwood fears a uprising from the Shadow Lands.
+- tier: near
+  ref: silverwood_near_04
+  topic: upcoming
+  content: A astrologer foretells a divine blessing for Silverwood.
+- tier: near
+  ref: silverwood_near_05
+  topic: upcoming
+  content: Silverwood will host a diplomatic meeting next season.
+- tier: near
+  ref: silverwood_near_06
+  topic: upcoming
+  content: A secret is rumored to be hidden in Silverwood's sewers.
+- tier: near
+  ref: silverwood_near_07
+  topic: upcoming
+  content: Silverwood must prepare for the summer season.
+- tier: near
+  ref: silverwood_near_08
+  topic: upcoming
+  content: A enemy kingdom threatens Silverwood's alliances.
+- tier: near
+  ref: silverwood_near_09
+  topic: upcoming
+  content: Silverwood will elect a new council by the next full moon.

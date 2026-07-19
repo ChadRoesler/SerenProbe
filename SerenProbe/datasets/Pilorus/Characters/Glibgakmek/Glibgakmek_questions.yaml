@@ -1,0 +1,171 @@
+# SerenProbe Questions - entity question set
+# Generated for character
+
+questions:
+- query: What is Glibgakmek's favorite drink?
+  asks: loci
+  expect_key:
+  - identity/favorite_drink
+  hops: 1
+- query: What armor does Glibgakmek wear?
+  asks: loci
+  expect_key:
+  - combat/armor
+  hops: 1
+- query: What weapon does Glibgakmek carry?
+  asks: loci
+  expect_key:
+  - combat/weapon
+  hops: 1
+- query: What is Glibgakmek's profession?
+  asks: loci
+  expect_key:
+  - identity/profession
+  hops: 1
+- query: What is the alignment of Glibgakmek?
+  asks: loci
+  expect_key:
+  - stats/alignment
+  hops: 1
+- query: How old is Glibgakmek?
+  asks: loci
+  expect_key:
+  - stats/age
+  hops: 1
+- query: What race is Glibgakmek?
+  asks: loci
+  expect_key:
+  - stats/race
+  hops: 1
+- query: What title does Glibgakmek hold?
+  asks: loci
+  expect_key:
+  - identity/title
+  hops: 1
+- query: What is Glibgakmek's favorite color?
+  asks: loci
+  expect_key:
+  - identity/favorite_color
+  hops: 1
+- query: What is Glibgakmek's favorite food?
+  asks: loci
+  expect_key:
+  - identity/favorite_food
+  hops: 1
+- query: What does Glibgakmek remember about endless laughter I often?
+  asks: memory
+  expect_ref:
+  - glibgakmek_281_long_69
+  hops: 1
+- query: What news reached Glibgakmek about spent the season guarding the walls?
+  asks: memory
+  expect_ref:
+  - glibgakmek_281_short_0
+  hops: 1
+- query: What news reached Glibgakmek about whole town gathered?
+  asks: memory
+  expect_ref:
+  - glibgakmek_281_short_1
+  hops: 1
+- query: What news reached Glibgakmek about friend Glibtrakspig shared a drink?
+  asks: memory
+  expect_ref:
+  - glibgakmek_281_short_3
+  hops: 1
+- query: What has Glibgakmek been thinking about songs sing that the spring?
+  asks: memory
+  expect_ref:
+  - glibgakmek_281_short_8
+  hops: 1
+- query: What news reached Glibgakmek about sun this season looked strange?
+  asks: memory
+  expect_ref:
+  - glibgakmek_281_short_5
+  hops: 1
+- query: What has Glibgakmek been thinking about thinking about my family far away?
+  asks: memory
+  expect_ref:
+  - glibgakmek_281_short_9
+  hops: 1
+- query: What has Glibgakmek been thinking about spring air makes me feel determined?
+  asks: memory
+  expect_ref:
+  - glibgakmek_281_short_10
+  hops: 1
+- query: What does Glibgakmek remember about world felt sharp and dangerous?
+  asks: memory
+  expect_ref:
+  - glibgakmek_281_long_55
+  hops: 1
+- query: What does Glibgakmek remember about dwarf halls for the first?
+  asks: memory
+  expect_ref:
+  - glibgakmek_281_long_2
+  hops: 1
+- query: What is the favorite color of Glibgakmek, and what does Glibgakmek recall
+    about dream of endless laughter I often?
+  asks: corpus
+  expect_key:
+  - identity/favorite_color
+  expect_ref:
+  - glibgakmek_281_long_69
+  hops: 2
+- query: What is the armor of Glibgakmek, and what does Glibgakmek recall about friend
+    Glibtrakspig shared a drink?
+  asks: corpus
+  expect_key:
+  - combat/armor
+  expect_ref:
+  - glibgakmek_281_short_3
+  hops: 2
+- query: What is the weapon and armor of Glibgakmek?
+  asks: corpus
+  expect_key:
+  - combat/weapon
+  - combat/armor
+  hops: 1
+- query: What is the favorite drink of Glibgakmek, and what does Glibgakmek recall
+    about goat and laughed at the trader's?
+  asks: corpus
+  expect_key:
+  - identity/favorite_drink
+  expect_ref:
+  - glibgakmek_281_long_1
+  hops: 2
+- query: What is the race of Glibgakmek, and what does Glibgakmek recall about built
+    a trap that caught?
+  asks: corpus
+  expect_key:
+  - stats/race
+  expect_ref:
+  - glibgakmek_281_long_7
+  hops: 2
+- query: What is known about The Sunken Archive?
+  asks: corpus
+  expect_empty: true
+  hops: 1
+- query: What is the race, age and alignment of Glibgakmek?
+  asks: corpus
+  expect_key:
+  - stats/race
+  - stats/age
+  - stats/alignment
+  hops: 1
+- query: What is the weapon of Glibgakmek, and what does Glibgakmek recall about poisoned
+    the water of a rival?
+  asks: corpus
+  expect_key:
+  - combat/weapon
+  expect_ref:
+  - glibgakmek_281_long_23
+  hops: 2
+- query: What is the civ and home site of Glibgakmek?
+  asks: corpus
+  expect_key:
+  - origin/civ
+  - origin/home_site
+  hops: 1
+- query: What is known about The Lost Spire of Vorn?
+  asks: corpus
+  expect_empty: true
+  hops: 1

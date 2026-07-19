@@ -1,0 +1,1387 @@
+{
+  "character": {
+    "id": 497,
+    "name": "Aelinioneri",
+    "race": "Elf",
+    "alignment": "chaos",
+    "title": "Trickster of Aeanoran",
+    "is_titleworthy": true,
+    "title_tier": "ruler",
+    "age": 100,
+    "birth_year": 207,
+    "death_year": null,
+    "deeds": [
+      "art",
+      "peace",
+      "peace",
+      "creation",
+      "sacrifice",
+      "diplomacy",
+      "war",
+      "diplomacy",
+      "faith",
+      "cruelty",
+      "war",
+      "cruelty",
+      "war",
+      "magic",
+      "magic"
+    ],
+    "relationships": [
+      {
+        "type": "parent_child",
+        "figure_id": 452,
+        "role": "child",
+        "strength": "strained"
+      }
+    ]
+  },
+  "context": {
+    "civ_name": "Aeanoran",
+    "civ_alignment": "order",
+    "region_biomes": [
+      "Dense Forest",
+      "Forest",
+      "Dense Forest",
+      "Dense Forest",
+      "Swamp"
+    ],
+    "num_civ_sites": 20,
+    "num_same_civ_figures": 99,
+    "num_civ_artifacts": 4,
+    "num_civ_events": 165
+  },
+  "facts": {
+    "race": "Elf",
+    "age": "100",
+    "alignment": "chaos",
+    "title": "Trickster of Aeanoran",
+    "civ": "Aeanoran",
+    "home_site": "Aelinar-wood",
+    "profession": "healer",
+    "weapon": "spear",
+    "armor": "studded leather",
+    "favorite_food": "wild game",
+    "favorite_drink": "nectar",
+    "favorite_color": "silver",
+    "stat_str": "6",
+    "stat_agi": "9",
+    "stat_end": "7",
+    "stat_int": "8",
+    "stat_wis": "6",
+    "stat_cha": "6"
+  },
+  "memories": {
+    "long_term": {
+      "count": 100,
+      "items": [
+        {
+          "year": 207,
+          "year_label": "Year 207 (The Pearl Years, year 22)",
+          "age": 0,
+          "season": "spring",
+          "type": "life_event",
+          "memory": "When I was 0 years old, was gifted a seed from the elder tree and planted it with tears of joy.",
+          "reflection": "The trees speak in the language of roots and rain.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 209,
+          "year_label": "Year 209 (The Pearl Years, year 24)",
+          "age": 2,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "When I was 2 years old, watched the stars dance in patterns that told the future.",
+          "reflection": "The world grows older, and so do I.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 212,
+          "year_label": "Year 212 (The Pearl Years, year 27)",
+          "age": 5,
+          "season": "spring",
+          "type": "life_event",
+          "memory": "When I was 5 years old, walked the silver paths under the moonlight for the first time.",
+          "reflection": "Time flows like a river through the forest of memory.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 215,
+          "year_label": "Year 215 (The Pearl Years, year 30)",
+          "age": 8,
+          "season": "autumn",
+          "type": "life_event",
+          "memory": "When I was 8 years old, learned the names of all the stars from the elder astronomer.",
+          "reflection": "The stars sing a different song tonight, and I listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 218,
+          "year_label": "Year 218 (The Pearl Years, year 33)",
+          "age": 11,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "I recall that in Year 218 (The Pearl Years, year 33), I stood at a crossroads. I carved a bow from the heartwood of the world tree and it sang with power To this day, I wonder what could have been.",
+          "reflection": "The wind carries whispers from far places I have yet to see.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 221,
+          "year_label": "Year 221 (The Pearl Years, year 36)",
+          "age": 14,
+          "season": "spring",
+          "type": "life_event",
+          "memory": "In Year 221 (The Pearl Years, year 36), the world felt still and waiting. I danced with the wild fae and lost three years in a single night That year taught me that hope endures. That year, the rules were unwritten. My parent Thaeion was a strained presence that year.",
+          "reflection": "Every leaf holds a memory of the sun that touched it.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 224,
+          "year_label": "Year 224 (The Pearl Years, year 39)",
+          "age": 17,
+          "season": "spring",
+          "type": "life_event",
+          "memory": "I remember Year 224 (The Pearl Years, year 39) well \u2014 it was a season of loss. I sang a song that unravelled fate and wove it anew To this day, I wonder what could have been.",
+          "reflection": "There is a melody beneath all things, if you listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 227,
+          "year_label": "Year 227 (The Pearl Years, year 42)",
+          "age": 20,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "In the early days of Year 227 (The Pearl Years, year 42), the shrine was consecrated. I worked as a mage and learned much that year. That year taught me that hope endures. Maraelros was there too.",
+          "reflection": "The stars sing a different song tonight, and I listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 230,
+          "year_label": "Year 230 (The Pearl Years, year 45)",
+          "age": 23,
+          "season": "spring",
+          "type": "life_event",
+          "memory": "In the early days of Year 230 (The Pearl Years, year 45), the builders raised a new hall. I spoke riddles that changed the weather \u2014 the clouds obeyed To this day, I wonder what could have been.",
+          "reflection": "The wind carries whispers from far places I have yet to see.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 233,
+          "year_label": "Year 233 (The Pearl Years, year 48)",
+          "age": 26,
+          "season": "spring",
+          "type": "life_event",
+          "memory": "In the deep days of Year 233 (The Pearl Years, year 48), the scholars debated. I traded my name for a handful of stars and forgot who I was I often think about the silences of that time.",
+          "reflection": "Time flows like a river through the forest of memory.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 236,
+          "year_label": "Year 236 (The Pearl Years, year 51)",
+          "age": 29,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "I remember Year 236 (The Pearl Years, year 51) well \u2014 it was a time of change. I worked as a mage and learned much that year. That year taught me that time changes everything. Thalmellin was there too.",
+          "reflection": "Every leaf holds a memory of the sun that touched it.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 239,
+          "year_label": "Year 239 (The Pearl Years, year 54)",
+          "age": 32,
+          "season": "spring",
+          "type": "life_event",
+          "memory": "At 239, the forest caught fire. I wandered the dream paths for a century and returned changed I often think about the faces of that time.",
+          "reflection": "The world grows older, and so do I.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 242,
+          "year_label": "Year 242 (The Pearl Years, year 57)",
+          "age": 35,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "In the late days of Year 242 (The Pearl Years, year 57), the council convened. I sang a song that unravelled fate and wove it anew To this day, I draw strength from it. That year, the rules were unwritten.",
+          "reflection": "There is a melody beneath all things, if you listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 245,
+          "year_label": "Year 245 (The Pearl Years, year 60)",
+          "age": 38,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "Of all the years, Year 245 (The Pearl Years, year 60) was the one where I realized what time takes. The thing I cannot forget was a great battle was fought \u2014 Aeanoran against Windoreford. To this day, I carry its weight.",
+          "reflection": "The trees speak in the language of roots and rain.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 248,
+          "year_label": "Year 248 (The Dawn Age, year 1)",
+          "age": 41,
+          "season": "spring",
+          "type": "life_event",
+          "memory": "I remember Year 248 (The Dawn Age, year 1) well \u2014 it was a period of growth. I traded my name for a handful of stars and forgot who I was That year taught me that time changes everything. Order broke, and something new was born.",
+          "reflection": "There is a melody beneath all things, if you listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 251,
+          "year_label": "Year 251 (The Dawn Age, year 4)",
+          "age": 44,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "Year 251 (The Dawn Age, year 4) was the season when the drought broke. The most poignant moment was a great battle was fought \u2014 Aeanoran against Mokthragorn. It was a year that broke me. Nothing was ever the same after that. My parent Thaeion was a strained presence that year.",
+          "reflection": "Every leaf holds a memory of the sun that touched it.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 254,
+          "year_label": "Year 254 (The Dawn Age, year 7)",
+          "age": 47,
+          "season": "autumn",
+          "type": "life_event",
+          "memory": "The year 254 was a forgotten one. The defining event was a great battle was fought \u2014 Aeanoran against Mokthragorn. The thing I cannot forget was Sindthasael was born. That year taught me that hope endures.",
+          "reflection": "Time flows like a river through the forest of memory.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 256,
+          "year_label": "Year 256 (The Dawn Age, year 9)",
+          "age": 49,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "Looking back, Year 256 (The Dawn Age, year 9) stands out \u2014 the harvest was bountiful. The thing I cannot forget was a great battle was fought \u2014 Miznok against Aeanoran. The thing I cannot forget was Ionfaleri was born. That year taught me that a good plan saves lives.",
+          "reflection": "The wind carries whispers from far places I have yet to see.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 259,
+          "year_label": "Year 259 (The Dawn Age, year 12)",
+          "age": 52,
+          "season": "summer",
+          "type": "life_event",
+          "memory": "During Year 259 (The Dawn Age, year 12), I buried my dead. The most poignant moment was a great battle was fought \u2014 Aeanoran against Turdurnaz. It was a year that broke me.",
+          "reflection": "The stars sing a different song tonight, and I listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 262,
+          "year_label": "Year 262 (The Dawn Age, year 15)",
+          "age": 55,
+          "season": "spring",
+          "type": "life_event",
+          "memory": "Year 262 (The Dawn Age, year 15) was the season when nothing happened. What marked that year was a great battle was fought \u2014 Aeanoran against Turdurnaz. The most poignant moment was a great battle was fought \u2014 Aeanoran against Turdurnaz. I often think about the shadows of that time.",
+          "reflection": "The world grows older, and so do I.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 265,
+          "year_label": "Year 265 (The Dawn Age, year 18)",
+          "age": 58,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "Looking back, Year 265 (The Dawn Age, year 18) stands out \u2014 the air smelled of smoke. I walked through a mirror pool into a world of reflections To this day, I wonder what could have been. The chaos of that time reshaped everything.",
+          "reflection": "The trees speak in the language of roots and rain.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 268,
+          "year_label": "Year 268 (The Dawn Age, year 21)",
+          "age": 61,
+          "season": "spring",
+          "type": "life_event",
+          "memory": "During Year 268 (The Dawn Age, year 21), I prayed in the ruins. The defining event was Sinderi was born. I often think about the shadows of that time.",
+          "reflection": "The wind carries whispers from far places I have yet to see.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 271,
+          "year_label": "Year 271 (The Dawn Age, year 24)",
+          "age": 64,
+          "season": "spring",
+          "type": "life_event",
+          "memory": "I remember Year 271 (The Dawn Age, year 24) well \u2014 it was a season of loss. What struck me most was a great battle was fought \u2014 Aeanoran against Mokthragorn. I often think about the silences of that time. Nothing was ever the same after that. Rilainar was there too.",
+          "reflection": "The stars sing a different song tonight, and I listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 274,
+          "year_label": "Year 274 (The Dawn Age, year 27)",
+          "age": 67,
+          "season": "summer",
+          "type": "life_event",
+          "memory": "At 274, the plague reached our village. I spoke riddles that changed the weather \u2014 the clouds obeyed It was a year that made me who I am. Martir was there too.",
+          "reflection": "There is a melody beneath all things, if you listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 277,
+          "year_label": "Year 277 (The Dawn Age, year 30)",
+          "age": 70,
+          "season": "spring",
+          "type": "life_event",
+          "memory": "Looking back, Year 277 (The Dawn Age, year 30) stands out \u2014 the nights were long. What struck me most was a great battle was fought \u2014 Falconcon against Aeanoran. What marked that year was a great battle was fought \u2014 Falconcon against Aeanoran. To this day, I remember it vividly.",
+          "reflection": "The world grows older, and so do I.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 280,
+          "year_label": "Year 280 (The Dawn Age, year 33)",
+          "age": 73,
+          "season": "autumn",
+          "type": "life_event",
+          "memory": "I recall that in Year 280 (The Dawn Age, year 33), I met a traveler from afar. The most poignant moment was a great battle was fought \u2014 Aeanoran against Mokthragorn. To this day, I wish I could forget. My parent Thaeion was a strained presence that year.",
+          "reflection": "Every leaf holds a memory of the sun that touched it.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 283,
+          "year_label": "Year 283 (The Dawn Age, year 36)",
+          "age": 76,
+          "season": "summer",
+          "type": "life_event",
+          "memory": "In Year 283 (The Dawn Age, year 36), the world felt alive with possibility. I worked as a mage and made a decent living. That year taught me that time changes everything. Elengalan was there too.",
+          "reflection": "Time flows like a river through the forest of memory.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 286,
+          "year_label": "Year 286 (The Dawn Age, year 39)",
+          "age": 79,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "In the late days of Year 286 (The Dawn Age, year 39), the hunters returned empty-handed. The defining event was a great battle was fought \u2014 Falconcon against Aeanoran. What struck me most was a great battle was fought \u2014 Falconcon against Aeanoran. That year taught me that time changes everything.",
+          "reflection": "The trees speak in the language of roots and rain.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 289,
+          "year_label": "Year 289 (The Dawn Age, year 42)",
+          "age": 82,
+          "season": "autumn",
+          "type": "life_event",
+          "memory": "In the middle days of Year 289 (The Dawn Age, year 42), the council convened. What struck me most was a great battle was fought \u2014 Falconcon against Aeanoran. To this day, I draw strength from it.",
+          "reflection": "There is a melody beneath all things, if you listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 292,
+          "year_label": "Year 292 (The Dawn Age, year 45)",
+          "age": 85,
+          "season": "summer",
+          "type": "life_event",
+          "memory": "Of all the years, Year 292 (The Dawn Age, year 45) was the one where I knew what hope carries. The thing I cannot forget was Sindvennaer was born. To this day, I remember it vividly.",
+          "reflection": "The wind carries whispers from far places I have yet to see.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 295,
+          "year_label": "Year 295 (The Dawn Age, year 48)",
+          "age": 88,
+          "season": "summer",
+          "type": "life_event",
+          "memory": "During Year 295 (The Dawn Age, year 48), I buried my dead. The defining event was a great battle was fought \u2014 Miznok against Aeanoran. I often think about the silences of that time. Venionlor was there too. My parent Thaeion was a strained presence that year.",
+          "reflection": "The trees speak in the language of roots and rain.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 298,
+          "year_label": "Year 298 (The Dawn Age, year 51)",
+          "age": 91,
+          "season": "autumn",
+          "type": "life_event",
+          "memory": "By Year 298 (The Dawn Age, year 51), the land had changed. I danced with the wild fae and lost three years in a single night I often think about the faces of that time. Tiralas was there too.",
+          "reflection": "Every leaf holds a memory of the sun that touched it.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 301,
+          "year_label": "Year 301 (The Dawn Age, year 54)",
+          "age": 94,
+          "season": "autumn",
+          "type": "life_event",
+          "memory": "Of all the years, Year 301 (The Dawn Age, year 54) was the one where I saw what love demands. I worked as a mage and grew stronger in body and spirit. To this day, I remember it vividly.",
+          "reflection": "Time flows like a river through the forest of memory.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 304,
+          "year_label": "Year 304 (The Dawn Age, year 57)",
+          "age": 97,
+          "season": "summer",
+          "type": "life_event",
+          "memory": "I remember Year 304 (The Dawn Age, year 57) well \u2014 it was a time of change. I wandered the dream paths for a century and returned changed I often think about the faces of that time. That year, the rules were unwritten. Thaemel was there too.",
+          "reflection": "The world grows older, and so do I.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 306,
+          "year_label": "Year 306 (The Dawn Age, year 59)",
+          "age": 99,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "During Year 306 (The Dawn Age, year 59), I fought in the trenches. What struck me most was Dirmelan was born. I often think about the faces of that time. Gallaer was there too.",
+          "reflection": "The stars sing a different song tonight, and I listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 309,
+          "year_label": "Year 309 (The Dawn Age, year 62)",
+          "age": 102,
+          "season": "autumn",
+          "type": "life_event",
+          "memory": "In Year 309 (The Dawn Age, year 62), the world felt sharp and dangerous. I climbed the highest peak to witness the birth of a new star I often think about the lessons of that time.",
+          "reflection": "The wind carries whispers from far places I have yet to see.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 312,
+          "year_label": "Year 312 (The Crystal Epoch, year 3)",
+          "age": 105,
+          "season": "autumn",
+          "type": "life_event",
+          "memory": "I remember Year 312 (The Crystal Epoch, year 3) well \u2014 it was a time of change. I worked as a mage and found my purpose in the craft. That year taught me that kindness matters. That year, the rules were unwritten.",
+          "reflection": "Every leaf holds a memory of the sun that touched it.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 315,
+          "year_label": "Year 315 (The Crystal Epoch, year 6)",
+          "age": 108,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "In Year 315 (The Crystal Epoch, year 6), the world felt sharp and dangerous. I lost my beloved to the shadow sickness that took their light That year taught me that a good plan saves lives.",
+          "reflection": "There is a melody beneath all things, if you listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 318,
+          "year_label": "Year 318 (The Crystal Epoch, year 9)",
+          "age": 111,
+          "season": "summer",
+          "type": "life_event",
+          "memory": "During Year 318 (The Crystal Epoch, year 9), I buried my dead. I worked as a mage and made a decent living. It was a year that tested my limits.",
+          "reflection": "The world grows older, and so do I.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 321,
+          "year_label": "Year 321 (The Crystal Epoch, year 12)",
+          "age": 114,
+          "season": "autumn",
+          "type": "life_event",
+          "memory": "The year 321 was a turbulent one. I was visited by a star-being from the celestial realms and given a vision That year taught me that time changes everything.",
+          "reflection": "Time flows like a river through the forest of memory.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 324,
+          "year_label": "Year 324 (The Crystal Epoch, year 15)",
+          "age": 117,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "In Year 324 (The Crystal Epoch, year 15), the world felt alive with possibility. What struck me most was a great battle was fought \u2014 Falconcon against Aeanoran. To this day, I wish I could forget. Lorsind was there too. My parent Thaeion was a strained presence that year.",
+          "reflection": "The stars sing a different song tonight, and I listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 327,
+          "year_label": "Year 327 (The Crystal Epoch, year 18)",
+          "age": 120,
+          "season": "autumn",
+          "type": "life_event",
+          "memory": "By Year 327 (The Crystal Epoch, year 18), the nights grew colder. The most poignant moment was Loralasgal was born. It was a year that shaped me.",
+          "reflection": "The trees speak in the language of roots and rain.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 330,
+          "year_label": "Year 330 (The Crystal Epoch, year 21)",
+          "age": 123,
+          "season": "autumn",
+          "type": "life_event",
+          "memory": "In the deep days of Year 330 (The Crystal Epoch, year 21), the smiths worked through the night. The most poignant moment was a great battle was fought \u2014 Falconcon against Aeanoran. I often think about the sounds of that time.",
+          "reflection": "The stars sing a different song tonight, and I listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 333,
+          "year_label": "Year 333 (The Crystal Epoch, year 24)",
+          "age": 126,
+          "season": "autumn",
+          "type": "life_event",
+          "memory": "Year 333 (The Crystal Epoch, year 24) was the season when I came of age. I worked as a mage and faced many challenges. I often think about the lessons of that time. Order broke, and something new was born.",
+          "reflection": "There is a melody beneath all things, if you listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 336,
+          "year_label": "Year 336 (The Crystal Epoch, year 27)",
+          "age": 129,
+          "season": "autumn",
+          "type": "life_event",
+          "memory": "I remember Year 336 (The Crystal Epoch, year 27) well \u2014 it was a season of loss. I composed a song that made the trees weep \u2014 Erithae-thorn remembered That year taught me that time changes everything.",
+          "reflection": "The trees speak in the language of roots and rain.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 339,
+          "year_label": "Year 339 (The Crystal Epoch, year 30)",
+          "age": 132,
+          "season": "autumn",
+          "type": "life_event",
+          "memory": "During Year 339 (The Crystal Epoch, year 30), I buried my dead. The thing I cannot forget was Sindnor was born. That year taught me that some wounds never heal. Sindrielion was there too.",
+          "reflection": "Time flows like a river through the forest of memory.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 342,
+          "year_label": "Year 342 (The Crystal Epoch, year 33)",
+          "age": 135,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "I recall that in Year 342 (The Crystal Epoch, year 33), I met a traveler from afar. I danced with the wild fae and lost three years in a single night It was a year that showed me the truth.",
+          "reflection": "The wind carries whispers from far places I have yet to see.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 345,
+          "year_label": "Year 345 (The Crystal Epoch, year 36)",
+          "age": 138,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "By Year 345 (The Crystal Epoch, year 36), the rivers ran dry. The defining event was a great battle was fought \u2014 Falconcon against Aeanoran. What struck me most was a great battle was fought \u2014 Falconcon against Aeanoran. To this day, I draw strength from it. Order broke, and something new was born.",
+          "reflection": "Every leaf holds a memory of the sun that touched it.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 348,
+          "year_label": "Year 348 (The Crystal Epoch, year 39)",
+          "age": 141,
+          "season": "autumn",
+          "type": "life_event",
+          "memory": "Year 348 (The Crystal Epoch, year 39) was the season when the drought broke. I spoke riddles that changed the weather \u2014 the clouds obeyed It was a year that broke me.",
+          "reflection": "The world grows older, and so do I.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 351,
+          "year_label": "Year 351 (The Crystal Epoch, year 42)",
+          "age": 144,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "Year 351 (The Crystal Epoch, year 42) was the season when the peace was signed. I sang a song that unravelled fate and wove it anew That year taught me that strength alone is not enough.",
+          "reflection": "The trees speak in the language of roots and rain.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 354,
+          "year_label": "Year 354 (The Crystal Epoch, year 45)",
+          "age": 147,
+          "season": "autumn",
+          "type": "life_event",
+          "memory": "Looking back, Year 354 (The Crystal Epoch, year 45) stands out \u2014 the wind carried strange news. I healed a dying forest with ancient magic, calling the roots back to life That year taught me that time changes everything. My parent Thaeion was a strained presence that year.",
+          "reflection": "Time flows like a river through the forest of memory.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 356,
+          "year_label": "Year 356 (The Crystal Epoch, year 47)",
+          "age": 149,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "Of all the years, Year 356 (The Crystal Epoch, year 47) was the one where I felt what hate does. The most poignant moment was a great battle was fought \u2014 Aeanoran against Turdurnaz. To this day, I carry its weight.",
+          "reflection": "There is a melody beneath all things, if you listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 359,
+          "year_label": "Year 359 (The Crystal Epoch, year 50)",
+          "age": 152,
+          "season": "autumn",
+          "type": "life_event",
+          "memory": "Year 359 (The Crystal Epoch, year 50) was the season when the new order began. The most poignant moment was a great battle was fought \u2014 Aeanoran against Mokthragorn. The defining event was a great battle was fought \u2014 Aeanoran against Mokthragorn. It was a year that broke me.",
+          "reflection": "The world grows older, and so do I.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 362,
+          "year_label": "Year 362 (The Crystal Epoch, year 53)",
+          "age": 155,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "In the middle days of Year 362 (The Crystal Epoch, year 53), the council convened. I traded my name for a handful of stars and forgot who I was It was a year that made me who I am.",
+          "reflection": "Every leaf holds a memory of the sun that touched it.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 365,
+          "year_label": "Year 365 (The Crystal Epoch, year 56)",
+          "age": 158,
+          "season": "summer",
+          "type": "life_event",
+          "memory": "Looking back, Year 365 (The Crystal Epoch, year 56) stands out \u2014 the nights were long. The most poignant moment was a great battle was fought \u2014 Aeanoran against Mokthragorn. The most poignant moment was a great battle was fought \u2014 Aeanoran against Turdurnaz. That year taught me that kindness matters.",
+          "reflection": "The stars sing a different song tonight, and I listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 368,
+          "year_label": "Year 368 (The Crystal Epoch, year 59)",
+          "age": 161,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "Year 368 (The Crystal Epoch, year 59) was the season when I came of age. I wandered the dream paths for a century and returned changed To this day, I carry its weight. My parent Thaeion was a strained presence that year.",
+          "reflection": "The wind carries whispers from far places I have yet to see.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 371,
+          "year_label": "Year 371 (The Crystal Epoch, year 62)",
+          "age": 164,
+          "season": "summer",
+          "type": "life_event",
+          "memory": "Looking back, Year 371 (The Crystal Epoch, year 62) stands out \u2014 the harvest was bountiful. The thing I cannot forget was a great battle was fought \u2014 Aeanoran against Mokthragorn. The defining event was Lornor was born. That year taught me that kindness matters. Nothing was ever the same after that.",
+          "reflection": "There is a melody beneath all things, if you listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 374,
+          "year_label": "Year 374 (The Sapphire Era, year 3)",
+          "age": 167,
+          "season": "spring",
+          "type": "life_event",
+          "memory": "By Year 374 (The Sapphire Era, year 3), the roads were safer. I discovered a hidden glade of eternal spring where time stands still It was a year that left its mark.",
+          "reflection": "Time flows like a river through the forest of memory.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 377,
+          "year_label": "Year 377 (The Sapphire Era, year 6)",
+          "age": 170,
+          "season": "summer",
+          "type": "life_event",
+          "memory": "In the middle days of Year 377 (The Sapphire Era, year 6), a battle was fought. I spoke riddles that changed the weather \u2014 the clouds obeyed That year taught me that some wounds never heal. The chaos of that time reshaped everything.",
+          "reflection": "Every leaf holds a memory of the sun that touched it.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 380,
+          "year_label": "Year 380 (The Sapphire Era, year 9)",
+          "age": 173,
+          "season": "autumn",
+          "type": "life_event",
+          "memory": "At 380, a child was born. I worked as a mage and found my purpose in the craft. It was a year that left its mark.",
+          "reflection": "The world grows older, and so do I.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 383,
+          "year_label": "Year 383 (The Sapphire Era, year 12)",
+          "age": 176,
+          "season": "spring",
+          "type": "life_event",
+          "memory": "During Year 383 (The Sapphire Era, year 12), I buried my dead. I defended the sacred grove against orc raiders with nothing but song and steel I often think about the lessons of that time.",
+          "reflection": "The stars sing a different song tonight, and I listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 386,
+          "year_label": "Year 386 (The Sapphire Era, year 15)",
+          "age": 179,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "I recall that in Year 386 (The Sapphire Era, year 15), I lost a dear friend. The defining event was a great battle was fought \u2014 Aeanoran against Turdurnaz. To this day, I wonder what could have been.",
+          "reflection": "The wind carries whispers from far places I have yet to see.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 389,
+          "year_label": "Year 389 (The Sapphire Era, year 18)",
+          "age": 182,
+          "season": "summer",
+          "type": "life_event",
+          "memory": "The year 389 was a hard one. I wandered the dream paths for a century and returned changed I often think about the lessons of that time. Order broke, and something new was born.",
+          "reflection": "The trees speak in the language of roots and rain.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 392,
+          "year_label": "Year 392 (The Sapphire Era, year 21)",
+          "age": 185,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "Of all the years, Year 392 (The Sapphire Era, year 21) was the one where I realized what time takes. The most poignant moment was Elengal was born. To this day, I carry its weight.",
+          "reflection": "Every leaf holds a memory of the sun that touched it.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 395,
+          "year_label": "Year 395 (The Sapphire Era, year 24)",
+          "age": 188,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "I remember Year 395 (The Sapphire Era, year 24) well \u2014 it was a age of shadows. I traded my name for a handful of stars and forgot who I was It was a year that left its mark. That year, the rules were unwritten.",
+          "reflection": "The trees speak in the language of roots and rain.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 398,
+          "year_label": "Year 398 (The Sapphire Era, year 27)",
+          "age": 191,
+          "season": "autumn",
+          "type": "life_event",
+          "memory": "Of all the years, Year 398 (The Sapphire Era, year 27) was the one where I saw what love demands. I sang a song that unravelled fate and wove it anew That year taught me that time changes everything. Galdir was there too. My parent Thaeion was a strained presence that year.",
+          "reflection": "Time flows like a river through the forest of memory.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 401,
+          "year_label": "Year 401 (The Sapphire Era, year 30)",
+          "age": 194,
+          "season": "autumn",
+          "type": "life_event",
+          "memory": "In the deep days of Year 401 (The Sapphire Era, year 30), the market bustled. I danced with the wild fae and lost three years in a single night That year taught me that kindness matters.",
+          "reflection": "The wind carries whispers from far places I have yet to see.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 403,
+          "year_label": "Year 403 (The Sapphire Era, year 32)",
+          "age": 196,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "During Year 403 (The Sapphire Era, year 32), I labored in the fields. The thing I cannot forget was a great battle was fought \u2014 Aeanoran against Windoreford. What marked that year was Calaerar was born. To this day, I wish I could forget. That year, the rules were unwritten.",
+          "reflection": "There is a melody beneath all things, if you listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 406,
+          "year_label": "Year 406 (The Sapphire Era, year 35)",
+          "age": 199,
+          "season": "autumn",
+          "type": "life_event",
+          "memory": "Of all the years, Year 406 (The Sapphire Era, year 35) was the one where I saw what love demands. I worked as a mage and faced many challenges. To this day, I wonder what could have been. Sindthasael was there too.",
+          "reflection": "The stars sing a different song tonight, and I listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 409,
+          "year_label": "Year 409 (The Sapphire Era, year 38)",
+          "age": 202,
+          "season": "autumn",
+          "type": "life_event",
+          "memory": "I recall that in Year 409 (The Sapphire Era, year 38), I committed a grave mistake. I walked the spirit paths between worlds and saw the veil thin That year taught me that kindness matters. The chaos of that time reshaped everything. Lorsind was there too.",
+          "reflection": "The world grows older, and so do I.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 412,
+          "year_label": "Year 412 (The Sapphire Era, year 41)",
+          "age": 205,
+          "season": "spring",
+          "type": "life_event",
+          "memory": "At 412, the temple bells fell silent. I wandered the dream paths for a century and returned changed I often think about the lessons of that time.",
+          "reflection": "The stars sing a different song tonight, and I listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 415,
+          "year_label": "Year 415 (The Sapphire Era, year 44)",
+          "age": 208,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "In Year 415 (The Sapphire Era, year 44), the world felt heavy with change. I led a diplomatic mission to the dwarf kingdoms and forged lasting peace It was a year that shaped me. Tiralas was there too.",
+          "reflection": "Every leaf holds a memory of the sun that touched it.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 418,
+          "year_label": "Year 418 (The Sapphire Era, year 47)",
+          "age": 211,
+          "season": "autumn",
+          "type": "life_event",
+          "memory": "In the early days of Year 418 (The Sapphire Era, year 47), the council convened. The defining event was a great battle was fought \u2014 Miznok against Aeanoran. I often think about the sounds of that time. Meothir was there too.",
+          "reflection": "The wind carries whispers from far places I have yet to see.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 421,
+          "year_label": "Year 421 (The Sapphire Era, year 50)",
+          "age": 214,
+          "season": "summer",
+          "type": "life_event",
+          "memory": "At 421, the crops were blessed. What marked that year was a great battle was fought \u2014 Miznok against Aeanoran. It was a year that shaped me. Sindthasael was there too.",
+          "reflection": "The trees speak in the language of roots and rain.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 424,
+          "year_label": "Year 424 (The Sapphire Era, year 53)",
+          "age": 217,
+          "season": "autumn",
+          "type": "life_event",
+          "memory": "The year 424 was a forgotten one. The most poignant moment was a great battle was fought \u2014 Miznok against Aeanoran. That year taught me that time changes everything. Aemiras was there too.",
+          "reflection": "The world grows older, and so do I.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 427,
+          "year_label": "Year 427 (The Sapphire Era, year 56)",
+          "age": 220,
+          "season": "summer",
+          "type": "life_event",
+          "memory": "I recall that in Year 427 (The Sapphire Era, year 56), I witnessed a miracle. I worked as a mage and learned much that year. It was a year that showed me the truth.",
+          "reflection": "Time flows like a river through the forest of memory.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 430,
+          "year_label": "Year 430 (The Sapphire Era, year 59)",
+          "age": 223,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "Year 430 (The Sapphire Era, year 59) was the season when the new order began. I sung the lament of the fallen leaves at the turning of the year I often think about the faces of that time.",
+          "reflection": "There is a melody beneath all things, if you listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 433,
+          "year_label": "Year 433 (The Sapphire Era, year 62)",
+          "age": 226,
+          "season": "spring",
+          "type": "life_event",
+          "memory": "Looking back, Year 433 (The Sapphire Era, year 62) stands out \u2014 the wind carried strange news. I worked as a mage and learned much that year. That year taught me that some wounds never heal.",
+          "reflection": "The wind carries whispers from far places I have yet to see.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 436,
+          "year_label": "Year 436 (Age of Radiant, year 3)",
+          "age": 229,
+          "season": "summer",
+          "type": "life_event",
+          "memory": "By Year 436 (Age of Radiant, year 3), the people were restless. I carved a bow from the heartwood of the world tree and it sang with power I often think about the faces of that time.",
+          "reflection": "There is a melody beneath all things, if you listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 439,
+          "year_label": "Year 439 (Age of Radiant, year 6)",
+          "age": 232,
+          "season": "summer",
+          "type": "life_event",
+          "memory": "By Year 439 (Age of Radiant, year 6), the rivers ran dry. I traded my name for a handful of stars and forgot who I was It was a year that showed me the truth. That year, the rules were unwritten.",
+          "reflection": "The stars sing a different song tonight, and I listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 442,
+          "year_label": "Year 442 (Age of Radiant, year 9)",
+          "age": 235,
+          "season": "spring",
+          "type": "life_event",
+          "memory": "During Year 442 (Age of Radiant, year 9), I raised my children. I danced with the wild fae and lost three years in a single night To this day, I draw strength from it. My parent Thaeion was a strained presence that year.",
+          "reflection": "Every leaf holds a memory of the sun that touched it.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 445,
+          "year_label": "Year 445 (Age of Radiant, year 12)",
+          "age": 238,
+          "season": "spring",
+          "type": "life_event",
+          "memory": "Year 445 (Age of Radiant, year 12) was the season when everything changed. The most poignant moment was a great battle was fought \u2014 Aeanoran against Windoreford. The defining event was a great battle was fought \u2014 Aeanoran against Windoreford. To this day, I wish I could forget.",
+          "reflection": "The trees speak in the language of roots and rain.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 448,
+          "year_label": "Year 448 (Age of Radiant, year 15)",
+          "age": 241,
+          "season": "summer",
+          "type": "life_event",
+          "memory": "Year 448 (Age of Radiant, year 15) was the season when I came of age. I sang a song that unravelled fate and wove it anew That year taught me that kindness matters.",
+          "reflection": "The world grows older, and so do I.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 451,
+          "year_label": "Year 451 (Age of Radiant, year 18)",
+          "age": 244,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "Looking back, Year 451 (Age of Radiant, year 18) stands out \u2014 everything felt fragile. I spoke riddles that changed the weather \u2014 the clouds obeyed I often think about the sounds of that time. Sindthasael was there too.",
+          "reflection": "Time flows like a river through the forest of memory.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 453,
+          "year_label": "Year 453 (Age of Radiant, year 20)",
+          "age": 246,
+          "season": "spring",
+          "type": "life_event",
+          "memory": "During Year 453 (Age of Radiant, year 20), I served at the court. I worked as a mage and found my purpose in the craft. To this day, I carry its weight. The chaos of that time reshaped everything.",
+          "reflection": "The wind carries whispers from far places I have yet to see.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 456,
+          "year_label": "Year 456 (Age of Radiant, year 23)",
+          "age": 249,
+          "season": "spring",
+          "type": "life_event",
+          "memory": "Looking back, Year 456 (Age of Radiant, year 23) stands out \u2014 everything felt fragile. I sang a song that unravelled fate and wove it anew To this day, I draw strength from it.",
+          "reflection": "Time flows like a river through the forest of memory.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 459,
+          "year_label": "Year 459 (Age of Radiant, year 26)",
+          "age": 252,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "Year 459 (Age of Radiant, year 26) was the season when I came of age. The thing I cannot forget was a great battle was fought \u2014 Aeanoran against Windoreford. The most poignant moment was a great battle was fought \u2014 Aeanoran against Windoreford. It was a year that shaped me.",
+          "reflection": "The world grows older, and so do I.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 462,
+          "year_label": "Year 462 (Age of Radiant, year 29)",
+          "age": 255,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "In Year 462 (Age of Radiant, year 29), the world felt alive with possibility. What marked that year was Ionthalven was born. It was a year that showed me the truth.",
+          "reflection": "The trees speak in the language of roots and rain.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 465,
+          "year_label": "Year 465 (Age of Radiant, year 32)",
+          "age": 258,
+          "season": "spring",
+          "type": "life_event",
+          "memory": "Year 465 (Age of Radiant, year 32) was the season when the war ended. The defining event was a great battle was fought \u2014 Aeanoran against Windoreford. I often think about the faces of that time. Nanoril was there too.",
+          "reflection": "Every leaf holds a memory of the sun that touched it.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 468,
+          "year_label": "Year 468 (Age of Radiant, year 35)",
+          "age": 261,
+          "season": "winter",
+          "type": "life_event",
+          "memory": "At 468, the temple bells fell silent. I wandered the dream paths for a century and returned changed To this day, I wish I could forget.",
+          "reflection": "There is a melody beneath all things, if you listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 471,
+          "year_label": "Year 471 (Age of Radiant, year 38)",
+          "age": 264,
+          "season": "spring",
+          "type": "life_event",
+          "memory": "At 471, a child was born. I spoke riddles that changed the weather \u2014 the clouds obeyed I often think about the lessons of that time. My parent Thaeion was a strained presence that year.",
+          "reflection": "The stars sing a different song tonight, and I listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 474,
+          "year_label": "Year 474 (Age of Radiant, year 41)",
+          "age": 267,
+          "season": "summer",
+          "type": "life_event",
+          "memory": "The year 474 was a turbulent one. I walked through a mirror pool into a world of reflections To this day, I draw strength from it. Elenlornor was there too.",
+          "reflection": "Every leaf holds a memory of the sun that touched it.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 477,
+          "year_label": "Year 477 (Age of Radiant, year 44)",
+          "age": 270,
+          "season": "spring",
+          "type": "life_event",
+          "memory": "Of all the years, Year 477 (Age of Radiant, year 44) was the one where I saw what love demands. I defended the sacred grove against orc raiders with nothing but song and steel I often think about the lessons of that time. Calaerar was there too.",
+          "reflection": "The wind carries whispers from far places I have yet to see.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 480,
+          "year_label": "Year 480 (Age of Radiant, year 47)",
+          "age": 273,
+          "season": "spring",
+          "type": "life_event",
+          "memory": "Year 480 (Age of Radiant, year 47) was the season when the drought broke. I lost my beloved to the shadow sickness that took their light That year taught me that some wounds never heal.",
+          "reflection": "Time flows like a river through the forest of memory.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 483,
+          "year_label": "Year 483 (Age of Radiant, year 50)",
+          "age": 276,
+          "season": "autumn",
+          "type": "life_event",
+          "memory": "I recall that in Year 483 (Age of Radiant, year 50), I lost a dear friend. I climbed the highest peak to witness the birth of a new star It was a year that showed me the truth. That year, the rules were unwritten.",
+          "reflection": "There is a melody beneath all things, if you listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 486,
+          "year_label": "Year 486 (Age of Radiant, year 53)",
+          "age": 279,
+          "season": "autumn",
+          "type": "life_event",
+          "memory": "At 486, a child was born. I worked as a mage and found my purpose in the craft. That year taught me that hope endures. My parent Thaeion was a strained presence that year.",
+          "reflection": "The trees speak in the language of roots and rain.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 489,
+          "year_label": "Year 489 (Age of Radiant, year 56)",
+          "age": 282,
+          "season": "summer",
+          "type": "life_event",
+          "memory": "I recall that in Year 489 (Age of Radiant, year 56), I found a hidden place. The thing I cannot forget was Simirir was born. That year taught me that a good plan saves lives.",
+          "reflection": "The world grows older, and so do I.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 492,
+          "year_label": "Year 492 (Age of Radiant, year 59)",
+          "age": 285,
+          "season": "summer",
+          "type": "life_event",
+          "memory": "At 492, the river flooded the lowlands. The thing I cannot forget was a great battle was fought \u2014 Aeanoran against Turdurnaz. The defining event was Mirdir was born. I often think about the lessons of that time. Order broke, and something new was born.",
+          "reflection": "The stars sing a different song tonight, and I listen.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 495,
+          "year_label": "Year 495 (Age of Radiant, year 62)",
+          "age": 288,
+          "season": "spring",
+          "type": "life_event",
+          "memory": "Of all the years, Year 495 (Age of Radiant, year 62) was the one where I realized what time takes. The most poignant moment was a great battle was fought \u2014 Falconcon against Aeanoran. That year taught me that strength alone is not enough.",
+          "reflection": "The wind carries whispers from far places I have yet to see.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        },
+        {
+          "year": 498,
+          "year_label": "Year 498 (Age of Radiant, year 65)",
+          "age": 291,
+          "season": "summer",
+          "type": "life_event",
+          "memory": "In the early days of Year 498 (Age of Radiant, year 65), the hunters returned empty-handed. I worked as a mage and found my purpose in the craft. That year taught me that the world is cruel.",
+          "reflection": "Every leaf holds a memory of the sun that touched it.",
+          "alignment_at_time": "chaos",
+          "race": "Elf"
+        }
+      ]
+    },
+    "short_term": {
+      "count": 15,
+      "items": [
+        {
+          "type": "seasonal_event",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "My parent Thaeion fell ill this season.",
+          "alignment": "chaos",
+          "race": "Elf"
+        },
+        {
+          "type": "seasonal_event",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "I trained this season and failed.",
+          "alignment": "chaos",
+          "race": "Elf"
+        },
+        {
+          "type": "seasonal_event",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "This spring, I felt the heat settle in in Aeanoran.",
+          "alignment": "chaos",
+          "race": "Elf"
+        },
+        {
+          "type": "seasonal_event",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "I spent the season traveling the roads.",
+          "alignment": "chaos",
+          "race": "Elf"
+        },
+        {
+          "type": "seasonal_event",
+          "season": "winter",
+          "year": 499,
+          "year_label": "Year 499 (Age of Radiant, year 66)",
+          "memory": "The moon this season looked ominous \u2014 I prayed for guidance.",
+          "alignment": "chaos",
+          "race": "Elf"
+        },
+        {
+          "type": "seasonal_event",
+          "season": "winter",
+          "year": 499,
+          "year_label": "Year 499 (Age of Radiant, year 66)",
+          "memory": "The rains this season was late \u2014 it was a welcome change.",
+          "alignment": "chaos",
+          "race": "Elf"
+        },
+        {
+          "type": "seasonal_event",
+          "season": "winter",
+          "year": 499,
+          "year_label": "Year 499 (Age of Radiant, year 66)",
+          "memory": "A wedding was held this season \u2014 I could not go and regret it.",
+          "alignment": "chaos",
+          "race": "Elf"
+        },
+        {
+          "type": "seasonal_event",
+          "season": "winter",
+          "year": 499,
+          "year_label": "Year 499 (Age of Radiant, year 66)",
+          "memory": "This season, I broke a promise.",
+          "alignment": "chaos",
+          "race": "Elf"
+        },
+        {
+          "type": "seasonal_thought",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "I wonder what the old gods will bring.",
+          "alignment": "chaos",
+          "race": "Elf"
+        },
+        {
+          "type": "seasonal_thought",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "It is written in the runes that the spring is for war.",
+          "alignment": "chaos",
+          "race": "Elf"
+        },
+        {
+          "type": "seasonal_thought",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "This spring, I find myself thinking about the road ahead.",
+          "alignment": "chaos",
+          "race": "Elf"
+        },
+        {
+          "type": "seasonal_thought",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "I remember this season last year \u2014 I was a different person.",
+          "alignment": "chaos",
+          "race": "Elf"
+        },
+        {
+          "type": "seasonal_thought",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "The spring cold makes me feel determined.",
+          "alignment": "chaos",
+          "race": "Elf"
+        },
+        {
+          "type": "seasonal_thought",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "This season feels fleeting \u2014 I cherish it.",
+          "alignment": "chaos",
+          "race": "Elf"
+        },
+        {
+          "type": "seasonal_thought",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "I have been wandering more than usual this season \u2014 it means something.",
+          "alignment": "chaos",
+          "race": "Elf"
+        }
+      ]
+    },
+    "near_term": {
+      "count": 10,
+      "items": [
+        {
+          "type": "future_plan",
+          "memory": "I will attend the council next season.",
+          "alignment": "chaos",
+          "race": "Elf"
+        },
+        {
+          "type": "future_plan",
+          "memory": "I want to befriend a neighboring tribe.",
+          "alignment": "chaos",
+          "race": "Elf"
+        },
+        {
+          "type": "future_plan",
+          "memory": "I plan to write my memoirs.",
+          "alignment": "chaos",
+          "race": "Elf"
+        },
+        {
+          "type": "future_plan",
+          "memory": "I should visit Thaeion and honor my parent.",
+          "alignment": "chaos",
+          "race": "Elf"
+        },
+        {
+          "type": "future_plan",
+          "memory": "I must prepare for the coming caravan.",
+          "alignment": "chaos",
+          "race": "Elf"
+        },
+        {
+          "type": "future_plan",
+          "memory": "I plan to travel to Aeanoran and seek my fortune there.",
+          "alignment": "chaos",
+          "race": "Elf"
+        },
+        {
+          "type": "future_worry",
+          "memory": "I am concerned about the strange dreams I have been having \u2014 they feel like warnings.",
+          "alignment": "chaos",
+          "race": "Elf"
+        },
+        {
+          "type": "future_worry",
+          "memory": "I worry about the river drying up \u2014 it has never done that before.",
+          "alignment": "chaos",
+          "race": "Elf"
+        },
+        {
+          "type": "future_worry",
+          "memory": "I fear that change is coming \u2014 and I am not ready for it.",
+          "alignment": "chaos",
+          "race": "Elf"
+        },
+        {
+          "type": "future_worry",
+          "memory": "I worry about the unrest in the mountain \u2014 the deep folk are troubled.",
+          "alignment": "chaos",
+          "race": "Elf"
+        }
+      ]
+    }
+  },
+  "seed": 2429
+}

@@ -1,0 +1,548 @@
+- tier: short
+  ref: log-anomaly-7
+  topic: anomaly
+  content: Deck 6 reported a plasma flux anomaly; Chief Engineer Orin (clearance Delta) traced it to a cracked reactor coolant line drawing 40 MW.
+- tier: short
+  ref: log-nav-degraded
+  topic: incident
+  content: Nav went degraded on Deck 1; Quell, the synth Nav Officer, rerouted through the backup gyros and paged Station Chief Vega.
+- tier: long
+  ref: log-medbay-quarantine
+  topic: medical
+  content: Medical Lead Sable (from Luna) quarantined Deck 3 after a cargo pallet from Mars tested positive for spore drift; Brix logged the manifest.
+- tier: long
+  ref: ord-vega-lockdown
+  topic: order
+  content: Station Chief Vega (clearance Omega) ordered a Deck 8 lockdown pending the spore screen; Cargo Master Brix complied.
+- tier: short
+  ref: log-reactor-drill
+  topic: drill
+  content: Orin ran a reactor scram drill; life support on Deck 4 held at 6 MW throughout.
+- tier: near
+  ref: todo-nav-parts
+  topic: todo
+  intent: Requisition replacement gyro bearings for the degraded nav system before the Europa transit.
+- tier: near
+  ref: todo-spore-clear
+  topic: todo
+  intent: Clear the Deck 8 lockdown once Sable signs off on the spore screen.
+- tier: long
+  ref: slog-000
+  topic: watch
+  content: Nyx logged a clean sweep on Deck 9 at 2300.
+- tier: short
+  ref: slog-001
+  topic: watch
+  content: Hux logged a clean sweep on Deck 10 at 0600.
+- tier: short
+  ref: slog-002
+  topic: watch
+  content: Vok logged a clean sweep on Deck 8 at 0300.
+- tier: long
+  ref: slog-003
+  topic: watch
+  content: Ash logged a clean sweep on Deck 2 at 0800.
+- tier: long
+  ref: slog-004
+  topic: routine
+  content: Enn logged a clean sweep on Deck 5 at 0100.
+- tier: short
+  ref: slog-005
+  topic: watch
+  content: Lio logged a hull ping on Deck 2 at 1200.
+- tier: short
+  ref: slog-006
+  topic: watch
+  content: Bex logged a minor fault on Deck 3 at 2000.
+- tier: short
+  ref: slog-007
+  topic: watch
+  content: Dov logged a clean sweep on Deck 2 at 0700.
+- tier: short
+  ref: slog-008
+  topic: watch
+  content: Bex logged a minor fault on Deck 5 at 0600.
+- tier: short
+  ref: slog-009
+  topic: maintenance
+  content: Ovo logged a clean sweep on Deck 3 at 1300.
+- tier: long
+  ref: slog-010
+  topic: comms
+  content: Pyr logged a minor fault on Deck 3 at 1800.
+- tier: short
+  ref: slog-011
+  topic: comms
+  content: Iri logged a comms check on Deck 8 at 2300.
+- tier: short
+  ref: slog-012
+  topic: routine
+  content: Bex logged a clean sweep on Deck 1 at 1400.
+- tier: short
+  ref: slog-013
+  topic: maintenance
+  content: Enn logged a clean sweep on Deck 8 at 0300.
+- tier: short
+  ref: slog-014
+  topic: maintenance
+  content: Enn logged a clean sweep on Deck 8 at 1400.
+- tier: short
+  ref: slog-015
+  topic: maintenance
+  content: Fen logged a hull ping on Deck 3 at 1300.
+- tier: long
+  ref: slog-016
+  topic: watch
+  content: Enn logged a comms check on Deck 2 at 1100.
+- tier: long
+  ref: slog-017
+  topic: routine
+  content: Tae logged a hull ping on Deck 2 at 1900.
+- tier: long
+  ref: slog-018
+  topic: comms
+  content: Iri logged a comms check on Deck 6 at 2100.
+- tier: short
+  ref: slog-019
+  topic: watch
+  content: Rho logged a hull ping on Deck 4 at 0000.
+- tier: long
+  ref: slog-020
+  topic: maintenance
+  content: Tae logged a minor fault on Deck 6 at 1400.
+- tier: short
+  ref: slog-021
+  topic: watch
+  content: Enn logged a comms check on Deck 8 at 0100.
+- tier: short
+  ref: slog-022
+  topic: comms
+  content: Jax logged a comms check on Deck 4 at 0200.
+- tier: long
+  ref: slog-023
+  topic: routine
+  content: Kwe logged a hull ping on Deck 10 at 1700.
+- tier: long
+  ref: slog-024
+  topic: comms
+  content: Ash logged a hull ping on Deck 8 at 0800.
+- tier: long
+  ref: slog-025
+  topic: maintenance
+  content: Bex logged a clean sweep on Deck 6 at 0200.
+- tier: short
+  ref: slog-026
+  topic: maintenance
+  content: Gale logged a minor fault on Deck 2 at 0400.
+- tier: short
+  ref: slog-027
+  topic: watch
+  content: Dov logged a comms check on Deck 1 at 1500.
+- tier: short
+  ref: slog-028
+  topic: comms
+  content: Cyr logged a comms check on Deck 1 at 1800.
+- tier: long
+  ref: slog-029
+  topic: comms
+  content: Hux logged a clean sweep on Deck 10 at 0800.
+- tier: long
+  ref: slog-030
+  topic: comms
+  content: Fen logged a clean sweep on Deck 9 at 1300.
+- tier: long
+  ref: slog-031
+  topic: maintenance
+  content: Cyr logged a clean sweep on Deck 1 at 1700.
+- tier: short
+  ref: slog-032
+  topic: comms
+  content: Vok logged a clean sweep on Deck 1 at 0100.
+- tier: short
+  ref: slog-033
+  topic: comms
+  content: Gale logged a clean sweep on Deck 2 at 0600.
+- tier: long
+  ref: slog-034
+  topic: maintenance
+  content: Syl logged a hull ping on Deck 3 at 1200.
+- tier: short
+  ref: slog-035
+  topic: comms
+  content: Bex logged a minor fault on Deck 6 at 0100.
+- tier: short
+  ref: slog-036
+  topic: comms
+  content: Hux logged a minor fault on Deck 1 at 1600.
+- tier: long
+  ref: slog-037
+  topic: comms
+  content: Vok logged a comms check on Deck 1 at 1300.
+- tier: long
+  ref: slog-038
+  topic: comms
+  content: Hux logged a clean sweep on Deck 8 at 1500.
+- tier: short
+  ref: slog-039
+  topic: routine
+  content: Rho logged a comms check on Deck 2 at 2200.
+- tier: short
+  ref: slog-040
+  topic: comms
+  content: Mko logged a minor fault on Deck 1 at 0500.
+- tier: long
+  ref: slog-041
+  topic: routine
+  content: Lio logged a comms check on Deck 6 at 1300.
+- tier: short
+  ref: slog-042
+  topic: comms
+  content: Pyr logged a hull ping on Deck 4 at 2100.
+- tier: short
+  ref: slog-043
+  topic: watch
+  content: Kwe logged a minor fault on Deck 3 at 2100.
+- tier: short
+  ref: slog-044
+  topic: watch
+  content: Ovo logged a comms check on Deck 9 at 0300.
+- tier: short
+  ref: slog-045
+  topic: routine
+  content: Gale logged a hull ping on Deck 6 at 0600.
+- tier: long
+  ref: slog-046
+  topic: comms
+  content: Ovo logged a hull ping on Deck 7 at 0500.
+- tier: short
+  ref: slog-047
+  topic: routine
+  content: Gale logged a hull ping on Deck 8 at 0600.
+- tier: long
+  ref: slog-048
+  topic: watch
+  content: Fen logged a comms check on Deck 6 at 1700.
+- tier: long
+  ref: slog-049
+  topic: comms
+  content: Ovo logged a comms check on Deck 6 at 0400.
+- tier: short
+  ref: slog-050
+  topic: watch
+  content: Lio logged a hull ping on Deck 1 at 0100.
+- tier: short
+  ref: slog-051
+  topic: maintenance
+  content: Ash logged a comms check on Deck 8 at 0100.
+- tier: short
+  ref: slog-052
+  topic: watch
+  content: Vok logged a comms check on Deck 3 at 1100.
+- tier: long
+  ref: slog-053
+  topic: watch
+  content: Bex logged a hull ping on Deck 5 at 0700.
+- tier: short
+  ref: slog-054
+  topic: maintenance
+  content: Bex logged a comms check on Deck 1 at 0400.
+- tier: short
+  ref: slog-055
+  topic: watch
+  content: Ash logged a comms check on Deck 10 at 1700.
+- tier: short
+  ref: slog-056
+  topic: maintenance
+  content: Rho logged a comms check on Deck 4 at 0300.
+- tier: short
+  ref: slog-057
+  topic: comms
+  content: Ovo logged a hull ping on Deck 9 at 1600.
+- tier: long
+  ref: slog-058
+  topic: watch
+  content: Enn logged a hull ping on Deck 3 at 1100.
+- tier: long
+  ref: slog-059
+  topic: comms
+  content: Mko logged a comms check on Deck 8 at 2300.
+- tier: long
+  ref: slog-060
+  topic: routine
+  content: Jax logged a clean sweep on Deck 3 at 1700.
+- tier: short
+  ref: slog-061
+  topic: maintenance
+  content: Ovo logged a minor fault on Deck 9 at 1400.
+- tier: short
+  ref: slog-062
+  topic: watch
+  content: Enn logged a clean sweep on Deck 1 at 2000.
+- tier: short
+  ref: slog-063
+  topic: comms
+  content: Rho logged a hull ping on Deck 4 at 0300.
+- tier: long
+  ref: slog-064
+  topic: comms
+  content: Hux logged a clean sweep on Deck 3 at 1100.
+- tier: short
+  ref: slog-065
+  topic: routine
+  content: Vok logged a comms check on Deck 6 at 1500.
+- tier: short
+  ref: slog-066
+  topic: routine
+  content: Iri logged a minor fault on Deck 9 at 1600.
+- tier: long
+  ref: slog-067
+  topic: routine
+  content: Ash logged a minor fault on Deck 10 at 1000.
+- tier: short
+  ref: slog-068
+  topic: routine
+  content: Syl logged a minor fault on Deck 6 at 1600.
+- tier: short
+  ref: slog-069
+  topic: maintenance
+  content: Mko logged a hull ping on Deck 7 at 1700.
+- tier: short
+  ref: slog-070
+  topic: maintenance
+  content: Nyx logged a minor fault on Deck 9 at 0800.
+- tier: long
+  ref: slog-071
+  topic: routine
+  content: Ash logged a comms check on Deck 1 at 0500.
+- tier: short
+  ref: slog-072
+  topic: maintenance
+  content: Hux logged a comms check on Deck 6 at 2200.
+- tier: short
+  ref: slog-073
+  topic: maintenance
+  content: Rho logged a clean sweep on Deck 2 at 2100.
+- tier: short
+  ref: slog-074
+  topic: routine
+  content: Dov logged a hull ping on Deck 10 at 0100.
+- tier: long
+  ref: slog-075
+  topic: comms
+  content: Gale logged a comms check on Deck 5 at 1600.
+- tier: long
+  ref: slog-076
+  topic: routine
+  content: Iri logged a minor fault on Deck 6 at 1500.
+- tier: short
+  ref: slog-077
+  topic: comms
+  content: Hux logged a comms check on Deck 6 at 1900.
+- tier: short
+  ref: slog-078
+  topic: watch
+  content: Rho logged a comms check on Deck 3 at 1400.
+- tier: short
+  ref: slog-079
+  topic: comms
+  content: Lio logged a hull ping on Deck 7 at 1000.
+- tier: short
+  ref: slog-080
+  topic: routine
+  content: Tae logged a clean sweep on Deck 6 at 0800.
+- tier: long
+  ref: slog-081
+  topic: comms
+  content: Tae logged a minor fault on Deck 2 at 2300.
+- tier: short
+  ref: slog-082
+  topic: routine
+  content: Ovo logged a minor fault on Deck 3 at 0500.
+- tier: short
+  ref: slog-083
+  topic: comms
+  content: Jax logged a comms check on Deck 10 at 0700.
+- tier: short
+  ref: slog-084
+  topic: watch
+  content: Rho logged a clean sweep on Deck 7 at 1600.
+- tier: long
+  ref: slog-085
+  topic: routine
+  content: Nyx logged a hull ping on Deck 10 at 1300.
+- tier: short
+  ref: slog-086
+  topic: comms
+  content: Ash logged a comms check on Deck 4 at 1600.
+- tier: short
+  ref: slog-087
+  topic: maintenance
+  content: Fen logged a clean sweep on Deck 7 at 1200.
+- tier: short
+  ref: slog-088
+  topic: maintenance
+  content: Gale logged a comms check on Deck 9 at 0400.
+- tier: short
+  ref: slog-089
+  topic: watch
+  content: Hux logged a clean sweep on Deck 9 at 1000.
+- tier: long
+  ref: slog-090
+  topic: comms
+  content: Cyr logged a hull ping on Deck 8 at 2200.
+- tier: short
+  ref: slog-091
+  topic: watch
+  content: Bex logged a clean sweep on Deck 8 at 0000.
+- tier: short
+  ref: slog-092
+  topic: watch
+  content: Pyr logged a clean sweep on Deck 4 at 0400.
+- tier: long
+  ref: slog-093
+  topic: maintenance
+  content: Lio logged a minor fault on Deck 4 at 1200.
+- tier: long
+  ref: slog-094
+  topic: routine
+  content: Ovo logged a clean sweep on Deck 8 at 1800.
+- tier: short
+  ref: slog-095
+  topic: comms
+  content: Pyr logged a hull ping on Deck 7 at 0500.
+- tier: long
+  ref: slog-096
+  topic: maintenance
+  content: Rho logged a comms check on Deck 7 at 1600.
+- tier: short
+  ref: slog-097
+  topic: maintenance
+  content: Kwe logged a minor fault on Deck 6 at 0500.
+- tier: short
+  ref: slog-098
+  topic: routine
+  content: Ash logged a comms check on Deck 6 at 0700.
+- tier: short
+  ref: slog-099
+  topic: routine
+  content: Tae logged a comms check on Deck 8 at 0200.
+- tier: short
+  ref: slog-100
+  topic: maintenance
+  content: Enn logged a clean sweep on Deck 9 at 2100.
+- tier: long
+  ref: slog-101
+  topic: maintenance
+  content: Bex logged a minor fault on Deck 1 at 1700.
+- tier: long
+  ref: slog-102
+  topic: watch
+  content: Iri logged a minor fault on Deck 8 at 1300.
+- tier: short
+  ref: slog-103
+  topic: comms
+  content: Enn logged a hull ping on Deck 7 at 1500.
+- tier: short
+  ref: slog-104
+  topic: routine
+  content: Cyr logged a minor fault on Deck 7 at 0000.
+- tier: short
+  ref: slog-105
+  topic: routine
+  content: Mko logged a minor fault on Deck 1 at 0700.
+- tier: short
+  ref: slog-106
+  topic: routine
+  content: Tae logged a minor fault on Deck 3 at 0000.
+- tier: short
+  ref: slog-107
+  topic: comms
+  content: Vok logged a comms check on Deck 6 at 0900.
+- tier: short
+  ref: slog-108
+  topic: comms
+  content: Ash logged a comms check on Deck 9 at 0300.
+- tier: short
+  ref: slog-109
+  topic: routine
+  content: Kwe logged a hull ping on Deck 4 at 1700.
+- tier: long
+  ref: slog-110
+  topic: watch
+  content: Iri logged a minor fault on Deck 9 at 0400.
+- tier: long
+  ref: slog-111
+  topic: watch
+  content: Syl logged a clean sweep on Deck 3 at 0800.
+- tier: short
+  ref: slog-112
+  topic: comms
+  content: Fen logged a comms check on Deck 3 at 1800.
+- tier: short
+  ref: slog-113
+  topic: maintenance
+  content: Pyr logged a minor fault on Deck 3 at 0100.
+- tier: short
+  ref: slog-114
+  topic: maintenance
+  content: Enn logged a minor fault on Deck 8 at 0400.
+- tier: short
+  ref: slog-115
+  topic: routine
+  content: Ovo logged a minor fault on Deck 5 at 2200.
+- tier: long
+  ref: slog-116
+  topic: routine
+  content: Iri logged a clean sweep on Deck 5 at 1000.
+- tier: short
+  ref: slog-117
+  topic: comms
+  content: Jax logged a clean sweep on Deck 7 at 0900.
+- tier: short
+  ref: slog-118
+  topic: maintenance
+  content: Enn logged a clean sweep on Deck 2 at 2000.
+- tier: long
+  ref: slog-119
+  topic: maintenance
+  content: Rho logged a comms check on Deck 8 at 0200.
+- tier: short
+  ref: slog-120
+  topic: maintenance
+  content: Syl logged a comms check on Deck 9 at 1700.
+- tier: short
+  ref: slog-121
+  topic: comms
+  content: Ash logged a hull ping on Deck 4 at 0300.
+- tier: short
+  ref: slog-122
+  topic: watch
+  content: Tae logged a minor fault on Deck 9 at 1500.
+- tier: short
+  ref: slog-123
+  topic: watch
+  content: Hux logged a comms check on Deck 8 at 1700.
+- tier: long
+  ref: slog-124
+  topic: maintenance
+  content: Vok logged a minor fault on Deck 10 at 1300.
+- tier: short
+  ref: slog-125
+  topic: watch
+  content: Tae logged a comms check on Deck 6 at 0200.
+- tier: short
+  ref: slog-126
+  topic: watch
+  content: Lio logged a minor fault on Deck 9 at 2300.
+- tier: short
+  ref: slog-127
+  topic: watch
+  content: Rho logged a clean sweep on Deck 5 at 1700.
+- tier: short
+  ref: slog-128
+  topic: watch
+  content: Rho logged a comms check on Deck 9 at 0400.
+- tier: short
+  ref: slog-129
+  topic: comms
+  content: Lio logged a clean sweep on Deck 8 at 0800.

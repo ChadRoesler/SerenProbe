@@ -1,0 +1,353 @@
+questions:
+- asks: loci
+  query: what race is Grickle?
+  expect_key:
+  - char_grickle/grickle_race
+  expect_content: []
+  hops: 1
+  quiet_in: &id001
+  - char_thorn-*
+  - char_elara-*
+  - char_kael-*
+  - char_riva-*
+  - char_zara-*
+  - char_malgor-*
+  - char_vexia-*
+  - char_grul-*
+  - char_shade-*
+  - char_ember-*
+  - char_shadowking-*
+  - char_fluffy-*
+  - char_boris-*
+  - char_ferris-*
+  - char_seraphina-*
+  - loc_ironhold-*
+  - loc_silverwood-*
+  - loc_crossroads-*
+  - loc_sunkentemple-*
+  - loc_wyvernspeak-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what class is Grickle?
+  expect_key:
+  - char_grickle/grickle_class
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what alignment does Grickle have?
+  expect_key:
+  - char_grickle/grickle_alignment
+  expect_content:
+  - Unaligned
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what level is Grickle?
+  expect_key:
+  - char_grickle/grickle_level
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: where is Grickle's homeland?
+  expect_key:
+  - char_grickle/grickle_homeland
+  expect_content:
+  - the Sunken Temple
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what faction does Grickle follow?
+  expect_key:
+  - char_grickle/grickle_faction
+  expect_content:
+  - Free Traders
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what deity does Grickle worship?
+  expect_key:
+  - char_grickle/grickle_deity
+  expect_content:
+  - Zehir
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what str score does Grickle have?
+  expect_key:
+  - char_grickle/grickle_stat_str
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what dex score does Grickle have?
+  expect_key:
+  - char_grickle/grickle_stat_dex
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what con score does Grickle have?
+  expect_key:
+  - char_grickle/grickle_stat_con
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what int score does Grickle have?
+  expect_key:
+  - char_grickle/grickle_stat_int
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what wis score does Grickle have?
+  expect_key:
+  - char_grickle/grickle_stat_wis
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what cha score does Grickle have?
+  expect_key:
+  - char_grickle/grickle_stat_cha
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: tell me about Grickle's recent encounter — recent encounter near the old road
+  expect_ref:
+  - grickle_short_00
+  expect_content:
+  - Grickle survived an ambush near the Sunken Temple last week.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: what happened to Grickle last week — incident involving a stranger last week
+  expect_ref:
+  - grickle_short_01
+  expect_content:
+  - Grickle discovered a hidden passage in the old ruins.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: 'what is the lore of the Grick race: ancient lore of the Grick people'
+  expect_ref:
+  - grickle_long_10
+  expect_content:
+  - A crown was forged for Grickle.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: tell me about the history of Grickle's homeland — history of the the Sunken Temple region
+  expect_ref:
+  - grickle_long_20
+  expect_content:
+  - The Grick once fought a great war against the Dragon Empire.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: what plans does Grickle have — upcoming journey or expedition
+  expect_ref:
+  - grickle_near_00
+  expect_content:
+  - Grickle plans to escort a caravan to Crossroads next week.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: what upcoming event involves Grickle — prophecy or omen concerning their future
+  expect_ref:
+  - grickle_near_01
+  expect_content:
+  - A prophecy warns that the dead will walk soon.
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: tell me about Grickle — their race, class, and alignment
+  expect_content:
+  - Grick
+  - Monster
+  - Unaligned
+  expect_key:
+  - char_grickle/grickle_race
+  - char_grickle/grickle_class
+  - char_grickle/grickle_alignment
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: describe Grickle's homeland and the faction they follow
+  expect_content:
+  - the Sunken Temple
+  - Monster
+  expect_key:
+  - char_grickle/grickle_homeland
+  - char_grickle/grickle_faction
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: give me a briefing on Grickle's background and upbringing
+  expect_content:
+  - the Sunken Temple
+  - Grick
+  expect_key:
+  - char_grickle/grickle_backstory_0
+  - char_grickle/grickle_backstory_1
+  - char_grickle/grickle_backstory_2
+  - char_grickle/grickle_backstory_3
+  - char_grickle/grickle_homeland
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what weapons and armor does Grickle carry into battle?
+  expect_content:
+  - Grickle
+  expect_key:
+  - char_grickle/grickle_weapon_1
+  - char_grickle/grickle_weapon_2
+  - char_grickle/grickle_armor
+  - char_grickle/grickle_shield
+  - char_grickle/grickle_ranged
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: tell me about Grickle's physical abilities — strength and dexterity
+  expect_content:
+  - Grickle
+  expect_key:
+  - char_grickle/grickle_stat_str
+  - char_grickle/grickle_stat_dex
+  - char_grickle/grickle_stat_con
+  - char_grickle/grickle_stat_int
+  - char_grickle/grickle_stat_wis
+  - char_grickle/grickle_stat_cha
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: who is Grickle and what is their role in the realm?
+  expect_content:
+  - Grick
+  - Semi-Intelligent
+  expect_key:
+  - char_grickle/grickle_race
+  - char_grickle/grickle_class
+  - char_grickle/grickle_alignment
+  - char_grickle/grickle_level
+  - char_grickle/grickle_background
+  - char_grickle/grickle_role
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: describe the Grick race and Grickle's place among them
+  expect_content:
+  - the Sunken Temple
+  - Grick
+  expect_key:
+  - char_grickle/grickle_race
+  - char_grickle/grickle_homeland
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what is known about Grickle's backstory and early life?
+  expect_content:
+  - Grickle
+  expect_key:
+  - char_grickle/grickle_backstory_0
+  - char_grickle/grickle_backstory_1
+  - char_grickle/grickle_backstory_2
+  - char_grickle/grickle_backstory_3
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: tell me about Grickle's key abilities and spells
+  expect_content:
+  - Grickle
+  expect_key:
+  - char_grickle/grickle_ability_1
+  - char_grickle/grickle_ability_2
+  - char_grickle/grickle_ability_3
+  - char_grickle/grickle_spell_1
+  - char_grickle/grickle_spell_2
+  - char_grickle/grickle_spell_3
+  - char_grickle/grickle_feat_1
+  - char_grickle/grickle_feat_2
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: summarize Grickle's equipment and carried items
+  expect_content:
+  - Grickle
+  expect_key:
+  - char_grickle/grickle_weapon_1
+  - char_grickle/grickle_weapon_2
+  - char_grickle/grickle_armor
+  - char_grickle/grickle_shield
+  - char_grickle/grickle_ranged
+  - char_grickle/grickle_potion_1
+  - char_grickle/grickle_potion_2
+  - char_grickle/grickle_tool
+  - char_grickle/grickle_gold
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what relationships does Grickle have with allies and enemies?
+  expect_content:
+  - Grickle
+  expect_key:
+  - char_grickle/grickle_rel_0
+  - char_grickle/grickle_rel_1
+  - char_grickle/grickle_rel_2
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: describe Grickle's current quest and their goals
+  expect_content:
+  - Grickle
+  expect_key:
+  - char_grickle/grickle_quest_1
+  - char_grickle/grickle_quest_2
+  - char_grickle/grickle_ideal
+  - char_grickle/grickle_bond
+  - char_grickle/grickle_flaw
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what are Grickle's ideals, bonds, and flaws?
+  expect_content:
+  - Grickle
+  expect_key:
+  - char_grickle/grickle_ideal
+  - char_grickle/grickle_bond
+  - char_grickle/grickle_flaw
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: give me a full dossier on Grickle the Monster
+  expect_content:
+  - Grick
+  - Monster
+  - Unaligned
+  - Semi-Intelligent
+  expect_key:
+  - char_grickle/grickle_race
+  - char_grickle/grickle_class
+  - char_grickle/grickle_alignment
+  - char_grickle/grickle_race
+  - char_grickle/grickle_class
+  - char_grickle/grickle_alignment
+  - char_grickle/grickle_level
+  - char_grickle/grickle_background
+  - char_grickle/grickle_backstory_0
+  - char_grickle/grickle_backstory_1
+  - char_grickle/grickle_backstory_2
+  - char_grickle/grickle_backstory_3
+  - char_grickle/grickle_rel_0
+  - char_grickle/grickle_rel_1
+  - char_grickle/grickle_rel_2
+  - char_grickle/grickle_quest_1
+  - char_grickle/grickle_quest_2
+  - char_grickle/grickle_ideal
+  - char_grickle/grickle_bond
+  - char_grickle/grickle_flaw
+  hops: 1
+  quiet_in: *id001

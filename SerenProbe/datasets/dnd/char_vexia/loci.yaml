@@ -1,0 +1,280 @@
+- project: char_vexia
+  key: vexia_name
+  value: Vexia the Venomous
+  why: character's full name
+- project: char_vexia
+  key: vexia_race
+  value: Lizardfolk
+  why: fantasy race
+- project: char_vexia
+  key: vexia_class
+  value: Assassin
+  why: character class
+- project: char_vexia
+  key: vexia_alignment
+  value: Neutral Evil
+  why: moral alignment
+- project: char_vexia
+  key: vexia_role
+  value: Evil Minion
+  why: narrative role
+- project: char_vexia
+  key: vexia_level
+  value: '9'
+  why: character level
+- project: char_vexia
+  key: vexia_background
+  value: soldier
+  why: life background
+- project: char_vexia
+  key: vexia_age
+  value: '186'
+  why: age in years
+- project: char_vexia
+  key: vexia_height
+  value: 71 inches
+  why: height
+- project: char_vexia
+  key: vexia_weight
+  value: 129 lbs
+  why: weight
+- project: char_vexia
+  key: vexia_stat_str
+  value: '19'
+  why: STR ability score
+- project: char_vexia
+  key: vexia_stat_str_mod
+  value: '+4'
+  why: STR modifier
+- project: char_vexia
+  key: vexia_stat_dex
+  value: '11'
+  why: DEX ability score
+- project: char_vexia
+  key: vexia_stat_dex_mod
+  value: '+0'
+  why: DEX modifier
+- project: char_vexia
+  key: vexia_stat_con
+  value: '13'
+  why: CON ability score
+- project: char_vexia
+  key: vexia_stat_con_mod
+  value: '+1'
+  why: CON modifier
+- project: char_vexia
+  key: vexia_stat_int
+  value: '10'
+  why: INT ability score
+- project: char_vexia
+  key: vexia_stat_int_mod
+  value: '+0'
+  why: INT modifier
+- project: char_vexia
+  key: vexia_stat_wis
+  value: '11'
+  why: WIS ability score
+- project: char_vexia
+  key: vexia_stat_wis_mod
+  value: '+0'
+  why: WIS modifier
+- project: char_vexia
+  key: vexia_stat_cha
+  value: '6'
+  why: CHA ability score
+- project: char_vexia
+  key: vexia_stat_cha_mod
+  value: '-2'
+  why: CHA modifier
+- project: char_vexia
+  key: vexia_skill_athletics
+  value: '+9'
+  why: athletics skill bonus
+- project: char_vexia
+  key: vexia_skill_acrobatics
+  value: '+8'
+  why: acrobatics skill bonus
+- project: char_vexia
+  key: vexia_skill_stealth
+  value: '+4'
+  why: stealth skill bonus
+- project: char_vexia
+  key: vexia_skill_perception
+  value: '+11'
+  why: perception skill bonus
+- project: char_vexia
+  key: vexia_skill_investigation
+  value: '+4'
+  why: investigation skill bonus
+- project: char_vexia
+  key: vexia_skill_survival
+  value: '+13'
+  why: survival skill bonus
+- project: char_vexia
+  key: vexia_skill_intimidation
+  value: '+10'
+  why: intimidation skill bonus
+- project: char_vexia
+  key: vexia_skill_persuasion
+  value: '+12'
+  why: persuasion skill bonus
+- project: char_vexia
+  key: vexia_skill_deception
+  value: '+12'
+  why: deception skill bonus
+- project: char_vexia
+  key: vexia_weapon_1
+  value: warhammer
+  why: primary weapon
+- project: char_vexia
+  key: vexia_weapon_2
+  value: whip
+  why: secondary weapon
+- project: char_vexia
+  key: vexia_armor
+  value: leather armor
+  why: worn armor
+- project: char_vexia
+  key: vexia_shield
+  value: wooden shield
+  why: carried shield
+- project: char_vexia
+  key: vexia_ranged
+  value: shortbow
+  why: ranged weapon
+- project: char_vexia
+  key: vexia_ammo
+  value: 34 arrows/bolts
+  why: ammunition supply
+- project: char_vexia
+  key: vexia_potion_1
+  value: potion of healing
+  why: healing potion
+- project: char_vexia
+  key: vexia_potion_2
+  value: potion of clairvoyance
+  why: special potion
+- project: char_vexia
+  key: vexia_tool
+  value: herbalism kit
+  why: tool kit
+- project: char_vexia
+  key: vexia_gold
+  value: 369 gp
+  why: carried gold
+- project: char_vexia
+  key: vexia_ability_1
+  value: sneak attack
+  why: class ability
+- project: char_vexia
+  key: vexia_ability_2
+  value: reckless attack
+  why: class ability
+- project: char_vexia
+  key: vexia_ability_3
+  value: uncanny dodge
+  why: combat ability
+- project: char_vexia
+  key: vexia_spell_1
+  value: bless
+  why: known spell
+- project: char_vexia
+  key: vexia_spell_2
+  value: polymorph
+  why: known spell
+- project: char_vexia
+  key: vexia_spell_3
+  value: death ward
+  why: known spell
+- project: char_vexia
+  key: vexia_feat_1
+  value: war caster
+  why: character feat
+- project: char_vexia
+  key: vexia_feat_2
+  value: defensive duelist
+  why: character feat
+- project: char_vexia
+  key: vexia_faction
+  value: Free Traders
+  why: faction affiliation
+- project: char_vexia
+  key: vexia_deity
+  value: Moradin
+  why: worshipped deity
+- project: char_vexia
+  key: vexia_location
+  value: Crossroads
+  why: current location
+- project: char_vexia
+  key: vexia_homeland
+  value: the Sunken Temple
+  why: ancestral homeland
+- project: char_vexia
+  key: vexia_rel_0
+  value: Grickle (rival)
+  why: rival relationship
+- project: char_vexia
+  key: vexia_rel_1
+  value: Riva Swiftfoot (enemy)
+  why: enemy relationship
+- project: char_vexia
+  key: vexia_rel_2
+  value: Shade the Whisperer (ally)
+  why: ally relationship
+- project: char_vexia
+  key: vexia_backstory_0
+  value: Vexia the Venomous was born in the Sunken Temple to a family of warriors.
+  why: personal history
+- project: char_vexia
+  key: vexia_backstory_1
+  value: As a youth, Vexia the Venomous sailed across the sea.
+  why: personal history
+- project: char_vexia
+  key: vexia_backstory_2
+  value: Vexia the Venomous discovered a hidden artifact.
+  why: personal history
+- project: char_vexia
+  key: vexia_backstory_3
+  value: Now Vexia the Venomous seeks revenge.
+  why: personal history
+- project: char_vexia
+  key: vexia_quest_1
+  value: Find the Sunken Temple
+  why: current quest
+- project: char_vexia
+  key: vexia_quest_2
+  value: Defeat the Ashen One
+  why: primary goal
+- project: char_vexia
+  key: vexia_ideal
+  value: justice
+  why: core ideal
+- project: char_vexia
+  key: vexia_flaw
+  value: cowardice
+  why: character flaw
+- project: char_vexia
+  key: vexia_bond
+  value: treasure
+  why: strong bond
+- project: char_vexia
+  key: vexia_note_896
+  value: speaks draconic
+  why: notable detail
+- project: char_vexia
+  key: vexia_note_545
+  value: scarred from battle
+  why: notable detail
+- project: char_vexia
+  key: vexia_note_808
+  value: speaks draconic
+  why: notable detail
+- project: char_vexia
+  key: vexia_note_423
+  value: carries a lucky charm
+  why: notable detail
+- project: char_vexia
+  key: vexia_note_640
+  value: has a secret identity
+  why: notable detail

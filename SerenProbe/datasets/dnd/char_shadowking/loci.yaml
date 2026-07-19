@@ -1,0 +1,280 @@
+- project: char_shadowking
+  key: shadowking_name
+  value: The Shadow King
+  why: character's full name
+- project: char_shadowking
+  key: shadowking_race
+  value: Wraith
+  why: fantasy race
+- project: char_shadowking
+  key: shadowking_class
+  value: Warlock
+  why: character class
+- project: char_shadowking
+  key: shadowking_alignment
+  value: Lawful Evil
+  why: moral alignment
+- project: char_shadowking
+  key: shadowking_role
+  value: Big Bad Guy
+  why: narrative role
+- project: char_shadowking
+  key: shadowking_level
+  value: '8'
+  why: character level
+- project: char_shadowking
+  key: shadowking_background
+  value: soldier
+  why: life background
+- project: char_shadowking
+  key: shadowking_age
+  value: '75'
+  why: age in years
+- project: char_shadowking
+  key: shadowking_height
+  value: 51 inches
+  why: height
+- project: char_shadowking
+  key: shadowking_weight
+  value: 161 lbs
+  why: weight
+- project: char_shadowking
+  key: shadowking_stat_str
+  value: '20'
+  why: STR ability score
+- project: char_shadowking
+  key: shadowking_stat_str_mod
+  value: '+5'
+  why: STR modifier
+- project: char_shadowking
+  key: shadowking_stat_dex
+  value: '16'
+  why: DEX ability score
+- project: char_shadowking
+  key: shadowking_stat_dex_mod
+  value: '+3'
+  why: DEX modifier
+- project: char_shadowking
+  key: shadowking_stat_con
+  value: '18'
+  why: CON ability score
+- project: char_shadowking
+  key: shadowking_stat_con_mod
+  value: '+4'
+  why: CON modifier
+- project: char_shadowking
+  key: shadowking_stat_int
+  value: '9'
+  why: INT ability score
+- project: char_shadowking
+  key: shadowking_stat_int_mod
+  value: '-1'
+  why: INT modifier
+- project: char_shadowking
+  key: shadowking_stat_wis
+  value: '9'
+  why: WIS ability score
+- project: char_shadowking
+  key: shadowking_stat_wis_mod
+  value: '-1'
+  why: WIS modifier
+- project: char_shadowking
+  key: shadowking_stat_cha
+  value: '11'
+  why: CHA ability score
+- project: char_shadowking
+  key: shadowking_stat_cha_mod
+  value: '+0'
+  why: CHA modifier
+- project: char_shadowking
+  key: shadowking_skill_athletics
+  value: '+12'
+  why: athletics skill bonus
+- project: char_shadowking
+  key: shadowking_skill_acrobatics
+  value: '+10'
+  why: acrobatics skill bonus
+- project: char_shadowking
+  key: shadowking_skill_stealth
+  value: '+4'
+  why: stealth skill bonus
+- project: char_shadowking
+  key: shadowking_skill_perception
+  value: '+7'
+  why: perception skill bonus
+- project: char_shadowking
+  key: shadowking_skill_investigation
+  value: '+4'
+  why: investigation skill bonus
+- project: char_shadowking
+  key: shadowking_skill_survival
+  value: '+4'
+  why: survival skill bonus
+- project: char_shadowking
+  key: shadowking_skill_intimidation
+  value: '+14'
+  why: intimidation skill bonus
+- project: char_shadowking
+  key: shadowking_skill_persuasion
+  value: '+8'
+  why: persuasion skill bonus
+- project: char_shadowking
+  key: shadowking_skill_deception
+  value: '+7'
+  why: deception skill bonus
+- project: char_shadowking
+  key: shadowking_weapon_1
+  value: staff
+  why: primary weapon
+- project: char_shadowking
+  key: shadowking_weapon_2
+  value: shortsword
+  why: secondary weapon
+- project: char_shadowking
+  key: shadowking_armor
+  value: leather armor
+  why: worn armor
+- project: char_shadowking
+  key: shadowking_shield
+  value: none
+  why: carried shield
+- project: char_shadowking
+  key: shadowking_ranged
+  value: crossbow
+  why: ranged weapon
+- project: char_shadowking
+  key: shadowking_ammo
+  value: 20 arrows/bolts
+  why: ammunition supply
+- project: char_shadowking
+  key: shadowking_potion_1
+  value: potion of healing
+  why: healing potion
+- project: char_shadowking
+  key: shadowking_potion_2
+  value: potion of resistance
+  why: special potion
+- project: char_shadowking
+  key: shadowking_tool
+  value: musical instrument
+  why: tool kit
+- project: char_shadowking
+  key: shadowking_gold
+  value: 339 gp
+  why: carried gold
+- project: char_shadowking
+  key: shadowking_ability_1
+  value: channel divinity
+  why: class ability
+- project: char_shadowking
+  key: shadowking_ability_2
+  value: indomitable
+  why: class ability
+- project: char_shadowking
+  key: shadowking_ability_3
+  value: misty step
+  why: combat ability
+- project: char_shadowking
+  key: shadowking_spell_1
+  value: hex
+  why: known spell
+- project: char_shadowking
+  key: shadowking_spell_2
+  value: blight
+  why: known spell
+- project: char_shadowking
+  key: shadowking_spell_3
+  value: revivify
+  why: known spell
+- project: char_shadowking
+  key: shadowking_feat_1
+  value: tough
+  why: character feat
+- project: char_shadowking
+  key: shadowking_feat_2
+  value: polearm master
+  why: character feat
+- project: char_shadowking
+  key: shadowking_faction
+  value: Shadow Syndicate
+  why: faction affiliation
+- project: char_shadowking
+  key: shadowking_deity
+  value: Asmodeus
+  why: worshipped deity
+- project: char_shadowking
+  key: shadowking_location
+  value: Ironhold
+  why: current location
+- project: char_shadowking
+  key: shadowking_homeland
+  value: the Shadowfell
+  why: ancestral homeland
+- project: char_shadowking
+  key: shadowking_rel_0
+  value: Grul the Smasher (contact)
+  why: contact relationship
+- project: char_shadowking
+  key: shadowking_rel_1
+  value: Grul the Smasher (contact)
+  why: contact relationship
+- project: char_shadowking
+  key: shadowking_rel_2
+  value: Ferris the Fence (rival)
+  why: rival relationship
+- project: char_shadowking
+  key: shadowking_backstory_0
+  value: The Shadow King was born in the Shadowfell to a family of warriors.
+  why: personal history
+- project: char_shadowking
+  key: shadowking_backstory_1
+  value: As a youth, The Shadow King sailed across the sea.
+  why: personal history
+- project: char_shadowking
+  key: shadowking_backstory_2
+  value: The Shadow King made a pact with a dark entity.
+  why: personal history
+- project: char_shadowking
+  key: shadowking_backstory_3
+  value: Now The Shadow King seeks peace.
+  why: personal history
+- project: char_shadowking
+  key: shadowking_quest_1
+  value: Find the Hidden Vault
+  why: current quest
+- project: char_shadowking
+  key: shadowking_quest_2
+  value: Defeat the Ashen One
+  why: primary goal
+- project: char_shadowking
+  key: shadowking_ideal
+  value: freedom
+  why: core ideal
+- project: char_shadowking
+  key: shadowking_flaw
+  value: naivety
+  why: character flaw
+- project: char_shadowking
+  key: shadowking_bond
+  value: faith
+  why: strong bond
+- project: char_shadowking
+  key: shadowking_note_289
+  value: speaks draconic
+  why: notable detail
+- project: char_shadowking
+  key: shadowking_note_122
+  value: speaks draconic
+  why: notable detail
+- project: char_shadowking
+  key: shadowking_note_525
+  value: speaks draconic
+  why: notable detail
+- project: char_shadowking
+  key: shadowking_note_188
+  value: scarred from battle
+  why: notable detail
+- project: char_shadowking
+  key: shadowking_note_983
+  value: has a secret identity
+  why: notable detail

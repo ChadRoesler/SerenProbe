@@ -1,0 +1,143 @@
+# SerenProbe Questions - entity question set
+# Generated for poi
+
+questions:
+- query: What year was Galaelinthorn founded?
+  asks: loci
+  expect_key:
+  - geography/founded_year
+  hops: 1
+- query: Is Galaelinthorn a capital?
+  asks: loci
+  expect_key:
+  - geography/is_capital
+  hops: 1
+- query: What is the population of Galaelinthorn?
+  asks: loci
+  expect_key:
+  - demographics/population
+  hops: 1
+- query: What type of site is Galaelinthorn?
+  asks: loci
+  expect_key:
+  - geography/site_type
+  hops: 1
+- query: What does Galaelinthorn intend to do about prepare for the coming journey?
+  asks: memory
+  expect_ref:
+  - galaelinthorn_258_near_4
+  hops: 1
+- query: What does Galaelinthorn worry about regarding fear that our enemies are closing?
+  asks: memory
+  expect_ref:
+  - galaelinthorn_258_near_7
+  hops: 1
+- query: What does Galaelinthorn remember about Order and discipline prevailed?
+  asks: memory
+  expect_ref:
+  - galaelinthorn_258_long_2
+  hops: 1
+- query: What does Galaelinthorn remember about local lord becoming a true settlement?
+  asks: memory
+  expect_ref:
+  - galaelinthorn_258_long_19
+  hops: 1
+- query: What has Galaelinthorn heard recently about affected daily life?
+  asks: memory
+  expect_ref:
+  - galaelinthorn_258_short_3
+  hops: 1
+- query: What has Galaelinthorn heard recently about stranger arrived at the site?
+  asks: memory
+  expect_ref:
+  - galaelinthorn_258_short_5
+  hops: 1
+- query: What does Galaelinthorn intend to do about understanding the old mysteries?
+  asks: memory
+  expect_ref:
+  - galaelinthorn_258_near_1
+  hops: 1
+- query: What has Galaelinthorn heard recently about songs remember that the autumn?
+  asks: memory
+  expect_ref:
+  - galaelinthorn_258_short_14
+  hops: 1
+- query: What has Galaelinthorn heard recently about makes the site feel melancholy?
+  asks: memory
+  expect_ref:
+  - galaelinthorn_258_short_8
+  hops: 1
+- query: What has Galaelinthorn heard recently about site's master made a proclamation?
+  asks: memory
+  expect_ref:
+  - galaelinthorn_258_short_0
+  hops: 1
+- query: What is the industry of Galaelinthorn, and what does Galaelinthorn recall
+    about must prepare for the coming journey?
+  asks: corpus
+  expect_key:
+  - misc/industry
+  expect_ref:
+  - galaelinthorn_258_near_4
+  hops: 2
+- query: What is known about The Forgotten Vault of Xul?
+  asks: corpus
+  expect_empty: true
+  hops: 1
+- query: What is the size class of Galaelinthorn, and what does Galaelinthorn recall
+    about recover from recent hardships?
+  asks: corpus
+  expect_key:
+  - demographics/size_class
+  expect_ref:
+  - galaelinthorn_258_near_5
+  hops: 2
+- query: What is the civ of Galaelinthorn, and what does Galaelinthorn recall about
+    affected daily life?
+  asks: corpus
+  expect_key:
+  - origin/civ
+  expect_ref:
+  - galaelinthorn_258_short_3
+  hops: 2
+- query: What is the defenses of Galaelinthorn, and what does Galaelinthorn recall
+    about council was formed to settle disputes?
+  asks: corpus
+  expect_key:
+  - misc/defenses
+  expect_ref:
+  - galaelinthorn_258_long_1
+  hops: 2
+- query: What is the population and size class of Galaelinthorn?
+  asks: corpus
+  expect_key:
+  - demographics/population
+  - demographics/size_class
+  hops: 1
+- query: What is the ruler of Galaelinthorn, and what does Galaelinthorn recall about
+    stranger arrived at the site?
+  asks: corpus
+  expect_key:
+  - misc/ruler
+  expect_ref:
+  - galaelinthorn_258_short_5
+  hops: 2
+- query: What is the primary material of Galaelinthorn, and what does Galaelinthorn
+    recall about Order and discipline prevailed?
+  asks: corpus
+  expect_key:
+  - misc/primary_material
+  expect_ref:
+  - galaelinthorn_258_long_2
+  hops: 2
+- query: What is the site type, founded year and is capital of Galaelinthorn?
+  asks: corpus
+  expect_key:
+  - geography/site_type
+  - geography/founded_year
+  - geography/is_capital
+  hops: 1
+- query: What is known about The Sunken Archive?
+  asks: corpus
+  expect_empty: true
+  hops: 1

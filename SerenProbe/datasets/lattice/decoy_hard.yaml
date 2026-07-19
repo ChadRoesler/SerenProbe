@@ -1,0 +1,24 @@
+- project: lattice
+  key: dissolve_module
+  value: lattice.legacy
+  why: module of dissolve()
+- project: lattice
+  key: dissolve_returns
+  value: Slurry
+  why: return type of dissolve()
+- project: lattice
+  key: dissolve_raises
+  value: MeltError
+  why: dissolve() failure
+- project: lattice
+  key: unweave_module
+  value: lattice.legacy
+  why: module of unweave()
+- project: lattice
+  key: unweave_returns
+  value: Strand
+  why: return type of unweave()
+- project: lattice
+  key: reshard_module
+  value: lattice.legacy
+  why: module of reshard()

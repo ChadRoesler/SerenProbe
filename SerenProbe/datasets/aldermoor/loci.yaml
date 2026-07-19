@@ -1,0 +1,612 @@
+- project: aldermoor
+  key: house_vayne_seat
+  value: Grimsgate
+  why: ancestral seat
+- project: aldermoor
+  key: house_vayne_head
+  value: Lord Corwin Vayne
+  why: current head of the house
+- project: aldermoor
+  key: house_vayne_sigil
+  value: a black harrier
+  why: heraldic sigil
+- project: aldermoor
+  key: house_vayne_region
+  value: the Ashfen
+  why: home region
+- project: aldermoor
+  key: house_vayne_words
+  value: We Do Not Kneel
+  why: house words
+- project: aldermoor
+  key: house_vayne_allegiance
+  value: the Iron Pact
+  why: sworn allegiance
+- project: aldermoor
+  key: house_ostry_seat
+  value: Highmere
+  why: ancestral seat
+- project: aldermoor
+  key: house_ostry_head
+  value: Lady Serane Ostry
+  why: current head of the house
+- project: aldermoor
+  key: house_ostry_sigil
+  value: a silver stag
+  why: heraldic sigil
+- project: aldermoor
+  key: house_ostry_region
+  value: the Reach
+  why: home region
+- project: aldermoor
+  key: house_ostry_words
+  value: Truth in Frost
+  why: house words
+- project: aldermoor
+  key: house_ostry_allegiance
+  value: the Crown
+  why: sworn allegiance
+- project: aldermoor
+  key: house_belloc_seat
+  value: Duskwater
+  why: ancestral seat
+- project: aldermoor
+  key: house_belloc_head
+  value: Ser Aldous Belloc
+  why: current head of the house
+- project: aldermoor
+  key: house_belloc_sigil
+  value: a red kraken
+  why: heraldic sigil
+- project: aldermoor
+  key: house_belloc_region
+  value: the Shoals
+  why: home region
+- project: aldermoor
+  key: house_belloc_words
+  value: Deep and Patient
+  why: house words
+- project: aldermoor
+  key: house_belloc_allegiance
+  value: the Iron Pact
+  why: sworn allegiance
+- project: aldermoor
+  key: house_merrow_seat
+  value: Thornhold
+  why: ancestral seat
+- project: aldermoor
+  key: house_merrow_head
+  value: Lady Wyn Merrow
+  why: current head of the house
+- project: aldermoor
+  key: house_merrow_sigil
+  value: a green thorn
+  why: heraldic sigil
+- project: aldermoor
+  key: house_merrow_region
+  value: the Weald
+  why: home region
+- project: aldermoor
+  key: house_merrow_words
+  value: None Pass Us
+  why: house words
+- project: aldermoor
+  key: house_merrow_allegiance
+  value: the Crown
+  why: sworn allegiance
+- project: aldermoor
+  key: house_kael_seat
+  value: Sunspear Keep
+  why: ancestral seat
+- project: aldermoor
+  key: house_kael_head
+  value: Lord Tamsin Kael
+  why: current head of the house
+- project: aldermoor
+  key: house_kael_sigil
+  value: a golden sun
+  why: heraldic sigil
+- project: aldermoor
+  key: house_kael_region
+  value: the Dunes
+  why: home region
+- project: aldermoor
+  key: house_kael_words
+  value: Burn Bright
+  why: house words
+- project: aldermoor
+  key: house_kael_allegiance
+  value: neutral
+  why: sworn allegiance
+- project: aldermoor
+  key: house_vayne_rival
+  value: House Ostry
+  why: House Vayne and House Ostry are sworn rivals
+- project: aldermoor
+  key: house_belloc_rival
+  value: House Merrow
+  why: House Belloc and House Merrow are sworn rivals
+- project: aldermoor
+  key: house_kael_rival
+  value: House Vayne
+  why: House Kael and House Vayne are sworn rivals
+- project: aldermoor
+  key: folk_000_trade
+  value: ferrier
+  why: Bryn of Sunspear plies their trade in the Dunes
+- project: aldermoor
+  key: folk_001_trade
+  value: miller
+  why: Ella of Duskwater plies their trade in the Dunes
+- project: aldermoor
+  key: folk_002_trade
+  value: miller
+  why: Bryn of Grimsgate plies their trade in the Dunes
+- project: aldermoor
+  key: folk_003_trade
+  value: fisher
+  why: Kit of Grimsgate plies their trade in the Shoals
+- project: aldermoor
+  key: folk_004_trade
+  value: fisher
+  why: Mabon of Duskwater plies their trade in the Weald
+- project: aldermoor
+  key: folk_005_trade
+  value: cooper
+  why: Bryn of Highmere plies their trade in the Shoals
+- project: aldermoor
+  key: folk_006_trade
+  value: cooper
+  why: Ulf of Sunspear plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_007_trade
+  value: fisher
+  why: Petra of Sunspear plies their trade in the Shoals
+- project: aldermoor
+  key: folk_008_trade
+  value: chandler
+  why: Mabon of Sunspear plies their trade in the Dunes
+- project: aldermoor
+  key: folk_009_trade
+  value: ferrier
+  why: Bryn of Sunspear plies their trade in the Shoals
+- project: aldermoor
+  key: folk_010_trade
+  value: chandler
+  why: Nell of Duskwater plies their trade in the Dunes
+- project: aldermoor
+  key: folk_011_trade
+  value: miller
+  why: Cora of Grimsgate plies their trade in the Weald
+- project: aldermoor
+  key: folk_012_trade
+  value: cooper
+  why: Osric of Thornhold plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_013_trade
+  value: septon
+  why: Rook of Highmere plies their trade in the Reach
+- project: aldermoor
+  key: folk_014_trade
+  value: miller
+  why: Senna of Grimsgate plies their trade in the Reach
+- project: aldermoor
+  key: folk_015_trade
+  value: ferrier
+  why: Gwyn of Highmere plies their trade in the Shoals
+- project: aldermoor
+  key: folk_016_trade
+  value: fisher
+  why: Bryn of Highmere plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_017_trade
+  value: ferrier
+  why: Isolde of Sunspear plies their trade in the Shoals
+- project: aldermoor
+  key: folk_018_trade
+  value: cooper
+  why: Lyra of Sunspear plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_019_trade
+  value: hedge knight
+  why: Rook of Sunspear plies their trade in the Dunes
+- project: aldermoor
+  key: folk_020_trade
+  value: fisher
+  why: Ulf of Grimsgate plies their trade in the Reach
+- project: aldermoor
+  key: folk_021_trade
+  value: ferrier
+  why: Cora of Thornhold plies their trade in the Dunes
+- project: aldermoor
+  key: folk_022_trade
+  value: chandler
+  why: Quill of Thornhold plies their trade in the Weald
+- project: aldermoor
+  key: folk_023_trade
+  value: ferrier
+  why: Joss of Sunspear plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_024_trade
+  value: miller
+  why: Quill of Grimsgate plies their trade in the Reach
+- project: aldermoor
+  key: folk_025_trade
+  value: ferrier
+  why: Finn of Duskwater plies their trade in the Shoals
+- project: aldermoor
+  key: folk_026_trade
+  value: septon
+  why: Finn of Highmere plies their trade in the Dunes
+- project: aldermoor
+  key: folk_027_trade
+  value: miller
+  why: Ella of Duskwater plies their trade in the Reach
+- project: aldermoor
+  key: folk_028_trade
+  value: hedge knight
+  why: Osric of Highmere plies their trade in the Reach
+- project: aldermoor
+  key: folk_029_trade
+  value: chandler
+  why: Nell of Highmere plies their trade in the Reach
+- project: aldermoor
+  key: folk_030_trade
+  value: ferrier
+  why: Tibb of Thornhold plies their trade in the Reach
+- project: aldermoor
+  key: folk_031_trade
+  value: septon
+  why: Mabon of Duskwater plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_032_trade
+  value: hedge knight
+  why: Hale of Highmere plies their trade in the Dunes
+- project: aldermoor
+  key: folk_033_trade
+  value: ferrier
+  why: Mabon of Grimsgate plies their trade in the Weald
+- project: aldermoor
+  key: folk_034_trade
+  value: ferrier
+  why: Quill of Highmere plies their trade in the Weald
+- project: aldermoor
+  key: folk_035_trade
+  value: smith
+  why: Senna of Highmere plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_036_trade
+  value: septon
+  why: Quill of Duskwater plies their trade in the Weald
+- project: aldermoor
+  key: folk_037_trade
+  value: miller
+  why: Bryn of Thornhold plies their trade in the Dunes
+- project: aldermoor
+  key: folk_038_trade
+  value: hedge knight
+  why: Ulf of Grimsgate plies their trade in the Shoals
+- project: aldermoor
+  key: folk_039_trade
+  value: ferrier
+  why: Kit of Highmere plies their trade in the Shoals
+- project: aldermoor
+  key: folk_040_trade
+  value: miller
+  why: Hale of Duskwater plies their trade in the Dunes
+- project: aldermoor
+  key: folk_041_trade
+  value: chandler
+  why: Joss of Grimsgate plies their trade in the Reach
+- project: aldermoor
+  key: folk_042_trade
+  value: cooper
+  why: Nell of Grimsgate plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_043_trade
+  value: hedge knight
+  why: Quill of Grimsgate plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_044_trade
+  value: ferrier
+  why: Isolde of Grimsgate plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_045_trade
+  value: hedge knight
+  why: Joss of Highmere plies their trade in the Shoals
+- project: aldermoor
+  key: folk_046_trade
+  value: septon
+  why: Bryn of Thornhold plies their trade in the Shoals
+- project: aldermoor
+  key: folk_047_trade
+  value: fisher
+  why: Rook of Duskwater plies their trade in the Dunes
+- project: aldermoor
+  key: folk_048_trade
+  value: miller
+  why: Isolde of Duskwater plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_049_trade
+  value: fisher
+  why: Finn of Highmere plies their trade in the Reach
+- project: aldermoor
+  key: folk_050_trade
+  value: smith
+  why: Gwyn of Grimsgate plies their trade in the Weald
+- project: aldermoor
+  key: folk_051_trade
+  value: miller
+  why: Osric of Highmere plies their trade in the Dunes
+- project: aldermoor
+  key: folk_052_trade
+  value: smith
+  why: Dax of Sunspear plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_053_trade
+  value: ferrier
+  why: Finn of Thornhold plies their trade in the Reach
+- project: aldermoor
+  key: folk_054_trade
+  value: hedge knight
+  why: Nell of Grimsgate plies their trade in the Reach
+- project: aldermoor
+  key: folk_055_trade
+  value: smith
+  why: Finn of Highmere plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_056_trade
+  value: ferrier
+  why: Nell of Thornhold plies their trade in the Reach
+- project: aldermoor
+  key: folk_057_trade
+  value: miller
+  why: Tibb of Grimsgate plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_058_trade
+  value: fisher
+  why: Osric of Thornhold plies their trade in the Weald
+- project: aldermoor
+  key: folk_059_trade
+  value: cooper
+  why: Ella of Thornhold plies their trade in the Weald
+- project: aldermoor
+  key: folk_060_trade
+  value: chandler
+  why: Tibb of Duskwater plies their trade in the Reach
+- project: aldermoor
+  key: folk_061_trade
+  value: ferrier
+  why: Dax of Duskwater plies their trade in the Reach
+- project: aldermoor
+  key: folk_062_trade
+  value: fisher
+  why: Gwyn of Thornhold plies their trade in the Reach
+- project: aldermoor
+  key: folk_063_trade
+  value: ferrier
+  why: Gwyn of Thornhold plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_064_trade
+  value: fisher
+  why: Isolde of Highmere plies their trade in the Reach
+- project: aldermoor
+  key: folk_065_trade
+  value: chandler
+  why: Ulf of Sunspear plies their trade in the Shoals
+- project: aldermoor
+  key: folk_066_trade
+  value: cooper
+  why: Rook of Grimsgate plies their trade in the Reach
+- project: aldermoor
+  key: folk_067_trade
+  value: miller
+  why: Rook of Highmere plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_068_trade
+  value: ferrier
+  why: Cora of Thornhold plies their trade in the Dunes
+- project: aldermoor
+  key: folk_069_trade
+  value: septon
+  why: Petra of Thornhold plies their trade in the Shoals
+- project: aldermoor
+  key: folk_070_trade
+  value: cooper
+  why: Lyra of Thornhold plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_071_trade
+  value: fisher
+  why: Cora of Highmere plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_072_trade
+  value: ferrier
+  why: Finn of Thornhold plies their trade in the Shoals
+- project: aldermoor
+  key: folk_073_trade
+  value: septon
+  why: Nell of Duskwater plies their trade in the Dunes
+- project: aldermoor
+  key: folk_074_trade
+  value: smith
+  why: Isolde of Thornhold plies their trade in the Shoals
+- project: aldermoor
+  key: folk_075_trade
+  value: miller
+  why: Bryn of Grimsgate plies their trade in the Weald
+- project: aldermoor
+  key: folk_076_trade
+  value: smith
+  why: Hale of Thornhold plies their trade in the Dunes
+- project: aldermoor
+  key: folk_077_trade
+  value: hedge knight
+  why: Rook of Sunspear plies their trade in the Shoals
+- project: aldermoor
+  key: folk_078_trade
+  value: fisher
+  why: Rook of Grimsgate plies their trade in the Reach
+- project: aldermoor
+  key: folk_079_trade
+  value: chandler
+  why: Quill of Duskwater plies their trade in the Weald
+- project: aldermoor
+  key: folk_080_trade
+  value: chandler
+  why: Hale of Thornhold plies their trade in the Reach
+- project: aldermoor
+  key: folk_081_trade
+  value: ferrier
+  why: Rook of Duskwater plies their trade in the Weald
+- project: aldermoor
+  key: folk_082_trade
+  value: chandler
+  why: Finn of Grimsgate plies their trade in the Shoals
+- project: aldermoor
+  key: folk_083_trade
+  value: miller
+  why: Joss of Sunspear plies their trade in the Weald
+- project: aldermoor
+  key: folk_084_trade
+  value: septon
+  why: Tibb of Thornhold plies their trade in the Shoals
+- project: aldermoor
+  key: folk_085_trade
+  value: septon
+  why: Ulf of Sunspear plies their trade in the Weald
+- project: aldermoor
+  key: folk_086_trade
+  value: cooper
+  why: Kit of Duskwater plies their trade in the Shoals
+- project: aldermoor
+  key: folk_087_trade
+  value: ferrier
+  why: Ella of Thornhold plies their trade in the Dunes
+- project: aldermoor
+  key: folk_088_trade
+  value: ferrier
+  why: Nell of Sunspear plies their trade in the Dunes
+- project: aldermoor
+  key: folk_089_trade
+  value: cooper
+  why: Tibb of Sunspear plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_090_trade
+  value: miller
+  why: Joss of Thornhold plies their trade in the Weald
+- project: aldermoor
+  key: folk_091_trade
+  value: cooper
+  why: Tibb of Thornhold plies their trade in the Shoals
+- project: aldermoor
+  key: folk_092_trade
+  value: ferrier
+  why: Petra of Highmere plies their trade in the Weald
+- project: aldermoor
+  key: folk_093_trade
+  value: chandler
+  why: Ulf of Duskwater plies their trade in the Shoals
+- project: aldermoor
+  key: folk_094_trade
+  value: chandler
+  why: Lyra of Duskwater plies their trade in the Reach
+- project: aldermoor
+  key: folk_095_trade
+  value: smith
+  why: Kit of Grimsgate plies their trade in the Weald
+- project: aldermoor
+  key: folk_096_trade
+  value: cooper
+  why: Quill of Sunspear plies their trade in the Dunes
+- project: aldermoor
+  key: folk_097_trade
+  value: smith
+  why: Osric of Thornhold plies their trade in the Weald
+- project: aldermoor
+  key: folk_098_trade
+  value: fisher
+  why: Tibb of Duskwater plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_099_trade
+  value: ferrier
+  why: Petra of Sunspear plies their trade in the Weald
+- project: aldermoor
+  key: folk_100_trade
+  value: septon
+  why: Hale of Thornhold plies their trade in the Weald
+- project: aldermoor
+  key: folk_101_trade
+  value: septon
+  why: Senna of Grimsgate plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_102_trade
+  value: chandler
+  why: Ella of Grimsgate plies their trade in the Dunes
+- project: aldermoor
+  key: folk_103_trade
+  value: smith
+  why: Senna of Thornhold plies their trade in the Reach
+- project: aldermoor
+  key: folk_104_trade
+  value: hedge knight
+  why: Petra of Sunspear plies their trade in the Dunes
+- project: aldermoor
+  key: folk_105_trade
+  value: fisher
+  why: Quill of Grimsgate plies their trade in the Weald
+- project: aldermoor
+  key: folk_106_trade
+  value: cooper
+  why: Finn of Sunspear plies their trade in the Dunes
+- project: aldermoor
+  key: folk_107_trade
+  value: ferrier
+  why: Hale of Grimsgate plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_108_trade
+  value: miller
+  why: Rook of Grimsgate plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_109_trade
+  value: smith
+  why: Nell of Grimsgate plies their trade in the Weald
+- project: aldermoor
+  key: folk_110_trade
+  value: chandler
+  why: Dax of Highmere plies their trade in the Shoals
+- project: aldermoor
+  key: folk_111_trade
+  value: chandler
+  why: Kit of Highmere plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_112_trade
+  value: septon
+  why: Mabon of Highmere plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_113_trade
+  value: hedge knight
+  why: Cora of Thornhold plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_114_trade
+  value: septon
+  why: Osric of Grimsgate plies their trade in the Reach
+- project: aldermoor
+  key: folk_115_trade
+  value: chandler
+  why: Hale of Thornhold plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_116_trade
+  value: hedge knight
+  why: Joss of Thornhold plies their trade in the Ashfen
+- project: aldermoor
+  key: folk_117_trade
+  value: ferrier
+  why: Rook of Thornhold plies their trade in the Dunes
+- project: aldermoor
+  key: folk_118_trade
+  value: smith
+  why: Ella of Grimsgate plies their trade in the Shoals
+- project: aldermoor
+  key: folk_119_trade
+  value: septon
+  why: Dax of Thornhold plies their trade in the Reach

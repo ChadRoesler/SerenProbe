@@ -1,0 +1,51 @@
+questions:
+- asks: loci
+  query: which services depend on auth?
+  expect_key:
+  - helix/gateway_depends_on_auth
+  - helix/billing_depends_on_auth
+  - helix/notify_depends_on_auth
+- asks: loci
+  query: what does the gateway depend on?
+  expect_key:
+  - helix/gateway_depends_on_auth
+  - helix/gateway_depends_on_search
+- asks: loci
+  query: which services does billing rely on?
+  expect_key:
+  - helix/billing_depends_on_auth
+  - helix/billing_depends_on_ledger
+- asks: memory
+  query: why were users suddenly unable to log in?
+  expect_ref:
+  - inc-auth-clockskew
+  expect_content:
+  - clock-skew
+  - leeway
+- asks: memory
+  query: how did we stop the cascading failure between services?
+  expect_ref:
+  - inc-gateway-cascade
+  expect_content:
+  - circuit breaker
+  - 2s budget
+- asks: corpus
+  query: if auth goes down, what else breaks?
+  expect_content:
+  - gateway calls auth
+  - billing calls auth
+  - notify calls auth
+- asks: corpus
+  query: give me the blast radius and history of the auth service
+  expect_content:
+  - Rust
+  - team-atlas
+  - '8091'
+  - clock-skew
+  - circuit breaker
+- asks: loci
+  query: what port does the vaporize service listen on?
+  expect_empty: true
+- asks: corpus
+  query: brief me on the quantum-teleport service
+  expect_empty: true

@@ -1,0 +1,49 @@
+# Auto-generated eval topology for 'loc_sunkentemple' (D&D realm).
+ProbeConfig:
+  StartingPort: 7900
+  DefaultQuestions: [datasets/dnd/loc_sunkentemple/questions.yaml]
+  Memory:
+    MemoryCount: 1
+    MemoryConfigs:
+      - Name: loc_sunkentemple-mem
+        Port: 7900
+        Seed: [datasets/dnd/loc_sunkentemple/memory.yaml]
+        Questions: [datasets/dnd/loc_sunkentemple/questions.yaml]
+  Loci:
+    LociCount: 2
+    LociConfigs:
+      - Name: loc_sunkentemple-loci-v
+        Port: 7901
+        Flags: [vector]
+        Seed: [datasets/dnd/loc_sunkentemple/loci.yaml]
+        Questions: [datasets/dnd/loc_sunkentemple/questions.yaml]
+      - Name: loc_sunkentemple-loci-nv
+        Port: 7902
+        Seed: [datasets/dnd/loc_sunkentemple/loci.yaml]
+        Questions: [datasets/dnd/loc_sunkentemple/questions.yaml]
+  Corpus:
+    CorpusRegrades:
+      - Name: hop-sweep
+        hops: [1, 2, 3]
+      - Name: rrf-sweep
+        rrf_k: [30, 60, 100]
+      - Name: floor-sweep
+        loci_floor: [0.0, 0.1, 0.3]
+      - Name: weight-sweep
+        loci_weight: [0.3, 0.5, 0.7, 1.0]
+      - Name: packet-sweep
+        n_results: [10, 15, 20, 30]
+    CorpusCount: 2
+    CorpusConfigs:
+      - Name: loc_sunkentemple-scc-v
+        Port: 7904
+        Stores:
+          - Store: loc_sunkentemple-loci-v
+          - Store: loc_sunkentemple-mem
+        Questions: [datasets/dnd/loc_sunkentemple/questions.yaml]
+      - Name: loc_sunkentemple-scc-nv
+        Port: 7903
+        Stores:
+          - Store: loc_sunkentemple-loci-nv
+          - Store: loc_sunkentemple-mem
+        Questions: [datasets/dnd/loc_sunkentemple/questions.yaml]

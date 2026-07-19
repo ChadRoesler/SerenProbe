@@ -1,0 +1,1100 @@
+- project: lattice
+  key: weave_module
+  value: lattice.core
+  why: defining module
+- project: lattice
+  key: weave_returns
+  value: Fabric
+  why: return type
+- project: lattice
+  key: weave_since
+  value: '0.4'
+  why: introduced in version
+- project: lattice
+  key: weave_arg
+  value: 'nodes: list'
+  why: primary argument
+- project: lattice
+  key: weave_raises
+  value: CycleError
+  why: raises on failure
+- project: lattice
+  key: pin_module
+  value: lattice.core
+  why: defining module
+- project: lattice
+  key: pin_returns
+  value: Handle
+  why: return type
+- project: lattice
+  key: pin_since
+  value: '0.2'
+  why: introduced in version
+- project: lattice
+  key: pin_arg
+  value: 'key: str'
+  why: primary argument
+- project: lattice
+  key: pin_raises
+  value: PinError
+  why: raises on failure
+- project: lattice
+  key: collapse_module
+  value: lattice.reduce
+  why: defining module
+- project: lattice
+  key: collapse_returns
+  value: Result
+  why: return type
+- project: lattice
+  key: collapse_since
+  value: '0.6'
+  why: introduced in version
+- project: lattice
+  key: collapse_arg
+  value: 'fabric: Fabric'
+  why: primary argument
+- project: lattice
+  key: collapse_raises
+  value: EmptyError
+  why: raises on failure
+- project: lattice
+  key: shard_module
+  value: lattice.dist
+  why: defining module
+- project: lattice
+  key: shard_returns
+  value: list
+  why: return type
+- project: lattice
+  key: shard_since
+  value: '0.5'
+  why: introduced in version
+- project: lattice
+  key: shard_arg
+  value: 'n: int'
+  why: primary argument
+- project: lattice
+  key: shard_raises
+  value: ValueError
+  why: raises on failure
+- project: lattice
+  key: hydrate_module
+  value: lattice.io
+  why: defining module
+- project: lattice
+  key: hydrate_returns
+  value: Fabric
+  why: return type
+- project: lattice
+  key: hydrate_since
+  value: '0.3'
+  why: introduced in version
+- project: lattice
+  key: hydrate_arg
+  value: 'path: str'
+  why: primary argument
+- project: lattice
+  key: hydrate_raises
+  value: SchemaError
+  why: raises on failure
+- project: lattice
+  key: cfg_max_nodes_default
+  value: '1024'
+  why: default for lattice.max_nodes
+- project: lattice
+  key: cfg_max_nodes_type
+  value: int
+  why: type of lattice.max_nodes
+- project: lattice
+  key: cfg_cache_dir_default
+  value: ~/.lattice
+  why: default for lattice.cache_dir
+- project: lattice
+  key: cfg_cache_dir_type
+  value: path
+  why: type of lattice.cache_dir
+- project: lattice
+  key: cfg_strict_default
+  value: 'false'
+  why: default for lattice.strict
+- project: lattice
+  key: cfg_strict_type
+  value: bool
+  why: type of lattice.strict
+- project: lattice
+  key: cfg_shard_count_default
+  value: '4'
+  why: default for lattice.shard_count
+- project: lattice
+  key: cfg_shard_count_type
+  value: int
+  why: type of lattice.shard_count
+- project: lattice
+  key: cfg_embedder_default
+  value: minilm
+  why: default for lattice.embedder
+- project: lattice
+  key: cfg_embedder_type
+  value: str
+  why: type of lattice.embedder
+- project: lattice
+  key: map0_module
+  value: lattice.util
+  why: module of map0()
+- project: lattice
+  key: map0_returns
+  value: bytes
+  why: return type of map0()
+- project: lattice
+  key: fold1_module
+  value: lattice.net
+  why: module of fold1()
+- project: lattice
+  key: fold1_returns
+  value: list
+  why: return type of fold1()
+- project: lattice
+  key: join2_module
+  value: lattice.net
+  why: module of join2()
+- project: lattice
+  key: join2_returns
+  value: dict
+  why: return type of join2()
+- project: lattice
+  key: split3_module
+  value: lattice.util
+  why: module of split3()
+- project: lattice
+  key: split3_returns
+  value: Fabric
+  why: return type of split3()
+- project: lattice
+  key: prune4_module
+  value: lattice.net
+  why: module of prune4()
+- project: lattice
+  key: prune4_returns
+  value: Fabric
+  why: return type of prune4()
+- project: lattice
+  key: graft5_module
+  value: lattice.dist
+  why: module of graft5()
+- project: lattice
+  key: graft5_returns
+  value: None
+  why: return type of graft5()
+- project: lattice
+  key: flush6_module
+  value: lattice.core
+  why: module of flush6()
+- project: lattice
+  key: flush6_returns
+  value: Fabric
+  why: return type of flush6()
+- project: lattice
+  key: seal7_module
+  value: lattice.reduce
+  why: module of seal7()
+- project: lattice
+  key: seal7_returns
+  value: Result
+  why: return type of seal7()
+- project: lattice
+  key: probe8_module
+  value: lattice.core
+  why: module of probe8()
+- project: lattice
+  key: probe8_returns
+  value: Handle
+  why: return type of probe8()
+- project: lattice
+  key: trace9_module
+  value: lattice.net
+  why: module of trace9()
+- project: lattice
+  key: trace9_returns
+  value: Result
+  why: return type of trace9()
+- project: lattice
+  key: bind10_module
+  value: lattice.core
+  why: module of bind10()
+- project: lattice
+  key: bind10_returns
+  value: Fabric
+  why: return type of bind10()
+- project: lattice
+  key: lift11_module
+  value: lattice.core
+  why: module of lift11()
+- project: lattice
+  key: lift11_returns
+  value: None
+  why: return type of lift11()
+- project: lattice
+  key: drop12_module
+  value: lattice.net
+  why: module of drop12()
+- project: lattice
+  key: drop12_returns
+  value: bytes
+  why: return type of drop12()
+- project: lattice
+  key: merge13_module
+  value: lattice.util
+  why: module of merge13()
+- project: lattice
+  key: merge13_returns
+  value: Fabric
+  why: return type of merge13()
+- project: lattice
+  key: zip14_module
+  value: lattice.net
+  why: module of zip14()
+- project: lattice
+  key: zip14_returns
+  value: int
+  why: return type of zip14()
+- project: lattice
+  key: scan15_module
+  value: lattice.net
+  why: module of scan15()
+- project: lattice
+  key: scan15_returns
+  value: Fabric
+  why: return type of scan15()
+- project: lattice
+  key: walk16_module
+  value: lattice.core
+  why: module of walk16()
+- project: lattice
+  key: walk16_returns
+  value: list
+  why: return type of walk16()
+- project: lattice
+  key: emit17_module
+  value: lattice.io
+  why: module of emit17()
+- project: lattice
+  key: emit17_returns
+  value: dict
+  why: return type of emit17()
+- project: lattice
+  key: sink18_module
+  value: lattice.reduce
+  why: module of sink18()
+- project: lattice
+  key: sink18_returns
+  value: Result
+  why: return type of sink18()
+- project: lattice
+  key: tap19_module
+  value: lattice.reduce
+  why: module of tap19()
+- project: lattice
+  key: tap19_returns
+  value: bytes
+  why: return type of tap19()
+- project: lattice
+  key: map20_module
+  value: lattice.util
+  why: module of map20()
+- project: lattice
+  key: map20_returns
+  value: list
+  why: return type of map20()
+- project: lattice
+  key: fold21_module
+  value: lattice.core
+  why: module of fold21()
+- project: lattice
+  key: fold21_returns
+  value: None
+  why: return type of fold21()
+- project: lattice
+  key: join22_module
+  value: lattice.util
+  why: module of join22()
+- project: lattice
+  key: join22_returns
+  value: dict
+  why: return type of join22()
+- project: lattice
+  key: split23_module
+  value: lattice.reduce
+  why: module of split23()
+- project: lattice
+  key: split23_returns
+  value: Fabric
+  why: return type of split23()
+- project: lattice
+  key: prune24_module
+  value: lattice.core
+  why: module of prune24()
+- project: lattice
+  key: prune24_returns
+  value: Handle
+  why: return type of prune24()
+- project: lattice
+  key: graft25_module
+  value: lattice.net
+  why: module of graft25()
+- project: lattice
+  key: graft25_returns
+  value: Fabric
+  why: return type of graft25()
+- project: lattice
+  key: flush26_module
+  value: lattice.net
+  why: module of flush26()
+- project: lattice
+  key: flush26_returns
+  value: bytes
+  why: return type of flush26()
+- project: lattice
+  key: seal27_module
+  value: lattice.io
+  why: module of seal27()
+- project: lattice
+  key: seal27_returns
+  value: None
+  why: return type of seal27()
+- project: lattice
+  key: probe28_module
+  value: lattice.core
+  why: module of probe28()
+- project: lattice
+  key: probe28_returns
+  value: Result
+  why: return type of probe28()
+- project: lattice
+  key: trace29_module
+  value: lattice.reduce
+  why: module of trace29()
+- project: lattice
+  key: trace29_returns
+  value: None
+  why: return type of trace29()
+- project: lattice
+  key: bind30_module
+  value: lattice.core
+  why: module of bind30()
+- project: lattice
+  key: bind30_returns
+  value: None
+  why: return type of bind30()
+- project: lattice
+  key: lift31_module
+  value: lattice.core
+  why: module of lift31()
+- project: lattice
+  key: lift31_returns
+  value: None
+  why: return type of lift31()
+- project: lattice
+  key: drop32_module
+  value: lattice.io
+  why: module of drop32()
+- project: lattice
+  key: drop32_returns
+  value: Fabric
+  why: return type of drop32()
+- project: lattice
+  key: merge33_module
+  value: lattice.io
+  why: module of merge33()
+- project: lattice
+  key: merge33_returns
+  value: bytes
+  why: return type of merge33()
+- project: lattice
+  key: zip34_module
+  value: lattice.reduce
+  why: module of zip34()
+- project: lattice
+  key: zip34_returns
+  value: Handle
+  why: return type of zip34()
+- project: lattice
+  key: scan35_module
+  value: lattice.io
+  why: module of scan35()
+- project: lattice
+  key: scan35_returns
+  value: bytes
+  why: return type of scan35()
+- project: lattice
+  key: walk36_module
+  value: lattice.util
+  why: module of walk36()
+- project: lattice
+  key: walk36_returns
+  value: Handle
+  why: return type of walk36()
+- project: lattice
+  key: emit37_module
+  value: lattice.net
+  why: module of emit37()
+- project: lattice
+  key: emit37_returns
+  value: Result
+  why: return type of emit37()
+- project: lattice
+  key: sink38_module
+  value: lattice.core
+  why: module of sink38()
+- project: lattice
+  key: sink38_returns
+  value: Result
+  why: return type of sink38()
+- project: lattice
+  key: tap39_module
+  value: lattice.util
+  why: module of tap39()
+- project: lattice
+  key: tap39_returns
+  value: list
+  why: return type of tap39()
+- project: lattice
+  key: map40_module
+  value: lattice.dist
+  why: module of map40()
+- project: lattice
+  key: map40_returns
+  value: bytes
+  why: return type of map40()
+- project: lattice
+  key: fold41_module
+  value: lattice.net
+  why: module of fold41()
+- project: lattice
+  key: fold41_returns
+  value: Fabric
+  why: return type of fold41()
+- project: lattice
+  key: join42_module
+  value: lattice.net
+  why: module of join42()
+- project: lattice
+  key: join42_returns
+  value: int
+  why: return type of join42()
+- project: lattice
+  key: split43_module
+  value: lattice.dist
+  why: module of split43()
+- project: lattice
+  key: split43_returns
+  value: Handle
+  why: return type of split43()
+- project: lattice
+  key: prune44_module
+  value: lattice.util
+  why: module of prune44()
+- project: lattice
+  key: prune44_returns
+  value: dict
+  why: return type of prune44()
+- project: lattice
+  key: graft45_module
+  value: lattice.util
+  why: module of graft45()
+- project: lattice
+  key: graft45_returns
+  value: list
+  why: return type of graft45()
+- project: lattice
+  key: flush46_module
+  value: lattice.net
+  why: module of flush46()
+- project: lattice
+  key: flush46_returns
+  value: None
+  why: return type of flush46()
+- project: lattice
+  key: seal47_module
+  value: lattice.reduce
+  why: module of seal47()
+- project: lattice
+  key: seal47_returns
+  value: dict
+  why: return type of seal47()
+- project: lattice
+  key: probe48_module
+  value: lattice.net
+  why: module of probe48()
+- project: lattice
+  key: probe48_returns
+  value: list
+  why: return type of probe48()
+- project: lattice
+  key: trace49_module
+  value: lattice.core
+  why: module of trace49()
+- project: lattice
+  key: trace49_returns
+  value: list
+  why: return type of trace49()
+- project: lattice
+  key: bind50_module
+  value: lattice.util
+  why: module of bind50()
+- project: lattice
+  key: bind50_returns
+  value: bytes
+  why: return type of bind50()
+- project: lattice
+  key: lift51_module
+  value: lattice.reduce
+  why: module of lift51()
+- project: lattice
+  key: lift51_returns
+  value: None
+  why: return type of lift51()
+- project: lattice
+  key: drop52_module
+  value: lattice.core
+  why: module of drop52()
+- project: lattice
+  key: drop52_returns
+  value: bytes
+  why: return type of drop52()
+- project: lattice
+  key: merge53_module
+  value: lattice.util
+  why: module of merge53()
+- project: lattice
+  key: merge53_returns
+  value: Handle
+  why: return type of merge53()
+- project: lattice
+  key: zip54_module
+  value: lattice.util
+  why: module of zip54()
+- project: lattice
+  key: zip54_returns
+  value: int
+  why: return type of zip54()
+- project: lattice
+  key: scan55_module
+  value: lattice.io
+  why: module of scan55()
+- project: lattice
+  key: scan55_returns
+  value: Result
+  why: return type of scan55()
+- project: lattice
+  key: walk56_module
+  value: lattice.io
+  why: module of walk56()
+- project: lattice
+  key: walk56_returns
+  value: Result
+  why: return type of walk56()
+- project: lattice
+  key: emit57_module
+  value: lattice.core
+  why: module of emit57()
+- project: lattice
+  key: emit57_returns
+  value: bytes
+  why: return type of emit57()
+- project: lattice
+  key: sink58_module
+  value: lattice.core
+  why: module of sink58()
+- project: lattice
+  key: sink58_returns
+  value: dict
+  why: return type of sink58()
+- project: lattice
+  key: tap59_module
+  value: lattice.io
+  why: module of tap59()
+- project: lattice
+  key: tap59_returns
+  value: bytes
+  why: return type of tap59()
+- project: lattice
+  key: map60_module
+  value: lattice.dist
+  why: module of map60()
+- project: lattice
+  key: map60_returns
+  value: int
+  why: return type of map60()
+- project: lattice
+  key: fold61_module
+  value: lattice.io
+  why: module of fold61()
+- project: lattice
+  key: fold61_returns
+  value: Handle
+  why: return type of fold61()
+- project: lattice
+  key: join62_module
+  value: lattice.io
+  why: module of join62()
+- project: lattice
+  key: join62_returns
+  value: dict
+  why: return type of join62()
+- project: lattice
+  key: split63_module
+  value: lattice.core
+  why: module of split63()
+- project: lattice
+  key: split63_returns
+  value: Fabric
+  why: return type of split63()
+- project: lattice
+  key: prune64_module
+  value: lattice.io
+  why: module of prune64()
+- project: lattice
+  key: prune64_returns
+  value: None
+  why: return type of prune64()
+- project: lattice
+  key: graft65_module
+  value: lattice.reduce
+  why: module of graft65()
+- project: lattice
+  key: graft65_returns
+  value: list
+  why: return type of graft65()
+- project: lattice
+  key: flush66_module
+  value: lattice.reduce
+  why: module of flush66()
+- project: lattice
+  key: flush66_returns
+  value: Fabric
+  why: return type of flush66()
+- project: lattice
+  key: seal67_module
+  value: lattice.io
+  why: module of seal67()
+- project: lattice
+  key: seal67_returns
+  value: Fabric
+  why: return type of seal67()
+- project: lattice
+  key: probe68_module
+  value: lattice.core
+  why: module of probe68()
+- project: lattice
+  key: probe68_returns
+  value: Handle
+  why: return type of probe68()
+- project: lattice
+  key: trace69_module
+  value: lattice.core
+  why: module of trace69()
+- project: lattice
+  key: trace69_returns
+  value: dict
+  why: return type of trace69()
+- project: lattice
+  key: bind70_module
+  value: lattice.util
+  why: module of bind70()
+- project: lattice
+  key: bind70_returns
+  value: dict
+  why: return type of bind70()
+- project: lattice
+  key: lift71_module
+  value: lattice.dist
+  why: module of lift71()
+- project: lattice
+  key: lift71_returns
+  value: list
+  why: return type of lift71()
+- project: lattice
+  key: drop72_module
+  value: lattice.util
+  why: module of drop72()
+- project: lattice
+  key: drop72_returns
+  value: None
+  why: return type of drop72()
+- project: lattice
+  key: merge73_module
+  value: lattice.util
+  why: module of merge73()
+- project: lattice
+  key: merge73_returns
+  value: bytes
+  why: return type of merge73()
+- project: lattice
+  key: zip74_module
+  value: lattice.reduce
+  why: module of zip74()
+- project: lattice
+  key: zip74_returns
+  value: Result
+  why: return type of zip74()
+- project: lattice
+  key: scan75_module
+  value: lattice.util
+  why: module of scan75()
+- project: lattice
+  key: scan75_returns
+  value: dict
+  why: return type of scan75()
+- project: lattice
+  key: walk76_module
+  value: lattice.util
+  why: module of walk76()
+- project: lattice
+  key: walk76_returns
+  value: Fabric
+  why: return type of walk76()
+- project: lattice
+  key: emit77_module
+  value: lattice.util
+  why: module of emit77()
+- project: lattice
+  key: emit77_returns
+  value: None
+  why: return type of emit77()
+- project: lattice
+  key: sink78_module
+  value: lattice.core
+  why: module of sink78()
+- project: lattice
+  key: sink78_returns
+  value: None
+  why: return type of sink78()
+- project: lattice
+  key: tap79_module
+  value: lattice.core
+  why: module of tap79()
+- project: lattice
+  key: tap79_returns
+  value: dict
+  why: return type of tap79()
+- project: lattice
+  key: map80_module
+  value: lattice.core
+  why: module of map80()
+- project: lattice
+  key: map80_returns
+  value: Handle
+  why: return type of map80()
+- project: lattice
+  key: fold81_module
+  value: lattice.reduce
+  why: module of fold81()
+- project: lattice
+  key: fold81_returns
+  value: list
+  why: return type of fold81()
+- project: lattice
+  key: join82_module
+  value: lattice.util
+  why: module of join82()
+- project: lattice
+  key: join82_returns
+  value: bytes
+  why: return type of join82()
+- project: lattice
+  key: split83_module
+  value: lattice.core
+  why: module of split83()
+- project: lattice
+  key: split83_returns
+  value: dict
+  why: return type of split83()
+- project: lattice
+  key: prune84_module
+  value: lattice.io
+  why: module of prune84()
+- project: lattice
+  key: prune84_returns
+  value: Handle
+  why: return type of prune84()
+- project: lattice
+  key: graft85_module
+  value: lattice.reduce
+  why: module of graft85()
+- project: lattice
+  key: graft85_returns
+  value: dict
+  why: return type of graft85()
+- project: lattice
+  key: flush86_module
+  value: lattice.net
+  why: module of flush86()
+- project: lattice
+  key: flush86_returns
+  value: dict
+  why: return type of flush86()
+- project: lattice
+  key: seal87_module
+  value: lattice.util
+  why: module of seal87()
+- project: lattice
+  key: seal87_returns
+  value: bytes
+  why: return type of seal87()
+- project: lattice
+  key: probe88_module
+  value: lattice.reduce
+  why: module of probe88()
+- project: lattice
+  key: probe88_returns
+  value: None
+  why: return type of probe88()
+- project: lattice
+  key: trace89_module
+  value: lattice.net
+  why: module of trace89()
+- project: lattice
+  key: trace89_returns
+  value: Fabric
+  why: return type of trace89()
+- project: lattice
+  key: bind90_module
+  value: lattice.net
+  why: module of bind90()
+- project: lattice
+  key: bind90_returns
+  value: Fabric
+  why: return type of bind90()
+- project: lattice
+  key: lift91_module
+  value: lattice.net
+  why: module of lift91()
+- project: lattice
+  key: lift91_returns
+  value: list
+  why: return type of lift91()
+- project: lattice
+  key: drop92_module
+  value: lattice.io
+  why: module of drop92()
+- project: lattice
+  key: drop92_returns
+  value: int
+  why: return type of drop92()
+- project: lattice
+  key: merge93_module
+  value: lattice.reduce
+  why: module of merge93()
+- project: lattice
+  key: merge93_returns
+  value: list
+  why: return type of merge93()
+- project: lattice
+  key: zip94_module
+  value: lattice.io
+  why: module of zip94()
+- project: lattice
+  key: zip94_returns
+  value: int
+  why: return type of zip94()
+- project: lattice
+  key: scan95_module
+  value: lattice.dist
+  why: module of scan95()
+- project: lattice
+  key: scan95_returns
+  value: Fabric
+  why: return type of scan95()
+- project: lattice
+  key: walk96_module
+  value: lattice.reduce
+  why: module of walk96()
+- project: lattice
+  key: walk96_returns
+  value: Result
+  why: return type of walk96()
+- project: lattice
+  key: emit97_module
+  value: lattice.dist
+  why: module of emit97()
+- project: lattice
+  key: emit97_returns
+  value: list
+  why: return type of emit97()
+- project: lattice
+  key: sink98_module
+  value: lattice.net
+  why: module of sink98()
+- project: lattice
+  key: sink98_returns
+  value: int
+  why: return type of sink98()
+- project: lattice
+  key: tap99_module
+  value: lattice.net
+  why: module of tap99()
+- project: lattice
+  key: tap99_returns
+  value: Fabric
+  why: return type of tap99()
+- project: lattice
+  key: map100_module
+  value: lattice.io
+  why: module of map100()
+- project: lattice
+  key: map100_returns
+  value: list
+  why: return type of map100()
+- project: lattice
+  key: fold101_module
+  value: lattice.io
+  why: module of fold101()
+- project: lattice
+  key: fold101_returns
+  value: list
+  why: return type of fold101()
+- project: lattice
+  key: join102_module
+  value: lattice.dist
+  why: module of join102()
+- project: lattice
+  key: join102_returns
+  value: Result
+  why: return type of join102()
+- project: lattice
+  key: split103_module
+  value: lattice.io
+  why: module of split103()
+- project: lattice
+  key: split103_returns
+  value: Handle
+  why: return type of split103()
+- project: lattice
+  key: prune104_module
+  value: lattice.core
+  why: module of prune104()
+- project: lattice
+  key: prune104_returns
+  value: dict
+  why: return type of prune104()
+- project: lattice
+  key: graft105_module
+  value: lattice.dist
+  why: module of graft105()
+- project: lattice
+  key: graft105_returns
+  value: dict
+  why: return type of graft105()
+- project: lattice
+  key: flush106_module
+  value: lattice.dist
+  why: module of flush106()
+- project: lattice
+  key: flush106_returns
+  value: int
+  why: return type of flush106()
+- project: lattice
+  key: seal107_module
+  value: lattice.io
+  why: module of seal107()
+- project: lattice
+  key: seal107_returns
+  value: bytes
+  why: return type of seal107()
+- project: lattice
+  key: probe108_module
+  value: lattice.io
+  why: module of probe108()
+- project: lattice
+  key: probe108_returns
+  value: Handle
+  why: return type of probe108()
+- project: lattice
+  key: trace109_module
+  value: lattice.io
+  why: module of trace109()
+- project: lattice
+  key: trace109_returns
+  value: dict
+  why: return type of trace109()
+- project: lattice
+  key: bind110_module
+  value: lattice.net
+  why: module of bind110()
+- project: lattice
+  key: bind110_returns
+  value: int
+  why: return type of bind110()
+- project: lattice
+  key: lift111_module
+  value: lattice.net
+  why: module of lift111()
+- project: lattice
+  key: lift111_returns
+  value: Result
+  why: return type of lift111()
+- project: lattice
+  key: drop112_module
+  value: lattice.util
+  why: module of drop112()
+- project: lattice
+  key: drop112_returns
+  value: None
+  why: return type of drop112()
+- project: lattice
+  key: merge113_module
+  value: lattice.io
+  why: module of merge113()
+- project: lattice
+  key: merge113_returns
+  value: list
+  why: return type of merge113()
+- project: lattice
+  key: zip114_module
+  value: lattice.util
+  why: module of zip114()
+- project: lattice
+  key: zip114_returns
+  value: None
+  why: return type of zip114()
+- project: lattice
+  key: scan115_module
+  value: lattice.net
+  why: module of scan115()
+- project: lattice
+  key: scan115_returns
+  value: int
+  why: return type of scan115()
+- project: lattice
+  key: walk116_module
+  value: lattice.io
+  why: module of walk116()
+- project: lattice
+  key: walk116_returns
+  value: Result
+  why: return type of walk116()
+- project: lattice
+  key: emit117_module
+  value: lattice.io
+  why: module of emit117()
+- project: lattice
+  key: emit117_returns
+  value: Result
+  why: return type of emit117()
+- project: lattice
+  key: sink118_module
+  value: lattice.dist
+  why: module of sink118()
+- project: lattice
+  key: sink118_returns
+  value: int
+  why: return type of sink118()
+- project: lattice
+  key: tap119_module
+  value: lattice.util
+  why: module of tap119()
+- project: lattice
+  key: tap119_returns
+  value: bytes
+  why: return type of tap119()

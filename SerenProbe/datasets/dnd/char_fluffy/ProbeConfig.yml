@@ -1,0 +1,49 @@
+# Auto-generated eval topology for 'char_fluffy' (D&D realm).
+ProbeConfig:
+  StartingPort: 7760
+  DefaultQuestions: [datasets/dnd/char_fluffy/questions.yaml]
+  Memory:
+    MemoryCount: 1
+    MemoryConfigs:
+      - Name: char_fluffy-mem
+        Port: 7760
+        Seed: [datasets/dnd/char_fluffy/memory.yaml]
+        Questions: [datasets/dnd/char_fluffy/questions.yaml]
+  Loci:
+    LociCount: 2
+    LociConfigs:
+      - Name: char_fluffy-loci-v
+        Port: 7761
+        Flags: [vector]
+        Seed: [datasets/dnd/char_fluffy/loci.yaml]
+        Questions: [datasets/dnd/char_fluffy/questions.yaml]
+      - Name: char_fluffy-loci-nv
+        Port: 7762
+        Seed: [datasets/dnd/char_fluffy/loci.yaml]
+        Questions: [datasets/dnd/char_fluffy/questions.yaml]
+  Corpus:
+    CorpusRegrades:
+      - Name: hop-sweep
+        hops: [1, 2, 3]
+      - Name: rrf-sweep
+        rrf_k: [30, 60, 100]
+      - Name: floor-sweep
+        loci_floor: [0.0, 0.1, 0.3]
+      - Name: weight-sweep
+        loci_weight: [0.3, 0.5, 0.7, 1.0]
+      - Name: packet-sweep
+        n_results: [10, 15, 20, 30]
+    CorpusCount: 2
+    CorpusConfigs:
+      - Name: char_fluffy-scc-v
+        Port: 7764
+        Stores:
+          - Store: char_fluffy-loci-v
+          - Store: char_fluffy-mem
+        Questions: [datasets/dnd/char_fluffy/questions.yaml]
+      - Name: char_fluffy-scc-nv
+        Port: 7763
+        Stores:
+          - Store: char_fluffy-loci-nv
+          - Store: char_fluffy-mem
+        Questions: [datasets/dnd/char_fluffy/questions.yaml]

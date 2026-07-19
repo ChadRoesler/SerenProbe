@@ -1,0 +1,651 @@
+{
+  "poi": {
+    "id": 169,
+    "name": "Kulmokhall",
+    "type": "site",
+    "subtype": "tower",
+    "biome_id": 5,
+    "biome_name": "Forest",
+    "founded_year": 35,
+    "founded_season": "winter",
+    "population": 2612,
+    "is_capital": false,
+    "civ_id": 69
+  },
+  "context": {
+    "civ_name": "Turdurnaz",
+    "civ_alignment": "order",
+    "biome_name": "Forest",
+    "num_decades": 30,
+    "num_site_events": 3,
+    "num_same_civ_figures": 105,
+    "num_same_civ_sites": 20,
+    "num_civ_artifacts": 2,
+    "num_site_beasts": 2
+  },
+  "facts": {
+    "site_type": "tower",
+    "founded_year": "35",
+    "population": "2612",
+    "size_class": "tower",
+    "primary_material": "brick",
+    "industry": "enchanting",
+    "defenses": "spike trap",
+    "is_capital": "no",
+    "civ": "Turdurnaz",
+    "ruler": "Durmok",
+    "ruler_title": "Censor of Turdurnaz"
+  },
+  "memories": {
+    "long_term": {
+      "count": 30,
+      "items": [
+        {
+          "decade": "35s (The Frost Era, year 36)",
+          "year_range": [
+            35,
+            50
+          ],
+          "type": "foundation",
+          "memory": "In the beginning, was built by a mage who sought solitude above the clouds Shortly after, a new site was founded nearby: Kulmokhall. This was the start of its story.  Structure and hierarchy shaped every aspect of life.  The tower remained a beacon.",
+          "reflection": "The tower pierces the sky \u2014 a bridge between earth and the beyond.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "The Frost Era"
+        },
+        {
+          "decade": "50s (The Frost Era, year 51)",
+          "year_range": [
+            50,
+            66
+          ],
+          "type": "life_event",
+          "memory": "In the 50s (The Frost Era, year 51), the site felt worn and tired. During this time, a new wing was built at the base to house students and visitors It was a decade that broke its spirit.  The land was measured and accounted for.  The tower pierced the sky, a finger of stone pointing at fate.",
+          "reflection": "The tower stands alone, but it watches over everything.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "The Frost Era"
+        },
+        {
+          "decade": "66s (Age of Ashen, year 5)",
+          "year_range": [
+            66,
+            81
+          ],
+          "type": "life_event",
+          "memory": "In the 66s (Age of Ashen, year 5), the site felt sharp and dangerous. During this time, the tower was besieged by those who feared its power \u2014 it held That decade taught Turdurnaz that hope endures. Thrakkragvorn was active during this time.  Every stone had its place and every soul its duty.  The tower's light never faltered \u2014 a promise kept.",
+          "reflection": "From the peak, one can see the shape of the world.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "Age of Ashen"
+        },
+        {
+          "decade": "81s (Age of Ashen, year 20)",
+          "year_range": [
+            81,
+            97
+          ],
+          "type": "life_event",
+          "memory": "In the 81s (Age of Ashen, year 20), the site felt worn and tired. The site grew \u2014 a secondary tower was raised nearby to house additional works It was a decade that shaped the site. Zolbal was active during this time.  The law held firm through the seasons.  The tower was a sentinel against the darkness.",
+          "reflection": "Height brings perspective \u2014 from the top, the world looks different.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "Age of Ashen"
+        },
+        {
+          "decade": "97s (Age of Ashen, year 36)",
+          "year_range": [
+            97,
+            112
+          ],
+          "type": "life_event",
+          "memory": "The 97s (Age of Ashen, year 36) was a hard decade for Turdurnaz. During this time, the tower's library was expanded with tomes from distant lands That decade taught Turdurnaz that hope endures.  The machinery of society ran without pause.  The tower stood tall against the sky.",
+          "reflection": "Height brings perspective \u2014 from the top, the world looks different.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "Age of Ashen"
+        },
+        {
+          "decade": "112s (Age of Ashen, year 51)",
+          "year_range": [
+            112,
+            128
+          ],
+          "type": "life_event",
+          "memory": "The 112s (Age of Ashen, year 51) was a hard decade for Turdurnaz. The site grew \u2014 the tower was connected to a network of similar spires across the realm It was a decade that tested its limits.  Rules governed all \u2014 and all obeyed.  The tower watched over the land, unchanging and patient.",
+          "reflection": "The tower pierces the sky \u2014 a bridge between earth and the beyond.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "Age of Ashen"
+        },
+        {
+          "decade": "128s (The Golden Times, year 5)",
+          "year_range": [
+            128,
+            143
+          ],
+          "type": "life_event",
+          "memory": "The 128s (The Golden Times, year 5) was a dark decade for Turdurnaz. During this time, a hidden chamber was discovered deep beneath the tower The silences of that time linger still.  Order and discipline prevailed.  The tower stood alone, proud and unyielding.",
+          "reflection": "The tower pierces the sky \u2014 a bridge between earth and the beyond.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "The Golden Times"
+        },
+        {
+          "decade": "143s (The Golden Times, year 20)",
+          "year_range": [
+            143,
+            159
+          ],
+          "type": "life_event",
+          "memory": "The 143s (The Golden Times, year 20) was a prosperous decade for Turdurnaz. During this time, the tower was wreathed in strange mists that lasted a full season It was a decade that made it what it is. Vorngum was active during this time.  Precision and control defined those years.  The tower's peak scraped the clouds \u2014 a symbol of vigilance.",
+          "reflection": "The tower pierces the sky \u2014 a bridge between earth and the beyond.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "The Golden Times"
+        },
+        {
+          "decade": "159s (The Golden Times, year 36)",
+          "year_range": [
+            159,
+            174
+          ],
+          "type": "life_event",
+          "memory": "In the 159s (The Golden Times, year 36), the site felt sharp and dangerous. During this time, the tower became a sanctuary for refugees seeking protection That decade taught Turdurnaz that time changes everything.  Every stone had its place and every soul its duty.  The tower's peak scraped the clouds \u2014 a symbol of vigilance.",
+          "reflection": "The spire holds secrets that only the heights can reveal.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "The Golden Times"
+        },
+        {
+          "decade": "174s (The Golden Times, year 51)",
+          "year_range": [
+            174,
+            190
+          ],
+          "type": "life_event",
+          "memory": "The 174s (The Golden Times, year 51) was a hard decade for Turdurnaz. During this time, the tower's top was struck by lightning \u2014 the damage was repaired with magic It was a decade that showed the truth. Ornbazrak was active during this time.  Rules governed all \u2014 and all obeyed.  The tower remained a beacon.",
+          "reflection": "Height brings perspective \u2014 from the top, the world looks different.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "The Golden Times"
+        },
+        {
+          "decade": "190s (The Pearl Years, year 5)",
+          "year_range": [
+            190,
+            205
+          ],
+          "type": "life_event",
+          "memory": "Looking back at the 190s (The Pearl Years, year 5), it stands out \u2014 the wind carried strange news. The most poignant moment was a megabeast called Doomdrake attacked, killing 94. It was a decade that shaped the site. Durmok was active during this time. The Blade of the Sky was held in the area.  Rules governed all \u2014 and all obeyed.  The tower pierced the sky, a finger of stone pointing at fate.",
+          "reflection": "The tower stands alone, but it watches over everything.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "The Pearl Years"
+        },
+        {
+          "decade": "205s (The Pearl Years, year 20)",
+          "year_range": [
+            205,
+            221
+          ],
+          "type": "life_event",
+          "memory": "The 205s (The Pearl Years, year 20) was a turbulent decade for Turdurnaz. During this time, a new crystal was placed at the tower's peak to focus magical energies The faces of that time linger still. Gornnaz was active during this time. The Doomdrake terrorized the region.  Order and discipline prevailed.  The tower remained a beacon.",
+          "reflection": "The spire holds secrets that only the heights can reveal.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "The Pearl Years"
+        },
+        {
+          "decade": "221s (The Pearl Years, year 36)",
+          "year_range": [
+            221,
+            236
+          ],
+          "type": "life_event",
+          "memory": "Looking back at the 221s (The Pearl Years, year 36), it stands out \u2014 everything felt fragile. The site grew \u2014 the outer wall was built to enclose the tower's grounds That decade taught Turdurnaz that kindness matters. Vguman was active during this time. The Doomdrake terrorized the region.  Rules governed all \u2014 and all obeyed.  The tower was a sentinel against the darkness.",
+          "reflection": "From the peak, one can see the shape of the world.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "The Pearl Years"
+        },
+        {
+          "decade": "236s (The Pearl Years, year 51)",
+          "year_range": [
+            236,
+            252
+          ],
+          "type": "life_event",
+          "memory": "The 236s (The Pearl Years, year 51) was a turbulent decade for Turdurnaz. During this time, the tower's master vanished \u2014 the tower stood empty for a time The shadows of that time linger still.  The machinery of society ran without pause.  The tower's light never faltered \u2014 a promise kept.",
+          "reflection": "Height brings perspective \u2014 from the top, the world looks different.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "The Pearl Years"
+        },
+        {
+          "decade": "252s (The Dawn Age, year 5)",
+          "year_range": [
+            252,
+            267
+          ],
+          "type": "life_event",
+          "memory": "The 252s (The Dawn Age, year 5) was a hard decade for Turdurnaz. During this time, a great experiment shook the tower \u2014 strange lights were seen for days That decade taught Turdurnaz that time changes everything. Ornbazrak was active during this time.  Structure and hierarchy shaped every aspect of life.  The tower was a sentinel against the darkness.",
+          "reflection": "The tower pierces the sky \u2014 a bridge between earth and the beyond.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "The Dawn Age"
+        },
+        {
+          "decade": "267s (The Dawn Age, year 20)",
+          "year_range": [
+            267,
+            283
+          ],
+          "type": "life_event",
+          "memory": "The 267s (The Dawn Age, year 20) was a dark decade for Turdurnaz. During this time, the tower's library was expanded with tomes from distant lands The silences of that time linger still.  Every stone had its place and every soul its duty.  The tower watched over the land, unchanging and patient.",
+          "reflection": "The spire holds secrets that only the heights can reveal.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "The Dawn Age"
+        },
+        {
+          "decade": "283s (The Dawn Age, year 36)",
+          "year_range": [
+            283,
+            298
+          ],
+          "type": "life_event",
+          "memory": "Looking back at the 283s (The Dawn Age, year 36), it stands out \u2014 the harvest was bountiful. The site grew \u2014 the tower was raised higher \u2014 a new level was added to its height That decade taught Turdurnaz that a good plan saves lives. Grimrak was active during this time.  Rules governed all \u2014 and all obeyed.  The tower remained a beacon.",
+          "reflection": "The spire holds secrets that only the heights can reveal.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "The Dawn Age"
+        },
+        {
+          "decade": "298s (The Dawn Age, year 51)",
+          "year_range": [
+            298,
+            314
+          ],
+          "type": "life_event",
+          "memory": "The 298s (The Dawn Age, year 51) was a quiet decade for Turdurnaz. The site grew \u2014 a gate was built at the tower's base to control access That decade taught Turdurnaz that hope endures. The Doomdrake terrorized the region.  Precision and control defined those years.  The tower was a sentinel against the darkness.",
+          "reflection": "Power flows through the stone, channeled by those who built it.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "The Dawn Age"
+        },
+        {
+          "decade": "314s (The Crystal Epoch, year 5)",
+          "year_range": [
+            314,
+            329
+          ],
+          "type": "life_event",
+          "memory": "The 314s (The Crystal Epoch, year 5) was a forgotten decade for Turdurnaz. During this time, the tower was besieged by those who feared its power \u2014 it held That decade taught Turdurnaz that hope endures.  The law held firm through the seasons.  The tower pierced the sky, a finger of stone pointing at fate.",
+          "reflection": "Height brings perspective \u2014 from the top, the world looks different.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "The Crystal Epoch"
+        },
+        {
+          "decade": "329s (The Crystal Epoch, year 20)",
+          "year_range": [
+            329,
+            345
+          ],
+          "type": "life_event",
+          "memory": "In the 329s (The Crystal Epoch, year 20), the site felt alive with possibility. During this time, a hidden chamber was discovered deep beneath the tower It was a decade that shaped the site.  The machinery of society ran without pause.  The tower stood tall against the sky.",
+          "reflection": "The tower remembers every step taken up its winding stairs.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "The Crystal Epoch"
+        },
+        {
+          "decade": "345s (The Crystal Epoch, year 36)",
+          "year_range": [
+            345,
+            360
+          ],
+          "type": "life_event",
+          "memory": "Looking back at the 345s (The Crystal Epoch, year 36), it stands out \u2014 everything felt fragile. The site grew \u2014 the tower's beacon was upgraded to shine visible for leagues That decade taught Turdurnaz that hope endures.  Order and discipline prevailed.  The tower's peak scraped the clouds \u2014 a symbol of vigilance.",
+          "reflection": "The spire holds secrets that only the heights can reveal.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "The Crystal Epoch"
+        },
+        {
+          "decade": "360s (The Crystal Epoch, year 51)",
+          "year_range": [
+            360,
+            376
+          ],
+          "type": "life_event",
+          "memory": "Looking back at the 360s (The Crystal Epoch, year 51), it stands out \u2014 everything felt fragile. The site grew \u2014 the tower's foundation was reinforced after signs of settling That decade taught Turdurnaz that strength alone is not enough.  The law held firm through the seasons.  The tower stood tall against the sky.",
+          "reflection": "The tower remembers every step taken up its winding stairs.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "The Crystal Epoch"
+        },
+        {
+          "decade": "376s (The Sapphire Era, year 5)",
+          "year_range": [
+            376,
+            391
+          ],
+          "type": "life_event",
+          "memory": "The 376s (The Sapphire Era, year 5) was a turbulent decade for Turdurnaz. The site grew \u2014 the outer wall was built to enclose the tower's grounds The faces of that time linger still. The Boneking terrorized the region. The Blade of the Sky was held in the area.  Rules governed all \u2014 and all obeyed.  The tower watched over the land, unchanging and patient.",
+          "reflection": "The tower remembers every step taken up its winding stairs.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "The Sapphire Era"
+        },
+        {
+          "decade": "391s (The Sapphire Era, year 20)",
+          "year_range": [
+            391,
+            407
+          ],
+          "type": "life_event",
+          "memory": "The 391s (The Sapphire Era, year 20) was a turbulent decade for Turdurnaz. During this time, a great experiment shook the tower \u2014 strange lights were seen for days That decade taught Turdurnaz that the world is cruel. Mardthulgund was active during this time.  The machinery of society ran without pause.  The tower stood tall against the sky.",
+          "reflection": "Power flows through the stone, channeled by those who built it.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "The Sapphire Era"
+        },
+        {
+          "decade": "407s (The Sapphire Era, year 36)",
+          "year_range": [
+            407,
+            422
+          ],
+          "type": "life_event",
+          "memory": "The 407s (The Sapphire Era, year 36) was a forgotten decade for Turdurnaz. During this time, the tower became a sanctuary for refugees seeking protection The lessons of that time linger still. Kazadorn was active during this time.  Precision and control defined those years.  The tower watched over the land, unchanging and patient.",
+          "reflection": "From the peak, one can see the shape of the world.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "The Sapphire Era"
+        },
+        {
+          "decade": "422s (The Sapphire Era, year 51)",
+          "year_range": [
+            422,
+            438
+          ],
+          "type": "life_event",
+          "memory": "The 422s (The Sapphire Era, year 51) was a quiet decade for Turdurnaz. The site grew \u2014 the tower's beacon was upgraded to shine visible for leagues The shadows of that time linger still. The Flame of Dreams was held in the area.  Rules governed all \u2014 and all obeyed.  The tower watched over the land, unchanging and patient.",
+          "reflection": "Height brings perspective \u2014 from the top, the world looks different.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "The Sapphire Era"
+        },
+        {
+          "decade": "438s (Age of Radiant, year 5)",
+          "year_range": [
+            438,
+            453
+          ],
+          "type": "life_event",
+          "memory": "In the 438s (Age of Radiant, year 5), the site felt sharp and dangerous. The site grew \u2014 the tower's foundation was reinforced after signs of settling The silences of that time linger still. Nurorn was active during this time.  The machinery of society ran without pause.  The tower remained a beacon.",
+          "reflection": "The tower remembers every step taken up its winding stairs.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "Age of Radiant"
+        },
+        {
+          "decade": "453s (Age of Radiant, year 20)",
+          "year_range": [
+            453,
+            469
+          ],
+          "type": "life_event",
+          "memory": "The 453s (Age of Radiant, year 20) was a bright decade for Turdurnaz. During this time, the tower was wreathed in strange mists that lasted a full season It was a decade that showed the truth. Morturthra was active during this time. The Boneking terrorized the region. The Blade of the Sky was held in the area.  Rules governed all \u2014 and all obeyed.  The tower's light never faltered \u2014 a promise kept.",
+          "reflection": "Power flows through the stone, channeled by those who built it.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "Age of Radiant"
+        },
+        {
+          "decade": "469s (Age of Radiant, year 36)",
+          "year_range": [
+            469,
+            484
+          ],
+          "type": "life_event",
+          "memory": "Looking back at the 469s (Age of Radiant, year 36), it stands out \u2014 the air smelled of smoke. During this time, the tower's top was struck by lightning \u2014 the damage was repaired with magic It was a decade that showed the truth. Zolbal was active during this time. The Blade of the Sky was held in the area.  Precision and control defined those years.  The tower pierced the sky, a finger of stone pointing at fate.",
+          "reflection": "Power flows through the stone, channeled by those who built it.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "Age of Radiant"
+        },
+        {
+          "decade": "484s (Age of Radiant, year 51)",
+          "year_range": [
+            484,
+            500
+          ],
+          "type": "life_event",
+          "memory": "In the 484s (Age of Radiant, year 51), the site felt still and waiting. During this time, a new wing was built at the base to house students and visitors That decade taught Turdurnaz that strength alone is not enough. Kadkragbal was active during this time.  Every stone had its place and every soul its duty.  The tower stood alone, proud and unyielding.",
+          "reflection": "The tower remembers every step taken up its winding stairs.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "tower",
+          "era": "Age of Radiant"
+        }
+      ]
+    },
+    "short_term": {
+      "count": 15,
+      "items": [
+        {
+          "type": "seasonal_observation",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "A stranger arrived at the site \u2014 they carried news from distant lands.",
+          "poi_type": "site",
+          "poi_subtype": "tower"
+        },
+        {
+          "type": "seasonal_observation",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "Traders brought goods from afar \u2014 the site's market was busy.",
+          "poi_type": "site",
+          "poi_subtype": "tower"
+        },
+        {
+          "type": "seasonal_observation",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "A tournament was held at the site.",
+          "poi_type": "site",
+          "poi_subtype": "tower"
+        },
+        {
+          "type": "seasonal_observation",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "Travelers passed through Turdurnaz and remarked on the site's condition.",
+          "poi_type": "site",
+          "poi_subtype": "tower"
+        },
+        {
+          "type": "seasonal_observation",
+          "season": "winter",
+          "year": 499,
+          "year_label": "Year 499 (Age of Radiant, year 66)",
+          "memory": "Supplies were stored for the coming season.",
+          "poi_type": "site",
+          "poi_subtype": "tower"
+        },
+        {
+          "type": "seasonal_observation",
+          "season": "winter",
+          "year": 499,
+          "year_label": "Year 499 (Age of Radiant, year 66)",
+          "memory": "A dispute was settled at the site.",
+          "poi_type": "site",
+          "poi_subtype": "tower"
+        },
+        {
+          "type": "seasonal_observation",
+          "season": "winter",
+          "year": 499,
+          "year_label": "Year 499 (Age of Radiant, year 66)",
+          "memory": "The site's elder made a proclamation.",
+          "poi_type": "site",
+          "poi_subtype": "tower"
+        },
+        {
+          "type": "seasonal_observation",
+          "season": "winter",
+          "year": 499,
+          "year_label": "Year 499 (Age of Radiant, year 66)",
+          "memory": "A nearby ruin was reported.",
+          "poi_type": "site",
+          "poi_subtype": "tower"
+        },
+        {
+          "type": "recent_thought",
+          "memory": "This season last year was the same \u2014 the site has endured since then.",
+          "poi_type": "site",
+          "poi_subtype": "tower"
+        },
+        {
+          "type": "recent_thought",
+          "memory": "I wonder what the coming year will bring to this place.",
+          "poi_type": "site",
+          "poi_subtype": "tower"
+        },
+        {
+          "type": "recent_thought",
+          "memory": "Considering Turdurnaz. This season feels precious \u2014 the site surrenders to it.",
+          "poi_type": "site",
+          "poi_subtype": "tower"
+        },
+        {
+          "type": "recent_thought",
+          "memory": "The future is uncertain. The runes record that the summer is for war.",
+          "poi_type": "site",
+          "poi_subtype": "tower"
+        },
+        {
+          "type": "recent_thought",
+          "memory": "Considering Turdurnaz. The spring light hangs over Turdurnaz \u2014 it makes the site feel melancholy.",
+          "poi_type": "site",
+          "poi_subtype": "tower"
+        },
+        {
+          "type": "recent_thought",
+          "memory": "Considering Turdurnaz. This spring, the site feels forgotten.",
+          "poi_type": "site",
+          "poi_subtype": "tower"
+        },
+        {
+          "type": "recent_thought",
+          "memory": "The site has been waiting more than usual this season.",
+          "poi_type": "site",
+          "poi_subtype": "tower"
+        }
+      ]
+    },
+    "near_term": {
+      "count": 10,
+      "items": [
+        {
+          "type": "future_plan",
+          "memory": "There is a vision to forge a legacy.",
+          "poi_type": "site",
+          "poi_subtype": "tower"
+        },
+        {
+          "type": "future_plan",
+          "memory": "The site aims to discover a lost artifact.",
+          "poi_type": "site",
+          "poi_subtype": "tower"
+        },
+        {
+          "type": "future_plan",
+          "memory": "There are plans to expand the site \u2014 new walls, new quarters, new hope.",
+          "poi_type": "site",
+          "poi_subtype": "tower"
+        },
+        {
+          "type": "future_plan",
+          "memory": "The site will host a ceremony next season.",
+          "poi_type": "site",
+          "poi_subtype": "tower"
+        },
+        {
+          "type": "future_plan",
+          "memory": "We hope to make contact with a distant realm.",
+          "poi_type": "site",
+          "poi_subtype": "tower"
+        },
+        {
+          "type": "future_plan",
+          "memory": "We dream of becoming a great power.",
+          "poi_type": "site",
+          "poi_subtype": "tower"
+        },
+        {
+          "type": "future_worry",
+          "memory": "I am concerned about our neighbors \u2014 they are far and we cannot rely on them.",
+          "poi_type": "site",
+          "poi_subtype": "tower"
+        },
+        {
+          "type": "future_worry",
+          "memory": "I worry about the plague spreading \u2014 too many have fallen sick.",
+          "poi_type": "site",
+          "poi_subtype": "tower"
+        },
+        {
+          "type": "future_worry",
+          "memory": "I am concerned about our reputation \u2014 a lie is spreading about us.",
+          "poi_type": "site",
+          "poi_subtype": "tower"
+        },
+        {
+          "type": "future_worry",
+          "memory": "I am concerned about a rival's schemes \u2014 they smile too much.",
+          "poi_type": "site",
+          "poi_subtype": "tower"
+        }
+      ]
+    }
+  },
+  "seed": 612
+}

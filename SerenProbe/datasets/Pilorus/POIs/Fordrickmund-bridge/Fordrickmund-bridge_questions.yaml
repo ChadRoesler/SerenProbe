@@ -1,0 +1,149 @@
+# SerenProbe Questions - entity question set
+# Generated for poi
+
+questions:
+- query: What year was Fordrickmund-bridge founded?
+  asks: loci
+  expect_key:
+  - geography/founded_year
+  hops: 1
+- query: Is Fordrickmund-bridge a capital?
+  asks: loci
+  expect_key:
+  - geography/is_capital
+  hops: 1
+- query: What is the population of Fordrickmund-bridge?
+  asks: loci
+  expect_key:
+  - demographics/population
+  hops: 1
+- query: What type of site is Fordrickmund-bridge?
+  asks: loci
+  expect_key:
+  - geography/site_type
+  hops: 1
+- query: What does Fordrickmund-bridge intend to do about expand the site?
+  asks: memory
+  expect_ref:
+  - fordrickmund_bridge_264_near_5
+  hops: 1
+- query: What does Fordrickmund-bridge worry about regarding fear that our enemies
+    are closing?
+  asks: memory
+  expect_ref:
+  - fordrickmund_bridge_264_near_8
+  hops: 1
+- query: What does Fordrickmund-bridge remember about within the fortress ensuring
+    water even?
+  asks: memory
+  expect_ref:
+  - fordrickmund_bridge_264_long_2
+  hops: 1
+- query: What does Fordrickmund-bridge remember about site felt worn and tired?
+  asks: memory
+  expect_ref:
+  - fordrickmund_bridge_264_long_16
+  hops: 1
+- query: What has Fordrickmund-bridge heard recently about couple married at the site?
+  asks: memory
+  expect_ref:
+  - fordrickmund_bridge_264_short_4
+  hops: 1
+- query: What has Fordrickmund-bridge heard recently about future will bring to this
+    place?
+  asks: memory
+  expect_ref:
+  - fordrickmund_bridge_264_short_9
+  hops: 1
+- query: What does Fordrickmund-bridge intend to do about make contact with a distant
+    realm?
+  asks: memory
+  expect_ref:
+  - fordrickmund_bridge_264_near_3
+  hops: 1
+- query: What does Fordrickmund-bridge intend to do about aims to discover a lost
+    artifact?
+  asks: memory
+  expect_ref:
+  - fordrickmund_bridge_264_near_0
+  hops: 1
+- query: What has Fordrickmund-bridge heard recently about spring stillness hangs
+    over Windoreford?
+  asks: memory
+  expect_ref:
+  - fordrickmund_bridge_264_short_14
+  hops: 1
+- query: What has Fordrickmund-bridge heard recently about Word came of a war?
+  asks: memory
+  expect_ref:
+  - fordrickmund_bridge_264_short_1
+  hops: 1
+- query: What is the industry of Fordrickmund-bridge, and what does Fordrickmund-bridge
+    recall about plans to expand the site?
+  asks: corpus
+  expect_key:
+  - misc/industry
+  expect_ref:
+  - fordrickmund_bridge_264_near_5
+  hops: 2
+- query: What is known about The Forgotten Vault of Xul?
+  asks: corpus
+  expect_empty: true
+  hops: 1
+- query: What is the size class of Fordrickmund-bridge, and what does Fordrickmund-bridge
+    recall about many have fallen sick?
+  asks: corpus
+  expect_key:
+  - demographics/size_class
+  expect_ref:
+  - fordrickmund_bridge_264_near_6
+  hops: 2
+- query: What is the civ of Fordrickmund-bridge, and what does Fordrickmund-bridge
+    recall about couple married at the site?
+  asks: corpus
+  expect_key:
+  - origin/civ
+  expect_ref:
+  - fordrickmund_bridge_264_short_4
+  hops: 2
+- query: What is the defenses of Fordrickmund-bridge, and what does Fordrickmund-bridge
+    recall about fortifications were rebuilt with stronger materials?
+  asks: corpus
+  expect_key:
+  - misc/defenses
+  expect_ref:
+  - fordrickmund_bridge_264_long_1
+  hops: 2
+- query: What is the population and size class of Fordrickmund-bridge?
+  asks: corpus
+  expect_key:
+  - demographics/population
+  - demographics/size_class
+  hops: 1
+- query: What is the ruler of Fordrickmund-bridge, and what does Fordrickmund-bridge
+    recall about future will bring to this place?
+  asks: corpus
+  expect_key:
+  - misc/ruler
+  expect_ref:
+  - fordrickmund_bridge_264_short_9
+  hops: 2
+- query: What is the primary material of Fordrickmund-bridge, and what does Fordrickmund-bridge
+    recall about within the fortress ensuring water even?
+  asks: corpus
+  expect_key:
+  - misc/primary_material
+  expect_ref:
+  - fordrickmund_bridge_264_long_2
+  hops: 2
+- query: What is the site type, founded year and is capital of Fordrickmund-bridge?
+  asks: corpus
+  expect_key:
+  - geography/site_type
+  - geography/founded_year
+  - geography/is_capital
+  hops: 1
+- query: What is known about The Sunken Archive?
+  asks: corpus
+  expect_empty: true
+  hops: 1

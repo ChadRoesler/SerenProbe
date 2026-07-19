@@ -1,0 +1,280 @@
+- project: loc_silverwood
+  key: silverwood_name
+  value: Silverwood
+  why: location name
+- project: loc_silverwood
+  key: silverwood_type
+  value: city
+  why: location type
+- project: loc_silverwood
+  key: silverwood_population
+  value: '45510'
+  why: population count
+- project: loc_silverwood
+  key: silverwood_size
+  value: vast
+  why: relative size
+- project: loc_silverwood
+  key: silverwood_climate
+  value: cold
+  why: climate zone
+- project: loc_silverwood
+  key: silverwood_terrain
+  value: hills
+  why: primary terrain
+- project: loc_silverwood
+  key: silverwood_government
+  value: theocracy
+  why: government type
+- project: loc_silverwood
+  key: silverwood_defense
+  value: mercenary guild
+  why: defense force
+- project: loc_silverwood
+  key: silverwood_economy
+  value: artisan
+  why: economic base
+- project: loc_silverwood
+  key: silverwood_language
+  value: Gnomish
+  why: primary language
+- project: loc_silverwood
+  key: silverwood_region
+  value: the south of Aethelgard
+  why: geographic region
+- project: loc_silverwood
+  key: silverwood_river
+  value: the Silverflow
+  why: nearby river
+- project: loc_silverwood
+  key: silverwood_mountain
+  value: the Iron Peaks
+  why: nearby mountain range
+- project: loc_silverwood
+  key: silverwood_forest
+  value: the Darkholt
+  why: nearby forest
+- project: loc_silverwood
+  key: silverwood_coast
+  value: the Pearl Strand
+  why: coastline
+- project: loc_silverwood
+  key: silverwood_elevation
+  value: 4422 ft
+  why: average elevation
+- project: loc_silverwood
+  key: silverwood_area
+  value: 4464 sq mi
+  why: total area
+- project: loc_silverwood
+  key: silverwood_biome
+  value: wetland
+  why: primary biome
+- project: loc_silverwood
+  key: silverwood_natural_port
+  value: 'yes'
+  why: natural harbor access
+- project: loc_silverwood
+  key: silverwood_resource_1
+  value: stone
+  why: primary natural resource
+- project: loc_silverwood
+  key: silverwood_district_1
+  value: Craftsman Row
+  why: city district
+- project: loc_silverwood
+  key: silverwood_district_2
+  value: Garrison District
+  why: city district
+- project: loc_silverwood
+  key: silverwood_district_3
+  value: Temple Heights
+  why: city district
+- project: loc_silverwood
+  key: silverwood_bldg_1
+  value: Town Hall
+  why: seat of power
+- project: loc_silverwood
+  key: silverwood_bldg_2
+  value: Chapel of Storms
+  why: place of worship
+- project: loc_silverwood
+  key: silverwood_bldg_3
+  value: The Silver Flagon
+  why: popular inn
+- project: loc_silverwood
+  key: silverwood_bldg_4
+  value: Crystal Exchange
+  why: main market
+- project: loc_silverwood
+  key: silverwood_bldg_5
+  value: Watchtower
+  why: defensive structure
+- project: loc_silverwood
+  key: silverwood_faction_1
+  value: Shadow Syndicate
+  why: active faction
+- project: loc_silverwood
+  key: silverwood_faction_2
+  value: Cult of the Black Flame
+  why: active faction
+- project: loc_silverwood
+  key: silverwood_faction_3
+  value: Artisan Guild
+  why: active faction
+- project: loc_silverwood
+  key: silverwood_export_1
+  value: ore
+  why: primary export
+- project: loc_silverwood
+  key: silverwood_export_2
+  value: leather
+  why: secondary export
+- project: loc_silverwood
+  key: silverwood_export_3
+  value: rare herbs
+  why: tertiary export
+- project: loc_silverwood
+  key: silverwood_import_1
+  value: oil
+  why: primary import
+- project: loc_silverwood
+  key: silverwood_import_2
+  value: spices
+  why: secondary import
+- project: loc_silverwood
+  key: silverwood_history_0
+  value: Silverwood was founded by a wandering tribe in the Age of Bones.
+  why: historical lore
+- project: loc_silverwood
+  key: silverwood_history_1
+  value: The first stone of Silverwood was laid in the 5th century.
+  why: historical lore
+- project: loc_silverwood
+  key: silverwood_history_2
+  value: Silverwood withstood a siege by the Crimson Court for 79 days.
+  why: historical lore
+- project: loc_silverwood
+  key: silverwood_history_3
+  value: A dragon once attacked Silverwood, destroying the east gate.
+  why: historical lore
+- project: loc_silverwood
+  key: silverwood_history_4
+  value: The Winter of Sorrow devastated Silverwood.
+  why: historical lore
+- project: loc_silverwood
+  key: silverwood_history_5
+  value: Silverwood was rebuilt under an elven architect.
+  why: historical lore
+- project: loc_silverwood
+  key: silverwood_history_6
+  value: A secret garden lies beneath Silverwood.
+  why: historical lore
+- project: loc_silverwood
+  key: silverwood_history_7
+  value: Silverwood is protected by a prophecy from the elements.
+  why: historical lore
+- project: loc_silverwood
+  key: silverwood_history_8
+  value: The most sacred part of Silverwood is the Iron Foundry.
+  why: historical lore
+- project: loc_silverwood
+  key: silverwood_history_9
+  value: A treaty was signed in Silverwood that shaped the fate of Aethelgard.
+  why: historical lore
+- project: loc_silverwood
+  key: silverwood_notable_1
+  value: a bottomless well
+  why: notable feature
+- project: loc_silverwood
+  key: silverwood_notable_2
+  value: a tree that bears silver fruit
+  why: notable feature
+- project: loc_silverwood
+  key: silverwood_danger_1
+  value: giant spiders
+  why: local danger
+- project: loc_silverwood
+  key: silverwood_danger_2
+  value: cursed ruins
+  why: local danger
+- project: loc_silverwood
+  key: silverwood_race_1
+  value: Elf
+  why: common race
+- project: loc_silverwood
+  key: silverwood_race_2
+  value: Half-Elf
+  why: minority race
+- project: loc_silverwood
+  key: silverwood_religion_1
+  value: Shrine of Corellon
+  why: primary religion
+- project: loc_silverwood
+  key: silverwood_religion_2
+  value: Druid Circle
+  why: secondary religion
+- project: loc_silverwood
+  key: silverwood_ruler
+  value: King Aldric
+  why: current ruler
+- project: loc_silverwood
+  key: silverwood_guard
+  value: 416 guards
+  why: garrison size
+- project: loc_silverwood
+  key: silverwood_festival
+  value: Moonfall
+  why: annual festival
+- project: loc_silverwood
+  key: silverwood_trade_route
+  value: the Coast Road
+  why: major trade route
+- project: loc_silverwood
+  key: silverwood_ally
+  value: Ironhold
+  why: allied settlement
+- project: loc_silverwood
+  key: silverwood_enemy
+  value: the Orc Wastes
+  why: hostile neighbor
+- project: loc_silverwood
+  key: silverwood_status
+  value: prosperous
+  why: current status
+- project: loc_silverwood
+  key: silverwood_extra_554
+  value: hidden catacombs
+  why: notable detail
+- project: loc_silverwood
+  key: silverwood_extra_184
+  value: royal hunting grounds
+  why: notable detail
+- project: loc_silverwood
+  key: silverwood_extra_973
+  value: royal hunting grounds
+  why: notable detail
+- project: loc_silverwood
+  key: silverwood_extra_861
+  value: abandoned quarry
+  why: notable detail
+- project: loc_silverwood
+  key: silverwood_extra_286
+  value: royal hunting grounds
+  why: notable detail
+- project: loc_silverwood
+  key: silverwood_extra_312
+  value: royal hunting grounds
+  why: notable detail
+- project: loc_silverwood
+  key: silverwood_extra_552
+  value: secret smuggler tunnels
+  why: notable detail
+- project: loc_silverwood
+  key: silverwood_extra_595
+  value: ancient aqueduct
+  why: notable detail
+- project: loc_silverwood
+  key: silverwood_extra_920
+  value: abandoned quarry
+  why: notable detail

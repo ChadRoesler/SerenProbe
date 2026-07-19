@@ -1,0 +1,28 @@
+- project: aldermoor
+  key: house_vance_seat
+  value: Blackmere
+  why: seat of House Vance
+- project: aldermoor
+  key: house_vance_head
+  value: Lord Aldric Vance
+  why: head of House Vance
+- project: aldermoor
+  key: house_vance_allegiance
+  value: the Free Cities
+  why: House Vance allegiance
+- project: aldermoor
+  key: house_ostrander_seat
+  value: Palegate
+  why: seat of House Ostrander
+- project: aldermoor
+  key: house_ostrander_head
+  value: Lady Miren Ostrander
+  why: head of House Ostrander
+- project: aldermoor
+  key: house_merrick_seat
+  value: Greenhollow
+  why: seat of House Merrick
+- project: aldermoor
+  key: house_merrick_allegiance
+  value: the Free Cities
+  why: House Merrick allegiance

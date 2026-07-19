@@ -1,0 +1,220 @@
+# SerenProbe Question Provenance - audit trail
+# Generated for poi
+
+provenance:
+- query: What is the population of Galfalthal-thorn?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: site:None --facts.population--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: What year was Galfalthal-thorn founded?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: site:None --facts.founded_year--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: What type of site is Galfalthal-thorn?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: site:None --facts.site_type--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: Is Galfalthal-thorn a capital?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: site:None --facts.is_capital--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: What does Galfalthal-thorn remember about great pilgrimage that brought blessings?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'galfalthal_thorn_0 --memory[long]--> galfalthal_thorn_25_long_2 (anchor:
+      great pilgrimage that brought blessings)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What has Galfalthal-thorn heard recently about site's leader made a proclamation?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'galfalthal_thorn_0 --memory[short]--> galfalthal_thorn_25_short_4 (anchor:
+      site''s leader made a proclamation)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What has Galfalthal-thorn heard recently about makes the site feel timeless?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'galfalthal_thorn_0 --memory[short]--> galfalthal_thorn_25_short_10 (anchor:
+      makes the site feel timeless)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What does Galfalthal-thorn intend to do about new walls new quarters new
+    hope?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'galfalthal_thorn_0 --memory[near]--> galfalthal_thorn_25_near_2 (anchor:
+      new walls new quarters new hope)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What does Galfalthal-thorn worry about regarding promise we cannot keep?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'galfalthal_thorn_0 --memory[near]--> galfalthal_thorn_25_near_7 (anchor:
+      promise we cannot keep)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What does Galfalthal-thorn remember about titan called Fell Thunderking attacked
+    killing?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'galfalthal_thorn_0 --memory[long]--> galfalthal_thorn_25_long_22 (anchor:
+      titan called Fell Thunderking attacked killing)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What has Galfalthal-thorn heard recently about couple married at the site?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'galfalthal_thorn_0 --memory[short]--> galfalthal_thorn_25_short_5 (anchor:
+      couple married at the site)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What has Galfalthal-thorn heard recently about distant future will bring?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'galfalthal_thorn_0 --memory[short]--> galfalthal_thorn_25_short_14 (anchor:
+      distant future will bring)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What has Galfalthal-thorn heard recently about Forest around the site changed?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'galfalthal_thorn_0 --memory[short]--> galfalthal_thorn_25_short_3 (anchor:
+      Forest around the site changed)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What does Galfalthal-thorn remember about site felt heavy with change?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'galfalthal_thorn_0 --memory[long]--> galfalthal_thorn_25_long_3 (anchor:
+      site felt heavy with change)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What is the size class of Galfalthal-thorn, and what does Galfalthal-thorn
+    recall about couple married at the site?
+  hops: 2
+  asks: corpus
+  _gen:
+    edge: loci:demographics/size_class + memory:galfalthal_thorn_25_short_5 -- answerable
+      only by the fan
+    hops_computed: 2
+    archetype: cross_organ
+    shortcut_test: passed
+- query: What is known about Throgdak the Whisperer?
+  hops: 1
+  asks: corpus
+  _gen:
+    edge: phantom entity 'Throgdak the Whisperer' -- expect_empty (bait)
+    hops_computed: 1
+    archetype: quiet
+    shortcut_test: passed
+- query: What is the primary material of Galfalthal-thorn, and what does Galfalthal-thorn
+    recall about promise we cannot keep?
+  hops: 2
+  asks: corpus
+  _gen:
+    edge: loci:misc/primary_material + memory:galfalthal_thorn_25_near_7 -- answerable
+      only by the fan
+    hops_computed: 2
+    archetype: cross_organ
+    shortcut_test: passed
+- query: What is the civ of Galfalthal-thorn, and what does Galfalthal-thorn recall
+    about Supplies were gathered for the coming?
+  hops: 2
+  asks: corpus
+  _gen:
+    edge: loci:origin/civ + memory:galfalthal_thorn_25_short_0 -- answerable only
+      by the fan
+    hops_computed: 2
+    archetype: cross_organ
+    shortcut_test: passed
+- query: What is the defenses of Galfalthal-thorn, and what does Galfalthal-thorn
+    recall about great pilgrimage that brought blessings?
+  hops: 2
+  asks: corpus
+  _gen:
+    edge: loci:misc/defenses + memory:galfalthal_thorn_25_long_2 -- answerable only
+      by the fan
+    hops_computed: 2
+    archetype: cross_organ
+    shortcut_test: passed
+- query: What is known about Kragmorn Hollow?
+  hops: 1
+  asks: corpus
+  _gen:
+    edge: phantom entity 'Kragmorn Hollow' -- expect_empty (bait)
+    hops_computed: 1
+    archetype: quiet
+    shortcut_test: passed
+- query: What is the site type, founded year and is capital of Galfalthal-thorn?
+  hops: 1
+  asks: corpus
+  _gen:
+    edge: loci project 'geography' -- 3 facts, docket coverage
+    hops_computed: 1
+    archetype: briefing
+    shortcut_test: passed
+- query: What is the population and size class of Galfalthal-thorn?
+  hops: 1
+  asks: corpus
+  _gen:
+    edge: loci project 'demographics' -- 2 facts, docket coverage
+    hops_computed: 1
+    archetype: briefing
+    shortcut_test: passed
+- query: What is the ruler of Galfalthal-thorn, and what does Galfalthal-thorn recall
+    about site's leader made a proclamation?
+  hops: 2
+  asks: corpus
+  _gen:
+    edge: loci:misc/ruler + memory:galfalthal_thorn_25_short_4 -- answerable only
+      by the fan
+    hops_computed: 2
+    archetype: cross_organ
+    shortcut_test: passed
+- query: What is the industry of Galfalthal-thorn, and what does Galfalthal-thorn
+    recall about distant future will bring?
+  hops: 2
+  asks: corpus
+  _gen:
+    edge: loci:misc/industry + memory:galfalthal_thorn_25_short_14 -- answerable only
+      by the fan
+    hops_computed: 2
+    archetype: cross_organ
+    shortcut_test: passed

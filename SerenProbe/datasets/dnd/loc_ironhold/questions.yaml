@@ -1,0 +1,330 @@
+questions:
+- asks: loci
+  query: what type of location is Ironhold?
+  expect_key:
+  - loc_ironhold/ironhold_type
+  expect_content: []
+  hops: 1
+  quiet_in: &id001
+  - char_thorn-*
+  - char_elara-*
+  - char_kael-*
+  - char_riva-*
+  - char_zara-*
+  - char_malgor-*
+  - char_vexia-*
+  - char_grul-*
+  - char_shade-*
+  - char_ember-*
+  - char_shadowking-*
+  - char_grickle-*
+  - char_fluffy-*
+  - char_boris-*
+  - char_ferris-*
+  - char_seraphina-*
+  - loc_silverwood-*
+  - loc_crossroads-*
+  - loc_sunkentemple-*
+  - loc_wyvernspeak-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what population does Ironhold have?
+  expect_key:
+  - loc_ironhold/ironhold_population
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what climate is Ironhold in?
+  expect_key:
+  - loc_ironhold/ironhold_climate
+  expect_content:
+  - arid
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what terrain is Ironhold on?
+  expect_key:
+  - loc_ironhold/ironhold_terrain
+  expect_content:
+  - coast
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what government rules Ironhold?
+  expect_key:
+  - loc_ironhold/ironhold_government
+  expect_content:
+  - monarchy
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what defense protects Ironhold?
+  expect_key:
+  - loc_ironhold/ironhold_defense
+  expect_content:
+  - standing army
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what export does Ironhold produce?
+  expect_key:
+  - loc_ironhold/ironhold_export_1
+  expect_content:
+  - weapons
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what language does Ironhold speak?
+  expect_key:
+  - loc_ironhold/ironhold_language
+  expect_content:
+  - Dwarvish
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what primary bldg is in Ironhold?
+  expect_key:
+  - loc_ironhold/ironhold_bldg_1
+  expect_content:
+  - Governor's Palace
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what festival does Ironhold celebrate?
+  expect_key:
+  - loc_ironhold/ironhold_festival
+  expect_content:
+  - Dragon's Wake
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: what recent event happened in Ironhold — an incident involving travelers or merchants
+  expect_ref:
+  - ironhold_short_00
+  expect_content:
+  - A merchant fleet arrived at Ironhold last week.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: tell me about a recent arrival to Ironhold — a newcomer who arrived recently
+  expect_ref:
+  - ironhold_short_01
+  expect_content:
+  - Ironhold suffered a flood in the docks.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: what is the founding lore of Ironhold — the legendary origins of the settlement
+  expect_ref:
+  - ironhold_long_00
+  expect_content:
+  - Ironhold was carved from the bones of a titan.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: tell me about the ancient history of Ironhold — tales from ages past
+  expect_ref:
+  - ironhold_long_05
+  expect_content:
+  - Ironhold was once a battlefield during the Dragon War.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: what upcoming event is planned for Ironhold — an upcoming festival or gathering
+  expect_ref:
+  - ironhold_near_00
+  expect_content:
+  - A army is expected to reach Ironhold within a month.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: what future threat does Ironhold face — a looming danger or encroaching force
+  expect_ref:
+  - ironhold_near_01
+  expect_content:
+  - Ironhold plans to build a bridge before winter.
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: tell me about Ironhold — its type, climate, and terrain
+  expect_content:
+  - city
+  - Ironhold
+  expect_key:
+  - loc_ironhold/ironhold_type
+  - loc_ironhold/ironhold_climate
+  - loc_ironhold/ironhold_terrain
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: describe Ironhold's government and defenses
+  expect_content:
+  - Ironhold
+  expect_key:
+  - loc_ironhold/ironhold_government
+  - loc_ironhold/ironhold_defense
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: give me a briefing on Ironhold's economy and exports
+  expect_content:
+  - Ironhold
+  expect_key:
+  - loc_ironhold/ironhold_export_1
+  - loc_ironhold/ironhold_export_2
+  - loc_ironhold/ironhold_economy
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what history does Ironhold have? tell me about its founding
+  expect_content:
+  - Ironhold
+  expect_key:
+  - loc_ironhold/ironhold_founding
+  - loc_ironhold/ironhold_history_1
+  - loc_ironhold/ironhold_history_2
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what factions and exports define Ironhold?
+  expect_content:
+  - Ironhold
+  expect_key:
+  - loc_ironhold/ironhold_export_1
+  - loc_ironhold/ironhold_export_2
+  - loc_ironhold/ironhold_economy
+  - loc_ironhold/ironhold_government
+  - loc_ironhold/ironhold_defense
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: describe the notable buildings and districts in Ironhold
+  expect_content:
+  - Ironhold
+  expect_key:
+  - loc_ironhold/ironhold_bldg_1
+  - loc_ironhold/ironhold_bldg_2
+  - loc_ironhold/ironhold_bldg_3
+  - loc_ironhold/ironhold_district_1
+  - loc_ironhold/ironhold_district_2
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what dangers lurk in and around Ironhold?
+  expect_content:
+  - Ironhold
+  expect_key:
+  - loc_ironhold/ironhold_danger_1
+  - loc_ironhold/ironhold_danger_2
+  - loc_ironhold/ironhold_danger_3
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: tell me about the races and religions found in Ironhold
+  expect_content:
+  - Ironhold
+  expect_key: &id002
+  - loc_ironhold/ironhold_festival
+  - loc_ironhold/ironhold_religion
+  - loc_ironhold/ironhold_race_1
+  - loc_ironhold/ironhold_race_2
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what trade routes connect Ironhold to the wider realm?
+  expect_content:
+  - Ironhold
+  expect_key:
+  - loc_ironhold/ironhold_trade_1
+  - loc_ironhold/ironhold_trade_2
+  - loc_ironhold/ironhold_resource_1
+  - loc_ironhold/ironhold_resource_2
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: summarize Ironhold's recent events and current status
+  expect_content:
+  - Ironhold
+  expect_key:
+  - loc_ironhold/ironhold_short_00
+  - loc_ironhold/ironhold_short_01
+  - loc_ironhold/ironhold_near_00
+  - loc_ironhold/ironhold_near_01
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what is the deep lore and ancient history of Ironhold?
+  expect_content:
+  - Ironhold
+  expect_key:
+  - loc_ironhold/ironhold_founding
+  - loc_ironhold/ironhold_history_1
+  - loc_ironhold/ironhold_history_2
+  - loc_ironhold/ironhold_long_00
+  - loc_ironhold/ironhold_long_05
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: describe the festivals and culture of Ironhold
+  expect_content:
+  - Ironhold
+  expect_key: *id002
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what resources and natural features does Ironhold have?
+  expect_content:
+  - Ironhold
+  expect_key:
+  - loc_ironhold/ironhold_river
+  - loc_ironhold/ironhold_mountain
+  - loc_ironhold/ironhold_forest
+  - loc_ironhold/ironhold_biome
+  - loc_ironhold/ironhold_region
+  - loc_ironhold/ironhold_trade_1
+  - loc_ironhold/ironhold_trade_2
+  - loc_ironhold/ironhold_resource_1
+  - loc_ironhold/ironhold_resource_2
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: give me a full dossier on Ironhold
+  expect_content:
+  - Ironhold
+  - city
+  expect_key:
+  - loc_ironhold/ironhold_type
+  - loc_ironhold/ironhold_climate
+  - loc_ironhold/ironhold_terrain
+  - loc_ironhold/ironhold_government
+  - loc_ironhold/ironhold_defense
+  - loc_ironhold/ironhold_export_1
+  - loc_ironhold/ironhold_export_2
+  - loc_ironhold/ironhold_economy
+  - loc_ironhold/ironhold_founding
+  - loc_ironhold/ironhold_history_1
+  - loc_ironhold/ironhold_history_2
+  - loc_ironhold/ironhold_bldg_1
+  - loc_ironhold/ironhold_bldg_2
+  - loc_ironhold/ironhold_bldg_3
+  - loc_ironhold/ironhold_district_1
+  - loc_ironhold/ironhold_district_2
+  - loc_ironhold/ironhold_danger_1
+  - loc_ironhold/ironhold_danger_2
+  - loc_ironhold/ironhold_danger_3
+  - loc_ironhold/ironhold_festival
+  - loc_ironhold/ironhold_religion
+  - loc_ironhold/ironhold_race_1
+  - loc_ironhold/ironhold_race_2
+  - loc_ironhold/ironhold_trade_1
+  - loc_ironhold/ironhold_trade_2
+  - loc_ironhold/ironhold_resource_1
+  - loc_ironhold/ironhold_resource_2
+  - loc_ironhold/ironhold_river
+  - loc_ironhold/ironhold_mountain
+  - loc_ironhold/ironhold_forest
+  - loc_ironhold/ironhold_biome
+  - loc_ironhold/ironhold_region
+  hops: 1
+  quiet_in: *id001

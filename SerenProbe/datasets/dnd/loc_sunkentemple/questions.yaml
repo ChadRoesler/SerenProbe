@@ -1,0 +1,330 @@
+questions:
+- asks: loci
+  query: what type of location is The Sunken Temple?
+  expect_key:
+  - loc_sunkentemple/sunkentemple_type
+  expect_content: []
+  hops: 1
+  quiet_in: &id001
+  - char_thorn-*
+  - char_elara-*
+  - char_kael-*
+  - char_riva-*
+  - char_zara-*
+  - char_malgor-*
+  - char_vexia-*
+  - char_grul-*
+  - char_shade-*
+  - char_ember-*
+  - char_shadowking-*
+  - char_grickle-*
+  - char_fluffy-*
+  - char_boris-*
+  - char_ferris-*
+  - char_seraphina-*
+  - loc_ironhold-*
+  - loc_silverwood-*
+  - loc_crossroads-*
+  - loc_wyvernspeak-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what population does The Sunken Temple have?
+  expect_key:
+  - loc_sunkentemple/sunkentemple_population
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what climate is The Sunken Temple in?
+  expect_key:
+  - loc_sunkentemple/sunkentemple_climate
+  expect_content:
+  - temperate
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what terrain is The Sunken Temple on?
+  expect_key:
+  - loc_sunkentemple/sunkentemple_terrain
+  expect_content:
+  - swamp
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what government rules The Sunken Temple?
+  expect_key:
+  - loc_sunkentemple/sunkentemple_government
+  expect_content:
+  - theocracy
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what defense protects The Sunken Temple?
+  expect_key:
+  - loc_sunkentemple/sunkentemple_defense
+  expect_content:
+  - militia
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what export does The Sunken Temple produce?
+  expect_key:
+  - loc_sunkentemple/sunkentemple_export_1
+  expect_content:
+  - grain
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what language does The Sunken Temple speak?
+  expect_key:
+  - loc_sunkentemple/sunkentemple_language
+  expect_content:
+  - Elvish
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what primary bldg is in The Sunken Temple?
+  expect_key:
+  - loc_sunkentemple/sunkentemple_bldg_1
+  expect_content:
+  - Town Hall
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what festival does The Sunken Temple celebrate?
+  expect_key:
+  - loc_sunkentemple/sunkentemple_festival
+  expect_content:
+  - Dragon's Wake
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: what recent event happened in The Sunken Temple — an incident involving travelers or merchants
+  expect_ref:
+  - sunkentemple_short_00
+  expect_content:
+  - A merchant fleet arrived at The Sunken Temple last week.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: tell me about a recent arrival to The Sunken Temple — a newcomer who arrived recently
+  expect_ref:
+  - sunkentemple_short_01
+  expect_content:
+  - The Sunken Temple suffered a flood in the east quarter.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: what is the founding lore of The Sunken Temple — the legendary origins of the settlement
+  expect_ref:
+  - sunkentemple_long_00
+  expect_content:
+  - The Sunken Temple was carved from ancient forest.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: tell me about the ancient history of The Sunken Temple — tales from ages past
+  expect_ref:
+  - sunkentemple_long_05
+  expect_content:
+  - The Sunken Temple was once a prison colony during the Great War.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: what upcoming event is planned for The Sunken Temple — an upcoming festival or gathering
+  expect_ref:
+  - sunkentemple_near_00
+  expect_content:
+  - A fleet is expected to reach The Sunken Temple within days.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: what future threat does The Sunken Temple face — a looming danger or encroaching force
+  expect_ref:
+  - sunkentemple_near_01
+  expect_content:
+  - The Sunken Temple plans to fortify the walls before winter.
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: tell me about The Sunken Temple — its type, climate, and terrain
+  expect_content:
+  - point-of-interest
+  - The Sunken Temple
+  expect_key:
+  - loc_sunkentemple/sunkentemple_type
+  - loc_sunkentemple/sunkentemple_climate
+  - loc_sunkentemple/sunkentemple_terrain
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: describe The Sunken Temple's government and defenses
+  expect_content:
+  - The Sunken Temple
+  expect_key:
+  - loc_sunkentemple/sunkentemple_government
+  - loc_sunkentemple/sunkentemple_defense
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: give me a briefing on The Sunken Temple's economy and exports
+  expect_content:
+  - The Sunken Temple
+  expect_key:
+  - loc_sunkentemple/sunkentemple_export_1
+  - loc_sunkentemple/sunkentemple_export_2
+  - loc_sunkentemple/sunkentemple_economy
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what history does The Sunken Temple have? tell me about its founding
+  expect_content:
+  - The Sunken Temple
+  expect_key:
+  - loc_sunkentemple/sunkentemple_founding
+  - loc_sunkentemple/sunkentemple_history_1
+  - loc_sunkentemple/sunkentemple_history_2
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what factions and exports define The Sunken Temple?
+  expect_content:
+  - The Sunken Temple
+  expect_key:
+  - loc_sunkentemple/sunkentemple_export_1
+  - loc_sunkentemple/sunkentemple_export_2
+  - loc_sunkentemple/sunkentemple_economy
+  - loc_sunkentemple/sunkentemple_government
+  - loc_sunkentemple/sunkentemple_defense
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: describe the notable buildings and districts in The Sunken Temple
+  expect_content:
+  - The Sunken Temple
+  expect_key:
+  - loc_sunkentemple/sunkentemple_bldg_1
+  - loc_sunkentemple/sunkentemple_bldg_2
+  - loc_sunkentemple/sunkentemple_bldg_3
+  - loc_sunkentemple/sunkentemple_district_1
+  - loc_sunkentemple/sunkentemple_district_2
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what dangers lurk in and around The Sunken Temple?
+  expect_content:
+  - The Sunken Temple
+  expect_key:
+  - loc_sunkentemple/sunkentemple_danger_1
+  - loc_sunkentemple/sunkentemple_danger_2
+  - loc_sunkentemple/sunkentemple_danger_3
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: tell me about the races and religions found in The Sunken Temple
+  expect_content:
+  - The Sunken Temple
+  expect_key: &id002
+  - loc_sunkentemple/sunkentemple_festival
+  - loc_sunkentemple/sunkentemple_religion
+  - loc_sunkentemple/sunkentemple_race_1
+  - loc_sunkentemple/sunkentemple_race_2
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what trade routes connect The Sunken Temple to the wider realm?
+  expect_content:
+  - The Sunken Temple
+  expect_key:
+  - loc_sunkentemple/sunkentemple_trade_1
+  - loc_sunkentemple/sunkentemple_trade_2
+  - loc_sunkentemple/sunkentemple_resource_1
+  - loc_sunkentemple/sunkentemple_resource_2
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: summarize The Sunken Temple's recent events and current status
+  expect_content:
+  - The Sunken Temple
+  expect_key:
+  - loc_sunkentemple/sunkentemple_short_00
+  - loc_sunkentemple/sunkentemple_short_01
+  - loc_sunkentemple/sunkentemple_near_00
+  - loc_sunkentemple/sunkentemple_near_01
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what is the deep lore and ancient history of The Sunken Temple?
+  expect_content:
+  - The Sunken Temple
+  expect_key:
+  - loc_sunkentemple/sunkentemple_founding
+  - loc_sunkentemple/sunkentemple_history_1
+  - loc_sunkentemple/sunkentemple_history_2
+  - loc_sunkentemple/sunkentemple_long_00
+  - loc_sunkentemple/sunkentemple_long_05
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: describe the festivals and culture of The Sunken Temple
+  expect_content:
+  - The Sunken Temple
+  expect_key: *id002
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what resources and natural features does The Sunken Temple have?
+  expect_content:
+  - The Sunken Temple
+  expect_key:
+  - loc_sunkentemple/sunkentemple_river
+  - loc_sunkentemple/sunkentemple_mountain
+  - loc_sunkentemple/sunkentemple_forest
+  - loc_sunkentemple/sunkentemple_biome
+  - loc_sunkentemple/sunkentemple_region
+  - loc_sunkentemple/sunkentemple_trade_1
+  - loc_sunkentemple/sunkentemple_trade_2
+  - loc_sunkentemple/sunkentemple_resource_1
+  - loc_sunkentemple/sunkentemple_resource_2
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: give me a full dossier on The Sunken Temple
+  expect_content:
+  - The Sunken Temple
+  - point-of-interest
+  expect_key:
+  - loc_sunkentemple/sunkentemple_type
+  - loc_sunkentemple/sunkentemple_climate
+  - loc_sunkentemple/sunkentemple_terrain
+  - loc_sunkentemple/sunkentemple_government
+  - loc_sunkentemple/sunkentemple_defense
+  - loc_sunkentemple/sunkentemple_export_1
+  - loc_sunkentemple/sunkentemple_export_2
+  - loc_sunkentemple/sunkentemple_economy
+  - loc_sunkentemple/sunkentemple_founding
+  - loc_sunkentemple/sunkentemple_history_1
+  - loc_sunkentemple/sunkentemple_history_2
+  - loc_sunkentemple/sunkentemple_bldg_1
+  - loc_sunkentemple/sunkentemple_bldg_2
+  - loc_sunkentemple/sunkentemple_bldg_3
+  - loc_sunkentemple/sunkentemple_district_1
+  - loc_sunkentemple/sunkentemple_district_2
+  - loc_sunkentemple/sunkentemple_danger_1
+  - loc_sunkentemple/sunkentemple_danger_2
+  - loc_sunkentemple/sunkentemple_danger_3
+  - loc_sunkentemple/sunkentemple_festival
+  - loc_sunkentemple/sunkentemple_religion
+  - loc_sunkentemple/sunkentemple_race_1
+  - loc_sunkentemple/sunkentemple_race_2
+  - loc_sunkentemple/sunkentemple_trade_1
+  - loc_sunkentemple/sunkentemple_trade_2
+  - loc_sunkentemple/sunkentemple_resource_1
+  - loc_sunkentemple/sunkentemple_resource_2
+  - loc_sunkentemple/sunkentemple_river
+  - loc_sunkentemple/sunkentemple_mountain
+  - loc_sunkentemple/sunkentemple_forest
+  - loc_sunkentemple/sunkentemple_biome
+  - loc_sunkentemple/sunkentemple_region
+  hops: 1
+  quiet_in: *id001

@@ -1,0 +1,280 @@
+- project: char_riva
+  key: riva_name
+  value: Riva Swiftfoot
+  why: character's full name
+- project: char_riva
+  key: riva_race
+  value: Halfling
+  why: fantasy race
+- project: char_riva
+  key: riva_class
+  value: Rogue
+  why: character class
+- project: char_riva
+  key: riva_alignment
+  value: Chaotic Good
+  why: moral alignment
+- project: char_riva
+  key: riva_role
+  value: Major NPC
+  why: narrative role
+- project: char_riva
+  key: riva_level
+  value: '12'
+  why: character level
+- project: char_riva
+  key: riva_background
+  value: soldier
+  why: life background
+- project: char_riva
+  key: riva_age
+  value: '80'
+  why: age in years
+- project: char_riva
+  key: riva_height
+  value: 64 inches
+  why: height
+- project: char_riva
+  key: riva_weight
+  value: 211 lbs
+  why: weight
+- project: char_riva
+  key: riva_stat_str
+  value: '15'
+  why: STR ability score
+- project: char_riva
+  key: riva_stat_str_mod
+  value: '+2'
+  why: STR modifier
+- project: char_riva
+  key: riva_stat_dex
+  value: '13'
+  why: DEX ability score
+- project: char_riva
+  key: riva_stat_dex_mod
+  value: '+1'
+  why: DEX modifier
+- project: char_riva
+  key: riva_stat_con
+  value: '18'
+  why: CON ability score
+- project: char_riva
+  key: riva_stat_con_mod
+  value: '+4'
+  why: CON modifier
+- project: char_riva
+  key: riva_stat_int
+  value: '10'
+  why: INT ability score
+- project: char_riva
+  key: riva_stat_int_mod
+  value: '+0'
+  why: INT modifier
+- project: char_riva
+  key: riva_stat_wis
+  value: '12'
+  why: WIS ability score
+- project: char_riva
+  key: riva_stat_wis_mod
+  value: '+1'
+  why: WIS modifier
+- project: char_riva
+  key: riva_stat_cha
+  value: '11'
+  why: CHA ability score
+- project: char_riva
+  key: riva_stat_cha_mod
+  value: '+0'
+  why: CHA modifier
+- project: char_riva
+  key: riva_skill_athletics
+  value: '+7'
+  why: athletics skill bonus
+- project: char_riva
+  key: riva_skill_acrobatics
+  value: '+4'
+  why: acrobatics skill bonus
+- project: char_riva
+  key: riva_skill_stealth
+  value: '+10'
+  why: stealth skill bonus
+- project: char_riva
+  key: riva_skill_perception
+  value: '+11'
+  why: perception skill bonus
+- project: char_riva
+  key: riva_skill_investigation
+  value: '+12'
+  why: investigation skill bonus
+- project: char_riva
+  key: riva_skill_survival
+  value: '+4'
+  why: survival skill bonus
+- project: char_riva
+  key: riva_skill_intimidation
+  value: '+12'
+  why: intimidation skill bonus
+- project: char_riva
+  key: riva_skill_persuasion
+  value: '+10'
+  why: persuasion skill bonus
+- project: char_riva
+  key: riva_skill_deception
+  value: '+8'
+  why: deception skill bonus
+- project: char_riva
+  key: riva_weapon_1
+  value: battleaxe
+  why: primary weapon
+- project: char_riva
+  key: riva_weapon_2
+  value: handaxe
+  why: secondary weapon
+- project: char_riva
+  key: riva_armor
+  value: leather armor
+  why: worn armor
+- project: char_riva
+  key: riva_shield
+  value: wooden shield
+  why: carried shield
+- project: char_riva
+  key: riva_ranged
+  value: sling
+  why: ranged weapon
+- project: char_riva
+  key: riva_ammo
+  value: 12 arrows/bolts
+  why: ammunition supply
+- project: char_riva
+  key: riva_potion_1
+  value: potion of healing
+  why: healing potion
+- project: char_riva
+  key: riva_potion_2
+  value: potion of invisibility
+  why: special potion
+- project: char_riva
+  key: riva_tool
+  value: thieves' tools
+  why: tool kit
+- project: char_riva
+  key: riva_gold
+  value: 348 gp
+  why: carried gold
+- project: char_riva
+  key: riva_ability_1
+  value: rage
+  why: class ability
+- project: char_riva
+  key: riva_ability_2
+  value: indomitable
+  why: class ability
+- project: char_riva
+  key: riva_ability_3
+  value: uncanny dodge
+  why: combat ability
+- project: char_riva
+  key: riva_spell_1
+  value: bless
+  why: known spell
+- project: char_riva
+  key: riva_spell_2
+  value: haste
+  why: known spell
+- project: char_riva
+  key: riva_spell_3
+  value: dimension door
+  why: known spell
+- project: char_riva
+  key: riva_feat_1
+  value: tough
+  why: character feat
+- project: char_riva
+  key: riva_feat_2
+  value: tough
+  why: character feat
+- project: char_riva
+  key: riva_faction
+  value: Cult of the Black Flame
+  why: faction affiliation
+- project: char_riva
+  key: riva_deity
+  value: Zehir
+  why: worshipped deity
+- project: char_riva
+  key: riva_location
+  value: The Sunken Temple
+  why: current location
+- project: char_riva
+  key: riva_homeland
+  value: Crossroads
+  why: ancestral homeland
+- project: char_riva
+  key: riva_rel_0
+  value: Kael Stormwind (contact)
+  why: contact relationship
+- project: char_riva
+  key: riva_rel_1
+  value: Shade the Whisperer (ally)
+  why: ally relationship
+- project: char_riva
+  key: riva_rel_2
+  value: Kael Stormwind (contact)
+  why: contact relationship
+- project: char_riva
+  key: riva_backstory_0
+  value: Riva Swiftfoot was born in Crossroads to a family of herders.
+  why: personal history
+- project: char_riva
+  key: riva_backstory_1
+  value: As a youth, Riva Swiftfoot stole from a noble.
+  why: personal history
+- project: char_riva
+  key: riva_backstory_2
+  value: Riva Swiftfoot discovered a hidden artifact.
+  why: personal history
+- project: char_riva
+  key: riva_backstory_3
+  value: Now Riva Swiftfoot seeks peace.
+  why: personal history
+- project: char_riva
+  key: riva_quest_1
+  value: Find the Sunken Temple
+  why: current quest
+- project: char_riva
+  key: riva_quest_2
+  value: Defeat the Ashen One
+  why: primary goal
+- project: char_riva
+  key: riva_ideal
+  value: knowledge
+  why: core ideal
+- project: char_riva
+  key: riva_flaw
+  value: cowardice
+  why: character flaw
+- project: char_riva
+  key: riva_bond
+  value: oath
+  why: strong bond
+- project: char_riva
+  key: riva_note_711
+  value: speaks draconic
+  why: notable detail
+- project: char_riva
+  key: riva_note_160
+  value: speaks draconic
+  why: notable detail
+- project: char_riva
+  key: riva_note_886
+  value: trained in heavy armor
+  why: notable detail
+- project: char_riva
+  key: riva_note_619
+  value: carries a lucky charm
+  why: notable detail
+- project: char_riva
+  key: riva_note_673
+  value: carries a lucky charm
+  why: notable detail

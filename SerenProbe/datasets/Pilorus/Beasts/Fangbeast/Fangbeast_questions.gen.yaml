@@ -1,0 +1,195 @@
+# SerenProbe Question Provenance - audit trail
+# Generated for beast
+
+provenance:
+- query: What size class is Fangbeast?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: beast:82 --facts.size_class--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: Is Fangbeast still active?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: beast:82 --facts.active--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: What is the alignment of Fangbeast?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: beast:82 --facts.alignment--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: How many kills does Fangbeast have?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: beast:82 --facts.kills--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: What type of beast is Fangbeast?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: beast:82 --facts.beast_type--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: What is the habitat of Fangbeast?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: beast:82 --facts.habitat--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: What has Fangbeast heard recently about master made a proclamation?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'fangbeast_0 --memory[short]--> fangbeast_82_short_2 (anchor: master made
+      a proclamation)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What has Fangbeast heard recently about arrived carrying news from distant
+    lands?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'fangbeast_0 --memory[short]--> fangbeast_82_short_1 (anchor: arrived carrying
+      news from distant lands)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What has Fangbeast heard recently about land around the forgotten_beast changed?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'fangbeast_0 --memory[short]--> fangbeast_82_short_7 (anchor: land around
+      the forgotten_beast changed)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What has Fangbeast been thinking about makes the forgotten_beast feel fragile?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'fangbeast_0 --memory[short]--> fangbeast_82_short_14 (anchor: makes the
+      forgotten_beast feel fragile)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What has Fangbeast heard recently about nearby field was damaged?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'fangbeast_0 --memory[short]--> fangbeast_82_short_3 (anchor: nearby field
+      was damaged)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What does Fangbeast intend to do about mark my scent across the ridge?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'fangbeast_0 --memory[near]--> fangbeast_82_near_3 (anchor: mark my scent
+      across the ridge)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What has Fangbeast heard recently about Signs of bandits were noted near?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'fangbeast_0 --memory[short]--> fangbeast_82_short_0 (anchor: Signs of bandits
+      were noted near)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What does Fangbeast remember about new region by a natural disaster?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'fangbeast_0 --memory[long]--> fangbeast_82_long_8 (anchor: new region by
+      a natural disaster)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What does Fangbeast intend to do about teach the young ones to stalk?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'fangbeast_0 --memory[near]--> fangbeast_82_near_2 (anchor: teach the young
+      ones to stalk)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What does Fangbeast intend to do about climb the peak and survey?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'fangbeast_0 --memory[near]--> fangbeast_82_near_1 (anchor: climb the peak
+      and survey)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What is known about Velskudel's Last Stand?
+  hops: 1
+  asks: corpus
+  _gen:
+    edge: phantom entity 'Velskudel's Last Stand' -- expect_empty (bait)
+    hops_computed: 1
+    archetype: quiet
+    shortcut_test: passed
+- query: What is the alignment and kills of Fangbeast?
+  hops: 1
+  asks: corpus
+  _gen:
+    edge: loci project 'stats' -- 2 facts, docket coverage
+    hops_computed: 1
+    archetype: briefing
+    shortcut_test: passed
+- query: What is the size class of Fangbeast, and what does Fangbeast recall about
+    teach the young ones to stalk?
+  hops: 2
+  asks: corpus
+  _gen:
+    edge: loci:demographics/size_class + memory:fangbeast_82_near_2 -- answerable
+      only by the fan
+    hops_computed: 2
+    archetype: cross_organ
+    shortcut_test: passed
+- query: What is known about Throgdak the Whisperer?
+  hops: 1
+  asks: corpus
+  _gen:
+    edge: phantom entity 'Throgdak the Whisperer' -- expect_empty (bait)
+    hops_computed: 1
+    archetype: quiet
+    shortcut_test: passed
+- query: What is known about Kragmorn Hollow?
+  hops: 1
+  asks: corpus
+  _gen:
+    edge: phantom entity 'Kragmorn Hollow' -- expect_empty (bait)
+    hops_computed: 1
+    archetype: quiet
+    shortcut_test: passed
+- query: What is the habitat of Fangbeast, and what does Fangbeast recall about delve
+    deeper into the caves?
+  hops: 2
+  asks: corpus
+  _gen:
+    edge: loci:misc/habitat + memory:fangbeast_82_near_4 -- answerable only by the
+      fan
+    hops_computed: 2
+    archetype: cross_organ
+    shortcut_test: passed

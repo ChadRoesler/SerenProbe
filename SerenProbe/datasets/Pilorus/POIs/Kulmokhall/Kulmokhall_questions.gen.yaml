@@ -1,0 +1,218 @@
+# SerenProbe Question Provenance - audit trail
+# Generated for poi
+
+provenance:
+- query: What is the population of Kulmokhall?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: site:None --facts.population--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: What year was Kulmokhall founded?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: site:None --facts.founded_year--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: What type of site is Kulmokhall?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: site:None --facts.site_type--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: Is Kulmokhall a capital?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: site:None --facts.is_capital--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: What does Kulmokhall remember about air smelled of smoke?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'kulmokhall_0 --memory[long]--> kulmokhall_169_long_28 (anchor: air smelled
+      of smoke)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What has Kulmokhall heard recently about site has endured since?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'kulmokhall_0 --memory[short]--> kulmokhall_169_short_8 (anchor: site has
+      endured since)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What has Kulmokhall heard recently about makes the site feel melancholy?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'kulmokhall_0 --memory[short]--> kulmokhall_169_short_12 (anchor: makes
+      the site feel melancholy)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What does Kulmokhall remember about good plan saves lives?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'kulmokhall_0 --memory[long]--> kulmokhall_169_long_16 (anchor: good plan
+      saves lives)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What does Kulmokhall remember about tower's peak to focus magical energies?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'kulmokhall_0 --memory[long]--> kulmokhall_169_long_11 (anchor: tower''s
+      peak to focus magical energies)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What does Kulmokhall worry about regarding many have fallen sick?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'kulmokhall_0 --memory[near]--> kulmokhall_169_near_7 (anchor: many have
+      fallen sick)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What has Kulmokhall heard recently about dispute was settled at the site?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'kulmokhall_0 --memory[short]--> kulmokhall_169_short_5 (anchor: dispute
+      was settled at the site)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What does Kulmokhall intend to do about site will host a ceremony next?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'kulmokhall_0 --memory[near]--> kulmokhall_169_near_3 (anchor: site will
+      host a ceremony next)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What has Kulmokhall heard recently about site's elder made a proclamation?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'kulmokhall_0 --memory[short]--> kulmokhall_169_short_6 (anchor: site''s
+      elder made a proclamation)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What does Kulmokhall remember about raised nearby to house additional works?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'kulmokhall_0 --memory[long]--> kulmokhall_169_long_3 (anchor: raised nearby
+      to house additional works)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What is the site type, founded year and is capital of Kulmokhall?
+  hops: 1
+  asks: corpus
+  _gen:
+    edge: loci project 'geography' -- 3 facts, docket coverage
+    hops_computed: 1
+    archetype: briefing
+    shortcut_test: passed
+- query: What is the ruler of Kulmokhall, and what does Kulmokhall recall about Supplies
+    were stored for the coming?
+  hops: 2
+  asks: corpus
+  _gen:
+    edge: loci:misc/ruler + memory:kulmokhall_169_short_4 -- answerable only by the
+      fan
+    hops_computed: 2
+    archetype: cross_organ
+    shortcut_test: passed
+- query: What is the industry of Kulmokhall, and what does Kulmokhall recall about
+    site has endured since?
+  hops: 2
+  asks: corpus
+  _gen:
+    edge: loci:misc/industry + memory:kulmokhall_169_short_8 -- answerable only by
+      the fan
+    hops_computed: 2
+    archetype: cross_organ
+    shortcut_test: passed
+- query: What is the defenses of Kulmokhall, and what does Kulmokhall recall about
+    nearby ruin was reported?
+  hops: 2
+  asks: corpus
+  _gen:
+    edge: loci:misc/defenses + memory:kulmokhall_169_short_7 -- answerable only by
+      the fan
+    hops_computed: 2
+    archetype: cross_organ
+    shortcut_test: passed
+- query: What is the population and size class of Kulmokhall?
+  hops: 1
+  asks: corpus
+  _gen:
+    edge: loci project 'demographics' -- 2 facts, docket coverage
+    hops_computed: 1
+    archetype: briefing
+    shortcut_test: passed
+- query: What is the size class of Kulmokhall, and what does Kulmokhall recall about
+    raised nearby to house additional works?
+  hops: 2
+  asks: corpus
+  _gen:
+    edge: loci:demographics/size_class + memory:kulmokhall_169_long_3 -- answerable
+      only by the fan
+    hops_computed: 2
+    archetype: cross_organ
+    shortcut_test: passed
+- query: What is known about Velskudel's Last Stand?
+  hops: 1
+  asks: corpus
+  _gen:
+    edge: phantom entity 'Velskudel's Last Stand' -- expect_empty (bait)
+    hops_computed: 1
+    archetype: quiet
+    shortcut_test: passed
+- query: What is the civ of Kulmokhall, and what does Kulmokhall recall about many
+    have fallen sick?
+  hops: 2
+  asks: corpus
+  _gen:
+    edge: loci:origin/civ + memory:kulmokhall_169_near_7 -- answerable only by the
+      fan
+    hops_computed: 2
+    archetype: cross_organ
+    shortcut_test: passed
+- query: What is the primary material of Kulmokhall, and what does Kulmokhall recall
+    about Travelers passed through Turdurnaz and remarked?
+  hops: 2
+  asks: corpus
+  _gen:
+    edge: loci:misc/primary_material + memory:kulmokhall_169_short_3 -- answerable
+      only by the fan
+    hops_computed: 2
+    archetype: cross_organ
+    shortcut_test: passed
+- query: What is known about Zalthar the Unseen?
+  hops: 1
+  asks: corpus
+  _gen:
+    edge: phantom entity 'Zalthar the Unseen' -- expect_empty (bait)
+    hops_computed: 1
+    archetype: quiet
+    shortcut_test: passed

@@ -1,0 +1,353 @@
+questions:
+- asks: loci
+  query: what race is Queen Seraphina?
+  expect_key:
+  - char_seraphina/seraphina_race
+  expect_content: []
+  hops: 1
+  quiet_in: &id001
+  - char_thorn-*
+  - char_elara-*
+  - char_kael-*
+  - char_riva-*
+  - char_zara-*
+  - char_malgor-*
+  - char_vexia-*
+  - char_grul-*
+  - char_shade-*
+  - char_ember-*
+  - char_shadowking-*
+  - char_grickle-*
+  - char_fluffy-*
+  - char_boris-*
+  - char_ferris-*
+  - loc_ironhold-*
+  - loc_silverwood-*
+  - loc_crossroads-*
+  - loc_sunkentemple-*
+  - loc_wyvernspeak-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what class is Queen Seraphina?
+  expect_key:
+  - char_seraphina/seraphina_class
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what alignment does Queen Seraphina have?
+  expect_key:
+  - char_seraphina/seraphina_alignment
+  expect_content:
+  - Lawful Good
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what level is Queen Seraphina?
+  expect_key:
+  - char_seraphina/seraphina_level
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: where is Queen Seraphina's homeland?
+  expect_key:
+  - char_seraphina/seraphina_homeland
+  expect_content:
+  - Silverwood
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what faction does Queen Seraphina follow?
+  expect_key:
+  - char_seraphina/seraphina_faction
+  expect_content:
+  - Crown Loyalists
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what deity does Queen Seraphina worship?
+  expect_key:
+  - char_seraphina/seraphina_deity
+  expect_content:
+  - Corellon
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what str score does Queen Seraphina have?
+  expect_key:
+  - char_seraphina/seraphina_stat_str
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what dex score does Queen Seraphina have?
+  expect_key:
+  - char_seraphina/seraphina_stat_dex
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what con score does Queen Seraphina have?
+  expect_key:
+  - char_seraphina/seraphina_stat_con
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what int score does Queen Seraphina have?
+  expect_key:
+  - char_seraphina/seraphina_stat_int
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what wis score does Queen Seraphina have?
+  expect_key:
+  - char_seraphina/seraphina_stat_wis
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what cha score does Queen Seraphina have?
+  expect_key:
+  - char_seraphina/seraphina_stat_cha
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: tell me about Queen Seraphina's recent encounter — recent encounter near the old road
+  expect_ref:
+  - seraphina_short_00
+  expect_content:
+  - Queen Seraphina survived an ambush near Silverwood last week.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: what happened to Queen Seraphina last week — incident involving a stranger last week
+  expect_ref:
+  - seraphina_short_01
+  expect_content:
+  - Queen Seraphina discovered a hidden passage in the abandoned keep.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: 'what is the lore of the High Elf race: ancient lore of the High Elf people'
+  expect_ref:
+  - seraphina_long_10
+  expect_content:
+  - A crown was forged for Queen Seraphina.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: tell me about the history of Queen Seraphina's homeland — history of the Silverwood region
+  expect_ref:
+  - seraphina_long_20
+  expect_content:
+  - The High Elf once fought a great war against the Underdark Horde.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: what plans does Queen Seraphina have — upcoming journey or expedition
+  expect_ref:
+  - seraphina_near_00
+  expect_content:
+  - Queen Seraphina plans to explore the Sunken Temple next week.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: what upcoming event involves Queen Seraphina — prophecy or omen concerning their future
+  expect_ref:
+  - seraphina_near_01
+  expect_content:
+  - A prophecy warns that the dead will walk soon.
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: tell me about Queen Seraphina — their race, class, and alignment
+  expect_content:
+  - High Elf
+  - Monarch
+  - Lawful Good
+  expect_key:
+  - char_seraphina/seraphina_race
+  - char_seraphina/seraphina_class
+  - char_seraphina/seraphina_alignment
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: describe Queen Seraphina's homeland and the faction they follow
+  expect_content:
+  - Silverwood
+  - Monarch
+  expect_key:
+  - char_seraphina/seraphina_homeland
+  - char_seraphina/seraphina_faction
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: give me a briefing on Queen Seraphina's background and upbringing
+  expect_content:
+  - Silverwood
+  - High Elf
+  expect_key:
+  - char_seraphina/seraphina_backstory_0
+  - char_seraphina/seraphina_backstory_1
+  - char_seraphina/seraphina_backstory_2
+  - char_seraphina/seraphina_backstory_3
+  - char_seraphina/seraphina_homeland
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what weapons and armor does Queen Seraphina carry into battle?
+  expect_content:
+  - Queen Seraphina
+  expect_key:
+  - char_seraphina/seraphina_weapon_1
+  - char_seraphina/seraphina_weapon_2
+  - char_seraphina/seraphina_armor
+  - char_seraphina/seraphina_shield
+  - char_seraphina/seraphina_ranged
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: tell me about Queen Seraphina's physical abilities — strength and dexterity
+  expect_content:
+  - Queen Seraphina
+  expect_key:
+  - char_seraphina/seraphina_stat_str
+  - char_seraphina/seraphina_stat_dex
+  - char_seraphina/seraphina_stat_con
+  - char_seraphina/seraphina_stat_int
+  - char_seraphina/seraphina_stat_wis
+  - char_seraphina/seraphina_stat_cha
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: who is Queen Seraphina and what is their role in the realm?
+  expect_content:
+  - High Elf
+  - Ruler
+  expect_key:
+  - char_seraphina/seraphina_race
+  - char_seraphina/seraphina_class
+  - char_seraphina/seraphina_alignment
+  - char_seraphina/seraphina_level
+  - char_seraphina/seraphina_background
+  - char_seraphina/seraphina_role
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: describe the High Elf race and Queen Seraphina's place among them
+  expect_content:
+  - Silverwood
+  - High Elf
+  expect_key:
+  - char_seraphina/seraphina_race
+  - char_seraphina/seraphina_homeland
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what is known about Queen Seraphina's backstory and early life?
+  expect_content:
+  - Queen Seraphina
+  expect_key:
+  - char_seraphina/seraphina_backstory_0
+  - char_seraphina/seraphina_backstory_1
+  - char_seraphina/seraphina_backstory_2
+  - char_seraphina/seraphina_backstory_3
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: tell me about Queen Seraphina's key abilities and spells
+  expect_content:
+  - Queen Seraphina
+  expect_key:
+  - char_seraphina/seraphina_ability_1
+  - char_seraphina/seraphina_ability_2
+  - char_seraphina/seraphina_ability_3
+  - char_seraphina/seraphina_spell_1
+  - char_seraphina/seraphina_spell_2
+  - char_seraphina/seraphina_spell_3
+  - char_seraphina/seraphina_feat_1
+  - char_seraphina/seraphina_feat_2
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: summarize Queen Seraphina's equipment and carried items
+  expect_content:
+  - Queen Seraphina
+  expect_key:
+  - char_seraphina/seraphina_weapon_1
+  - char_seraphina/seraphina_weapon_2
+  - char_seraphina/seraphina_armor
+  - char_seraphina/seraphina_shield
+  - char_seraphina/seraphina_ranged
+  - char_seraphina/seraphina_potion_1
+  - char_seraphina/seraphina_potion_2
+  - char_seraphina/seraphina_tool
+  - char_seraphina/seraphina_gold
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what relationships does Queen Seraphina have with allies and enemies?
+  expect_content:
+  - Queen Seraphina
+  expect_key:
+  - char_seraphina/seraphina_rel_0
+  - char_seraphina/seraphina_rel_1
+  - char_seraphina/seraphina_rel_2
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: describe Queen Seraphina's current quest and their goals
+  expect_content:
+  - Queen Seraphina
+  expect_key:
+  - char_seraphina/seraphina_quest_1
+  - char_seraphina/seraphina_quest_2
+  - char_seraphina/seraphina_ideal
+  - char_seraphina/seraphina_bond
+  - char_seraphina/seraphina_flaw
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what are Queen Seraphina's ideals, bonds, and flaws?
+  expect_content:
+  - Queen Seraphina
+  expect_key:
+  - char_seraphina/seraphina_ideal
+  - char_seraphina/seraphina_bond
+  - char_seraphina/seraphina_flaw
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: give me a full dossier on Queen Seraphina the Monarch
+  expect_content:
+  - High Elf
+  - Monarch
+  - Lawful Good
+  - Ruler
+  expect_key:
+  - char_seraphina/seraphina_race
+  - char_seraphina/seraphina_class
+  - char_seraphina/seraphina_alignment
+  - char_seraphina/seraphina_race
+  - char_seraphina/seraphina_class
+  - char_seraphina/seraphina_alignment
+  - char_seraphina/seraphina_level
+  - char_seraphina/seraphina_background
+  - char_seraphina/seraphina_backstory_0
+  - char_seraphina/seraphina_backstory_1
+  - char_seraphina/seraphina_backstory_2
+  - char_seraphina/seraphina_backstory_3
+  - char_seraphina/seraphina_rel_0
+  - char_seraphina/seraphina_rel_1
+  - char_seraphina/seraphina_rel_2
+  - char_seraphina/seraphina_quest_1
+  - char_seraphina/seraphina_quest_2
+  - char_seraphina/seraphina_ideal
+  - char_seraphina/seraphina_bond
+  - char_seraphina/seraphina_flaw
+  hops: 1
+  quiet_in: *id001
