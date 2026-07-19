@@ -322,13 +322,13 @@ def _parse_regrades(raw, errors: list[str], warnings: list[str]) -> list[Regrade
                 warnings.append(f"CorpusRegrades {name!r}: unknown knob {key!r} - ignoring "
                                 f"(valid: {sorted(REGRADE_KNOBS)}).")
                 continue
-            if key in KNOBS_NEEDING_CAPABILITY:
-                warnings.append(
-                    f"CorpusRegrades {name!r} sweeps {key!r}, which requires "
-                    f"{KNOBS_NEEDING_CAPABILITY[key]} If the SCC does not implement it, "
-                    f"/configure IGNORES the field and every combo scores identically - an "
-                    f"inert knob that looks exactly like a real ceiling. The regrade will "
-                    f"hard-error unless the SCC advertises {key!r} in GET /stores.")
+            # if key in KNOBS_NEEDING_CAPABILITY:
+            #     warnings.append(
+            #         f"CorpusRegrades {name!r} sweeps {key!r}, which requires "
+            #         f"{KNOBS_NEEDING_CAPABILITY[key]} If the SCC does not implement it, "
+            #         f"/configure IGNORES the field and every combo scores identically - an "
+            #         f"inert knob that looks exactly like a real ceiling. The regrade will "
+            #         f"hard-error unless the SCC advertises {key!r} in GET /stores.")
             want = REGRADE_KNOBS[key]
             vals = val if isinstance(val, list) else [val]
             clean: list = []

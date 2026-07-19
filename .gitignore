@@ -409,6 +409,8 @@ FodyWeavers.xsd
 
 # VS Code files for those working on multiple tools
 .vscode/*
+# Allow a token-free mcp.json to be committed for team rip-and-win convenience
+!.vscode/mcp.json
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
@@ -427,4 +429,41 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
-SerenProbe/SerenProbe/datasets/localstores
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+
+# VS
+.vs/
+*.pyproj.user
+
+# SerenMemory runtime state - never commit someone's memory
+.seren-probe/
+seren-probe.yaml          # may contain a bearer token
+chroma/
+
+# Test artifacts
+.pytest_cache/
+
+# -- Seren-specific ----------------------------------------------------------
+# setuptools-scm writes the tag-derived version here at build time; it ships
+# inside the wheel but must never be committed (it'd go stale instantly).
+**/_version.py
+# Local test-runner output (leaks machine hostname/username into XML).
+
+# -- Python ------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+*.whl

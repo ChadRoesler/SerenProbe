@@ -186,7 +186,9 @@ def _ndcg(top_ids: list[str], relevant: set[str], k: int) -> float:
     Relevance is binary (1 if doc_id in relevant, else 0).
     """
     if not relevant:
-        return 1.0  # edge case: no relevant docs -> perfect score
+        return 0.0  # no resolvable ground truth -> scores like HR/recall (0.0), never a
+                    # free 1.0. A 1.0 here made unscorable questions inflate NDCG: a store
+                    # with HALF its ground truth unresolved reported NDCG 0.978.
 
     dcg = 0.0
     for i, doc_id in enumerate(top_ids):
