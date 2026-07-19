@@ -196,6 +196,18 @@ async function refreshEval() {
   try {
     const data = await api('/eval/results');
     currentEval = data;
+    // No results yet (fresh start/adopt, nothing seeded/scored) -- fall back to
+    // placeholder rows sourced from the running topology, rather than an empty
+    // table that looks indistinguishable from "the app is broken."
+    if (!data.stores || !Object.keys(data.stores).length) {
+      try {
+        const ds = await api('/docker/status');
+        if (ds && (ds.running || ds.managed) && (ds.loci || ds.memory || ds.corpus)) {
+          renderEvalPlaceholder(ds.loci, ds.memory, ds.corpus);
+          return;
+        }
+      } catch (e) { /* fall through to normal empty rendering below */ }
+    }
     const info = document.getElementById('eval-info');
     const qc = data.question_count || data.query_count || 0;
     info.textContent = `${qc} questions · k=${data.k || 10}`;
@@ -227,7 +239,7 @@ async function refreshEval() {
             + `<span class="muted">- real data copied into the container, read-only on the live store. `
             + `Synthetic questions won't match imported data; use this to explore retrieval on real data.</span></div>`;
     }
-    html += '<table class="store-table eval-table"><tr><th>Store</th><th>HR</th><th>MRR</th><th>P@k</th><th>R@k</th><th>NDCG</th><th>IoU</th><th>P-Ω</th><th></th></tr>';
+    html += '<table class="store-table eval-table"><tr><th>Store</th><th>Status</th><th>HR</th><th>MRR</th><th>P@k</th><th>R@k</th><th>NDCG</th><th>IoU</th><th>P-Ω</th><th></th></tr>';
     for (const [name, m] of Object.entries(data.stores || {})) {
       const a = m.aggregate || m;   // metrics live under .aggregate (snapshot shape)
       const f = (x) => (a[x] || 0).toFixed(3);
@@ -268,6 +280,7 @@ async function refreshEval() {
         ? '<span class="muted" title="vacuous: NDCG is 1.0 when the relevant set is empty, and a decoy has no relevant docs by design">\u2014</span>'
         : f('ndcg');
       html += `<tr class="${rowcls}"><td class="sname">${escapeHtml(name)}${badge}</td>`
+            + `<td class="mval prog-cell" id="prog-${escapeHtml(name)}">done</td>`
             + `<td class="mval">${f('hit_rate')}</td><td class="mval">${f('mrr')}</td><td class="mval">${f('precision')}</td><td class="mval">${f('recall')}</td>`
             + `<td class="mval">${ndcgCell}</td><td class="mval">${f('iou')}</td><td class="mval">${f('prec_omega')}</td><td>${tail}</td></tr>`;
     }
@@ -322,12 +335,78 @@ function renderDocket(d) {
   return h;
 }
 
+// ── Live progress polling ──────────────────────────────────────────
+// The /eval/seed and /eval/run requests BLOCK until the whole operation is
+// done (run_in_threadpool holds the request open) -- so there is no response
+// to read progress FROM. Instead we poll a separate, cheap GET on an interval
+// while that request is in flight, and paint whatever X/Y it reports onto the
+// matching row's Status cell by store name. Stops itself (clearInterval) the
+// moment the caller's await resolves, success or failure.
+let _progressTimer = null;
+
+function _renderProgressCell(row) {
+  if (!row) return '-';
+  const phase = row.phase === 'eval' ? 'eval' : 'seed';
+  if (row.done) return `${phase} ${row.current}/${row.total}`;
+  return `${phase} ${row.current}/${row.total}…`;
+}
+
+function startProgressPolling() {
+  stopProgressPolling();
+  _progressTimer = setInterval(async () => {
+    try {
+      const snap = await api('/eval/progress');
+      for (const [name, row] of Object.entries(snap || {})) {
+        const cell = document.getElementById(`prog-${name}`);
+        if (cell) cell.textContent = _renderProgressCell(row);
+      }
+    } catch (e) { /* transient - next tick will retry */ }
+  }, 1000);
+}
+
+function stopProgressPolling() {
+  if (_progressTimer) {
+    clearInterval(_progressTimer);
+    _progressTimer = null;
+  }
+}
+
+async function runSeedOnly() {
+  const btn = document.getElementById('seed-stores');
+  const orig = btn.textContent;
+  btn.textContent = 'seeding…';
+  btn.disabled = true;
+  startProgressPolling();
+  try {
+    const data = await api('/eval/seed', { method: 'POST' });
+    if (data && data.ok) {
+      if (data.note) alert(data.note);
+    } else {
+      alert('Seed failed: ' + (data && data.error || 'unknown'));
+    }
+  } catch (e) {
+    alert('Seed error: ' + (e.message || e));
+  } finally {
+    stopProgressPolling();
+    btn.textContent = orig;
+    btn.disabled = false;
+  }
+}
+
 async function runEval() {
   const btn = document.getElementById('run-eval');
   const orig = btn.textContent;
   btn.textContent = 'running…';
   btn.disabled = true;
+  startProgressPolling();
   try {
+    // NO seed:false here. Evaluate is split from the explicit 🌱 Seed button, but
+    // /eval/run's own guard (ts_seeded/force_reseed) already refuses to seed a pod
+    // twice -- so on a FRESH pod this button must still be allowed to seed once,
+    // otherwise there is nothing to score and expect_ref questions fail loudly
+    // with "GROUND TRUTH MISSING" even though the topology is perfectly healthy.
+    // Forcing seed:false here made Evaluate useless as a first action; 🌱 Seed
+    // stays useful for "seed now, evaluate later" and for reseeding via reseed:true.
     const data = await api('/eval/run', { method: 'POST' });
     if (data && data.ok) {
       await refreshEval();
@@ -337,6 +416,7 @@ async function runEval() {
   } catch (e) {
     alert('Eval error: ' + (e.message || e));
   } finally {
+    stopProgressPolling();
     btn.textContent = orig;
     btn.disabled = false;
   }
@@ -528,6 +608,30 @@ async function refreshDocker() {
   }
 }
 
+// PLACEHOLDER ROWS. Right after docker_start/docker_adopt hand back the topology's
+// store names, the Eval tab has nothing to show yet -- no seed has run, no eval has
+// scored anything -- but "loading…" (or a blank table) looks like the app is stuck,
+// not like the fleet just came up. Render every known store immediately with "-" in
+// every column so the operator sees the shape of the topology right away; refreshEval()
+// overwrites this with real numbers the moment /eval/seed or /eval/run actually finishes.
+function renderEvalPlaceholder(loci, memory, corpus) {
+  const body = document.getElementById('eval-body');
+  if (!body) return;
+  const names = [...(loci || []), ...(memory || []), ...(corpus || [])];
+  if (!names.length) return;
+  let html = '<table class="store-table eval-table"><tr><th>Store</th><th>Status</th><th>HR</th><th>MRR</th><th>P@k</th><th>R@k</th><th>NDCG</th><th>IoU</th><th>P-Ω</th><th></th></tr>';
+  for (const name of names) {
+    html += `<tr><td class="sname">${escapeHtml(name)}</td>`
+          + `<td class="mval prog-cell" id="prog-${escapeHtml(name)}">-</td>`
+          + '<td class="mval">-</td><td class="mval">-</td><td class="mval">-</td><td class="mval">-</td>'
+          + '<td class="mval">-</td><td class="mval">-</td><td class="mval">-</td><td></td></tr>';
+  }
+  html += '</table>';
+  body.innerHTML = html;
+  const info = document.getElementById('eval-info');
+  if (info) info.textContent = `${names.length} stores · not yet seeded/evaluated`;
+}
+
 async function dockerStart() {
   const btn = document.getElementById('docker-start');
   const orig = btn.textContent;
@@ -537,6 +641,7 @@ async function dockerStart() {
     const data = await api('/docker/start', { method: 'POST' });
     if (data && data.ok) {
       await refreshDocker();
+      renderEvalPlaceholder(data.loci, data.memory, data.corpus);
     } else {
       alert('Docker start failed: ' + (data && data.error || 'unknown'));
     }
@@ -802,6 +907,8 @@ async function saveConfig() {
 
 document.addEventListener('DOMContentLoaded', function() {
   // Wire run buttons
+  const seedStoresBtn = document.getElementById('seed-stores');
+  if (seedStoresBtn) seedStoresBtn.addEventListener('click', runSeedOnly);
   const runEvalBtn = document.getElementById('run-eval');
   if (runEvalBtn) runEvalBtn.addEventListener('click', runEval);
   const runRegradeBtn = document.getElementById('run-regrade');
@@ -908,6 +1015,7 @@ async function offerAdoption() {
         // The Docker view may already have rendered "nothing running"; force both
         // panels to re-read now that app.state actually has the fleet attached.
         if (typeof refreshDocker === 'function') refreshDocker();
+        if (typeof renderEvalPlaceholder === 'function') renderEvalPlaceholder(d.loci, d.memory, d.corpus);
         if (typeof refreshEval === 'function') refreshEval();
       } else {
         bar.className = 'note adopt-note err';

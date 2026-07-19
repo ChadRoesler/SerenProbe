@@ -545,7 +545,22 @@ class _StorePartial:
     refs: list = field(default_factory=list)        # memory: (ref, minted_id)
 
 
-def _seed_one_store(name: str, items: list, url: str, kind: str, post, delete) -> _StorePartial:
+def _seed_item_weight(kind: str, item) -> int:
+    """Units of WORK one item costs, for progress totals -- not a count of items.
+
+    Loci and short/near memory items are one HTTP call each. A long-tier memory
+    item is THREE: POST /short (write it), POST /short/{id}/promote (promote it),
+    DELETE /short/{id} (clean up the now-superseded short copy). Counting it as 1
+    would make the progress bar visibly LIE for any corpus with long-tier items --
+    it would race ahead on short/near items, then crawl through long ones at a
+    third of the apparent rate for no visible reason.
+    """
+    if kind == "loci":
+        return 1
+    return 3 if getattr(item, "tier", None) == "long" else 1
+
+
+def _seed_one_store(name: str, items: list, url: str, kind: str, post, delete, on_progress=None) -> _StorePartial:
     """Seed ONE store, SERIALLY. Runs in its own worker thread.
 
     Writes stay in file order on purpose. Order is semantically load-bearing in a
@@ -554,6 +569,11 @@ def _seed_one_store(name: str, items: list, url: str, kind: str, post, delete) -
     parallelise ACROSS stores (independent processes, independent databases) and
     never WITHIN one. Wall clock goes from sum(store_times) to max(store_times);
     the contents of each store are unchanged.
+
+    on_progress(delta), if given, is called after EACH underlying HTTP call --
+    once for a loci fact, once for a short/near write, and once each for a long
+    item's write/promote/delete -- so the caller's X/Y advances by exactly the
+    same units _seed_item_weight counted into the total.
     """
     p = _StorePartial()
     if kind == "loci":
@@ -562,6 +582,8 @@ def _seed_one_store(name: str, items: list, url: str, kind: str, post, delete) -
                                 "value": it.value, "why": it.why})
             p.keys.append(f"{it.project}/{it.key}")
             p.count += 1
+            if on_progress:
+                on_progress(1)
         return p
 
     for it in items:
@@ -570,17 +592,30 @@ def _seed_one_store(name: str, items: list, url: str, kind: str, post, delete) -
             if it.topic:
                 body["topic"] = it.topic
             resp = post(url, "/near", body)
+            if on_progress:
+                on_progress(1)
         else:
             body = {"content": it.text}
             if it.topic:
                 body["topic"] = it.topic
             resp = post(url, "/short", body)
+            if on_progress:
+                on_progress(1)
             if it.tier == "long":
                 sid = (resp or {}).get("id", "")
                 if sid:
                     post(url, f"/short/{sid}/promote", {})
+                    if on_progress:
+                        on_progress(1)
                     if delete is not None:
                         delete(url, f"/short/{sid}")
+                    # The delete is skipped when no `delete` callable is passed (some
+                    # callers seed without one). The item was still COUNTED as 3 units
+                    # in the total, so we still bump the 3rd unit here -- otherwise a
+                    # deliberately delete-less caller would leave every long item
+                    # permanently at 2/3 and the bar would never reach 100%.
+                    if on_progress:
+                        on_progress(1)
         minted = (resp or {}).get("id", "")
         if it.ref and minted:
             p.refs.append((it.ref, minted))
@@ -589,7 +624,7 @@ def _seed_one_store(name: str, items: list, url: str, kind: str, post, delete) -
 
 
 def seed_from_plan(topology: CompiledTopology, seed_by_store: dict, url_of: dict[str, str],
-                   post, delete=None, max_parallel_stores: int = 8) -> SeedResult:
+                   post, delete=None, max_parallel_stores: int = 8, report_progress: bool = False) -> SeedResult:
     """Seed each live store from a RESOLVED plan (store_name -> [LociItem|MemoryItem]).
 
     The resolver already decided which store gets which content (kind defaults,
@@ -612,6 +647,13 @@ def seed_from_plan(topology: CompiledTopology, seed_by_store: dict, url_of: dict
     max_parallel_stores bounds the fan. Unbounded fan-out on a big topology would
     open a hundred simultaneous connections and DoS your own Docker host; a default
     of 8 is plenty for any realistic multi-brain layout and cheap to raise.
+
+    report_progress publishes live X/Y counters to runtime.progress for the UI's
+    status column, keyed by store name, weighted by _seed_item_weight so a long
+    memory item (write+promote+delete = 3 calls) advances the bar three times as
+    much as a short/near item or a loci fact. False by default -- most callers
+    (tests, rehydration re-seeds) have no UI polling it and shouldn't pay the
+    (tiny) locking cost or leave stale rows behind.
     """
     from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -637,14 +679,44 @@ def seed_from_plan(topology: CompiledTopology, seed_by_store: dict, url_of: dict
     width = max(1, min(int(max_parallel_stores or 1), len(tasks)))
     partials: dict[str, _StorePartial] = {}
 
+    progress_bumps: dict[str, callable] = {}
+    # Bound unconditionally, so the guards below test the VALUE rather than trusting
+    # two `if report_progress:` blocks to stay in agreement forever. The old shape
+    # only imported _progress inside the flag check and then referenced it inside a
+    # closure under a second copy of the same check -- correct today, possibly-unbound
+    # to any reader or linter, and one edit away from a NameError that only fires when
+    # the UI is watching.
+    #
+    # Relative import, matching every other cross-module reference in this package.
+    # The absolute `from seren_probe.runtime import progress` that was here works
+    # right up until the package is vendored, renamed, or imported under a different
+    # top-level name.
+    _progress = None
+    if report_progress:
+        from ..runtime import progress as _progress
+        for name, items, url, kind in tasks:
+            total = sum(_seed_item_weight(kind, it) for it in items)
+            _progress.start(name, "seed", total)
+            progress_bumps[name] = (lambda n: lambda delta: _progress.bump(n, delta))(name)
+
+    def _seed_and_finish(name, items, url, kind):
+        try:
+            return _seed_one_store(name, items, url, kind, post, delete, progress_bumps.get(name))
+        finally:
+            # finish() in a finally, so a store that RAISES still stops reporting a
+            # half-filled bar forever. A stuck row reads as "still working" and there
+            # is nothing left to work.
+            if _progress is not None:
+                _progress.finish(name)
+
     if width == 1:
         # Explicit serial path. Keeps single-store topologies (and every test that
         # injects a fake transport) on a plain, thread-free code path.
         for name, items, url, kind in tasks:
-            partials[name] = _seed_one_store(name, items, url, kind, post, delete)
+            partials[name] = _seed_and_finish(name, items, url, kind)
     else:
         with ThreadPoolExecutor(max_workers=width, thread_name_prefix="seren-seed") as pool:
-            futures = {pool.submit(_seed_one_store, name, items, url, kind, post, delete): name
+            futures = {pool.submit(_seed_and_finish, name, items, url, kind): name
                        for name, items, url, kind in tasks}
             for fut in as_completed(futures):
                 # .result() RE-RAISES a worker's exception on the main thread. A store
@@ -670,7 +742,7 @@ def seed_from_plan(topology: CompiledTopology, seed_by_store: dict, url_of: dict
 
 
 def rehydrate_ref_map(topology: CompiledTopology, seed_by_store: dict, url_of: dict[str, str],
-                      post) -> tuple[dict[str, str], list[str]]:
+                      post, max_parallel_stores: int = 8, max_parallel_items: int = 8) -> tuple[dict[str, str], list[str]]:
     """Rebuild ref -> minted-id WITHOUT reseeding, by finding each seeded memory
     item's EXACT text in the live store. Returns (ref_to_id, unresolved_refs).
 
@@ -695,30 +767,29 @@ def rehydrate_ref_map(topology: CompiledTopology, seed_by_store: dict, url_of: d
     comes back in `unresolved`, and the caller must SHOUT about it rather than quietly
     score it as a miss. An unresolvable answer key is a broken harness, not a failing
     store.
+
+    CONCURRENCY -- this used to be one giant serial loop: every seeded memory item,
+    across every store, one /search at a time. On an already-seeded/adopted pod that
+    is the FIRST thing eval does, before the store fan-out even starts, and on a
+    ~2000-item corpus it ran for MINUTES before a single result appeared -- indistinguishable
+    from a hang. Same template as seed_from_plan: parallel ACROSS stores (independent
+    containers), and within one store, its own items' /search calls also fan out
+    (bounded separately -- concurrent traffic against the SAME container). Merge stays
+    in store order so the result is deterministic regardless of completion order.
     """
+    from concurrent.futures import ThreadPoolExecutor, as_completed
     from .metrics import normalize_text
     mem_names = {n.name for n in topology.memory}
-    ref_to_id: dict[str, str] = {}
-    unresolved: list[str] = []
-    for name, items in (seed_by_store or {}).items():
-        if name not in mem_names:
-            continue
-        url = url_of.get(name)
-        if not url:
-            continue
-        for it in items:
-            ref = getattr(it, "ref", None)
-            if not ref:
-                continue
+
+    def _rehydrate_one_store(name: str, items: list, url: str) -> tuple[dict[str, str], list[str]]:
+        refed = [it for it in items if getattr(it, "ref", None)]
+        if not refed:
+            return {}, []
+
+        def _bind(it) -> tuple[str, str, str]:
+            """Returns (ref, want_text_marker, hit_id) -- hit_id '' means unresolved."""
             want = normalize_text(it.text)
             try:
-                # n_results=50, not 10. The corpus this exists for is ~2000 TEMPLATED,
-                # near-duplicate entries ("<thing> happened at <station> on <time>"), and
-                # searching for an item's own exact text does NOT reliably surface it in
-                # the top 10 -- dozens of siblings score just as well. At n=10, NINE refs
-                # failed to bind on orkrail, and each unbound ref then scored as a
-                # vacuously-perfect ndcg=1.0 (empty relevant), which is the metric
-                # flattering a HOLE. 50 is SerenMemory's own per-request cap.
                 resp = post(url, "/search", {"query": it.text, "n_results": 50,
                                             "include_short": True, "include_near": True,
                                             "include_long": True, "include_superseded": False})
@@ -731,11 +802,47 @@ def rehydrate_ref_map(topology: CompiledTopology, seed_by_store: dict, url_of: d
                 if normalize_text(body) == want:   # EXACT, not "close enough"
                     hit_id = h.get("id", "")
                     break
+            return it.ref, hit_id
+
+        store_ref_to_id: dict[str, str] = {}
+        store_unresolved: list[str] = []
+        width = max(1, min(int(max_parallel_items or 1), len(refed)))
+        if width == 1:
+            bound = [_bind(it) for it in refed]
+        else:
+            with ThreadPoolExecutor(max_workers=width, thread_name_prefix="seren-rehydrate") as pool:
+                bound = list(pool.map(_bind, refed))
+        for ref, hit_id in bound:
             if hit_id:
-                ref_to_id[f"{name}:{ref}"] = hit_id
-                ref_to_id.setdefault(ref, hit_id)
+                store_ref_to_id[f"{name}:{ref}"] = hit_id
+                store_ref_to_id.setdefault(ref, hit_id)
             else:
-                unresolved.append(f"{name}:{ref}")
+                store_unresolved.append(f"{name}:{ref}")
+        return store_ref_to_id, store_unresolved
+
+    tasks = [(name, items, url_of.get(name)) for name, items in (seed_by_store or {}).items()
+             if name in mem_names and url_of.get(name)]
+    if not tasks:
+        return {}, []
+
+    width = max(1, min(int(max_parallel_stores or 1), len(tasks)))
+    partials: dict[str, tuple[dict[str, str], list[str]]] = {}
+    if width == 1:
+        for name, items, url in tasks:
+            partials[name] = _rehydrate_one_store(name, items, url)
+    else:
+        with ThreadPoolExecutor(max_workers=width, thread_name_prefix="seren-rehydrate-store") as pool:
+            futures = {pool.submit(_rehydrate_one_store, name, items, url): name
+                       for name, items, url in tasks}
+            for fut in as_completed(futures):
+                partials[futures[fut]] = fut.result()
+
+    ref_to_id: dict[str, str] = {}
+    unresolved: list[str] = []
+    for name, _items, _url in tasks:          # store order -> deterministic merge
+        store_ref_to_id, store_unresolved = partials[name]
+        ref_to_id.update(store_ref_to_id)
+        unresolved.extend(store_unresolved)
     return ref_to_id, unresolved
 
 

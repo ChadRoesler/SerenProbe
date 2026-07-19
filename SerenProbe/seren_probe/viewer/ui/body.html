@@ -17,15 +17,17 @@
     <div class="panel-header">
       <div class="info" id="eval-info">-</div>
       <div class="ctrls">
-        <button class="btn" id="run-eval" title="Run full evaluation against live stores">▶ Run Eval</button>
+        <button class="btn" id="seed-stores" title="Seed the running stores from the ProbeConfig - no scoring">🌱 Seed</button>
+        <button class="btn" id="run-eval" title="Evaluate the stores - seeds a fresh pod once automatically, then scores">▶ Evaluate</button>
         <button class="btn" id="run-regrade" title="Sweep the ProbeConfig's CorpusRegrades sets against the corpora">⚙ Regrades</button>
         <button data-refresh="eval">↻</button>
       </div>
     </div>
     <div class="note">
       <span class="label">tip:</span>
-      Scores your ProbeConfig's questions across every store - seeds are config-driven,
-      no separate upload. Negative-test stores read as ✓ stayed quiet / ✗ leaked.
+      <b>🌱 Seed</b> loads the ProbeConfig's data into the stores ahead of time; <b>▶ Evaluate</b>
+      scores the questions, seeding a fresh (never-seeded) pod once automatically if you skip
+      Seed. Negative-test stores read as ✓ stayed quiet / ✗ leaked.
     </div>
     <div id="eval-body" class="loading">loading…</div>
     <div id="regrade-body"></div>

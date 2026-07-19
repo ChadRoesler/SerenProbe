@@ -39,16 +39,24 @@ refuses the write at the transport even if someone finds a fifth way in.
 Do not reintroduce a module-level default that names a live port. There is no
 safe way to hold that.
 
-CONCURRENCY: stores run IN PARALLEL (each is a separate container - loci, memory,
-and corpus columns share nothing but the read-only ref_to_id/gt_notes lookups and
-the lock-protected write_guard allowlist), and WITHIN one store, its own questions'
-/search calls also fan out (bounded separately, since that's concurrent traffic
-against the SAME container). Grading itself stays single-threaded per store - only
-the network fetch is parallelized, so nothing needs to lock the per-store
-accumulators. A failing store or a failing question's search does NOT abort the
-run: eval is read-only, so isolating the failure and reporting it inline (an
-"error" snapshot for a store, a scored miss for a question) beats losing every
-other column over one flaky container. See run_topology_evaluation's docstring.
+CONCURRENCY: loci and memory stores run IN PARALLEL (each is a separate container,
+sharing nothing but the read-only ref_to_id/gt_notes lookups and the lock-protected
+write_guard allowlist). CORPUS columns run STRICTLY SERIALLY, after all of them: an
+SCC holds no data and fans into member containers that other columns also fan into,
+so a corpus running alongside its own members -- or alongside another corpus that
+overlaps it -- multiplies load rather than adding a worker. WITHIN one store, its
+own questions' /search calls can fan out (bounded separately, since that is
+concurrent traffic against the SAME container; the routes default it to 1).
+Grading itself stays single-threaded per store - only the network fetch is
+parallelized, so nothing needs to lock the per-store accumulators.
+
+A failing store or a failing question's search does NOT abort the run: eval is
+read-only, so isolating the failure and reporting it inline beats losing every
+other column over one flaky container. A failed SEARCH is EXCLUDED from the
+metrics, never scored as a miss -- "the store was asked and had nothing" and "the
+store was never successfully asked" mean opposite things, and collapsing them
+manufactures clean-looking zeros out of infrastructure trouble. See
+run_topology_evaluation's docstring.
 """
 from __future__ import annotations
 
@@ -195,7 +203,8 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
                             seed_result=None, questions_by_store=None,
                             k: int = 10, post=post, delete=_delete, get_params=_get_params,
                             seed: bool = True, max_parallel_stores: int = 8,
-                            max_parallel_questions: int = 8) -> dict:
+                            max_parallel_questions: int = 8,
+                            report_progress: bool = False) -> dict:
     """Eval every store in a compiled topology as a dynamic column against the
     uploaded questions. Seeds via seed_from_plan first (unless a seed_result is
     passed or seed=False). Transport is injectable for testing; defaults hit the
@@ -204,21 +213,33 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
     CONCURRENCY -- mirrors seeding's template (bounded ThreadPoolExecutor,
     width==1 runs thread-free, parallel-across / serial-within):
 
-      max_parallel_stores: stores are independent containers, so they run
-        concurrently up to this width. A store that raises does NOT sink the
-        run -- it's read-only, so the failure is isolated and reported as an
-        "error" snapshot for that column while every other store finishes and
-        scores normally.
+      max_parallel_stores: LOCI AND MEMORY stores are independent containers, so
+        they run concurrently up to this width, in a first wave. CORPUS columns
+        then run one at a time regardless of this setting -- they fan into member
+        containers that other columns share, so parallel corpora contend by
+        construction. Also forwarded to seed_from_plan. A store that raises does
+        NOT sink the run -- it's read-only, so the failure is isolated and
+        reported as an "error" snapshot for that column while every other store
+        finishes and scores normally.
 
       max_parallel_questions: WITHIN one store, that store's own /search calls
         also fan out up to this width (bounded separately -- it's concurrent
-        traffic against the SAME container, not independent containers). A
-        question whose search blows up is isolated the same way: scored as a
-        miss (empty hits) rather than losing the rest of that store's column.
+        traffic against the SAME container, not independent containers). The
+        routes pass 1 by default, so this is opt-in. A question whose search
+        blows up is EXCLUDED from that store's metrics and counted in
+        search_error_count -- not scored as a miss. A question that was never
+        successfully asked carries no evidence either way, and averaging it in
+        as a zero reports a retrieval failure that did not happen.
         Grading stays single-threaded per store; only the network fetch is
         parallelized, so the accumulators below never need a lock.
 
     Returns {stores: {name: snapshot+kind+flags}, question_count, topology, k, date}.
+
+    report_progress: publish live X/Y counters to runtime.progress for the UI's
+    status column -- "seed" units while seed_from_plan is writing (weighted, see
+    _seed_item_weight), then "eval" units (one per question scored) once each
+    store's eval_store phase starts. False by default so tests and non-UI callers
+    don't pay for a registry nobody is polling.
     """
     from datetime import datetime
     from ..core.seed_dataset import seed_from_plan, rehydrate_ref_map
@@ -232,7 +253,14 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
     allow_targets(url_of.values())
 
     if seed and seed_result is None and seed_by_store is not None:
-        seed_result = seed_from_plan(topology, seed_by_store, url_of, post=post, delete=delete)
+        # max_parallel_stores is forwarded, not left to seed_from_plan's own default.
+        # Both defaults are 8, so this LOOKED correct while doing nothing: an operator
+        # passing max_parallel_stores=2 to ease load on a small host got a throttled
+        # eval and a seed still fanning at 8. Two knobs that agree by coincidence are
+        # one knob that silently ignores you.
+        seed_result = seed_from_plan(topology, seed_by_store, url_of, post=post, delete=delete,
+                                     max_parallel_stores=max_parallel_stores,
+                                     report_progress=report_progress)
     ref_to_id = seed_result.ref_to_id if seed_result else {}
     gt_notes: list[str] = []
 
@@ -263,7 +291,15 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
         return any(key.endswith(suffix) and val for key, val in ref_to_id.items())
 
     if needed_refs and not ref_to_id and seed_by_store:
-        ref_to_id, unresolved = rehydrate_ref_map(topology, seed_by_store, url_of, post)
+        logger.info("eval: rehydrating ref->id map for an already-seeded pod "
+                    "(max_parallel_stores=%d, max_parallel_items=%d)...",
+                    max_parallel_stores, max_parallel_questions)
+        _t0 = time.monotonic()
+        ref_to_id, unresolved = rehydrate_ref_map(
+            topology, seed_by_store, url_of, post,
+            max_parallel_stores=max_parallel_stores, max_parallel_items=max_parallel_questions)
+        logger.info("eval: rehydration finished in %.2fs (%d refs bound, %d unresolved)",
+                    time.monotonic() - _t0, len(ref_to_id), len(unresolved))
         if ref_to_id:
             gt_notes.append(
                 f"stores were already seeded, so the ref->id map was rebuilt from the live "
@@ -347,7 +383,7 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
                     for s in (c.stores if c else []) if s.name in _loci_urls]
         return []          # memory has no /fact; expect_key on a memory question is already warned
 
-    def eval_store(name, url, kind, qs, fact_urls, max_parallel_questions=8):
+    def eval_store(name, url, kind, qs, fact_urls, max_parallel_questions=8, on_progress=None):
         _key_cache: dict[str, str] = {}
         _fact_by_store = dict(fact_urls)
         _ambiguous_keys: set[str] = set()
@@ -477,7 +513,16 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
         # the only two things that change the result for a given store.
         _search_cache: dict[tuple, list] = {}
         _search_lock = threading.Lock()
-        def _search(query: str) -> list:
+        # A FAILED SEARCH IS NOT A MISS. Kept separate from hits, because the two are
+        # indistinguishable once they reach the metrics and they mean opposite things:
+        # "the store was asked and had nothing" vs "the store was never successfully
+        # asked". Scoring the second as the first manufactures clean-looking zeros out
+        # of infrastructure trouble -- observed live when corpus columns ran concurrently
+        # with the member containers they fan into, and every per-entity SCC collapsed
+        # from ~0.8 to 0.000 while its own members stayed healthy.
+        _search_errors: dict[str, str] = {}
+        def _search(query: str):
+            """hits list, or None if the request itself failed. None != []."""
             ck = (query, k)
             with _search_lock:
                 cached = _search_cache.get(ck)
@@ -487,10 +532,13 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
                 resp = post(url, "/search", _search_payload(kind, query, k))
                 hits = resp.get("hits", []) if isinstance(resp, dict) else []
             except Exception as exc:
-                # Isolated per-question failure: a flaky search scores as a miss
-                # (empty hits), not a lost column -- eval is read-only.
+                # Do NOT cache this. The old code stored [] on the failure path, so a
+                # single transient timeout poisoned every later question sharing that
+                # query text -- one flake became a column of zeros.
                 logger.warning("search failed for %r on %s: %s", query, name, exc)
-                hits = []
+                with _search_lock:
+                    _search_errors[query] = f"{type(exc).__name__}: {exc}"
+                return None
             with _search_lock:
                 _search_cache[ck] = hits
             return hits
@@ -500,14 +548,42 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
             max_parallel_questions. Order-preserving: results come back aligned
             with qlist regardless of completion order."""
             if len(qlist) <= 1 or max_parallel_questions <= 1:
-                return [_search(q.query) for q in qlist]
+                out = []
+                for q in qlist:
+                    out.append(_search(q.query))
+                    if on_progress:
+                        on_progress(1)
+                return out
             from concurrent.futures import ThreadPoolExecutor
             width = min(max_parallel_questions, len(qlist))
+            # BUMP INSIDE THE WORKER, not after the map.
+            #
+            # ex.map does not return until EVERY future has completed, so a single
+            # on_progress(len(qlist)) call afterwards leaves the counter pinned at 0/N
+            # for the whole store and then snaps to N/N when there is nothing left to
+            # report. The bar is dead exactly where it is needed -- the stores slow
+            # enough to run parallel are the only ones anyone watches -- and it looks
+            # healthy the entire time, because the denominator is right and it does
+            # eventually arrive. progress.bump is lock-scoped and cheap; it is built to
+            # be called from workers.
+            def _one(q):
+                hits = _search(q.query)
+                if on_progress:
+                    on_progress(1)
+                return hits
             with ThreadPoolExecutor(max_workers=width) as ex:
-                return list(ex.map(lambda q: _search(q.query), qlist))
+                out = list(ex.map(_one, qlist))
+            return out
 
         normal_hits = _search_many(normal_qs)
+        scored_qs = 0
         for q, hits in zip(normal_qs, normal_hits):
+            # EXCLUDED, not zeroed. A question whose search never completed was never
+            # actually asked, so it carries no evidence either way -- averaging it in as
+            # a miss reports a retrieval failure that did not happen.
+            if hits is None:
+                continue
+            scored_qs += 1
             if hits:
                 pos_tops.append(float(hits[0].get("score", 0.0) or 0.0))
             retrieved, relevant, cov, den = _grade(hits, q, kind, resolve_key, resolve_ref, k)
@@ -517,7 +593,12 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
             m.docket_coverages = coverages
             m.docket_densities = densities
         snap = m.snapshot()
-        snap["kind"] = kind; snap["question_count"] = len(normal_qs); snap["k"] = k
+        snap["kind"] = kind; snap["question_count"] = scored_qs; snap["k"] = k
+        # question_count is now questions SCORED, so it no longer silently equals
+        # questions ASKED. The gap is the error count, reported right beside it -- a
+        # column that scored 3 of 28 should say so on the same line as its metrics.
+        if len(normal_qs) != scored_qs:
+            snap["unscored_normal"] = len(normal_qs) - scored_qs
 
         # expect_empty (no-answer) questions: PASS = the store stays quiet (0 hits).
         # Scored SEPARATELY so a correct silence doesn't drag down hit_rate. A store
@@ -525,13 +606,18 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
         # the signal. Lexical Loci / a floored SCC can return nothing -> can pass.
         if empty_qs:
             passes = 0
+            asked = 0
             empty_hits = _search_many(empty_qs)
             for hits in empty_hits:
+                if hits is None:
+                    continue          # never asked; cannot have stayed quiet OR leaked
+                asked += 1
                 if not hits:
                     passes += 1
-            snap["empty_count"] = len(empty_qs)
-            snap["empty_passes"] = passes
-            snap["empty_pass_rate"] = passes / len(empty_qs)
+            if asked:
+                snap["empty_count"] = asked
+                snap["empty_passes"] = passes
+                snap["empty_pass_rate"] = passes / asked
 
         # quiet_in (NON-LEAKAGE) questions: PASS = this store does not SURFACE the answer.
         #
@@ -553,7 +639,14 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
             margins: list[float] = []
             leaked_queries: list[str] = []
             quiet_hits = _search_many(quiet_qs)
+            asked = 0
             for q, hits in zip(quiet_qs, quiet_hits):
+                if hits is None:
+                    # Never asked. A hard-leak check would still be valid here, but a
+                    # partial verdict on a question we could not run is exactly the kind
+                    # of half-evidence that made the parallel run unreadable.
+                    continue
+                asked += 1
                 leaked = False
                 for h in hits[:k]:
                     hay = _loci_haystack(h) if kind == "seren_loci" else str(h.get("content", ""))
@@ -581,13 +674,22 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
                 # you want to know before you trust it anywhere else).
                 if base is not None and hits:
                     margins.append(base - float(hits[0].get("score", 0.0) or 0.0))
-            snap["quiet_count"] = len(quiet_qs)
-            snap["quiet_passes"] = passes
-            snap["quiet_rate"] = passes / len(quiet_qs)
+            if asked:
+                snap["quiet_count"] = asked
+                snap["quiet_passes"] = passes
+                snap["quiet_rate"] = passes / asked
             if leaked_queries:
                 snap["quiet_leaks"] = leaked_queries[:10]
             if margins:
                 snap["quiet_margin"] = sum(margins) / len(margins)
+
+        # SEARCH FAILURES, SURFACED. Without this the exclusions above are invisible and
+        # a column that mostly failed looks like a column that mostly missed -- which is
+        # the whole bug. If this is non-empty the metrics beside it are provisional.
+        if _search_errors:
+            snap["search_error_count"] = len(_search_errors)
+            snap["search_errors"] = [f"{q[:60]}: {e}" for q, e in
+                                     sorted(_search_errors.items())[:5]]
 
         # AMBIGUOUS GROUND TRUTH, SURFACED. A bare expect_key in a column that fans
         # more than one Loci cannot name which tenant it means. resolve_key still
@@ -601,6 +703,25 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
 
     report: dict[str, dict] = {}
 
+    _progress = None
+    if report_progress:
+        from . import progress as _progress_mod
+        _progress = _progress_mod
+
+    def _eval_total_for(name, kind_key):
+        """Total question count THIS store will actually be scored on: normal +
+        expect_empty + quiet_in, mirroring the exact splits eval_store computes
+        internally. Recomputing here (cheaply, no /search calls) is what lets
+        progress.start declare an accurate denominator before the store's own
+        eval_store call does any real work."""
+        from ..core.seed_dataset import quiet_targets_for
+        qs = qs_for(name, kind_key)
+        normal = sum(1 for q in qs if not getattr(q, "expect_empty", False)
+                     and not quiet_targets_for(q, name))
+        empty = sum(1 for q in qs if getattr(q, "expect_empty", False))
+        quiet = sum(1 for q in questions if quiet_targets_for(q, name))
+        return normal + empty + quiet
+
     # STORE-LEVEL FAN-OUT. Each entry is an independent container; build the full
     # job list first (store name, kind, node, eval callable) so the merge order
     # stays deterministic (loci, then memory, then corpus, each in topology order)
@@ -610,20 +731,32 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
         jobs.append((n.name, n, "loci",
                      lambda n=n: eval_store(n.name, url_of[n.name], "seren_loci",
                                             qs_for(n.name, "loci"), fact_urls_for(n.name, "seren_loci"),
-                                            max_parallel_questions)))
+                                            max_parallel_questions,
+                                            (lambda d: _progress.bump(n.name, d)) if _progress else None)))
     for n in topology.memory:
         jobs.append((n.name, n, "memory",
                      lambda n=n: eval_store(n.name, url_of[n.name], "seren_memory",
                                             qs_for(n.name, "memory"), fact_urls_for(n.name, "seren_memory"),
-                                            max_parallel_questions)))
+                                            max_parallel_questions,
+                                            (lambda d: _progress.bump(n.name, d)) if _progress else None)))
     for c in topology.corpus:
         jobs.append((c.name, c, "corpus",
                      lambda c=c: eval_store(c.name, url_of[c.name], "corpus",
                                             qs_for(c.name, "corpus"), fact_urls_for(c.name, "corpus"),
-                                            max_parallel_questions)))
+                                            max_parallel_questions,
+                                            (lambda d: _progress.bump(c.name, d)) if _progress else None)))
+
+    if _progress:
+        kind_key_of = {n.name: "loci" for n in topology.loci}
+        kind_key_of.update({n.name: "memory" for n in topology.memory})
+        kind_key_of.update({c.name: "corpus" for c in topology.corpus})
+        for name, node, kind, fn in jobs:
+            _progress.start(name, "eval", _eval_total_for(name, kind_key_of[name]))
 
     def _run_job(job):
         name, node, kind, fn = job
+        t0 = time.monotonic()
+        logger.info("eval store %r: starting (kind=%s)", name, kind)
         try:
             snap = fn()
             error = None
@@ -632,6 +765,10 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
             snap = {"kind": {"loci": "seren_loci", "memory": "seren_memory",
                               "corpus": "corpus"}[kind], "question_count": 0, "k": k}
             error = str(exc)
+        finally:
+            if _progress:
+                _progress.finish(name)
+        logger.info("eval store %r: finished in %.2fs", name, time.monotonic() - t0)
         if error is not None:
             snap["error"] = error
         snap["flags"] = node.flags
@@ -641,16 +778,62 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
             snap["negative_test"] = node.negative_test
         return name, snap
 
-    if len(jobs) <= 1 or max_parallel_stores <= 1:
-        for job in jobs:
-            name, snap = _run_job(job)
-            report[name] = snap
-    else:
+    # SCHEDULING: MEMBERS FIRST, THEN CORPORA. Two waves, not one pool.
+    #
+    # The old comment here said "each entry is an independent container" and that is
+    # true of loci and memory and FALSE of a corpus. An SCC holds no data; it fans
+    # into its member containers. Running Cewellric-scc alongside Cewellric-loci and
+    # Cewellric-mem does not parallelise three workers -- it triples the load on two,
+    # while each of them is already fanning its own questions concurrently. Under that
+    # contention the corpus searches fail, and (before the fix above) each failure was
+    # scored as a miss: every per-entity SCC read 0.000 while its own members read 0.5-1.0
+    # on identical data. All-scc fans 22 containers and was the worst hit.
+    #
+    # Waves keep the parallelism where the premise holds. Wave 1 is genuinely
+    # independent containers. Wave 2 runs when nothing else is touching them.
+    def _run_wave(wave_jobs, label):
+        if not wave_jobs:
+            return
+        if len(wave_jobs) <= 1 or max_parallel_stores <= 1:
+            logger.info("eval: %s - running %d store(s) SERIALLY (max_parallel_stores=%d)",
+                        label, len(wave_jobs), max_parallel_stores)
+            for job in wave_jobs:
+                nm, sn = _run_job(job)
+                report[nm] = sn
+            return
         from concurrent.futures import ThreadPoolExecutor
-        width = min(max_parallel_stores, len(jobs))
+        width = min(max_parallel_stores, len(wave_jobs))
+        logger.info("eval: %s - running %d store(s) in PARALLEL, width=%d",
+                    label, len(wave_jobs), width)
         with ThreadPoolExecutor(max_workers=width) as ex:
-            for name, snap in ex.map(_run_job, jobs):
-                report[name] = snap
+            for nm, sn in ex.map(_run_job, wave_jobs):
+                report[nm] = sn
+
+    _run_wave([j for j in jobs if j[2] != "corpus"], "wave 1 (loci + memory)")
+
+    # WAVE 2 IS ALWAYS SERIAL, regardless of max_parallel_stores.
+    #
+    # Corpora are not peers -- they OVERLAP. Characters-scc and All-scc both fan
+    # Cewellric-loci; All-scc fans all 22 containers by itself. Running two corpora at
+    # once is the same mistake as running a corpus alongside its members, one level up:
+    # it does not add a worker, it multiplies load on containers that a different column
+    # is already fanning. There is no width at which that is safe, because the sharing is
+    # structural rather than incidental -- the whole point of a corpus is to reach into
+    # stores that belong to someone else.
+    #
+    # A corpus column is also the SLOWEST thing in the topology (each query is an N-store
+    # fan), so this is the expensive choice. It is still the right one: a fast number you
+    # cannot trust costs more than a slow number you can. Parallelism stays in wave 1,
+    # where containers really are independent, and inside each corpus's own question
+    # fan-out, which is bounded traffic against one endpoint.
+    corpus_jobs = [j for j in jobs if j[2] == "corpus"]
+    if corpus_jobs:
+        logger.info("eval: wave 2 (corpora) - running %d store(s) SERIALLY "
+                    "(corpora share member containers; parallel corpora contend)",
+                    len(corpus_jobs))
+        for job in corpus_jobs:
+            nm, sn = _run_job(job)
+            report[nm] = sn
 
     result = {"stores": report, "question_count": len(questions),
               "topology": {"loci": [n.name for n in topology.loci],

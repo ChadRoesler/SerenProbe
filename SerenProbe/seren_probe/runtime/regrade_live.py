@@ -22,11 +22,25 @@ GET /stores exposes) is captured before the sweep and RESTORED after, so a regra
 never leaves the container mistuned for the next /eval/run. The default sets sweep
 only those readable knobs, so restore is exact.
 
-CONCURRENCY: corpora run IN PARALLEL (each is a separate SCC container, so
-nothing contends), but combos within ONE corpus's sweep stay strictly serial -
-never two regrades in flight against the same SCC. See run_live_regrade's
-docstring for the fan-out details and why a failing corpus doesn't abort the
-others.
+CONCURRENCY: corpora run STRICTLY SERIALLY, and so do the combos within one
+corpus's sweep. This used to run corpora in parallel on the reasoning that "each
+is a separate SCC container, so nothing contends" -- which is exactly wrong, and
+was wrong in live_eval for the same reason. An SCC container holds NO DATA. It
+fans into member stores that other corpora also fan into (Characters-scc and
+All-scc share every character's loci and memory; All-scc alone fans 22). Two
+regrades in flight are two N-store fans hammering an overlapping set of
+containers, and a regrade is worse than an eval here because it also POSTs
+/configure between combos.
+
+There is no safe width. The sharing is STRUCTURAL -- reaching into stores that
+belong to someone else is the entire job description of a corpus -- so it does not
+go away with a smaller pool, only with serialization. And a contended sweep does
+not fail loudly; it returns degraded packets that grade as bad knob settings,
+which is the worst possible outcome for a tool whose only job is to tell good knob
+settings from bad ones.
+
+max_parallel_corpora is honoured only as a floor of 1; anything higher is ignored
+with a warning rather than silently obeyed. See run_live_regrade.
 """
 from __future__ import annotations
 
@@ -343,43 +357,29 @@ def run_live_regrade(topology, url_of: dict, questions, *, k: int = 10,
         tasks.append((corpus, scc_url))
 
     corpora_out: list[dict] = []
-    if not tasks:
-        pass
-    elif max(1, min(int(max_parallel_corpora or 1), len(tasks))) == 1:
-        # Explicit serial path. Keeps single-corpus topologies (and every test
-        # that injects a fake transport) on a plain, thread-free code path.
-        for corpus, scc_url in tasks:
-            try:
-                corpora_out.append(_regrade_one_corpus(
-                    corpus, scc_url, corpus_qs, regrades, all_override_keys,
-                    flag_map, k, sort_by))
-            except Exception as exc:  # noqa: BLE001 - one bad SCC must not sink the run
-                logger.error("Regrade failed for corpus %s: %s", corpus.name, exc)
-                corpora_out.append({"corpus": corpus.name,
-                                    "error": f"{type(exc).__name__}: {exc}"})
-    else:
-        from concurrent.futures import ThreadPoolExecutor, as_completed
-        width = max(1, min(int(max_parallel_corpora or 1), len(tasks)))
-        partials: dict[str, dict] = {}
-        with ThreadPoolExecutor(max_workers=width, thread_name_prefix="seren-regrade") as pool:
-            futures = {pool.submit(_regrade_one_corpus, corpus, scc_url, corpus_qs,
-                                   regrades, all_override_keys, flag_map, k, sort_by): corpus
-                       for corpus, scc_url in tasks}
-            for fut in as_completed(futures):
-                corpus = futures[fut]
-                try:
-                    partials[corpus.name] = fut.result()
-                except Exception as exc:  # noqa: BLE001 - caught per-corpus, NOT re-raised:
-                    # the rest of the pool must still finish and report. This is the
-                    # one deliberate deviation from seed_from_plan's loud .result()
-                    # re-raise -- see the docstring's PARALLEL ACROSS CORPORA note.
-                    logger.error("Regrade failed for corpus %s: %s", corpus.name, exc)
-                    partials[corpus.name] = {"corpus": corpus.name,
-                                             "error": f"{type(exc).__name__}: {exc}"}
-        # MERGE in original topology order, never completion order -- keeps the
-        # parallel result's corpus ordering identical to the serial path's.
-        for corpus, _scc_url in tasks:
-            corpora_out.append(partials[corpus.name])
+    # SERIAL, ALWAYS. See the module docstring: corpora overlap on member stores, so
+    # two sweeps in flight contend by construction and a contended sweep does not fail
+    # loudly -- it returns degraded packets that grade as BAD KNOB SETTINGS. A regrade
+    # harness that mistakes contention for tuning is worse than no harness.
+    #
+    # The knob is ignored rather than removed, and ignored OUT LOUD. A config value that
+    # silently does nothing is how the next person spends an afternoon wondering why
+    # their width setting changed no timings.
+    _requested = int(max_parallel_corpora or 1)
+    if _requested > 1 and len(tasks) > 1:
+        logger.warning(
+            "regrade: ignoring max_parallel_corpora=%d -- corpora share member "
+            "containers, so parallel sweeps contend and grade the contention as a "
+            "knob result. Running %d corpora serially.", _requested, len(tasks))
+    for corpus, scc_url in tasks:
+        try:
+            corpora_out.append(_regrade_one_corpus(
+                corpus, scc_url, corpus_qs, regrades, all_override_keys,
+                flag_map, k, sort_by))
+        except Exception as exc:  # noqa: BLE001 - one bad SCC must not sink the run
+            logger.error("Regrade failed for corpus %s: %s", corpus.name, exc)
+            corpora_out.append({"corpus": corpus.name,
+                                "error": f"{type(exc).__name__}: {exc}"})
 
     return {"corpora": corpora_out, "sort_by": sort_by, "eval_k": k,
             "set_names": ["current"] + [r.name for r in regrades],
