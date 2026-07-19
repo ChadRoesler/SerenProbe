@@ -176,8 +176,12 @@ def test_stores_actually_run_concurrently():
     parallel_s = time.monotonic() - t0
 
     # 5 stores serially would be ~250ms; in parallel ~50ms. Assert we're comfortably
-    # under the serial cost, with slack for CI jitter.
-    assert parallel_s < 0.15, f"stores did not run concurrently ({parallel_s:.3f}s)"
+    # under the serial cost, with slack for CI jitter. 0.15s was too tight -- thread
+    # pool startup + scheduler noise pushed this past it on a loaded machine even
+    # though the fan-out itself was real (threads_seen > 1 below). Widen to a bound
+    # that still fails hard if this regresses to fully serial (~250ms) but tolerates
+    # normal jitter over the ~50ms parallel floor.
+    assert parallel_s < 0.20, f"stores did not run concurrently ({parallel_s:.3f}s)"
     assert len(rec.threads_seen) > 1, "everything ran on one thread -- no fan-out happened"
 
 

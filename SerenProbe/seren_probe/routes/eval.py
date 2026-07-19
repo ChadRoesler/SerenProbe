@@ -103,7 +103,9 @@ async def run_eval(request: Request):
                 run_topology_evaluation,
                 topo, ts["url_of"], ei.questions,
                 seed_by_store=ei.seed_by_store, seed=do_seed,
-                questions_by_store=ei.questions_by_store)
+                questions_by_store=ei.questions_by_store,
+                max_parallel_stores=body.get("max_parallel_stores", 8),
+                max_parallel_questions=body.get("max_parallel_questions", 8))
         except Exception as exc:
             logger.error("Topology eval failed: %s", exc)
             raise HTTPException(status_code=500, detail=str(exc))
