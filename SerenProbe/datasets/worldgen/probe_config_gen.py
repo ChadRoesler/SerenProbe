@@ -207,6 +207,54 @@ def build_probe_config(
         corpus_count += 1
         port += 3
 
+    # ── Cross corpora (multi-tenant) ──
+    #
+    # MEMBERSHIP IS A FUNCTION OF WHICH GENERATOR RAN, not a hand-kept list:
+    #   character_memory_gen + ooi_memory_gen  -> Characters   (chars, beasts, artifacts)
+    #   poi_memory_gen + the world's own export -> Geography
+    #   the union                               -> All
+    # So All == Characters | Geography by construction. A third hand-maintained
+    # list would be a third thing to forget to update.
+    #
+    # PORTS. Every store above occupies an interleaved triple
+    # (mem=base+3i, loci=base+3i+1, corpus=base+3i+2), so the highest port in use
+    # is base + 3*total - 1 and base + 3*total is the first free one. Computing it
+    # rather than hardcoding is the whole point -- the hand-written cross config
+    # put Characters-scc and All-scc both on 7654.
+    total_stores = 1 + len(entities)          # world + entities
+    cross_port = starting_port + 3 * total_stores
+
+    def _stores_for(types: List[str], include_world: bool) -> List[Dict]:
+        out: List[Dict] = []
+        if include_world:
+            out.append({"Store": f"{world_name_safe}-loci"})
+            out.append({"Store": f"{world_name_safe}-mem"})
+        for e in entities:
+            if e["type"] in types:
+                out.append({"Store": f"{e['safe_name']}-loci"})
+                out.append({"Store": f"{e['safe_name']}-mem"})
+        return out
+
+    CROSS = [
+        ("Characters", ["character", "beast", "artifact"], False),
+        ("Geography",  ["poi"],                            True),
+        ("All",        ["character", "beast", "artifact", "poi"], True),
+    ]
+    for label, types, with_world in CROSS:
+        stores = _stores_for(types, with_world)
+        # A "cross" corpus over one tenant is just that tenant's SCC with a longer
+        # name, and it would report a dilution score with nothing to dilute.
+        if len(stores) < 4:      # fewer than two members
+            continue
+        corpus_configs.append({
+            "Name": f"{label}-scc",
+            "Port": cross_port,
+            "Questions": [f"{ds_root}/{label}_questions.yaml"],
+            "Stores": stores,
+        })
+        corpus_count += 1
+        cross_port += 1
+
     config["ProbeConfig"]["Corpus"] = {
         "CorpusRegrades": STATIC_CORPUS_REGRADES,
         "CorpusCount": corpus_count,

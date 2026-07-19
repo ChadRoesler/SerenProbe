@@ -348,6 +348,35 @@ for idx in "${POI_IDS[@]}"; do
     echo "    -> ${SAFE_NAME}_loci.yaml + ${SAFE_NAME}_memory.yaml + ${SAFE_NAME}_questions.yaml + ${SAFE_NAME}_map.png"
 done
 
+# ── Step 7.9: Cross-corpus question sets ─────────────────────────────
+#
+# MUST run before Step 8: probe_config_gen writes a Questions: entry pointing at
+# each of these files, and a corpus whose question file does not exist seeds
+# fine and then evaluates zero questions -- a silent empty column, not an error.
+#
+# Membership follows which generator produced the entity, so these three sets
+# stay in sync with the pipeline automatically:
+#   characters = character_memory_gen + ooi_memory_gen (chars, beasts, artifacts)
+#   geography  = poi_memory_gen + the world's own loci/memory
+#   all        = the union
+echo ""
+echo "--- Cross-corpus questions ---"
+for SCOPE in characters geography all; do
+    case "$SCOPE" in
+        characters) LABEL="Characters" ;;
+        geography)  LABEL="Geography"  ;;
+        all)        LABEL="All"        ;;
+    esac
+    echo "  ${LABEL}_questions.yaml"
+    python3 "$SCRIPT_DIR/cross_question_gen.py" \
+        --root "$WORLD_DIR" \
+        --world-name "$NAME" \
+        --scope "$SCOPE" \
+        --output "$WORLD_DIR/${LABEL}_questions.yaml" \
+        --seed "$((SELECT_SEED + 900))" \
+        --per-member 3
+done
+
 # ── Step 8: Generate SerenProbe probe config ──────────────────────────
 echo ""
 echo "--- Probe config ---"

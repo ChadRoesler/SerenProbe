@@ -42,6 +42,8 @@ safe way to hold that.
 from __future__ import annotations
 
 import os
+import sys
+import time
 
 import httpx
 
@@ -85,9 +87,36 @@ def _delete(url: str, path: str) -> None:
     httpx.delete(f"{url}{path}", timeout=10.0)
 
 
+# Fact resolution is a different animal from search: individually trivial, but the
+# COUNT scales with members x keys. On a cross-everything corpus, qualified keys
+# ('Cewellric-loci:combat/weapon') are deliberately distinct cache entries -- that
+# is the whole point, one lookup per tenant instead of one shared answer for all of
+# them -- so a column that used to resolve ~10 keys now resolves ~110, fired at loci
+# containers already serving a 22-way fan. A bare 15s with no retry killed a
+# 54-minute run on the last store in the topology. Idempotent GET, so retrying is free.
+_FACT_TIMEOUT = float(os.environ.get("SEREN_PROBE_FACT_TIMEOUT", "45"))
+_FACT_RETRIES = int(os.environ.get("SEREN_PROBE_FACT_RETRIES", "2"))
+
+
 def _get_params(url: str, path: str, params: dict) -> dict:
-    resp = httpx.get(f"{url}{path}", params=params, timeout=15.0)
-    return resp.json() if (resp.status_code == 200 and resp.content) else {}
+    last: Exception | None = None
+    for attempt in range(_FACT_RETRIES + 1):
+        try:
+            resp = httpx.get(f"{url}{path}", params=params, timeout=_FACT_TIMEOUT)
+            return resp.json() if (resp.status_code == 200 and resp.content) else {}
+        except httpx.TimeoutException as exc:
+            # A contended store, not a broken one. Back off and ask again rather than
+            # taking down an hour of work over one slow read.
+            last = exc
+            if attempt < _FACT_RETRIES:
+                time.sleep(0.5 * (attempt + 1))
+    # Out of retries. Return empty rather than raise: an unresolved key already has an
+    # honest downstream story (gt_notes records it and the row scores as unresolved),
+    # whereas an exception here aborts the ENTIRE topology eval over one fact lookup.
+    # Losing one question beats losing every column.
+    print(f"  WARN: /fact timed out after {_FACT_RETRIES + 1} attempts "
+          f"({url} {params}): {last}", file=sys.stderr)
+    return {}
 
 
 def _search_payload(kind: str, query: str, k: int) -> dict:
@@ -273,28 +302,102 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
     # FusedHitOut carries the store-native id straight through the merge.
     _loci_urls = {n.name: url_of[n.name] for n in topology.loci if n.name in url_of}
 
-    def fact_urls_for(name: str, kind: str) -> list[str]:
+    def fact_urls_for(name: str, kind: str) -> list[tuple[str, str]]:
+        # (store_name, url) pairs, NOT bare urls. The name is what lets an
+        # expect_key say WHICH tenant it means in a multi-tenant corpus -- see
+        # resolve_key below. A list of anonymous urls cannot answer that.
         if kind == "seren_loci":
-            return [url_of[name]]
+            return [(name, url_of[name])]
         if kind == "corpus":
             c = next((c for c in topology.corpus if c.name == name), None)
-            return [_loci_urls[s.name] for s in (c.stores if c else []) if s.name in _loci_urls]
+            return [(s.name, _loci_urls[s.name])
+                    for s in (c.stores if c else []) if s.name in _loci_urls]
         return []          # memory has no /fact; expect_key on a memory question is already warned
 
     def eval_store(name, url, kind, qs, fact_urls):
         _key_cache: dict[str, str] = {}
+        _fact_by_store = dict(fact_urls)
+        _ambiguous_keys: set[str] = set()
+
+        def _split_qualified(pk):
+            """'Edricmer-loci:stats/race' -> ('Edricmer-loci', 'stats/race').
+            Anything else -> (None, pk). Only splits when the head names a store
+            this column actually fans, so a stray colon in a key can't be
+            mistaken for a qualifier."""
+            if ":" in pk:
+                head, rest = pk.split(":", 1)
+                if head in _fact_by_store:
+                    return head, rest
+            return None, pk
+
+        def _fetch_fact_id(furl, path_key):
+            project, key = path_key.split("/", 1) if "/" in path_key else ("*", path_key)
+            data = get_params(furl, "/fact", {"project": project, "key": key})
+            return data.get("id", "") if isinstance(data, dict) else ""
+
         def resolve_key(pk):
+            """expect_key -> the canonical Loci id, optionally store-qualified.
+
+            WHY THE QUALIFIER EXISTS. Loci keys are CATEGORY-scoped since the
+            category restructure -- 'stats/race', 'combat/weapon'. That is
+            unambiguous while one store holds one tenant, which is true of every
+            per-entity store. It stops being true the moment a corpus fans six
+            characters: there are then six rows answering to 'stats/race', this
+            loop used to take the FIRST member that replied, and _key_cache then
+            pinned that id for every later question in the column. One question
+            got the right answer key and five got another character's -- scoring
+            as a false miss when the wrong row didn't rank and a false HIT when it
+            did. Noise whose direction depends on member ordering, which is worse
+            than a bug that fails honestly.
+
+            So a question may name its tenant: 'Edricmer-loci:stats/race'. The
+            shape deliberately mirrors resolve_ref, which has always tried
+            '{store}:{ref}' before the bare handle.
+
+            Bare keys keep the old loop, so nothing single-tenant changes.
+            """
             if pk in _key_cache:
                 return _key_cache[pk]
-            project, key = pk.split("/", 1) if "/" in pk else ("*", pk)
+            store, bare = _split_qualified(pk)
             rid = ""
-            for furl in fact_urls:
-                data = get_params(furl, "/fact", {"project": project, "key": key})
-                rid = data.get("id", "") if isinstance(data, dict) else ""
-                if rid:
-                    break
+            if store is not None:
+                rid = _fetch_fact_id(_fact_by_store[store], bare)
+            else:
+                if len(fact_urls) > 1:
+                    _ambiguous_keys.add(pk)
+                for _sname, furl in fact_urls:
+                    rid = _fetch_fact_id(furl, bare)
+                    if rid:
+                        break
             _key_cache[pk] = rid
             return rid
+
+        def holds_key(pk):
+            """Does THIS column hold that exact fact? QUALIFIED ONLY when it could
+            be ambiguous -- never the first-member fallback.
+
+            Exactly the distinction holds_ref draws, and for exactly the same
+            reason. resolve_key's fallback answers 'can anyone here resolve this
+            key', which in a six-tenant corpus is true for 'stats/race' no matter
+            whose race the question meant. Used as a leak test that marks EVERY
+            quiet question carrying a common key as a leak, in every cross corpus,
+            for a document none of them was asked about.
+
+            'Can this key be resolved by someone' and 'does this store contain the
+            specific row the question means' are different questions. Only the
+            second one is a leak. When the key is bare and the column fans more
+            than one loci, we cannot tell them apart -- so we decline to claim a
+            leak and record the ambiguity instead. Refusing to answer beats
+            answering confidently wrong.
+            """
+            store, bare = _split_qualified(pk)
+            if store is not None:
+                return bool(_fetch_fact_id(_fact_by_store[store], bare))
+            if len(fact_urls) > 1:
+                _ambiguous_keys.add(pk)
+                return False
+            return bool(resolve_key(pk))
+
         def resolve_ref(ref):
             return ref_to_id.get(f"{name}:{ref}") or ref_to_id.get(ref) or ""
 
@@ -408,7 +511,7 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
                 # if retrieval failed to surface it this time -- a store that HOLDS the answer
                 # has already lost the quiet test; whether it happened to rank it is luck.
                 if not leaked:
-                    leaked = (any(resolve_key(pk) for pk in q.expect_key)
+                    leaked = (any(holds_key(pk) for pk in q.expect_key)
                               or any(holds_ref(r) for r in q.expect_ref))
                 if leaked:
                     leaked_queries.append(q.query)
@@ -431,6 +534,15 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
                 snap["quiet_leaks"] = leaked_queries[:10]
             if margins:
                 snap["quiet_margin"] = sum(margins) / len(margins)
+
+        # AMBIGUOUS GROUND TRUTH, SURFACED. A bare expect_key in a column that fans
+        # more than one Loci cannot name which tenant it means. resolve_key still
+        # falls back to first-member-wins so nothing single-tenant regresses, but
+        # silence here is how a multi-tenant column reports confident noise. If this
+        # list is non-empty, qualify those keys in the question set.
+        if _ambiguous_keys:
+            snap["ambiguous_keys"] = sorted(_ambiguous_keys)[:20]
+            snap["ambiguous_key_count"] = len(_ambiguous_keys)
         return snap
 
     report: dict[str, dict] = {}

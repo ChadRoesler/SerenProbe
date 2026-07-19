@@ -1,7 +1,7 @@
 ==============================================
   Generating world: Pilorus (end year 500)
 ==============================================
-Generating world 'Pilorus' (seed 2029045089)...
+Generating world 'Pilorus' (seed 1381327920)...
   Terrain...
   Civilizations, figures, sites...
   History (0 to 500, 4 seasons/year)...
@@ -10,60 +10,60 @@ Generating world 'Pilorus' (seed 2029045089)...
   Memories & Facts...
 
 ==================================================
-World: Pilorus (seed 2029045089)
-  Civilizations: 7
-  Sites: 140
-  Historical Figures: 747
-  Beasts: 4
-  Artifacts: 18
-  Events: 3834
+World: Pilorus (seed 1381327920)
+  Civilizations: 11
+  Sites: 220
+  Historical Figures: 1170
+  Beasts: 3
+  Artifacts: 12
+  Events: 7505
   Eras: 8
 ==================================================
 
-Exported world to /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus.json
+Exported world to /home/caesar/worldgen/Pilorus/Pilorus.json
 
-=== World generated: /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus.json ===
+=== World generated: /home/caesar/worldgen/Pilorus/Pilorus.json ===
 
 --- Using provided font: /home/caesar/ds4/worldgen/Pilorus_font.png ---
   Generating reference sheet → Pilorus_font_reference.png
-Reference sheet saved to /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus_font_reference.png
-Entities available: 747 figures, 4 beasts, 18 artifacts, 140 sites
+Reference sheet saved to /home/caesar/worldgen/Pilorus/Pilorus_font_reference.png
+Entities available: 1170 figures, 3 beasts, 12 artifacts, 220 sites
 
-Selected character indices: 341 623 158
-Selected beast indices:     2
-Selected artifact indices:  9 13
-Selected POI indices:       104 9 54 99
+Selected character indices: 773 317 1031
+Selected beast indices:     1
+Selected artifact indices:  3 7
+Selected POI indices:       204 129 54 199
 
 --- World-level exports ---
-  world: 231 facts from /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus.json (slug=pilorus_0)
+  world: 246 facts from /home/caesar/worldgen/Pilorus/Pilorus.json (slug=pilorus_0)
 
-Wrote 231 total facts to /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus_loci.yaml
-  world: 55 memories from /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus.json
+Wrote 246 total facts to /home/caesar/worldgen/Pilorus/Pilorus_loci.yaml
+  world: 55 memories from /home/caesar/worldgen/Pilorus/Pilorus.json
 
-Wrote 55 total memories to /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus_memory.yaml
+Wrote 55 total memories to /home/caesar/worldgen/Pilorus/Pilorus_memory.yaml
 
 --- World-level questions ---
 Loading world...
-Loading loci from /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus_loci.yaml...
-Loading memory from /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus_memory.yaml...
+Loading loci from /home/caesar/worldgen/Pilorus/Pilorus_loci.yaml...
+Loading memory from /home/caesar/worldgen/Pilorus/Pilorus_memory.yaml...
 Generating questions (target=10)...
-  Memory: 8 anchored, 47 skipped (no discriminating term -- corpus duplication, not a phrasing bug)
-    skipped refs: pilorus_0_long_0, pilorus_0_long_1, pilorus_0_long_2, pilorus_0_long_3, pilorus_0_long_4, pilorus_0_long_5, pilorus_0_long_6, pilorus_0_long_7, pilorus_0_long_8, pilorus_0_long_9, pilorus_0_long_10, pilorus_0_long_11...
-  Enumerated 32 walkable edges
-  Built 15 gate-passing candidates
-  Selected 15 questions (loci=9, memory=3, corpus=3)
+  Memory: 54 anchored, 1 skipped (no discriminating term -- corpus duplication, not a phrasing bug)
+    skipped refs: pilorus_0_short_12
+  Enumerated 82 walkable edges
+  Built 32 gate-passing candidates
+  Selected 22 questions (loci=9, memory=10, corpus=3)
 
-Coverage: {'total': 15, 'by_archetype': {'direct': 9, 'temporal': 3, 'quiet': 2, 'cross_organ': 1}, 'by_hops': {1: 14, 2: 1}, 'by_entity_type': {}}
-Wrote 15 provenance entries to /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus_questions.gen.yaml
+Coverage: {'total': 22, 'by_archetype': {'direct': 9, 'temporal': 10, 'quiet': 2, 'cross_organ': 1}, 'by_hops': {1: 22}, 'by_entity_type': {}}
+Wrote 22 provenance entries to /home/caesar/worldgen/Pilorus/Pilorus_questions.gen.yaml
 
-Wrote 15 questions to /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus_questions.yaml
+Wrote 22 questions to /home/caesar/worldgen/Pilorus/Pilorus_questions.yaml
 
 --- World map ---
   Rendering → Pilorus_map.png
 Loading font from /home/caesar/ds4/worldgen/Pilorus_font.png...
   Font: 256x256 px
-Loading world from /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus.json...
-  World: Pilorus (seed 2029045089)
+Loading world from /home/caesar/worldgen/Pilorus/Pilorus.json...
+  World: Pilorus (seed 1381327920)
 Rendering map: 80x100 tiles
   Each tile: 16x16 px
   Output size: 1280x1600 px
@@ -71,470 +71,484 @@ Rendering map: 80x100 tiles
   Pass 2: Elevation shading...
   Pass 3: Sites...
   Writing 1280x1600 PNG...
-  Done → /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus_map.png
+  Done → /home/caesar/worldgen/Pilorus/Pilorus_map.png
 
 --- Characters ---
-  Aelinioneri (id=497) ...
-Loading world from /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus.json...
+  Cewellric (id=1007) ...
+Loading world from /home/caesar/worldgen/Pilorus/Pilorus.json...
 Selecting character...
-Character: Aelinioneri (Elf), alignment=chaos, id=497
+Character: Cewellric (Human), alignment=order, id=1007
 Resolving context...
 Age: 100
 Generating 100 long-term memories...
 Generating 15 short-term memories...
 Generating 10 near-term memories...
 
-Exported character memories to /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Aelinioneri/Aelinioneri.json
+Exported character memories to /home/caesar/worldgen/Pilorus/Characters/Cewellric/Cewellric.json
   Long-term:  100 memories
   Short-term: 15 memories
   Near-term:  10 memories
   Total:      125 memories
-  character: 1 entities from /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Aelinioneri/Aelinioneri.json
+  character: 1 entities from /home/caesar/worldgen/Pilorus/Characters/Cewellric/Cewellric.json
 
-Wrote 18 total facts to /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Aelinioneri/Aelinioneri_loci.yaml
-  character: 1 entities from /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Aelinioneri/Aelinioneri.json
+Wrote 18 total facts to /home/caesar/worldgen/Pilorus/Characters/Cewellric/Cewellric_loci.yaml
+  character: 1 entities from /home/caesar/worldgen/Pilorus/Characters/Cewellric/Cewellric.json
 
-Wrote 125 total memories to /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Aelinioneri/Aelinioneri_memory.yaml
+Wrote 125 total memories to /home/caesar/worldgen/Pilorus/Characters/Cewellric/Cewellric_memory.yaml
 Loading world...
 Loading character JSON...
-Loading loci from /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Aelinioneri/Aelinioneri_loci.yaml...
-Loading memory from /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Aelinioneri/Aelinioneri_memory.yaml...
+Loading loci from /home/caesar/worldgen/Pilorus/Characters/Cewellric/Cewellric_loci.yaml...
+Loading memory from /home/caesar/worldgen/Pilorus/Characters/Cewellric/Cewellric_memory.yaml...
 Generating questions (target=10)...
-  Memory: 30 anchored, 95 skipped (no discriminating term -- corpus duplication, not a phrasing bug)
-    skipped refs: aelinioneri_497_long_3, aelinioneri_497_long_4, aelinioneri_497_long_5, aelinioneri_497_long_6, aelinioneri_497_long_7, aelinioneri_497_long_9, aelinioneri_497_long_10, aelinioneri_497_long_12, aelinioneri_497_long_13, aelinioneri_497_long_14, aelinioneri_497_long_15, aelinioneri_497_long_16...
+  Memory: 61 anchored, 64 skipped (no discriminating term -- corpus duplication, not a phrasing bug)
+    skipped refs: cewellric_1007_long_1, cewellric_1007_long_6, cewellric_1007_long_7, cewellric_1007_long_9, cewellric_1007_long_10, cewellric_1007_long_11, cewellric_1007_long_12, cewellric_1007_long_15, cewellric_1007_long_16, cewellric_1007_long_17, cewellric_1007_long_18, cewellric_1007_long_19...
   Stripped 4 cross-lens edges from character
-  Enumerated 53 walkable edges
-  Built 52 gate-passing candidates
+  Enumerated 88 walkable edges
+  Built 83 gate-passing candidates
   Selected 30 questions (loci=10, memory=10, corpus=10)
 
-Coverage: {'total': 30, 'by_archetype': {'direct': 10, 'temporal': 10, 'briefing': 4, 'cross_organ': 4, 'quiet': 2}, 'by_hops': {1: 26, 2: 4}, 'by_entity_type': {}}
-Wrote 30 provenance entries to /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Aelinioneri/Aelinioneri_questions.gen.yaml
+Coverage: {'total': 30, 'by_archetype': {'direct': 10, 'temporal': 10, 'cross_organ': 5, 'quiet': 2, 'briefing': 3}, 'by_hops': {1: 30}, 'by_entity_type': {}}
+Wrote 30 provenance entries to /home/caesar/worldgen/Pilorus/Characters/Cewellric/Cewellric_questions.gen.yaml
 
-Wrote 30 questions to /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Aelinioneri/Aelinioneri_questions.yaml
-    -> Aelinioneri_loci.yaml + Aelinioneri_memory.yaml + Aelinioneri_questions.yaml
-  Nazgundvorn (id=784) ...
-Loading world from /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus.json...
+Wrote 30 questions to /home/caesar/worldgen/Pilorus/Characters/Cewellric/Cewellric_questions.yaml
+    -> Cewellric_loci.yaml + Cewellric_memory.yaml + Cewellric_questions.yaml
+  Urgkrug (id=548) ...
+Loading world from /home/caesar/worldgen/Pilorus/Pilorus.json...
 Selecting character...
-Character: Nazgundvorn (Dwarf), alignment=order, id=784
+Character: Urgkrug (Orc), alignment=evil, id=548
 Resolving context...
-Age: 83
-Generating 83 long-term memories...
+Age: 21
+Generating 21 long-term memories...
 Generating 15 short-term memories...
 Generating 10 near-term memories...
 
-Exported character memories to /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Nazgundvorn/Nazgundvorn.json
-  Long-term:  83 memories
+Exported character memories to /home/caesar/worldgen/Pilorus/Characters/Urgkrug/Urgkrug.json
+  Long-term:  21 memories
   Short-term: 15 memories
   Near-term:  10 memories
-  Total:      108 memories
-  character: 1 entities from /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Nazgundvorn/Nazgundvorn.json
+  Total:      46 memories
+  character: 1 entities from /home/caesar/worldgen/Pilorus/Characters/Urgkrug/Urgkrug.json
 
-Wrote 18 total facts to /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Nazgundvorn/Nazgundvorn_loci.yaml
-  character: 1 entities from /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Nazgundvorn/Nazgundvorn.json
+Wrote 18 total facts to /home/caesar/worldgen/Pilorus/Characters/Urgkrug/Urgkrug_loci.yaml
+  character: 1 entities from /home/caesar/worldgen/Pilorus/Characters/Urgkrug/Urgkrug.json
 
-Wrote 108 total memories to /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Nazgundvorn/Nazgundvorn_memory.yaml
+Wrote 46 total memories to /home/caesar/worldgen/Pilorus/Characters/Urgkrug/Urgkrug_memory.yaml
 Loading world...
 Loading character JSON...
-Loading loci from /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Nazgundvorn/Nazgundvorn_loci.yaml...
-Loading memory from /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Nazgundvorn/Nazgundvorn_memory.yaml...
+Loading loci from /home/caesar/worldgen/Pilorus/Characters/Urgkrug/Urgkrug_loci.yaml...
+Loading memory from /home/caesar/worldgen/Pilorus/Characters/Urgkrug/Urgkrug_memory.yaml...
 Generating questions (target=10)...
-  Memory: 40 anchored, 68 skipped (no discriminating term -- corpus duplication, not a phrasing bug)
-    skipped refs: nazgundvorn_784_long_7, nazgundvorn_784_long_8, nazgundvorn_784_long_9, nazgundvorn_784_long_10, nazgundvorn_784_long_11, nazgundvorn_784_long_12, nazgundvorn_784_long_13, nazgundvorn_784_long_14, nazgundvorn_784_long_15, nazgundvorn_784_long_16, nazgundvorn_784_long_17, nazgundvorn_784_long_18...
+  Memory: 33 anchored, 13 skipped (no discriminating term -- corpus duplication, not a phrasing bug)
+    skipped refs: urgkrug_548_long_12, urgkrug_548_long_13, urgkrug_548_long_14, urgkrug_548_long_15, urgkrug_548_long_18, urgkrug_548_long_19, urgkrug_548_short_3, urgkrug_548_short_6, urgkrug_548_short_7, urgkrug_548_short_9, urgkrug_548_short_11, urgkrug_548_short_14...
   Stripped 4 cross-lens edges from character
-  Enumerated 64 walkable edges
-  Built 63 gate-passing candidates
+  Enumerated 57 walkable edges
+  Built 54 gate-passing candidates
   Selected 30 questions (loci=10, memory=10, corpus=10)
 
-Coverage: {'total': 30, 'by_archetype': {'direct': 10, 'temporal': 10, 'quiet': 3, 'cross_organ': 5, 'briefing': 2}, 'by_hops': {1: 25, 2: 5}, 'by_entity_type': {}}
-Wrote 30 provenance entries to /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Nazgundvorn/Nazgundvorn_questions.gen.yaml
+Coverage: {'total': 30, 'by_archetype': {'direct': 10, 'temporal': 10, 'briefing': 3, 'cross_organ': 6, 'quiet': 1}, 'by_hops': {1: 30}, 'by_entity_type': {}}
+Wrote 30 provenance entries to /home/caesar/worldgen/Pilorus/Characters/Urgkrug/Urgkrug_questions.gen.yaml
 
-Wrote 30 questions to /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Nazgundvorn/Nazgundvorn_questions.yaml
-    -> Nazgundvorn_loci.yaml + Nazgundvorn_memory.yaml + Nazgundvorn_questions.yaml
-  Glibgakmek (id=281) ...
-Loading world from /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus.json...
+Wrote 30 questions to /home/caesar/worldgen/Pilorus/Characters/Urgkrug/Urgkrug_questions.yaml
+    -> Urgkrug_loci.yaml + Urgkrug_memory.yaml + Urgkrug_questions.yaml
+  Turgundthok (id=1266) ...
+Loading world from /home/caesar/worldgen/Pilorus/Pilorus.json...
 Selecting character...
-Character: Glibgakmek (Goblin), alignment=chaos, id=281
+Character: Turgundthok (Dwarf), alignment=evil, id=1266
 Resolving context...
-Age: 73
-Generating 73 long-term memories...
+Age: 63
+Generating 63 long-term memories...
 Generating 15 short-term memories...
 Generating 10 near-term memories...
 
-Exported character memories to /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Glibgakmek/Glibgakmek.json
-  Long-term:  73 memories
+Exported character memories to /home/caesar/worldgen/Pilorus/Characters/Turgundthok/Turgundthok.json
+  Long-term:  63 memories
   Short-term: 15 memories
   Near-term:  10 memories
-  Total:      98 memories
-  character: 1 entities from /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Glibgakmek/Glibgakmek.json
+  Total:      88 memories
+  character: 1 entities from /home/caesar/worldgen/Pilorus/Characters/Turgundthok/Turgundthok.json
 
-Wrote 18 total facts to /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Glibgakmek/Glibgakmek_loci.yaml
-  character: 1 entities from /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Glibgakmek/Glibgakmek.json
+Wrote 18 total facts to /home/caesar/worldgen/Pilorus/Characters/Turgundthok/Turgundthok_loci.yaml
+  character: 1 entities from /home/caesar/worldgen/Pilorus/Characters/Turgundthok/Turgundthok.json
 
-Wrote 98 total memories to /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Glibgakmek/Glibgakmek_memory.yaml
+Wrote 88 total memories to /home/caesar/worldgen/Pilorus/Characters/Turgundthok/Turgundthok_memory.yaml
 Loading world...
 Loading character JSON...
-Loading loci from /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Glibgakmek/Glibgakmek_loci.yaml...
-Loading memory from /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Glibgakmek/Glibgakmek_memory.yaml...
+Loading loci from /home/caesar/worldgen/Pilorus/Characters/Turgundthok/Turgundthok_loci.yaml...
+Loading memory from /home/caesar/worldgen/Pilorus/Characters/Turgundthok/Turgundthok_memory.yaml...
 Generating questions (target=10)...
-  Memory: 36 anchored, 62 skipped (no discriminating term -- corpus duplication, not a phrasing bug)
-    skipped refs: glibgakmek_281_long_8, glibgakmek_281_long_9, glibgakmek_281_long_10, glibgakmek_281_long_11, glibgakmek_281_long_12, glibgakmek_281_long_13, glibgakmek_281_long_14, glibgakmek_281_long_15, glibgakmek_281_long_16, glibgakmek_281_long_17, glibgakmek_281_long_18, glibgakmek_281_long_19...
+  Memory: 52 anchored, 36 skipped (no discriminating term -- corpus duplication, not a phrasing bug)
+    skipped refs: turgundthok_1266_long_1, turgundthok_1266_long_4, turgundthok_1266_long_11, turgundthok_1266_long_12, turgundthok_1266_long_14, turgundthok_1266_long_16, turgundthok_1266_long_17, turgundthok_1266_long_18, turgundthok_1266_long_20, turgundthok_1266_long_23, turgundthok_1266_long_26, turgundthok_1266_long_27...
   Stripped 4 cross-lens edges from character
-  Enumerated 63 walkable edges
-  Built 59 gate-passing candidates
+  Enumerated 74 walkable edges
+  Built 73 gate-passing candidates
   Selected 30 questions (loci=10, memory=10, corpus=10)
 
-Coverage: {'total': 30, 'by_archetype': {'direct': 10, 'temporal': 10, 'cross_organ': 5, 'briefing': 3, 'quiet': 2}, 'by_hops': {1: 25, 2: 5}, 'by_entity_type': {}}
-Wrote 30 provenance entries to /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Glibgakmek/Glibgakmek_questions.gen.yaml
+Coverage: {'total': 30, 'by_archetype': {'direct': 10, 'temporal': 10, 'briefing': 3, 'cross_organ': 5, 'quiet': 2}, 'by_hops': {1: 30}, 'by_entity_type': {}}
+Wrote 30 provenance entries to /home/caesar/worldgen/Pilorus/Characters/Turgundthok/Turgundthok_questions.gen.yaml
 
-Wrote 30 questions to /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Glibgakmek/Glibgakmek_questions.yaml
-    -> Glibgakmek_loci.yaml + Glibgakmek_memory.yaml + Glibgakmek_questions.yaml
+Wrote 30 questions to /home/caesar/worldgen/Pilorus/Characters/Turgundthok/Turgundthok_questions.yaml
+    -> Turgundthok_loci.yaml + Turgundthok_memory.yaml + Turgundthok_questions.yaml
 
 --- Beasts ---
-  Fangbeast (id=82) ...
-Loading world from /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus.json...
+  Vile_Crystalfang (id=128) ...
+Loading world from /home/caesar/worldgen/Pilorus/Pilorus.json...
 Selecting beast...
-OOI: Fangbeast (beast), id=82
+OOI: Vile Crystalfang (beast), id=128
 Resolving context...
-Decades: 30
-Decade ranges: [(36, 51), (51, 66), (66, 82), (82, 97), (97, 113), (113, 128), (128, 144), (144, 159), (159, 175), (175, 190), (190, 206), (206, 221), (221, 237), (237, 252), (252, 268), (268, 283), (283, 298), (298, 314), (314, 329), (329, 345), (345, 360), (360, 376), (376, 391), (391, 407), (407, 422), (422, 438), (438, 453), (453, 469), (469, 484), (484, 500)]
-Generating 30 long-term memories...
+Decades: 3
+Decade ranges: [(8, 19), (19, 30), (30, 41)]
+Generating 3 long-term memories...
 Generating 15 short-term memories...
 Generating 10 near-term memories...
 
-Exported OOI memories to /home/caesar/ds4/worldgen/worldgen/Pilorus/Beasts/Fangbeast/Fangbeast.json
-  Long-term:  30 memories (decades)
+Exported OOI memories to /home/caesar/worldgen/Pilorus/Beasts/Vile_Crystalfang/Vile_Crystalfang.json
+  Long-term:  3 memories (decades)
   Short-term: 15 memories
   Near-term:  10 memories
-  Total:      55 memories
-  ooi: 1 OOIs from /home/caesar/ds4/worldgen/worldgen/Pilorus/Beasts/Fangbeast/Fangbeast.json
+  Total:      28 memories
+  ooi: 1 OOIs from /home/caesar/worldgen/Pilorus/Beasts/Vile_Crystalfang/Vile_Crystalfang.json
 
-Wrote 10 total facts to /home/caesar/ds4/worldgen/worldgen/Pilorus/Beasts/Fangbeast/Fangbeast_loci.yaml
-  ooi: 1 OOIs from /home/caesar/ds4/worldgen/worldgen/Pilorus/Beasts/Fangbeast/Fangbeast.json
+Wrote 10 total facts to /home/caesar/worldgen/Pilorus/Beasts/Vile_Crystalfang/Vile_Crystalfang_loci.yaml
+  ooi: 1 OOIs from /home/caesar/worldgen/Pilorus/Beasts/Vile_Crystalfang/Vile_Crystalfang.json
 
-Wrote 55 total memories to /home/caesar/ds4/worldgen/worldgen/Pilorus/Beasts/Fangbeast/Fangbeast_memory.yaml
+Wrote 28 total memories to /home/caesar/worldgen/Pilorus/Beasts/Vile_Crystalfang/Vile_Crystalfang_memory.yaml
 Loading world...
 Loading beast JSON...
-Loading loci from /home/caesar/ds4/worldgen/worldgen/Pilorus/Beasts/Fangbeast/Fangbeast_loci.yaml...
-Loading memory from /home/caesar/ds4/worldgen/worldgen/Pilorus/Beasts/Fangbeast/Fangbeast_memory.yaml...
+Loading loci from /home/caesar/worldgen/Pilorus/Beasts/Vile_Crystalfang/Vile_Crystalfang_loci.yaml...
+Loading memory from /home/caesar/worldgen/Pilorus/Beasts/Vile_Crystalfang/Vile_Crystalfang_memory.yaml...
 Generating questions (target=10)...
-  Memory: 16 anchored, 39 skipped (no discriminating term -- corpus duplication, not a phrasing bug)
-    skipped refs: fangbeast_82_long_0, fangbeast_82_long_1, fangbeast_82_long_2, fangbeast_82_long_3, fangbeast_82_long_4, fangbeast_82_long_5, fangbeast_82_long_6, fangbeast_82_long_7, fangbeast_82_long_9, fangbeast_82_long_10, fangbeast_82_long_11, fangbeast_82_long_12...
+  Memory: 23 anchored, 5 skipped (no discriminating term -- corpus duplication, not a phrasing bug)
+    skipped refs: vile_crystalfang_128_short_8, vile_crystalfang_128_short_9, vile_crystalfang_128_near_5, vile_crystalfang_128_near_7, vile_crystalfang_128_near_8
   Stripped 0 cross-lens edges from beast
-  Enumerated 29 walkable edges
-  Built 28 gate-passing candidates
+  Enumerated 37 walkable edges
+  Built 35 gate-passing candidates
   Selected 22 questions (loci=6, memory=10, corpus=6)
 
-Coverage: {'total': 22, 'by_archetype': {'direct': 6, 'temporal': 10, 'quiet': 3, 'briefing': 1, 'cross_organ': 2}, 'by_hops': {1: 20, 2: 2}, 'by_entity_type': {}}
-Wrote 22 provenance entries to /home/caesar/ds4/worldgen/worldgen/Pilorus/Beasts/Fangbeast/Fangbeast_questions.gen.yaml
+Coverage: {'total': 22, 'by_archetype': {'direct': 6, 'temporal': 10, 'cross_organ': 3, 'quiet': 3}, 'by_hops': {1: 22}, 'by_entity_type': {}}
+Wrote 22 provenance entries to /home/caesar/worldgen/Pilorus/Beasts/Vile_Crystalfang/Vile_Crystalfang_questions.gen.yaml
 
-Wrote 22 questions to /home/caesar/ds4/worldgen/worldgen/Pilorus/Beasts/Fangbeast/Fangbeast_questions.yaml
-    -> Fangbeast_loci.yaml + Fangbeast_memory.yaml + Fangbeast_questions.yaml
+Wrote 22 questions to /home/caesar/worldgen/Pilorus/Beasts/Vile_Crystalfang/Vile_Crystalfang_questions.yaml
+    -> Vile_Crystalfang_loci.yaml + Vile_Crystalfang_memory.yaml + Vile_Crystalfang_questions.yaml
 
 --- Artifacts ---
-  The_Blade_of_Kings (id=449) ...
-Loading world from /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus.json...
+  The_Star_of_the_Deep (id=133) ...
+Loading world from /home/caesar/worldgen/Pilorus/Pilorus.json...
 Selecting artifact...
-OOI: The Blade of Kings (artifact), id=449
+OOI: The Star of the Deep (artifact), id=133
 Resolving context...
 Decades: 30
-Decade ranges: [(170, 181), (181, 192), (192, 203), (203, 214), (214, 225), (225, 236), (236, 247), (247, 258), (258, 269), (269, 280), (280, 291), (291, 302), (302, 313), (313, 324), (324, 335), (335, 346), (346, 357), (357, 368), (368, 379), (379, 390), (390, 401), (401, 412), (412, 423), (423, 434), (434, 445), (445, 456), (456, 467), (467, 478), (478, 489), (489, 500)]
+Decade ranges: [(51, 65), (65, 80), (80, 95), (95, 110), (110, 125), (125, 140), (140, 155), (155, 170), (170, 185), (185, 200), (200, 215), (215, 230), (230, 245), (245, 260), (260, 275), (275, 290), (290, 305), (305, 320), (320, 335), (335, 350), (350, 365), (365, 380), (380, 395), (395, 410), (410, 425), (425, 440), (440, 455), (455, 470), (470, 485), (485, 500)]
 Generating 30 long-term memories...
 Generating 15 short-term memories...
 Generating 10 near-term memories...
 
-Exported OOI memories to /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Blade_of_Kings/The_Blade_of_Kings.json
+Exported OOI memories to /home/caesar/worldgen/Pilorus/Artifacts/The_Star_of_the_Deep/The_Star_of_the_Deep.json
   Long-term:  30 memories (decades)
   Short-term: 15 memories
   Near-term:  10 memories
   Total:      55 memories
-  ooi: 1 OOIs from /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Blade_of_Kings/The_Blade_of_Kings.json
+  ooi: 1 OOIs from /home/caesar/worldgen/Pilorus/Artifacts/The_Star_of_the_Deep/The_Star_of_the_Deep.json
 
-Wrote 22 total facts to /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Blade_of_Kings/The_Blade_of_Kings_loci.yaml
-  ooi: 1 OOIs from /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Blade_of_Kings/The_Blade_of_Kings.json
+Wrote 22 total facts to /home/caesar/worldgen/Pilorus/Artifacts/The_Star_of_the_Deep/The_Star_of_the_Deep_loci.yaml
+  ooi: 1 OOIs from /home/caesar/worldgen/Pilorus/Artifacts/The_Star_of_the_Deep/The_Star_of_the_Deep.json
 
-Wrote 55 total memories to /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Blade_of_Kings/The_Blade_of_Kings_memory.yaml
+Wrote 55 total memories to /home/caesar/worldgen/Pilorus/Artifacts/The_Star_of_the_Deep/The_Star_of_the_Deep_memory.yaml
 Loading world...
 Loading artifact JSON...
-Loading loci from /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Blade_of_Kings/The_Blade_of_Kings_loci.yaml...
-Loading memory from /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Blade_of_Kings/The_Blade_of_Kings_memory.yaml...
+Loading loci from /home/caesar/worldgen/Pilorus/Artifacts/The_Star_of_the_Deep/The_Star_of_the_Deep_loci.yaml...
+Loading memory from /home/caesar/worldgen/Pilorus/Artifacts/The_Star_of_the_Deep/The_Star_of_the_Deep_memory.yaml...
 Generating questions (target=10)...
-  Memory: 41 anchored, 14 skipped (no discriminating term -- corpus duplication, not a phrasing bug)
-    skipped refs: blade_of_kings_449_long_4, blade_of_kings_449_long_15, blade_of_kings_449_long_27, blade_of_kings_449_short_0, blade_of_kings_449_short_3, blade_of_kings_449_short_8, blade_of_kings_449_short_12, blade_of_kings_449_short_14, blade_of_kings_449_near_1, blade_of_kings_449_near_2, blade_of_kings_449_near_3, blade_of_kings_449_near_5...
+  Memory: 46 anchored, 9 skipped (no discriminating term -- corpus duplication, not a phrasing bug)
+    skipped refs: star_of_the_deep_133_long_18, star_of_the_deep_133_short_1, star_of_the_deep_133_short_4, star_of_the_deep_133_short_9, star_of_the_deep_133_short_13, star_of_the_deep_133_near_1, star_of_the_deep_133_near_2, star_of_the_deep_133_near_5, star_of_the_deep_133_near_6
   Stripped 1 cross-lens edges from artifact
-  Enumerated 58 walkable edges
-  Built 58 gate-passing candidates
+  Enumerated 63 walkable edges
+  Built 63 gate-passing candidates
   Selected 27 questions (loci=8, memory=10, corpus=9)
 
-Coverage: {'total': 27, 'by_archetype': {'direct': 7, 'relationship': 1, 'temporal': 10, 'cross_organ': 6, 'quiet': 2, 'briefing': 1}, 'by_hops': {1: 21, 2: 6}, 'by_entity_type': {}}
-Wrote 27 provenance entries to /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Blade_of_Kings/The_Blade_of_Kings_questions.gen.yaml
+Coverage: {'total': 27, 'by_archetype': {'direct': 7, 'relationship': 1, 'temporal': 10, 'briefing': 1, 'cross_organ': 6, 'quiet': 2}, 'by_hops': {1: 27}, 'by_entity_type': {}}
+Wrote 27 provenance entries to /home/caesar/worldgen/Pilorus/Artifacts/The_Star_of_the_Deep/The_Star_of_the_Deep_questions.gen.yaml
 
-Wrote 27 questions to /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Blade_of_Kings/The_Blade_of_Kings_questions.yaml
-    -> The_Blade_of_Kings_loci.yaml + The_Blade_of_Kings_memory.yaml + The_Blade_of_Kings_questions.yaml
-  The_Flame_of_Dreams (id=559) ...
-Loading world from /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus.json...
+Wrote 27 questions to /home/caesar/worldgen/Pilorus/Artifacts/The_Star_of_the_Deep/The_Star_of_the_Deep_questions.yaml
+    -> The_Star_of_the_Deep_loci.yaml + The_Star_of_the_Deep_memory.yaml + The_Star_of_the_Deep_questions.yaml
+  The_Mirror_of_Eternity (id=570) ...
+Loading world from /home/caesar/worldgen/Pilorus/Pilorus.json...
 Selecting artifact...
-OOI: The Flame of Dreams (artifact), id=559
+OOI: The Mirror of Eternity (artifact), id=570
 Resolving context...
-Decades: 25
-Decade ranges: [(247, 257), (257, 267), (267, 277), (277, 287), (287, 297), (297, 307), (307, 317), (317, 327), (327, 338), (338, 348), (348, 358), (358, 368), (368, 378), (378, 388), (388, 398), (398, 408), (408, 419), (419, 429), (429, 439), (439, 449), (449, 459), (459, 469), (469, 479), (479, 489), (489, 500)]
-Generating 25 long-term memories...
+Decades: 30
+Decade ranges: [(123, 135), (135, 148), (148, 160), (160, 173), (173, 185), (185, 198), (198, 210), (210, 223), (223, 236), (236, 248), (248, 261), (261, 273), (273, 286), (286, 298), (298, 311), (311, 324), (324, 336), (336, 349), (349, 361), (361, 374), (374, 386), (386, 399), (399, 412), (412, 424), (424, 437), (437, 449), (449, 462), (462, 474), (474, 487), (487, 500)]
+Generating 30 long-term memories...
 Generating 15 short-term memories...
 Generating 10 near-term memories...
 
-Exported OOI memories to /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Flame_of_Dreams/The_Flame_of_Dreams.json
-  Long-term:  25 memories (decades)
+Exported OOI memories to /home/caesar/worldgen/Pilorus/Artifacts/The_Mirror_of_Eternity/The_Mirror_of_Eternity.json
+  Long-term:  30 memories (decades)
   Short-term: 15 memories
   Near-term:  10 memories
-  Total:      50 memories
-  ooi: 1 OOIs from /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Flame_of_Dreams/The_Flame_of_Dreams.json
+  Total:      55 memories
+  ooi: 1 OOIs from /home/caesar/worldgen/Pilorus/Artifacts/The_Mirror_of_Eternity/The_Mirror_of_Eternity.json
 
-Wrote 22 total facts to /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Flame_of_Dreams/The_Flame_of_Dreams_loci.yaml
-  ooi: 1 OOIs from /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Flame_of_Dreams/The_Flame_of_Dreams.json
+Wrote 22 total facts to /home/caesar/worldgen/Pilorus/Artifacts/The_Mirror_of_Eternity/The_Mirror_of_Eternity_loci.yaml
+  ooi: 1 OOIs from /home/caesar/worldgen/Pilorus/Artifacts/The_Mirror_of_Eternity/The_Mirror_of_Eternity.json
 
-Wrote 50 total memories to /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Flame_of_Dreams/The_Flame_of_Dreams_memory.yaml
+Wrote 55 total memories to /home/caesar/worldgen/Pilorus/Artifacts/The_Mirror_of_Eternity/The_Mirror_of_Eternity_memory.yaml
 Loading world...
 Loading artifact JSON...
-Loading loci from /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Flame_of_Dreams/The_Flame_of_Dreams_loci.yaml...
-Loading memory from /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Flame_of_Dreams/The_Flame_of_Dreams_memory.yaml...
+Loading loci from /home/caesar/worldgen/Pilorus/Artifacts/The_Mirror_of_Eternity/The_Mirror_of_Eternity_loci.yaml...
+Loading memory from /home/caesar/worldgen/Pilorus/Artifacts/The_Mirror_of_Eternity/The_Mirror_of_Eternity_memory.yaml...
 Generating questions (target=10)...
-  Memory: 36 anchored, 14 skipped (no discriminating term -- corpus duplication, not a phrasing bug)
-    skipped refs: flame_of_dreams_559_long_3, flame_of_dreams_559_long_4, flame_of_dreams_559_short_0, flame_of_dreams_559_short_6, flame_of_dreams_559_short_7, flame_of_dreams_559_short_8, flame_of_dreams_559_short_9, flame_of_dreams_559_short_11, flame_of_dreams_559_short_12, flame_of_dreams_559_near_0, flame_of_dreams_559_near_1, flame_of_dreams_559_near_2...
+  Memory: 46 anchored, 9 skipped (no discriminating term -- corpus duplication, not a phrasing bug)
+    skipped refs: mirror_of_eternity_570_long_27, mirror_of_eternity_570_short_5, mirror_of_eternity_570_short_9, mirror_of_eternity_570_short_11, mirror_of_eternity_570_short_14, mirror_of_eternity_570_near_2, mirror_of_eternity_570_near_4, mirror_of_eternity_570_near_7, mirror_of_eternity_570_near_9
   Stripped 1 cross-lens edges from artifact
-  Enumerated 53 walkable edges
-  Built 53 gate-passing candidates
-  Selected 27 questions (loci=8, memory=10, corpus=9)
+  Enumerated 64 walkable edges
+  Built 64 gate-passing candidates
+  Selected 28 questions (loci=9, memory=10, corpus=9)
 
-Coverage: {'total': 27, 'by_archetype': {'direct': 7, 'relationship': 1, 'temporal': 10, 'quiet': 2, 'briefing': 1, 'cross_organ': 6}, 'by_hops': {1: 21, 2: 6}, 'by_entity_type': {}}
-Wrote 27 provenance entries to /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Flame_of_Dreams/The_Flame_of_Dreams_questions.gen.yaml
+Coverage: {'total': 28, 'by_archetype': {'direct': 7, 'relationship': 2, 'temporal': 10, 'briefing': 1, 'cross_organ': 6, 'quiet': 2}, 'by_hops': {1: 28}, 'by_entity_type': {}}
+Wrote 28 provenance entries to /home/caesar/worldgen/Pilorus/Artifacts/The_Mirror_of_Eternity/The_Mirror_of_Eternity_questions.gen.yaml
 
-Wrote 27 questions to /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Flame_of_Dreams/The_Flame_of_Dreams_questions.yaml
-    -> The_Flame_of_Dreams_loci.yaml + The_Flame_of_Dreams_memory.yaml + The_Flame_of_Dreams_questions.yaml
+Wrote 28 questions to /home/caesar/worldgen/Pilorus/Artifacts/The_Mirror_of_Eternity/The_Mirror_of_Eternity_questions.yaml
+    -> The_Mirror_of_Eternity_loci.yaml + The_Mirror_of_Eternity_memory.yaml + The_Mirror_of_Eternity_questions.yaml
 
 --- POIs ---
-  Fordrickmund-bridge (id=264) ...
-Loading world from /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus.json...
+  Gulmorgothmaw (id=476) ...
+Loading world from /home/caesar/worldgen/Pilorus/Pilorus.json...
 Selecting site...
-POI: Fordrickmund-bridge (site), id=264
+POI: Gulmorgothmaw (site), id=476
 Resolving context...
 Decades: 30
-Decade ranges: [(66, 80), (80, 94), (94, 109), (109, 123), (123, 138), (138, 152), (152, 167), (167, 181), (181, 196), (196, 210), (210, 225), (225, 239), (239, 254), (254, 268), (268, 283), (283, 297), (297, 311), (311, 326), (326, 340), (340, 355), (355, 369), (369, 384), (384, 398), (398, 413), (413, 427), (427, 442), (442, 456), (456, 471), (471, 485), (485, 500)]
+Decade ranges: [(86, 99), (99, 113), (113, 127), (127, 141), (141, 155), (155, 168), (168, 182), (182, 196), (196, 210), (210, 224), (224, 237), (237, 251), (251, 265), (265, 279), (279, 293), (293, 306), (306, 320), (320, 334), (334, 348), (348, 362), (362, 375), (375, 389), (389, 403), (403, 417), (417, 431), (431, 444), (444, 458), (458, 472), (472, 486), (486, 500)]
 Generating 30 long-term memories...
 Generating 15 short-term memories...
 Generating 10 near-term memories...
 
-Exported POI memories to /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Fordrickmund-bridge/Fordrickmund-bridge.json
+Exported POI memories to /home/caesar/worldgen/Pilorus/POIs/Gulmorgothmaw/Gulmorgothmaw.json
   Long-term:  30 memories (decades)
   Short-term: 15 memories
   Near-term:  10 memories
   Total:      55 memories
-  poi: 1 POIs from /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Fordrickmund-bridge/Fordrickmund-bridge.json
+  poi: 1 POIs from /home/caesar/worldgen/Pilorus/POIs/Gulmorgothmaw/Gulmorgothmaw.json
 
-Wrote 11 total facts to /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Fordrickmund-bridge/Fordrickmund-bridge_loci.yaml
-  poi: 1 POIs from /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Fordrickmund-bridge/Fordrickmund-bridge.json
+Wrote 11 total facts to /home/caesar/worldgen/Pilorus/POIs/Gulmorgothmaw/Gulmorgothmaw_loci.yaml
+  poi: 1 POIs from /home/caesar/worldgen/Pilorus/POIs/Gulmorgothmaw/Gulmorgothmaw.json
 
-Wrote 55 total memories to /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Fordrickmund-bridge/Fordrickmund-bridge_memory.yaml
+Wrote 55 total memories to /home/caesar/worldgen/Pilorus/POIs/Gulmorgothmaw/Gulmorgothmaw_memory.yaml
 Loading world...
 Loading poi JSON...
-Loading loci from /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Fordrickmund-bridge/Fordrickmund-bridge_loci.yaml...
-Loading memory from /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Fordrickmund-bridge/Fordrickmund-bridge_memory.yaml...
+Loading loci from /home/caesar/worldgen/Pilorus/POIs/Gulmorgothmaw/Gulmorgothmaw_loci.yaml...
+Loading memory from /home/caesar/worldgen/Pilorus/POIs/Gulmorgothmaw/Gulmorgothmaw_memory.yaml...
 Generating questions (target=10)...
-  Memory: 25 anchored, 30 skipped (no discriminating term -- corpus duplication, not a phrasing bug)
-    skipped refs: fordrickmund_bridge_264_long_5, fordrickmund_bridge_264_long_6, fordrickmund_bridge_264_long_8, fordrickmund_bridge_264_long_9, fordrickmund_bridge_264_long_10, fordrickmund_bridge_264_long_11, fordrickmund_bridge_264_long_12, fordrickmund_bridge_264_long_15, fordrickmund_bridge_264_long_17, fordrickmund_bridge_264_long_18, fordrickmund_bridge_264_long_19, fordrickmund_bridge_264_long_20...
-  Stripped 689 cross-lens edges from poi
-  Enumerated 39 walkable edges
-  Built 39 gate-passing candidates
-  Selected 24 questions (loci=4, memory=10, corpus=10)
+  Memory: 41 anchored, 14 skipped (no discriminating term -- corpus duplication, not a phrasing bug)
+    skipped refs: gulmorgothmaw_476_long_6, gulmorgothmaw_476_long_10, gulmorgothmaw_476_long_11, gulmorgothmaw_476_long_13, gulmorgothmaw_476_long_14, gulmorgothmaw_476_long_22, gulmorgothmaw_476_long_27, gulmorgothmaw_476_long_29, gulmorgothmaw_476_short_9, gulmorgothmaw_476_short_11, gulmorgothmaw_476_short_14, gulmorgothmaw_476_near_3...
+  Stripped 1437 cross-lens edges from poi
+  Enumerated 56 walkable edges
+  Built 53 gate-passing candidates
+  Selected 22 questions (loci=4, memory=10, corpus=8)
 
-Coverage: {'total': 24, 'by_archetype': {'direct': 4, 'temporal': 10, 'cross_organ': 6, 'quiet': 2, 'briefing': 2}, 'by_hops': {1: 18, 2: 6}, 'by_entity_type': {}}
-Wrote 24 provenance entries to /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Fordrickmund-bridge/Fordrickmund-bridge_questions.gen.yaml
+Coverage: {'total': 22, 'by_archetype': {'direct': 4, 'temporal': 10, 'quiet': 3, 'cross_organ': 5}, 'by_hops': {1: 22}, 'by_entity_type': {}}
+Wrote 22 provenance entries to /home/caesar/worldgen/Pilorus/POIs/Gulmorgothmaw/Gulmorgothmaw_questions.gen.yaml
 
-Wrote 24 questions to /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Fordrickmund-bridge/Fordrickmund-bridge_questions.yaml
-  Rendering local map → Fordrickmund-bridge_map.png
+Wrote 22 questions to /home/caesar/worldgen/Pilorus/POIs/Gulmorgothmaw/Gulmorgothmaw_questions.yaml
+  Rendering local map → Gulmorgothmaw_map.png
 Loading font from /home/caesar/ds4/worldgen/Pilorus_font.png...
   Font: 256x256 px
-Loading world from /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus.json...
-  World: Pilorus (seed 2029045089)
-POI: Fordrickmund-bridge (fortress, id=264)
-  Location: (33, 31)
-  Population: 2635
+Loading world from /home/caesar/worldgen/Pilorus/Pilorus.json...
+  World: Pilorus (seed 1381327920)
+POI: Gulmorgothmaw (tower, id=476)
+  Location: (80, 67)
+  Population: 2503
   Capital: False
   Local map: 49x49 tiles → 784x784 px
   Rendering terrain...
   Elevation shading...
   Placing buildings...
   Writing 784x784 PNG...
-  Done → /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Fordrickmund-bridge/Fordrickmund-bridge_map.png
-    -> Fordrickmund-bridge_loci.yaml + Fordrickmund-bridge_memory.yaml + Fordrickmund-bridge_questions.yaml + Fordrickmund-bridge_map.png
-  Galfalthal-thorn (id=25) ...
-Loading world from /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus.json...
+  Done → /home/caesar/worldgen/Pilorus/POIs/Gulmorgothmaw/Gulmorgothmaw_map.png
+    -> Gulmorgothmaw_loci.yaml + Gulmorgothmaw_memory.yaml + Gulmorgothmaw_questions.yaml + Gulmorgothmaw_map.png
+  Kazkazad-hold (id=354) ...
+Loading world from /home/caesar/worldgen/Pilorus/Pilorus.json...
 Selecting site...
-POI: Galfalthal-thorn (site), id=25
+POI: Kazkazad-hold (site), id=354
 Resolving context...
 Decades: 30
-Decade ranges: [(0, 16), (16, 33), (33, 50), (50, 66), (66, 83), (83, 100), (100, 116), (116, 133), (133, 150), (150, 166), (166, 183), (183, 200), (200, 216), (216, 233), (233, 250), (250, 266), (266, 283), (283, 300), (300, 316), (316, 333), (333, 350), (350, 366), (366, 383), (383, 400), (400, 416), (416, 433), (433, 450), (450, 466), (466, 483), (483, 500)]
+Decade ranges: [(62, 76), (76, 91), (91, 105), (105, 120), (120, 135), (135, 149), (149, 164), (164, 178), (178, 193), (193, 208), (208, 222), (222, 237), (237, 251), (251, 266), (266, 281), (281, 295), (295, 310), (310, 324), (324, 339), (339, 354), (354, 368), (368, 383), (383, 397), (397, 412), (412, 427), (427, 441), (441, 456), (456, 470), (470, 485), (485, 500)]
 Generating 30 long-term memories...
 Generating 15 short-term memories...
 Generating 10 near-term memories...
 
-Exported POI memories to /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galfalthal-thorn/Galfalthal-thorn.json
+Exported POI memories to /home/caesar/worldgen/Pilorus/POIs/Kazkazad-hold/Kazkazad-hold.json
   Long-term:  30 memories (decades)
   Short-term: 15 memories
   Near-term:  10 memories
   Total:      55 memories
-  poi: 1 POIs from /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galfalthal-thorn/Galfalthal-thorn.json
+  poi: 1 POIs from /home/caesar/worldgen/Pilorus/POIs/Kazkazad-hold/Kazkazad-hold.json
 
-Wrote 11 total facts to /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galfalthal-thorn/Galfalthal-thorn_loci.yaml
-  poi: 1 POIs from /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galfalthal-thorn/Galfalthal-thorn.json
+Wrote 11 total facts to /home/caesar/worldgen/Pilorus/POIs/Kazkazad-hold/Kazkazad-hold_loci.yaml
+  poi: 1 POIs from /home/caesar/worldgen/Pilorus/POIs/Kazkazad-hold/Kazkazad-hold.json
 
-Wrote 55 total memories to /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galfalthal-thorn/Galfalthal-thorn_memory.yaml
+Wrote 55 total memories to /home/caesar/worldgen/Pilorus/POIs/Kazkazad-hold/Kazkazad-hold_memory.yaml
 Loading world...
 Loading poi JSON...
-Loading loci from /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galfalthal-thorn/Galfalthal-thorn_loci.yaml...
-Loading memory from /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galfalthal-thorn/Galfalthal-thorn_memory.yaml...
+Loading loci from /home/caesar/worldgen/Pilorus/POIs/Kazkazad-hold/Kazkazad-hold_loci.yaml...
+Loading memory from /home/caesar/worldgen/Pilorus/POIs/Kazkazad-hold/Kazkazad-hold_memory.yaml...
 Generating questions (target=10)...
-  Memory: 27 anchored, 28 skipped (no discriminating term -- corpus duplication, not a phrasing bug)
-    skipped refs: galfalthal_thorn_25_long_4, galfalthal_thorn_25_long_7, galfalthal_thorn_25_long_8, galfalthal_thorn_25_long_10, galfalthal_thorn_25_long_11, galfalthal_thorn_25_long_12, galfalthal_thorn_25_long_13, galfalthal_thorn_25_long_14, galfalthal_thorn_25_long_15, galfalthal_thorn_25_long_17, galfalthal_thorn_25_long_18, galfalthal_thorn_25_long_19...
-  Stripped 688 cross-lens edges from poi
-  Enumerated 41 walkable edges
-  Built 41 gate-passing candidates
-  Selected 24 questions (loci=4, memory=10, corpus=10)
+  Memory: 41 anchored, 14 skipped (no discriminating term -- corpus duplication, not a phrasing bug)
+    skipped refs: kazkazad_hold_354_long_1, kazkazad_hold_354_long_5, kazkazad_hold_354_long_8, kazkazad_hold_354_long_16, kazkazad_hold_354_long_19, kazkazad_hold_354_long_26, kazkazad_hold_354_long_27, kazkazad_hold_354_short_9, kazkazad_hold_354_short_11, kazkazad_hold_354_short_12, kazkazad_hold_354_short_13, kazkazad_hold_354_short_14...
+  Stripped 1437 cross-lens edges from poi
+  Enumerated 56 walkable edges
+  Built 54 gate-passing candidates
+  Selected 23 questions (loci=4, memory=10, corpus=9)
 
-Coverage: {'total': 24, 'by_archetype': {'direct': 4, 'temporal': 10, 'cross_organ': 6, 'quiet': 2, 'briefing': 2}, 'by_hops': {1: 18, 2: 6}, 'by_entity_type': {}}
-Wrote 24 provenance entries to /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galfalthal-thorn/Galfalthal-thorn_questions.gen.yaml
+Coverage: {'total': 23, 'by_archetype': {'direct': 4, 'temporal': 10, 'quiet': 3, 'cross_organ': 6}, 'by_hops': {1: 23}, 'by_entity_type': {}}
+Wrote 23 provenance entries to /home/caesar/worldgen/Pilorus/POIs/Kazkazad-hold/Kazkazad-hold_questions.gen.yaml
 
-Wrote 24 questions to /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galfalthal-thorn/Galfalthal-thorn_questions.yaml
-  Rendering local map → Galfalthal-thorn_map.png
+Wrote 23 questions to /home/caesar/worldgen/Pilorus/POIs/Kazkazad-hold/Kazkazad-hold_questions.yaml
+  Rendering local map → Kazkazad-hold_map.png
 Loading font from /home/caesar/ds4/worldgen/Pilorus_font.png...
   Font: 256x256 px
-Loading world from /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus.json...
-  World: Pilorus (seed 2029045089)
-POI: Galfalthal-thorn (shrine, id=25)
-  Location: (62, 31)
-  Population: 1023
+Loading world from /home/caesar/worldgen/Pilorus/Pilorus.json...
+  World: Pilorus (seed 1381327920)
+POI: Kazkazad-hold (shrine, id=354)
+  Location: (93, 52)
+  Population: 928
   Capital: False
   Local map: 49x49 tiles → 784x784 px
   Rendering terrain...
   Elevation shading...
   Placing buildings...
   Writing 784x784 PNG...
-  Done → /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galfalthal-thorn/Galfalthal-thorn_map.png
-    -> Galfalthal-thorn_loci.yaml + Galfalthal-thorn_memory.yaml + Galfalthal-thorn_questions.yaml + Galfalthal-thorn_map.png
-  Kulmokhall (id=169) ...
-Loading world from /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus.json...
+  Done → /home/caesar/worldgen/Pilorus/POIs/Kazkazad-hold/Kazkazad-hold_map.png
+    -> Kazkazad-hold_loci.yaml + Kazkazad-hold_memory.yaml + Kazkazad-hold_questions.yaml + Kazkazad-hold_map.png
+  Thranaz-hold (id=193) ...
+Loading world from /home/caesar/worldgen/Pilorus/Pilorus.json...
 Selecting site...
-POI: Kulmokhall (site), id=169
+POI: Thranaz-hold (site), id=193
 Resolving context...
 Decades: 30
-Decade ranges: [(35, 50), (50, 66), (66, 81), (81, 97), (97, 112), (112, 128), (128, 143), (143, 159), (159, 174), (174, 190), (190, 205), (205, 221), (221, 236), (236, 252), (252, 267), (267, 283), (283, 298), (298, 314), (314, 329), (329, 345), (345, 360), (360, 376), (376, 391), (391, 407), (407, 422), (422, 438), (438, 453), (453, 469), (469, 484), (484, 500)]
+Decade ranges: [(25, 40), (40, 56), (56, 72), (72, 88), (88, 104), (104, 120), (120, 135), (135, 151), (151, 167), (167, 183), (183, 199), (199, 215), (215, 230), (230, 246), (246, 262), (262, 278), (278, 294), (294, 310), (310, 325), (325, 341), (341, 357), (357, 373), (373, 389), (389, 405), (405, 420), (420, 436), (436, 452), (452, 468), (468, 484), (484, 500)]
 Generating 30 long-term memories...
 Generating 15 short-term memories...
 Generating 10 near-term memories...
 
-Exported POI memories to /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Kulmokhall/Kulmokhall.json
+Exported POI memories to /home/caesar/worldgen/Pilorus/POIs/Thranaz-hold/Thranaz-hold.json
   Long-term:  30 memories (decades)
   Short-term: 15 memories
   Near-term:  10 memories
   Total:      55 memories
-  poi: 1 POIs from /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Kulmokhall/Kulmokhall.json
+  poi: 1 POIs from /home/caesar/worldgen/Pilorus/POIs/Thranaz-hold/Thranaz-hold.json
 
-Wrote 11 total facts to /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Kulmokhall/Kulmokhall_loci.yaml
-  poi: 1 POIs from /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Kulmokhall/Kulmokhall.json
+Wrote 11 total facts to /home/caesar/worldgen/Pilorus/POIs/Thranaz-hold/Thranaz-hold_loci.yaml
+  poi: 1 POIs from /home/caesar/worldgen/Pilorus/POIs/Thranaz-hold/Thranaz-hold.json
 
-Wrote 55 total memories to /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Kulmokhall/Kulmokhall_memory.yaml
+Wrote 55 total memories to /home/caesar/worldgen/Pilorus/POIs/Thranaz-hold/Thranaz-hold_memory.yaml
 Loading world...
 Loading poi JSON...
-Loading loci from /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Kulmokhall/Kulmokhall_loci.yaml...
-Loading memory from /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Kulmokhall/Kulmokhall_memory.yaml...
+Loading loci from /home/caesar/worldgen/Pilorus/POIs/Thranaz-hold/Thranaz-hold_loci.yaml...
+Loading memory from /home/caesar/worldgen/Pilorus/POIs/Thranaz-hold/Thranaz-hold_memory.yaml...
 Generating questions (target=10)...
-  Memory: 32 anchored, 23 skipped (no discriminating term -- corpus duplication, not a phrasing bug)
-    skipped refs: kulmokhall_169_long_2, kulmokhall_169_long_4, kulmokhall_169_long_6, kulmokhall_169_long_7, kulmokhall_169_long_8, kulmokhall_169_long_9, kulmokhall_169_long_14, kulmokhall_169_long_15, kulmokhall_169_long_17, kulmokhall_169_long_18, kulmokhall_169_long_20, kulmokhall_169_long_21...
-  Stripped 689 cross-lens edges from poi
-  Enumerated 46 walkable edges
-  Built 46 gate-passing candidates
-  Selected 24 questions (loci=4, memory=10, corpus=10)
+  Memory: 42 anchored, 13 skipped (no discriminating term -- corpus duplication, not a phrasing bug)
+    skipped refs: thranaz_hold_193_long_5, thranaz_hold_193_long_10, thranaz_hold_193_long_12, thranaz_hold_193_long_20, thranaz_hold_193_long_22, thranaz_hold_193_long_24, thranaz_hold_193_long_25, thranaz_hold_193_long_27, thranaz_hold_193_long_28, thranaz_hold_193_short_7, thranaz_hold_193_short_9, thranaz_hold_193_short_10...
+  Stripped 1439 cross-lens edges from poi
+  Enumerated 56 walkable edges
+  Built 54 gate-passing candidates
+  Selected 22 questions (loci=4, memory=10, corpus=8)
 
-Coverage: {'total': 24, 'by_archetype': {'direct': 4, 'temporal': 10, 'briefing': 2, 'cross_organ': 6, 'quiet': 2}, 'by_hops': {1: 18, 2: 6}, 'by_entity_type': {}}
-Wrote 24 provenance entries to /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Kulmokhall/Kulmokhall_questions.gen.yaml
+Coverage: {'total': 22, 'by_archetype': {'direct': 4, 'temporal': 10, 'quiet': 2, 'cross_organ': 6}, 'by_hops': {1: 22}, 'by_entity_type': {}}
+Wrote 22 provenance entries to /home/caesar/worldgen/Pilorus/POIs/Thranaz-hold/Thranaz-hold_questions.gen.yaml
 
-Wrote 24 questions to /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Kulmokhall/Kulmokhall_questions.yaml
-  Rendering local map → Kulmokhall_map.png
+Wrote 22 questions to /home/caesar/worldgen/Pilorus/POIs/Thranaz-hold/Thranaz-hold_questions.yaml
+  Rendering local map → Thranaz-hold_map.png
 Loading font from /home/caesar/ds4/worldgen/Pilorus_font.png...
   Font: 256x256 px
-Loading world from /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus.json...
-  World: Pilorus (seed 2029045089)
-POI: Kulmokhall (tower, id=169)
-  Location: (63, 34)
-  Population: 2612
+Loading world from /home/caesar/worldgen/Pilorus/Pilorus.json...
+  World: Pilorus (seed 1381327920)
+POI: Thranaz-hold (fortress, id=193)
+  Location: (94, 53)
+  Population: 2603
   Capital: False
   Local map: 49x49 tiles → 784x784 px
   Rendering terrain...
   Elevation shading...
   Placing buildings...
   Writing 784x784 PNG...
-  Done → /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Kulmokhall/Kulmokhall_map.png
-    -> Kulmokhall_loci.yaml + Kulmokhall_memory.yaml + Kulmokhall_questions.yaml + Kulmokhall_map.png
-  Galaelinthorn (id=258) ...
-Loading world from /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus.json...
+  Done → /home/caesar/worldgen/Pilorus/POIs/Thranaz-hold/Thranaz-hold_map.png
+    -> Thranaz-hold_loci.yaml + Thranaz-hold_memory.yaml + Thranaz-hold_questions.yaml + Thranaz-hold_map.png
+  Nobnoknog-nest (id=470) ...
+Loading world from /home/caesar/worldgen/Pilorus/Pilorus.json...
 Selecting site...
-POI: Galaelinthorn (site), id=258
+POI: Nobnoknog-nest (site), id=470
 Resolving context...
 Decades: 30
-Decade ranges: [(65, 79), (79, 94), (94, 108), (108, 123), (123, 137), (137, 152), (152, 166), (166, 181), (181, 195), (195, 210), (210, 224), (224, 239), (239, 253), (253, 268), (268, 282), (282, 297), (297, 311), (311, 326), (326, 340), (340, 355), (355, 369), (369, 384), (384, 398), (398, 413), (413, 427), (427, 442), (442, 456), (456, 471), (471, 485), (485, 500)]
+Decade ranges: [(83, 96), (96, 110), (110, 124), (124, 138), (138, 152), (152, 166), (166, 180), (180, 194), (194, 208), (208, 222), (222, 235), (235, 249), (249, 263), (263, 277), (277, 291), (291, 305), (305, 319), (319, 333), (333, 347), (347, 361), (361, 374), (374, 388), (388, 402), (402, 416), (416, 430), (430, 444), (444, 458), (458, 472), (472, 486), (486, 500)]
 Generating 30 long-term memories...
 Generating 15 short-term memories...
 Generating 10 near-term memories...
 
-Exported POI memories to /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galaelinthorn/Galaelinthorn.json
+Exported POI memories to /home/caesar/worldgen/Pilorus/POIs/Nobnoknog-nest/Nobnoknog-nest.json
   Long-term:  30 memories (decades)
   Short-term: 15 memories
   Near-term:  10 memories
   Total:      55 memories
-  poi: 1 POIs from /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galaelinthorn/Galaelinthorn.json
+  poi: 1 POIs from /home/caesar/worldgen/Pilorus/POIs/Nobnoknog-nest/Nobnoknog-nest.json
 
-Wrote 11 total facts to /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galaelinthorn/Galaelinthorn_loci.yaml
-  poi: 1 POIs from /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galaelinthorn/Galaelinthorn.json
+Wrote 11 total facts to /home/caesar/worldgen/Pilorus/POIs/Nobnoknog-nest/Nobnoknog-nest_loci.yaml
+  poi: 1 POIs from /home/caesar/worldgen/Pilorus/POIs/Nobnoknog-nest/Nobnoknog-nest.json
 
-Wrote 55 total memories to /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galaelinthorn/Galaelinthorn_memory.yaml
+Wrote 55 total memories to /home/caesar/worldgen/Pilorus/POIs/Nobnoknog-nest/Nobnoknog-nest_memory.yaml
 Loading world...
 Loading poi JSON...
-Loading loci from /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galaelinthorn/Galaelinthorn_loci.yaml...
-Loading memory from /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galaelinthorn/Galaelinthorn_memory.yaml...
+Loading loci from /home/caesar/worldgen/Pilorus/POIs/Nobnoknog-nest/Nobnoknog-nest_loci.yaml...
+Loading memory from /home/caesar/worldgen/Pilorus/POIs/Nobnoknog-nest/Nobnoknog-nest_memory.yaml...
 Generating questions (target=10)...
-  Memory: 25 anchored, 30 skipped (no discriminating term -- corpus duplication, not a phrasing bug)
-    skipped refs: galaelinthorn_258_long_3, galaelinthorn_258_long_4, galaelinthorn_258_long_5, galaelinthorn_258_long_6, galaelinthorn_258_long_7, galaelinthorn_258_long_8, galaelinthorn_258_long_9, galaelinthorn_258_long_12, galaelinthorn_258_long_15, galaelinthorn_258_long_16, galaelinthorn_258_long_17, galaelinthorn_258_long_20...
-  Stripped 688 cross-lens edges from poi
-  Enumerated 39 walkable edges
-  Built 39 gate-passing candidates
-  Selected 24 questions (loci=4, memory=10, corpus=10)
+  Memory: 42 anchored, 13 skipped (no discriminating term -- corpus duplication, not a phrasing bug)
+    skipped refs: nobnoknog_nest_470_long_2, nobnoknog_nest_470_long_8, nobnoknog_nest_470_long_12, nobnoknog_nest_470_long_16, nobnoknog_nest_470_long_18, nobnoknog_nest_470_long_22, nobnoknog_nest_470_long_24, nobnoknog_nest_470_long_26, nobnoknog_nest_470_short_6, nobnoknog_nest_470_short_11, nobnoknog_nest_470_short_13, nobnoknog_nest_470_near_0...
+  Stripped 1437 cross-lens edges from poi
+  Enumerated 56 walkable edges
+  Built 54 gate-passing candidates
+  Selected 22 questions (loci=4, memory=10, corpus=8)
 
-Coverage: {'total': 24, 'by_archetype': {'direct': 4, 'temporal': 10, 'cross_organ': 6, 'quiet': 2, 'briefing': 2}, 'by_hops': {1: 18, 2: 6}, 'by_entity_type': {}}
-Wrote 24 provenance entries to /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galaelinthorn/Galaelinthorn_questions.gen.yaml
+Coverage: {'total': 22, 'by_archetype': {'direct': 4, 'temporal': 10, 'quiet': 2, 'cross_organ': 6}, 'by_hops': {1: 22}, 'by_entity_type': {}}
+Wrote 22 provenance entries to /home/caesar/worldgen/Pilorus/POIs/Nobnoknog-nest/Nobnoknog-nest_questions.gen.yaml
 
-Wrote 24 questions to /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galaelinthorn/Galaelinthorn_questions.yaml
-  Rendering local map → Galaelinthorn_map.png
+Wrote 22 questions to /home/caesar/worldgen/Pilorus/POIs/Nobnoknog-nest/Nobnoknog-nest_questions.yaml
+  Rendering local map → Nobnoknog-nest_map.png
 Loading font from /home/caesar/ds4/worldgen/Pilorus_font.png...
   Font: 256x256 px
-Loading world from /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus.json...
-  World: Pilorus (seed 2029045089)
-POI: Galaelinthorn (village, id=258)
-  Location: (74, 6)
-  Population: 905
+Loading world from /home/caesar/worldgen/Pilorus/Pilorus.json...
+  World: Pilorus (seed 1381327920)
+POI: Nobnoknog-nest (tower, id=470)
+  Location: (5, 42)
+  Population: 2510
   Capital: False
   Local map: 49x49 tiles → 784x784 px
   Rendering terrain...
   Elevation shading...
   Placing buildings...
   Writing 784x784 PNG...
-  Done → /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galaelinthorn/Galaelinthorn_map.png
-    -> Galaelinthorn_loci.yaml + Galaelinthorn_memory.yaml + Galaelinthorn_questions.yaml + Galaelinthorn_map.png
+  Done → /home/caesar/worldgen/Pilorus/POIs/Nobnoknog-nest/Nobnoknog-nest_map.png
+    -> Nobnoknog-nest_loci.yaml + Nobnoknog-nest_memory.yaml + Nobnoknog-nest_questions.yaml + Nobnoknog-nest_map.png
+
+--- Cross-corpus questions ---
+  Characters_questions.yaml
+  characters: 6 members (Cewellric, Turgundthok, Urgkrug, Vile_Crystalfang, The_Mirror_of_Eternity, The_Star_of_the_Deep)
+  Memory: 198 anchored corpus-wide, 199 skipped (shared across tenants -- template reuse, not a phrasing bug)
+  Wrote 34 questions to /home/caesar/worldgen/Pilorus/Characters_questions.yaml ({'loci': 13, 'memory': 18, 'quiet': 3})
+  Geography_questions.yaml
+  geography: 5 members (Gulmorgothmaw, Kazkazad-hold, Nobnoknog-nest, Thranaz-hold, Pilorus)
+  Memory: 173 anchored corpus-wide, 102 skipped (shared across tenants -- template reuse, not a phrasing bug)
+  Wrote 30 questions to /home/caesar/worldgen/Pilorus/Geography_questions.yaml ({'loci': 12, 'memory': 15, 'quiet': 3})
+  All_questions.yaml
+  all: 11 members (Cewellric, Turgundthok, Urgkrug, Vile_Crystalfang, The_Mirror_of_Eternity, The_Star_of_the_Deep, Gulmorgothmaw, Kazkazad-hold, Nobnoknog-nest, Thranaz-hold, Pilorus)
+  Memory: 360 anchored corpus-wide, 312 skipped (shared across tenants -- template reuse, not a phrasing bug)
+  Wrote 61 questions to /home/caesar/worldgen/Pilorus/All_questions.yaml ({'loci': 25, 'memory': 33, 'quiet': 3})
 
 --- Probe config ---
   Generating Pilorus_probe_config.yaml
 
-Wrote probe config to /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus_probe_config.yaml
+Wrote probe config to /home/caesar/worldgen/Pilorus/Pilorus_probe_config.yaml
   Memory stores:  11
   Loci stores:    11
-  Corpus stores:  11
+  Corpus stores:  14
   Starting port:  7620
     -> Pilorus_probe_config.yaml
 
@@ -543,67 +557,70 @@ Wrote probe config to /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus_probe_c
 ==============================================
 
 Directory structure:
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Blade_of_Kings/The_Blade_of_Kings.json
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Blade_of_Kings/The_Blade_of_Kings_loci.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Blade_of_Kings/The_Blade_of_Kings_memory.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Blade_of_Kings/The_Blade_of_Kings_questions.gen.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Blade_of_Kings/The_Blade_of_Kings_questions.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Flame_of_Dreams/The_Flame_of_Dreams.json
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Flame_of_Dreams/The_Flame_of_Dreams_loci.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Flame_of_Dreams/The_Flame_of_Dreams_memory.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Flame_of_Dreams/The_Flame_of_Dreams_questions.gen.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Artifacts/The_Flame_of_Dreams/The_Flame_of_Dreams_questions.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Beasts/Fangbeast/Fangbeast.json
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Beasts/Fangbeast/Fangbeast_loci.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Beasts/Fangbeast/Fangbeast_memory.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Beasts/Fangbeast/Fangbeast_questions.gen.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Beasts/Fangbeast/Fangbeast_questions.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Aelinioneri/Aelinioneri.json
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Aelinioneri/Aelinioneri_loci.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Aelinioneri/Aelinioneri_memory.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Aelinioneri/Aelinioneri_questions.gen.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Aelinioneri/Aelinioneri_questions.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Glibgakmek/Glibgakmek.json
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Glibgakmek/Glibgakmek_loci.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Glibgakmek/Glibgakmek_memory.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Glibgakmek/Glibgakmek_questions.gen.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Glibgakmek/Glibgakmek_questions.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Nazgundvorn/Nazgundvorn.json
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Nazgundvorn/Nazgundvorn_loci.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Nazgundvorn/Nazgundvorn_memory.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Nazgundvorn/Nazgundvorn_questions.gen.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Characters/Nazgundvorn/Nazgundvorn_questions.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Fordrickmund-bridge/Fordrickmund-bridge.json
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Fordrickmund-bridge/Fordrickmund-bridge_loci.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Fordrickmund-bridge/Fordrickmund-bridge_map.png
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Fordrickmund-bridge/Fordrickmund-bridge_memory.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Fordrickmund-bridge/Fordrickmund-bridge_questions.gen.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Fordrickmund-bridge/Fordrickmund-bridge_questions.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galaelinthorn/Galaelinthorn.json
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galaelinthorn/Galaelinthorn_loci.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galaelinthorn/Galaelinthorn_map.png
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galaelinthorn/Galaelinthorn_memory.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galaelinthorn/Galaelinthorn_questions.gen.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galaelinthorn/Galaelinthorn_questions.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galfalthal-thorn/Galfalthal-thorn.json
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galfalthal-thorn/Galfalthal-thorn_loci.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galfalthal-thorn/Galfalthal-thorn_map.png
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galfalthal-thorn/Galfalthal-thorn_memory.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galfalthal-thorn/Galfalthal-thorn_questions.gen.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Galfalthal-thorn/Galfalthal-thorn_questions.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Kulmokhall/Kulmokhall.json
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Kulmokhall/Kulmokhall_loci.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Kulmokhall/Kulmokhall_map.png
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Kulmokhall/Kulmokhall_memory.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Kulmokhall/Kulmokhall_questions.gen.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/POIs/Kulmokhall/Kulmokhall_questions.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus.json
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus_font_reference.png
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus_loci.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus_map.png
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus_memory.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus_probe_config.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus_questions.gen.yaml
-  /home/caesar/ds4/worldgen/worldgen/Pilorus/Pilorus_questions.yaml
+  /home/caesar/worldgen/Pilorus/All_questions.yaml
+  /home/caesar/worldgen/Pilorus/Artifacts/The_Mirror_of_Eternity/The_Mirror_of_Eternity.json
+  /home/caesar/worldgen/Pilorus/Artifacts/The_Mirror_of_Eternity/The_Mirror_of_Eternity_loci.yaml
+  /home/caesar/worldgen/Pilorus/Artifacts/The_Mirror_of_Eternity/The_Mirror_of_Eternity_memory.yaml
+  /home/caesar/worldgen/Pilorus/Artifacts/The_Mirror_of_Eternity/The_Mirror_of_Eternity_questions.gen.yaml
+  /home/caesar/worldgen/Pilorus/Artifacts/The_Mirror_of_Eternity/The_Mirror_of_Eternity_questions.yaml
+  /home/caesar/worldgen/Pilorus/Artifacts/The_Star_of_the_Deep/The_Star_of_the_Deep.json
+  /home/caesar/worldgen/Pilorus/Artifacts/The_Star_of_the_Deep/The_Star_of_the_Deep_loci.yaml
+  /home/caesar/worldgen/Pilorus/Artifacts/The_Star_of_the_Deep/The_Star_of_the_Deep_memory.yaml
+  /home/caesar/worldgen/Pilorus/Artifacts/The_Star_of_the_Deep/The_Star_of_the_Deep_questions.gen.yaml
+  /home/caesar/worldgen/Pilorus/Artifacts/The_Star_of_the_Deep/The_Star_of_the_Deep_questions.yaml
+  /home/caesar/worldgen/Pilorus/Beasts/Vile_Crystalfang/Vile_Crystalfang.json
+  /home/caesar/worldgen/Pilorus/Beasts/Vile_Crystalfang/Vile_Crystalfang_loci.yaml
+  /home/caesar/worldgen/Pilorus/Beasts/Vile_Crystalfang/Vile_Crystalfang_memory.yaml
+  /home/caesar/worldgen/Pilorus/Beasts/Vile_Crystalfang/Vile_Crystalfang_questions.gen.yaml
+  /home/caesar/worldgen/Pilorus/Beasts/Vile_Crystalfang/Vile_Crystalfang_questions.yaml
+  /home/caesar/worldgen/Pilorus/Characters/Cewellric/Cewellric.json
+  /home/caesar/worldgen/Pilorus/Characters/Cewellric/Cewellric_loci.yaml
+  /home/caesar/worldgen/Pilorus/Characters/Cewellric/Cewellric_memory.yaml
+  /home/caesar/worldgen/Pilorus/Characters/Cewellric/Cewellric_questions.gen.yaml
+  /home/caesar/worldgen/Pilorus/Characters/Cewellric/Cewellric_questions.yaml
+  /home/caesar/worldgen/Pilorus/Characters/Turgundthok/Turgundthok.json
+  /home/caesar/worldgen/Pilorus/Characters/Turgundthok/Turgundthok_loci.yaml
+  /home/caesar/worldgen/Pilorus/Characters/Turgundthok/Turgundthok_memory.yaml
+  /home/caesar/worldgen/Pilorus/Characters/Turgundthok/Turgundthok_questions.gen.yaml
+  /home/caesar/worldgen/Pilorus/Characters/Turgundthok/Turgundthok_questions.yaml
+  /home/caesar/worldgen/Pilorus/Characters/Urgkrug/Urgkrug.json
+  /home/caesar/worldgen/Pilorus/Characters/Urgkrug/Urgkrug_loci.yaml
+  /home/caesar/worldgen/Pilorus/Characters/Urgkrug/Urgkrug_memory.yaml
+  /home/caesar/worldgen/Pilorus/Characters/Urgkrug/Urgkrug_questions.gen.yaml
+  /home/caesar/worldgen/Pilorus/Characters/Urgkrug/Urgkrug_questions.yaml
+  /home/caesar/worldgen/Pilorus/Characters_questions.yaml
+  /home/caesar/worldgen/Pilorus/Geography_questions.yaml
+  /home/caesar/worldgen/Pilorus/POIs/Gulmorgothmaw/Gulmorgothmaw.json
+  /home/caesar/worldgen/Pilorus/POIs/Gulmorgothmaw/Gulmorgothmaw_loci.yaml
+  /home/caesar/worldgen/Pilorus/POIs/Gulmorgothmaw/Gulmorgothmaw_map.png
+  /home/caesar/worldgen/Pilorus/POIs/Gulmorgothmaw/Gulmorgothmaw_memory.yaml
+  /home/caesar/worldgen/Pilorus/POIs/Gulmorgothmaw/Gulmorgothmaw_questions.gen.yaml
+  /home/caesar/worldgen/Pilorus/POIs/Gulmorgothmaw/Gulmorgothmaw_questions.yaml
+  /home/caesar/worldgen/Pilorus/POIs/Kazkazad-hold/Kazkazad-hold.json
+  /home/caesar/worldgen/Pilorus/POIs/Kazkazad-hold/Kazkazad-hold_loci.yaml
+  /home/caesar/worldgen/Pilorus/POIs/Kazkazad-hold/Kazkazad-hold_map.png
+  /home/caesar/worldgen/Pilorus/POIs/Kazkazad-hold/Kazkazad-hold_memory.yaml
+  /home/caesar/worldgen/Pilorus/POIs/Kazkazad-hold/Kazkazad-hold_questions.gen.yaml
+  /home/caesar/worldgen/Pilorus/POIs/Kazkazad-hold/Kazkazad-hold_questions.yaml
+  /home/caesar/worldgen/Pilorus/POIs/Nobnoknog-nest/Nobnoknog-nest.json
+  /home/caesar/worldgen/Pilorus/POIs/Nobnoknog-nest/Nobnoknog-nest_loci.yaml
+  /home/caesar/worldgen/Pilorus/POIs/Nobnoknog-nest/Nobnoknog-nest_map.png
+  /home/caesar/worldgen/Pilorus/POIs/Nobnoknog-nest/Nobnoknog-nest_memory.yaml
+  /home/caesar/worldgen/Pilorus/POIs/Nobnoknog-nest/Nobnoknog-nest_questions.gen.yaml
+  /home/caesar/worldgen/Pilorus/POIs/Nobnoknog-nest/Nobnoknog-nest_questions.yaml
+  /home/caesar/worldgen/Pilorus/POIs/Thranaz-hold/Thranaz-hold.json
+  /home/caesar/worldgen/Pilorus/POIs/Thranaz-hold/Thranaz-hold_loci.yaml
+  /home/caesar/worldgen/Pilorus/POIs/Thranaz-hold/Thranaz-hold_map.png
+  /home/caesar/worldgen/Pilorus/POIs/Thranaz-hold/Thranaz-hold_memory.yaml
+  /home/caesar/worldgen/Pilorus/POIs/Thranaz-hold/Thranaz-hold_questions.gen.yaml
+  /home/caesar/worldgen/Pilorus/POIs/Thranaz-hold/Thranaz-hold_questions.yaml
+  /home/caesar/worldgen/Pilorus/Pilorus.json
+  /home/caesar/worldgen/Pilorus/Pilorus_font_reference.png
+  /home/caesar/worldgen/Pilorus/Pilorus_loci.yaml
+  /home/caesar/worldgen/Pilorus/Pilorus_map.png
+  /home/caesar/worldgen/Pilorus/Pilorus_memory.yaml
+  /home/caesar/worldgen/Pilorus/Pilorus_probe_config.yaml
+  /home/caesar/worldgen/Pilorus/Pilorus_questions.gen.yaml
+  /home/caesar/worldgen/Pilorus/Pilorus_questions.yaml
 
 Done.

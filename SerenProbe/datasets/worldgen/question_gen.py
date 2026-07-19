@@ -41,6 +41,7 @@ from entity_utils import entity_slug, make_loci_key, asciify
 from question_anchor import (
     extract_anchor as _extract_anchor,
     phrase_memory_question as _phrase_memory_question,
+    strip_boilerplate as _strip_boilerplate,
 )
 
 
@@ -892,6 +893,7 @@ def enumerate_temporal_edges(
             # render_template only substitutes {slots}, so a literal query is safe.
             "template": query,
             "anchor": anchor,
+            "content": content,
         })
 
     if skipped:
@@ -904,6 +906,36 @@ def enumerate_temporal_edges(
 
 
 # ── 2g.  Cross-organ edges (the CORPUS column's actual job) ──────────────
+
+def _alt_phrase(content: str, anchor: str, min_words: int = 4) -> Optional[str]:
+    """A second distinctive clause from the same memory, disjoint from `anchor`.
+
+    Used as the memory half's docket item so a cross-organ question can name the
+    anchor in the query (needed for retrieval) without also handing the store the
+    string it will be graded on (which is an answer leak).
+
+    Returns None when the document is a one-liner with nothing left over -- the
+    caller then ships a single-item docket rather than a leaking two-item one.
+    Half a measurement beats a dishonest one.
+    """
+    body = _strip_boilerplate(content or "")
+    al = (anchor or "").lower()
+    best = None
+    for sent in re.split(r'(?<=[.!?])\s+|\s+--\s+', body):
+        s = sent.strip().strip('.,;:!?')
+        if len(s.split()) < min_words:
+            continue
+        sl = s.lower()
+        # Must not contain the anchor, and must not BE contained by it.
+        if al and (al in sl or sl in al):
+            continue
+        # Prefer the shortest qualifying clause: a docket item is a substring
+        # probe, so a tight phrase is likelier to match than a whole sentence
+        # whose punctuation or spacing drifted in the seed.
+        if best is None or len(s) < len(best):
+            best = s
+    return best
+
 
 def enumerate_cross_organ_edges(
     entity: Dict,
@@ -957,7 +989,7 @@ def enumerate_cross_organ_edges(
             continue
         if val.lower() in LOW_CARD or val.isdigit():
             continue
-        facts.append((ident, it.get("key", "")))
+        facts.append((ident, it.get("key", ""), val))
 
     anchored = [e for e in memory_edges if e.get("anchor")]
     if not facts or not anchored:
@@ -973,13 +1005,24 @@ def enumerate_cross_organ_edges(
     # into one clause on purpose: the retrieval target is two DIFFERENT
     # documents, so the query needs both sets of terms present and neither
     # diluted. This is a briefing request, not a sentence.
-    for i, ((ident, key_name), mem_edge) in enumerate(zip(facts, anchored)):
+    for i, ((ident, key_name, fact_val), mem_edge) in enumerate(zip(facts, anchored)):
         if i >= max_edges:
             break
         readable = str(key_name).replace("_", " ")
         anchor = str(mem_edge["anchor"]).rstrip('.,;:!?')
         query = (f"What is the {readable} of {entity_name}, "
                  f"and what does {entity_name} recall about {anchor}?")
+        # DOCKET ITEM FOR THE MEMORY HALF -- deliberately NOT the anchor.
+        #
+        # The anchor has to be in the QUERY or the memory row is unretrievable.
+        # A docket item has to be OUT of the query or it is the answer handed to
+        # the store, which gate_answer_not_in_query correctly refuses -- and did,
+        # silently deleting every cross-organ question in the run where
+        # expect_content was first added. Those two requirements genuinely
+        # conflict, so they get two different phrases from the same document:
+        # the anchor retrieves it, a later clause proves it actually arrived.
+        alt = _alt_phrase(mem_edge.get("content", ""), anchor)
+        docket = [fact_val] + ([alt] if alt else [])
         edges.append({
             "type": f"cross_organ_{i}",
             "archetype": "cross_organ",
@@ -987,7 +1030,14 @@ def enumerate_cross_organ_edges(
             "subject": entity_name,
             "expect_key": ident,
             "expect_ref": mem_edge["expect_ref"],
-            "expect_content": None,
+            # DOCKET FEED. docket_coverage is the fraction of expect_content items
+            # found among the hits -- it is the ONLY metric that can see a miss on a
+            # corpus column, and it is what the regrade sweep sorts by. With no
+            # expect_content it reads 0.000 everywhere and every knob combo scores
+            # identically, so the sweep grades a flat surface. Two items, one per
+            # organ: coverage 1.0 means the fan carried BOTH, 0.5 means it carried
+            # one organ and dropped the other. That is precisely the fusion question.
+            "expect_content": docket,
             "expect_empty": False,
             "walk": f"loci:{ident} + memory:{mem_edge['expect_ref']} "
                     f"-- answerable only by the fan",
@@ -1049,7 +1099,7 @@ def enumerate_briefing_edges(
         # retrieved by any natural query and cannot be judged by a human.
         if name.endswith("_ids") or name.endswith("_id"):
             continue
-        by_cat.setdefault(cat, []).append((ident, name))
+        by_cat.setdefault(cat, []).append((ident, name, str(it.get("value", "")).strip()))
 
     for cat in sorted(by_cat):
         if len(edges) >= max_edges:
@@ -1060,6 +1110,11 @@ def enumerate_briefing_edges(
             continue
         idents = [p[0] for p in pairs]
         terms = [p[1].replace("_", " ") for p in pairs]
+        # One docket item per fact. Coverage then reads literally as "what
+        # fraction of the requested dossier did the briefing actually carry",
+        # which is the whole reason a multi-fact question exists -- a
+        # single-answer question can never move that number off 0 or 1.
+        values = [p[2] for p in pairs if p[2]]
         listed = ", ".join(terms[:-1]) + f" and {terms[-1]}"
         edges.append({
             "type": f"briefing_{cat}",
@@ -1068,7 +1123,7 @@ def enumerate_briefing_edges(
             "subject": entity_name,
             "expect_key": idents,
             "expect_ref": None,
-            "expect_content": None,
+            "expect_content": values or None,
             "expect_empty": False,
             "walk": f"loci project '{cat}' -- {len(idents)} facts, docket coverage",
             "target_name": None,
@@ -1264,6 +1319,7 @@ def build_question_from_edge(
             "asks": "corpus",
             "expect_key": [edge["expect_key"]],
             "expect_ref": [edge["expect_ref"]],
+            "expect_content": list(edge.get("expect_content") or []),
             "hops": edge.get("hops", 2),
             "_gen": {
                 "edge": asciify(edge["walk"]),
@@ -1281,6 +1337,7 @@ def build_question_from_edge(
             "query": query,
             "asks": "corpus",
             "expect_key": keys,
+            "expect_content": list(edge.get("expect_content") or []),
             "hops": 1,
             "_gen": {
                 "edge": asciify(edge["walk"]),
@@ -1389,8 +1446,8 @@ def gate_well_formed(q: Dict) -> Tuple[bool, str]:
     elif asks == "corpus":
         if kinds < 1:
             return False, "at least one expectation kind required"
-        if kinds > 2:
-            return False, f"corpus questions may carry at most 2 kinds, got {kinds}"
+        if kinds > 3:
+            return False, f"corpus questions may carry at most 3 kinds, got {kinds}"
     elif kinds != 1:
         return False, f"exactly one expectation kind required, got {kinds}"
 

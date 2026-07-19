@@ -103,6 +103,7 @@
     <Compile Include="tests\test_question_lint.py" />
     <Compile Include="tests\test_regrades.py" />
     <Compile Include="tests\test_regrade_grid.py" />
+    <Compile Include="tests\test_regrade_parallel.py" />
     <Compile Include="tests\test_resolve.py" />
     <Compile Include="tests\test_seed_dataset.py" />
     <Compile Include="tests\test_seed_flat.py" />

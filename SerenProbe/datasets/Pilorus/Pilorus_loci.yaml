@@ -12,968 +12,1173 @@
   ident: '*/world_year_span'
   why: world_year_span of Pilorus (id:0)
 - key: num_civilizations
-  value: '7'
+  value: '11'
   project: '*'
   ident: '*/num_civilizations'
-  why: There are 7 civilizations in the world of Pilorus
+  why: There are 11 civilizations in the world of Pilorus
 - key: num_sites
-  value: '140'
+  value: '220'
   project: '*'
   ident: '*/num_sites'
-  why: There are 140 sites in the world of Pilorus
+  why: There are 220 sites in the world of Pilorus
 - key: num_figures
-  value: '747'
+  value: '1170'
   project: '*'
   ident: '*/num_figures'
-  why: There are 747 figures in the world of Pilorus
+  why: There are 1170 figures in the world of Pilorus
 - key: num_artifacts
-  value: '18'
+  value: '12'
   project: '*'
   ident: '*/num_artifacts'
-  why: There are 18 artifacts in the world of Pilorus
+  why: There are 12 artifacts in the world of Pilorus
 - key: num_beasts
-  value: '4'
+  value: '3'
   project: '*'
   ident: '*/num_beasts'
-  why: There are 4 beasts in the world of Pilorus
+  why: There are 3 beasts in the world of Pilorus
 - key: num_eras
   value: '8'
   project: '*'
   ident: '*/num_eras'
   why: There are 8 eras in the world of Pilorus
 - key: num_events
-  value: '3834'
+  value: '7505'
   project: '*'
   ident: '*/num_events'
-  why: There are 3834 events in the world of Pilorus
-- key: civ_miznok_name
-  value: Miznok
+  why: There are 7505 events in the world of Pilorus
+- key: civ_durgankaz_name
+  value: Durgankaz
   project: '*'
-  ident: '*/civ_miznok_name'
-  why: civ_miznok_name of Pilorus (id:0)
-- key: civ_miznok_race
+  ident: '*/civ_durgankaz_name'
+  why: civ_durgankaz_name of Pilorus (id:0)
+- key: civ_durgankaz_race
   value: mixed
   project: '*'
-  ident: '*/civ_miznok_race'
-  why: civ_miznok_race of Pilorus (id:0)
-- key: civ_miznok_alignment
+  ident: '*/civ_durgankaz_race'
+  why: civ_durgankaz_race of Pilorus (id:0)
+- key: civ_durgankaz_alignment
   value: neutral
   project: '*'
-  ident: '*/civ_miznok_alignment'
-  why: civ_miznok_alignment of Pilorus (id:0)
-- key: civ_miznok_founded
+  ident: '*/civ_durgankaz_alignment'
+  why: civ_durgankaz_alignment of Pilorus (id:0)
+- key: civ_durgankaz_founded
   value: '0'
   project: '*'
-  ident: '*/civ_miznok_founded'
-  why: civ_miznok_founded of Pilorus (id:0)
-- key: civ_miznok_sites
+  ident: '*/civ_durgankaz_founded'
+  why: civ_durgankaz_founded of Pilorus (id:0)
+- key: civ_durgankaz_sites
   value: '20'
   project: '*'
-  ident: '*/civ_miznok_sites'
-  why: civ_miznok_sites of Pilorus (id:0)
-- key: civ_miznok_capital
-  value: Gakskigglibwarren
+  ident: '*/civ_durgankaz_sites'
+  why: civ_durgankaz_sites of Pilorus (id:0)
+- key: civ_durgankaz_capital
+  value: Ndwalak-vale
   project: '*'
-  ident: '*/civ_miznok_capital'
-  why: civ_miznok_capital of Pilorus (id:0)
-- key: civ_miznok_artifacts
-  value: '2'
+  ident: '*/civ_durgankaz_capital'
+  why: civ_durgankaz_capital of Pilorus (id:0)
+- key: civ_durgankaz_artifacts
+  value: '1'
   project: '*'
-  ident: '*/civ_miznok_artifacts'
-  why: civ_miznok_artifacts of Pilorus (id:0)
-- key: civ_miznok_figures
-  value: '104'
+  ident: '*/civ_durgankaz_artifacts'
+  why: civ_durgankaz_artifacts of Pilorus (id:0)
+- key: civ_durgankaz_figures
+  value: '120'
   project: '*'
-  ident: '*/civ_miznok_figures'
-  why: civ_miznok_figures of Pilorus (id:0)
-- key: civ_falconcon_name
-  value: Falconcon
+  ident: '*/civ_durgankaz_figures'
+  why: civ_durgankaz_figures of Pilorus (id:0)
+- key: civ_dwalbram_name
+  value: Dwalbram
   project: '*'
-  ident: '*/civ_falconcon_name'
-  why: civ_falconcon_name of Pilorus (id:0)
-- key: civ_falconcon_race
+  ident: '*/civ_dwalbram_name'
+  why: civ_dwalbram_name of Pilorus (id:0)
+- key: civ_dwalbram_race
   value: mixed
   project: '*'
-  ident: '*/civ_falconcon_race'
-  why: civ_falconcon_race of Pilorus (id:0)
-- key: civ_falconcon_alignment
-  value: order
+  ident: '*/civ_dwalbram_race'
+  why: civ_dwalbram_race of Pilorus (id:0)
+- key: civ_dwalbram_alignment
+  value: neutral
   project: '*'
-  ident: '*/civ_falconcon_alignment'
-  why: civ_falconcon_alignment of Pilorus (id:0)
-- key: civ_falconcon_founded
+  ident: '*/civ_dwalbram_alignment'
+  why: civ_dwalbram_alignment of Pilorus (id:0)
+- key: civ_dwalbram_founded
   value: '0'
   project: '*'
-  ident: '*/civ_falconcon_founded'
-  why: civ_falconcon_founded of Pilorus (id:0)
-- key: civ_falconcon_sites
+  ident: '*/civ_dwalbram_founded'
+  why: civ_dwalbram_founded of Pilorus (id:0)
+- key: civ_dwalbram_sites
   value: '20'
   project: '*'
-  ident: '*/civ_falconcon_sites'
-  why: civ_falconcon_sites of Pilorus (id:0)
-- key: civ_falconcon_capital
-  value: Radramwatch
+  ident: '*/civ_dwalbram_sites'
+  why: civ_dwalbram_sites of Pilorus (id:0)
+- key: civ_dwalbram_capital
+  value: Mokornpeak
   project: '*'
-  ident: '*/civ_falconcon_capital'
-  why: civ_falconcon_capital of Pilorus (id:0)
-- key: civ_falconcon_artifacts
-  value: '5'
+  ident: '*/civ_dwalbram_capital'
+  why: civ_dwalbram_capital of Pilorus (id:0)
+- key: civ_dwalbram_artifacts
+  value: '2'
   project: '*'
-  ident: '*/civ_falconcon_artifacts'
-  why: civ_falconcon_artifacts of Pilorus (id:0)
-- key: civ_falconcon_figures
+  ident: '*/civ_dwalbram_artifacts'
+  why: civ_dwalbram_artifacts of Pilorus (id:0)
+- key: civ_dwalbram_figures
+  value: '122'
+  project: '*'
+  ident: '*/civ_dwalbram_figures'
+  why: civ_dwalbram_figures of Pilorus (id:0)
+- key: civ_edwelldore_name
+  value: Edwelldore
+  project: '*'
+  ident: '*/civ_edwelldore_name'
+  why: civ_edwelldore_name of Pilorus (id:0)
+- key: civ_edwelldore_race
+  value: mixed
+  project: '*'
+  ident: '*/civ_edwelldore_race'
+  why: civ_edwelldore_race of Pilorus (id:0)
+- key: civ_edwelldore_alignment
+  value: chaos
+  project: '*'
+  ident: '*/civ_edwelldore_alignment'
+  why: civ_edwelldore_alignment of Pilorus (id:0)
+- key: civ_edwelldore_founded
+  value: '0'
+  project: '*'
+  ident: '*/civ_edwelldore_founded'
+  why: civ_edwelldore_founded of Pilorus (id:0)
+- key: civ_edwelldore_sites
+  value: '20'
+  project: '*'
+  ident: '*/civ_edwelldore_sites'
+  why: civ_edwelldore_sites of Pilorus (id:0)
+- key: civ_edwelldore_capital
+  value: Godwin-ford
+  project: '*'
+  ident: '*/civ_edwelldore_capital'
+  why: civ_edwelldore_capital of Pilorus (id:0)
+- key: civ_edwelldore_artifacts
+  value: '1'
+  project: '*'
+  ident: '*/civ_edwelldore_artifacts'
+  why: civ_edwelldore_artifacts of Pilorus (id:0)
+- key: civ_edwelldore_figures
+  value: '117'
+  project: '*'
+  ident: '*/civ_edwelldore_figures'
+  why: civ_edwelldore_figures of Pilorus (id:0)
+- key: civ_wilganric_name
+  value: Wilganric
+  project: '*'
+  ident: '*/civ_wilganric_name'
+  why: civ_wilganric_name of Pilorus (id:0)
+- key: civ_wilganric_race
+  value: mixed
+  project: '*'
+  ident: '*/civ_wilganric_race'
+  why: civ_wilganric_race of Pilorus (id:0)
+- key: civ_wilganric_alignment
+  value: chaos
+  project: '*'
+  ident: '*/civ_wilganric_alignment'
+  why: civ_wilganric_alignment of Pilorus (id:0)
+- key: civ_wilganric_founded
+  value: '0'
+  project: '*'
+  ident: '*/civ_wilganric_founded'
+  why: civ_wilganric_founded of Pilorus (id:0)
+- key: civ_wilganric_sites
+  value: '20'
+  project: '*'
+  ident: '*/civ_wilganric_sites'
+  why: civ_wilganric_sites of Pilorus (id:0)
+- key: civ_wilganric_capital
+  value: Cemundfredford
+  project: '*'
+  ident: '*/civ_wilganric_capital'
+  why: civ_wilganric_capital of Pilorus (id:0)
+- key: civ_wilganric_artifacts
+  value: '0'
+  project: '*'
+  ident: '*/civ_wilganric_artifacts'
+  why: civ_wilganric_artifacts of Pilorus (id:0)
+- key: civ_wilganric_figures
   value: '109'
   project: '*'
-  ident: '*/civ_falconcon_figures'
-  why: civ_falconcon_figures of Pilorus (id:0)
-- key: civ_aeanoran_name
-  value: Aeanoran
+  ident: '*/civ_wilganric_figures'
+  why: civ_wilganric_figures of Pilorus (id:0)
+- key: civ_kruglurg_name
+  value: Kruglurg
   project: '*'
-  ident: '*/civ_aeanoran_name'
-  why: civ_aeanoran_name of Pilorus (id:0)
-- key: civ_aeanoran_race
+  ident: '*/civ_kruglurg_name'
+  why: civ_kruglurg_name of Pilorus (id:0)
+- key: civ_kruglurg_race
   value: mixed
   project: '*'
-  ident: '*/civ_aeanoran_race'
-  why: civ_aeanoran_race of Pilorus (id:0)
-- key: civ_aeanoran_alignment
-  value: order
+  ident: '*/civ_kruglurg_race'
+  why: civ_kruglurg_race of Pilorus (id:0)
+- key: civ_kruglurg_alignment
+  value: chaos
   project: '*'
-  ident: '*/civ_aeanoran_alignment'
-  why: civ_aeanoran_alignment of Pilorus (id:0)
-- key: civ_aeanoran_founded
+  ident: '*/civ_kruglurg_alignment'
+  why: civ_kruglurg_alignment of Pilorus (id:0)
+- key: civ_kruglurg_founded
   value: '0'
   project: '*'
-  ident: '*/civ_aeanoran_founded'
-  why: civ_aeanoran_founded of Pilorus (id:0)
-- key: civ_aeanoran_sites
+  ident: '*/civ_kruglurg_founded'
+  why: civ_kruglurg_founded of Pilorus (id:0)
+- key: civ_kruglurg_sites
   value: '20'
   project: '*'
-  ident: '*/civ_aeanoran_sites'
-  why: civ_aeanoran_sites of Pilorus (id:0)
-- key: civ_aeanoran_capital
-  value: Erithae-thorn
+  ident: '*/civ_kruglurg_sites'
+  why: civ_kruglurg_sites of Pilorus (id:0)
+- key: civ_kruglurg_capital
+  value: Nargsnortsnort-fort
   project: '*'
-  ident: '*/civ_aeanoran_capital'
-  why: civ_aeanoran_capital of Pilorus (id:0)
-- key: civ_aeanoran_artifacts
-  value: '4'
-  project: '*'
-  ident: '*/civ_aeanoran_artifacts'
-  why: civ_aeanoran_artifacts of Pilorus (id:0)
-- key: civ_aeanoran_figures
-  value: '99'
-  project: '*'
-  ident: '*/civ_aeanoran_figures'
-  why: civ_aeanoran_figures of Pilorus (id:0)
-- key: civ_windoreford_name
-  value: Windoreford
-  project: '*'
-  ident: '*/civ_windoreford_name'
-  why: civ_windoreford_name of Pilorus (id:0)
-- key: civ_windoreford_race
-  value: mixed
-  project: '*'
-  ident: '*/civ_windoreford_race'
-  why: civ_windoreford_race of Pilorus (id:0)
-- key: civ_windoreford_alignment
-  value: evil
-  project: '*'
-  ident: '*/civ_windoreford_alignment'
-  why: civ_windoreford_alignment of Pilorus (id:0)
-- key: civ_windoreford_founded
-  value: '0'
-  project: '*'
-  ident: '*/civ_windoreford_founded'
-  why: civ_windoreford_founded of Pilorus (id:0)
-- key: civ_windoreford_sites
-  value: '20'
-  project: '*'
-  ident: '*/civ_windoreford_sites'
-  why: civ_windoreford_sites of Pilorus (id:0)
-- key: civ_windoreford_capital
-  value: Rickricwellford
-  project: '*'
-  ident: '*/civ_windoreford_capital'
-  why: civ_windoreford_capital of Pilorus (id:0)
-- key: civ_windoreford_artifacts
+  ident: '*/civ_kruglurg_capital'
+  why: civ_kruglurg_capital of Pilorus (id:0)
+- key: civ_kruglurg_artifacts
   value: '2'
   project: '*'
-  ident: '*/civ_windoreford_artifacts'
-  why: civ_windoreford_artifacts of Pilorus (id:0)
-- key: civ_windoreford_figures
-  value: '121'
+  ident: '*/civ_kruglurg_artifacts'
+  why: civ_kruglurg_artifacts of Pilorus (id:0)
+- key: civ_kruglurg_figures
+  value: '103'
   project: '*'
-  ident: '*/civ_windoreford_figures'
-  why: civ_windoreford_figures of Pilorus (id:0)
-- key: civ_rakmiz_name
-  value: Rakmiz
+  ident: '*/civ_kruglurg_figures'
+  why: civ_kruglurg_figures of Pilorus (id:0)
+- key: civ_thoklurgshog_name
+  value: Thoklurgshog
   project: '*'
-  ident: '*/civ_rakmiz_name'
-  why: civ_rakmiz_name of Pilorus (id:0)
-- key: civ_rakmiz_race
+  ident: '*/civ_thoklurgshog_name'
+  why: civ_thoklurgshog_name of Pilorus (id:0)
+- key: civ_thoklurgshog_race
   value: mixed
   project: '*'
-  ident: '*/civ_rakmiz_race'
-  why: civ_rakmiz_race of Pilorus (id:0)
-- key: civ_rakmiz_alignment
-  value: evil
+  ident: '*/civ_thoklurgshog_race'
+  why: civ_thoklurgshog_race of Pilorus (id:0)
+- key: civ_thoklurgshog_alignment
+  value: chaos
   project: '*'
-  ident: '*/civ_rakmiz_alignment'
-  why: civ_rakmiz_alignment of Pilorus (id:0)
-- key: civ_rakmiz_founded
+  ident: '*/civ_thoklurgshog_alignment'
+  why: civ_thoklurgshog_alignment of Pilorus (id:0)
+- key: civ_thoklurgshog_founded
   value: '0'
   project: '*'
-  ident: '*/civ_rakmiz_founded'
-  why: civ_rakmiz_founded of Pilorus (id:0)
-- key: civ_rakmiz_sites
+  ident: '*/civ_thoklurgshog_founded'
+  why: civ_thoklurgshog_founded of Pilorus (id:0)
+- key: civ_thoklurgshog_sites
   value: '20'
   project: '*'
-  ident: '*/civ_rakmiz_sites'
-  why: civ_rakmiz_sites of Pilorus (id:0)
-- key: civ_rakmiz_capital
-  value: Trogklikdig
+  ident: '*/civ_thoklurgshog_sites'
+  why: civ_thoklurgshog_sites of Pilorus (id:0)
+- key: civ_thoklurgshog_capital
+  value: Grzoguk-den
   project: '*'
-  ident: '*/civ_rakmiz_capital'
-  why: civ_rakmiz_capital of Pilorus (id:0)
-- key: civ_rakmiz_artifacts
-  value: '3'
+  ident: '*/civ_thoklurgshog_capital'
+  why: civ_thoklurgshog_capital of Pilorus (id:0)
+- key: civ_thoklurgshog_artifacts
+  value: '1'
   project: '*'
-  ident: '*/civ_rakmiz_artifacts'
-  why: civ_rakmiz_artifacts of Pilorus (id:0)
-- key: civ_rakmiz_figures
-  value: '110'
+  ident: '*/civ_thoklurgshog_artifacts'
+  why: civ_thoklurgshog_artifacts of Pilorus (id:0)
+- key: civ_thoklurgshog_figures
+  value: '101'
   project: '*'
-  ident: '*/civ_rakmiz_figures'
-  why: civ_rakmiz_figures of Pilorus (id:0)
-- key: civ_mokthragorn_name
-  value: Mokthragorn
+  ident: '*/civ_thoklurgshog_figures'
+  why: civ_thoklurgshog_figures of Pilorus (id:0)
+- key: civ_mokthrak_name
+  value: Mokthrak
   project: '*'
-  ident: '*/civ_mokthragorn_name'
-  why: civ_mokthragorn_name of Pilorus (id:0)
-- key: civ_mokthragorn_race
+  ident: '*/civ_mokthrak_name'
+  why: civ_mokthrak_name of Pilorus (id:0)
+- key: civ_mokthrak_race
   value: mixed
   project: '*'
-  ident: '*/civ_mokthragorn_race'
-  why: civ_mokthragorn_race of Pilorus (id:0)
-- key: civ_mokthragorn_alignment
+  ident: '*/civ_mokthrak_race'
+  why: civ_mokthrak_race of Pilorus (id:0)
+- key: civ_mokthrak_alignment
   value: order
   project: '*'
-  ident: '*/civ_mokthragorn_alignment'
-  why: civ_mokthragorn_alignment of Pilorus (id:0)
-- key: civ_mokthragorn_founded
+  ident: '*/civ_mokthrak_alignment'
+  why: civ_mokthrak_alignment of Pilorus (id:0)
+- key: civ_mokthrak_founded
   value: '0'
   project: '*'
-  ident: '*/civ_mokthragorn_founded'
-  why: civ_mokthragorn_founded of Pilorus (id:0)
-- key: civ_mokthragorn_sites
+  ident: '*/civ_mokthrak_founded'
+  why: civ_mokthrak_founded of Pilorus (id:0)
+- key: civ_mokthrak_sites
   value: '20'
   project: '*'
-  ident: '*/civ_mokthragorn_sites'
-  why: civ_mokthragorn_sites of Pilorus (id:0)
-- key: civ_mokthragorn_capital
-  value: Grimmormok-vale
+  ident: '*/civ_mokthrak_sites'
+  why: civ_mokthrak_sites of Pilorus (id:0)
+- key: civ_mokthrak_capital
+  value: Grimgumgund-forge
   project: '*'
-  ident: '*/civ_mokthragorn_capital'
-  why: civ_mokthragorn_capital of Pilorus (id:0)
-- key: civ_mokthragorn_artifacts
-  value: '0'
-  project: '*'
-  ident: '*/civ_mokthragorn_artifacts'
-  why: civ_mokthragorn_artifacts of Pilorus (id:0)
-- key: civ_mokthragorn_figures
-  value: '99'
-  project: '*'
-  ident: '*/civ_mokthragorn_figures'
-  why: civ_mokthragorn_figures of Pilorus (id:0)
-- key: civ_turdurnaz_name
-  value: Turdurnaz
-  project: '*'
-  ident: '*/civ_turdurnaz_name'
-  why: civ_turdurnaz_name of Pilorus (id:0)
-- key: civ_turdurnaz_race
-  value: mixed
-  project: '*'
-  ident: '*/civ_turdurnaz_race'
-  why: civ_turdurnaz_race of Pilorus (id:0)
-- key: civ_turdurnaz_alignment
-  value: order
-  project: '*'
-  ident: '*/civ_turdurnaz_alignment'
-  why: civ_turdurnaz_alignment of Pilorus (id:0)
-- key: civ_turdurnaz_founded
-  value: '0'
-  project: '*'
-  ident: '*/civ_turdurnaz_founded'
-  why: civ_turdurnaz_founded of Pilorus (id:0)
-- key: civ_turdurnaz_sites
-  value: '20'
-  project: '*'
-  ident: '*/civ_turdurnaz_sites'
-  why: civ_turdurnaz_sites of Pilorus (id:0)
-- key: civ_turdurnaz_capital
-  value: Gummor-hearth
-  project: '*'
-  ident: '*/civ_turdurnaz_capital'
-  why: civ_turdurnaz_capital of Pilorus (id:0)
-- key: civ_turdurnaz_artifacts
+  ident: '*/civ_mokthrak_capital'
+  why: civ_mokthrak_capital of Pilorus (id:0)
+- key: civ_mokthrak_artifacts
   value: '2'
   project: '*'
-  ident: '*/civ_turdurnaz_artifacts'
-  why: civ_turdurnaz_artifacts of Pilorus (id:0)
-- key: civ_turdurnaz_figures
-  value: '105'
+  ident: '*/civ_mokthrak_artifacts'
+  why: civ_mokthrak_artifacts of Pilorus (id:0)
+- key: civ_mokthrak_figures
+  value: '86'
   project: '*'
-  ident: '*/civ_turdurnaz_figures'
-  why: civ_turdurnaz_figures of Pilorus (id:0)
-- key: era_the_frost_era_name
-  value: The Frost Era
+  ident: '*/civ_mokthrak_figures'
+  why: civ_mokthrak_figures of Pilorus (id:0)
+- key: civ_durzol_name
+  value: Durzol
   project: '*'
-  ident: '*/era_the_frost_era_name'
-  why: era_the_frost_era_name of Pilorus (id:0)
-- key: era_the_frost_era_span
+  ident: '*/civ_durzol_name'
+  why: civ_durzol_name of Pilorus (id:0)
+- key: civ_durzol_race
+  value: mixed
+  project: '*'
+  ident: '*/civ_durzol_race'
+  why: civ_durzol_race of Pilorus (id:0)
+- key: civ_durzol_alignment
+  value: order
+  project: '*'
+  ident: '*/civ_durzol_alignment'
+  why: civ_durzol_alignment of Pilorus (id:0)
+- key: civ_durzol_founded
+  value: '0'
+  project: '*'
+  ident: '*/civ_durzol_founded'
+  why: civ_durzol_founded of Pilorus (id:0)
+- key: civ_durzol_sites
+  value: '20'
+  project: '*'
+  ident: '*/civ_durzol_sites'
+  why: civ_durzol_sites of Pilorus (id:0)
+- key: civ_durzol_capital
+  value: Durbramgund-vale
+  project: '*'
+  ident: '*/civ_durzol_capital'
+  why: civ_durzol_capital of Pilorus (id:0)
+- key: civ_durzol_artifacts
+  value: '0'
+  project: '*'
+  ident: '*/civ_durzol_artifacts'
+  why: civ_durzol_artifacts of Pilorus (id:0)
+- key: civ_durzol_figures
+  value: '103'
+  project: '*'
+  ident: '*/civ_durzol_figures'
+  why: civ_durzol_figures of Pilorus (id:0)
+- key: civ_shogbrut_name
+  value: Shogbrut
+  project: '*'
+  ident: '*/civ_shogbrut_name'
+  why: civ_shogbrut_name of Pilorus (id:0)
+- key: civ_shogbrut_race
+  value: mixed
+  project: '*'
+  ident: '*/civ_shogbrut_race'
+  why: civ_shogbrut_race of Pilorus (id:0)
+- key: civ_shogbrut_alignment
+  value: good
+  project: '*'
+  ident: '*/civ_shogbrut_alignment'
+  why: civ_shogbrut_alignment of Pilorus (id:0)
+- key: civ_shogbrut_founded
+  value: '0'
+  project: '*'
+  ident: '*/civ_shogbrut_founded'
+  why: civ_shogbrut_founded of Pilorus (id:0)
+- key: civ_shogbrut_sites
+  value: '20'
+  project: '*'
+  ident: '*/civ_shogbrut_sites'
+  why: civ_shogbrut_sites of Pilorus (id:0)
+- key: civ_shogbrut_capital
+  value: Sharsnortnash-hold
+  project: '*'
+  ident: '*/civ_shogbrut_capital'
+  why: civ_shogbrut_capital of Pilorus (id:0)
+- key: civ_shogbrut_artifacts
+  value: '2'
+  project: '*'
+  ident: '*/civ_shogbrut_artifacts'
+  why: civ_shogbrut_artifacts of Pilorus (id:0)
+- key: civ_shogbrut_figures
+  value: '106'
+  project: '*'
+  ident: '*/civ_shogbrut_figures'
+  why: civ_shogbrut_figures of Pilorus (id:0)
+- key: civ_sniktak_name
+  value: Sniktak
+  project: '*'
+  ident: '*/civ_sniktak_name'
+  why: civ_sniktak_name of Pilorus (id:0)
+- key: civ_sniktak_race
+  value: mixed
+  project: '*'
+  ident: '*/civ_sniktak_race'
+  why: civ_sniktak_race of Pilorus (id:0)
+- key: civ_sniktak_alignment
+  value: order
+  project: '*'
+  ident: '*/civ_sniktak_alignment'
+  why: civ_sniktak_alignment of Pilorus (id:0)
+- key: civ_sniktak_founded
+  value: '0'
+  project: '*'
+  ident: '*/civ_sniktak_founded'
+  why: civ_sniktak_founded of Pilorus (id:0)
+- key: civ_sniktak_sites
+  value: '20'
+  project: '*'
+  ident: '*/civ_sniktak_sites'
+  why: civ_sniktak_sites of Pilorus (id:0)
+- key: civ_sniktak_capital
+  value: Skabriksnik-dig
+  project: '*'
+  ident: '*/civ_sniktak_capital'
+  why: civ_sniktak_capital of Pilorus (id:0)
+- key: civ_sniktak_artifacts
+  value: '1'
+  project: '*'
+  ident: '*/civ_sniktak_artifacts'
+  why: civ_sniktak_artifacts of Pilorus (id:0)
+- key: civ_sniktak_figures
+  value: '106'
+  project: '*'
+  ident: '*/civ_sniktak_figures'
+  why: civ_sniktak_figures of Pilorus (id:0)
+- key: civ_klsnagig_name
+  value: Klsnagig
+  project: '*'
+  ident: '*/civ_klsnagig_name'
+  why: civ_klsnagig_name of Pilorus (id:0)
+- key: civ_klsnagig_race
+  value: mixed
+  project: '*'
+  ident: '*/civ_klsnagig_race'
+  why: civ_klsnagig_race of Pilorus (id:0)
+- key: civ_klsnagig_alignment
+  value: order
+  project: '*'
+  ident: '*/civ_klsnagig_alignment'
+  why: civ_klsnagig_alignment of Pilorus (id:0)
+- key: civ_klsnagig_founded
+  value: '0'
+  project: '*'
+  ident: '*/civ_klsnagig_founded'
+  why: civ_klsnagig_founded of Pilorus (id:0)
+- key: civ_klsnagig_sites
+  value: '20'
+  project: '*'
+  ident: '*/civ_klsnagig_sites'
+  why: civ_klsnagig_sites of Pilorus (id:0)
+- key: civ_klsnagig_capital
+  value: Zitrakzit-nest
+  project: '*'
+  ident: '*/civ_klsnagig_capital'
+  why: civ_klsnagig_capital of Pilorus (id:0)
+- key: civ_klsnagig_artifacts
+  value: '0'
+  project: '*'
+  ident: '*/civ_klsnagig_artifacts'
+  why: civ_klsnagig_artifacts of Pilorus (id:0)
+- key: civ_klsnagig_figures
+  value: '97'
+  project: '*'
+  ident: '*/civ_klsnagig_figures'
+  why: civ_klsnagig_figures of Pilorus (id:0)
+- key: era_the_iron_times_name
+  value: The Iron Times
+  project: '*'
+  ident: '*/era_the_iron_times_name'
+  why: era_the_iron_times_name of Pilorus (id:0)
+- key: era_the_iron_times_span
   value: 0 to 61
   project: '*'
-  ident: '*/era_the_frost_era_span'
-  why: era_the_frost_era_span of Pilorus (id:0)
-- key: era_the_frost_era_trigger
-  value: The birth of Trakot
+  ident: '*/era_the_iron_times_span'
+  why: era_the_iron_times_span of Pilorus (id:0)
+- key: era_the_iron_times_trigger
+  value: War declared between Kruglurg and Durzol
   project: '*'
-  ident: '*/era_the_frost_era_trigger'
-  why: era_the_frost_era_trigger of Pilorus (id:0)
-- key: era_the_frost_era_description
-  value: The world turned through seasons of change -- 95 births and 87 battles and
-    62 site foundings defined this age.
+  ident: '*/era_the_iron_times_trigger'
+  why: era_the_iron_times_trigger of Pilorus (id:0)
+- key: era_the_iron_times_description
+  value: The world turned through seasons of change -- 182 battles and 142 births
+    and 94 wars declared defined this age.
   project: '*'
-  ident: '*/era_the_frost_era_description'
-  why: era_the_frost_era_description of Pilorus (id:0)
-- key: era_age_of_ashen_name
-  value: Age of Ashen
+  ident: '*/era_the_iron_times_description'
+  why: era_the_iron_times_description of Pilorus (id:0)
+- key: era_the_fallen_epoch_name
+  value: The Fallen Epoch
   project: '*'
-  ident: '*/era_age_of_ashen_name'
-  why: era_age_of_ashen_name of Pilorus (id:0)
-- key: era_age_of_ashen_span
+  ident: '*/era_the_fallen_epoch_name'
+  why: era_the_fallen_epoch_name of Pilorus (id:0)
+- key: era_the_fallen_epoch_span
   value: 62 to 123
   project: '*'
-  ident: '*/era_age_of_ashen_span'
-  why: era_age_of_ashen_span of Pilorus (id:0)
-- key: era_age_of_ashen_trigger
-  value: The birth of Wilramwin
+  ident: '*/era_the_fallen_epoch_span'
+  why: era_the_fallen_epoch_span of Pilorus (id:0)
+- key: era_the_fallen_epoch_trigger
+  value: The founding of Zgashnakh-fang
   project: '*'
-  ident: '*/era_age_of_ashen_trigger'
-  why: era_age_of_ashen_trigger of Pilorus (id:0)
-- key: era_age_of_ashen_description
-  value: The world turned through seasons of change -- 110 battles and 90 births and
-    86 title promotions defined this age.
+  ident: '*/era_the_fallen_epoch_trigger'
+  why: era_the_fallen_epoch_trigger of Pilorus (id:0)
+- key: era_the_fallen_epoch_description
+  value: The world turned through seasons of change -- 345 battles and 126 births
+    and 105 wars declared defined this age.
   project: '*'
-  ident: '*/era_age_of_ashen_description'
-  why: era_age_of_ashen_description of Pilorus (id:0)
+  ident: '*/era_the_fallen_epoch_description'
+  why: era_the_fallen_epoch_description of Pilorus (id:0)
+- key: era_the_ash_age_name
+  value: The Ash Age
+  project: '*'
+  ident: '*/era_the_ash_age_name'
+  why: era_the_ash_age_name of Pilorus (id:0)
+- key: era_the_ash_age_span
+  value: 124 to 185
+  project: '*'
+  ident: '*/era_the_ash_age_span'
+  why: era_the_ash_age_span of Pilorus (id:0)
+- key: era_the_ash_age_trigger
+  value: The birth of Mugghash
+  project: '*'
+  ident: '*/era_the_ash_age_trigger'
+  why: era_the_ash_age_trigger of Pilorus (id:0)
+- key: era_the_ash_age_description
+  value: The world turned through seasons of change -- 268 battles and 166 title promotions
+    and 133 births defined this age.
+  project: '*'
+  ident: '*/era_the_ash_age_description'
+  why: era_the_ash_age_description of Pilorus (id:0)
+- key: era_age_of_bone_name
+  value: Age of Bone
+  project: '*'
+  ident: '*/era_age_of_bone_name'
+  why: era_age_of_bone_name of Pilorus (id:0)
+- key: era_age_of_bone_span
+  value: 186 to 247
+  project: '*'
+  ident: '*/era_age_of_bone_span'
+  why: era_age_of_bone_span of Pilorus (id:0)
+- key: era_age_of_bone_trigger
+  value: A title promotion occurred
+  project: '*'
+  ident: '*/era_age_of_bone_trigger'
+  why: era_age_of_bone_trigger of Pilorus (id:0)
+- key: era_age_of_bone_description
+  value: The world turned through seasons of change -- 298 battles and 169 title promotions
+    and 146 births defined this age.
+  project: '*'
+  ident: '*/era_age_of_bone_description'
+  why: era_age_of_bone_description of Pilorus (id:0)
+- key: era_the_ember_years_name
+  value: The Ember Years
+  project: '*'
+  ident: '*/era_the_ember_years_name'
+  why: era_the_ember_years_name of Pilorus (id:0)
+- key: era_the_ember_years_span
+  value: 248 to 309
+  project: '*'
+  ident: '*/era_the_ember_years_span'
+  why: era_the_ember_years_span of Pilorus (id:0)
+- key: era_the_ember_years_trigger
+  value: Battle between Dwalbram and Sniktak
+  project: '*'
+  ident: '*/era_the_ember_years_trigger'
+  why: era_the_ember_years_trigger of Pilorus (id:0)
+- key: era_the_ember_years_description
+  value: The world turned through seasons of change -- 273 battles and 227 title promotions
+    and 140 births defined this age.
+  project: '*'
+  ident: '*/era_the_ember_years_description'
+  why: era_the_ember_years_description of Pilorus (id:0)
+- key: era_the_shadow_era_name
+  value: The Shadow Era
+  project: '*'
+  ident: '*/era_the_shadow_era_name'
+  why: era_the_shadow_era_name of Pilorus (id:0)
+- key: era_the_shadow_era_span
+  value: 310 to 371
+  project: '*'
+  ident: '*/era_the_shadow_era_span'
+  why: era_the_shadow_era_span of Pilorus (id:0)
+- key: era_the_shadow_era_trigger
+  value: A title promotion occurred
+  project: '*'
+  ident: '*/era_the_shadow_era_trigger'
+  why: era_the_shadow_era_trigger of Pilorus (id:0)
+- key: era_the_shadow_era_description
+  value: The world turned through seasons of change -- 267 battles and 239 title promotions
+    and 146 births defined this age.
+  project: '*'
+  ident: '*/era_the_shadow_era_description'
+  why: era_the_shadow_era_description of Pilorus (id:0)
 - key: era_the_golden_times_name
   value: The Golden Times
   project: '*'
   ident: '*/era_the_golden_times_name'
   why: era_the_golden_times_name of Pilorus (id:0)
 - key: era_the_golden_times_span
-  value: 124 to 185
+  value: 372 to 433
   project: '*'
   ident: '*/era_the_golden_times_span'
   why: era_the_golden_times_span of Pilorus (id:0)
 - key: era_the_golden_times_trigger
-  value: Battle between Miznok and Falconcon
+  value: The birth of Edolfwald
   project: '*'
   ident: '*/era_the_golden_times_trigger'
   why: era_the_golden_times_trigger of Pilorus (id:0)
 - key: era_the_golden_times_description
-  value: The world turned through seasons of change -- 106 title promotions and 84
-    births and 80 battles defined this age.
+  value: The world turned through seasons of change -- 285 title promotions and 276
+    battles and 118 births defined this age.
   project: '*'
   ident: '*/era_the_golden_times_description'
   why: era_the_golden_times_description of Pilorus (id:0)
-- key: era_the_pearl_years_name
-  value: The Pearl Years
+- key: era_the_ashen_epoch_name
+  value: The Ashen Epoch
   project: '*'
-  ident: '*/era_the_pearl_years_name'
-  why: era_the_pearl_years_name of Pilorus (id:0)
-- key: era_the_pearl_years_span
-  value: 186 to 247
-  project: '*'
-  ident: '*/era_the_pearl_years_span'
-  why: era_the_pearl_years_span of Pilorus (id:0)
-- key: era_the_pearl_years_trigger
-  value: Battle between Windoreford and Rakmiz
-  project: '*'
-  ident: '*/era_the_pearl_years_trigger'
-  why: era_the_pearl_years_trigger of Pilorus (id:0)
-- key: era_the_pearl_years_description
-  value: The world turned through seasons of change -- 158 title promotions and 129
-    battles and 88 births defined this age.
-  project: '*'
-  ident: '*/era_the_pearl_years_description'
-  why: era_the_pearl_years_description of Pilorus (id:0)
-- key: era_the_dawn_age_name
-  value: The Dawn Age
-  project: '*'
-  ident: '*/era_the_dawn_age_name'
-  why: era_the_dawn_age_name of Pilorus (id:0)
-- key: era_the_dawn_age_span
-  value: 248 to 309
-  project: '*'
-  ident: '*/era_the_dawn_age_span'
-  why: era_the_dawn_age_span of Pilorus (id:0)
-- key: era_the_dawn_age_trigger
-  value: A title promotion occurred
-  project: '*'
-  ident: '*/era_the_dawn_age_trigger'
-  why: era_the_dawn_age_trigger of Pilorus (id:0)
-- key: era_the_dawn_age_description
-  value: The world turned through seasons of change -- 144 title promotions and 107
-    battles and 92 births defined this age.
-  project: '*'
-  ident: '*/era_the_dawn_age_description'
-  why: era_the_dawn_age_description of Pilorus (id:0)
-- key: era_the_crystal_epoch_name
-  value: The Crystal Epoch
-  project: '*'
-  ident: '*/era_the_crystal_epoch_name'
-  why: era_the_crystal_epoch_name of Pilorus (id:0)
-- key: era_the_crystal_epoch_span
-  value: 310 to 371
-  project: '*'
-  ident: '*/era_the_crystal_epoch_span'
-  why: era_the_crystal_epoch_span of Pilorus (id:0)
-- key: era_the_crystal_epoch_trigger
-  value: Battle between Miznok and Falconcon
-  project: '*'
-  ident: '*/era_the_crystal_epoch_trigger'
-  why: era_the_crystal_epoch_trigger of Pilorus (id:0)
-- key: era_the_crystal_epoch_description
-  value: The world turned through seasons of change -- 156 title promotions and 92
-    battles and 68 births defined this age.
-  project: '*'
-  ident: '*/era_the_crystal_epoch_description'
-  why: era_the_crystal_epoch_description of Pilorus (id:0)
-- key: era_the_sapphire_era_name
-  value: The Sapphire Era
-  project: '*'
-  ident: '*/era_the_sapphire_era_name'
-  why: era_the_sapphire_era_name of Pilorus (id:0)
-- key: era_the_sapphire_era_span
-  value: 372 to 433
-  project: '*'
-  ident: '*/era_the_sapphire_era_span'
-  why: era_the_sapphire_era_span of Pilorus (id:0)
-- key: era_the_sapphire_era_trigger
-  value: The birth of Glotgakblik
-  project: '*'
-  ident: '*/era_the_sapphire_era_trigger'
-  why: era_the_sapphire_era_trigger of Pilorus (id:0)
-- key: era_the_sapphire_era_description
-  value: The world turned through seasons of change -- 175 title promotions and 96
-    births and 69 battles defined this age.
-  project: '*'
-  ident: '*/era_the_sapphire_era_description'
-  why: era_the_sapphire_era_description of Pilorus (id:0)
-- key: era_age_of_radiant_name
-  value: Age of Radiant
-  project: '*'
-  ident: '*/era_age_of_radiant_name'
-  why: era_age_of_radiant_name of Pilorus (id:0)
-- key: era_age_of_radiant_span
+  ident: '*/era_the_ashen_epoch_name'
+  why: era_the_ashen_epoch_name of Pilorus (id:0)
+- key: era_the_ashen_epoch_span
   value: 434 to 500
   project: '*'
-  ident: '*/era_age_of_radiant_span'
-  why: era_age_of_radiant_span of Pilorus (id:0)
-- key: era_age_of_radiant_trigger
-  value: A title promotion occurred
+  ident: '*/era_the_ashen_epoch_span'
+  why: era_the_ashen_epoch_span of Pilorus (id:0)
+- key: era_the_ashen_epoch_trigger
+  value: A war ended occurred
   project: '*'
-  ident: '*/era_age_of_radiant_trigger'
-  why: era_age_of_radiant_trigger of Pilorus (id:0)
-- key: era_age_of_radiant_description
-  value: The world turned through seasons of change -- 187 title promotions and 90
-    births and 88 battles defined this age.
+  ident: '*/era_the_ashen_epoch_trigger'
+  why: era_the_ashen_epoch_trigger of Pilorus (id:0)
+- key: era_the_ashen_epoch_description
+  value: The world turned through seasons of change -- 354 battles and 321 title promotions
+    and 148 births defined this age.
   project: '*'
-  ident: '*/era_age_of_radiant_description'
-  why: era_age_of_radiant_description of Pilorus (id:0)
+  ident: '*/era_the_ashen_epoch_description'
+  why: era_the_ashen_epoch_description of Pilorus (id:0)
 - key: major_event_1
-  value: In year 36, Battle between Aeanoran and Rakmiz.
+  value: 'In year 40, War ended: Dwalbram defeated Wilganric.'
   project: '*'
   ident: '*/major_event_1'
   why: major_event_1 of Pilorus (id:0)
 - key: major_event_2
-  value: In year 115, Battle between Aeanoran and Windoreford.
+  value: In year 106, Battle between Durgankaz and Shogbrut.
   project: '*'
   ident: '*/major_event_2'
   why: major_event_2 of Pilorus (id:0)
 - key: major_event_3
-  value: In year 153, The dragon Boneking attacked Linmar-haven, killing 49.
+  value: In year 143, Battle between Durgankaz and Thoklurgshog.
   project: '*'
   ident: '*/major_event_3'
   why: major_event_3 of Pilorus (id:0)
 - key: major_event_4
-  value: In year 232, Battle between Miznok and Windoreford.
+  value: In year 240, Battle between Edwelldore and Shogbrut.
   project: '*'
   ident: '*/major_event_4'
   why: major_event_4 of Pilorus (id:0)
 - key: major_event_5
-  value: In year 290, Battle between Falconcon and Rakmiz.
+  value: 'In year 258, War ended: Shogbrut defeated Dwalbram.'
   project: '*'
   ident: '*/major_event_5'
   why: major_event_5 of Pilorus (id:0)
-- key: site_gakskigglibwarren_type
+- key: site_ndwalak-vale_type
   value: city
   project: '*'
-  ident: '*/site_gakskigglibwarren_type'
-  why: site_gakskigglibwarren_type of Pilorus (id:0)
-- key: site_gakskigglibwarren_population
-  value: '3455'
+  ident: '*/site_ndwalak-vale_type'
+  why: site_ndwalak-vale_type of Pilorus (id:0)
+- key: site_ndwalak-vale_population
+  value: '3650'
   project: '*'
-  ident: '*/site_gakskigglibwarren_population'
-  why: site_gakskigglibwarren_population of Pilorus (id:0)
-- key: site_gakskigglibwarren_founded
+  ident: '*/site_ndwalak-vale_population'
+  why: site_ndwalak-vale_population of Pilorus (id:0)
+- key: site_ndwalak-vale_founded
   value: '0'
   project: '*'
-  ident: '*/site_gakskigglibwarren_founded'
-  why: site_gakskigglibwarren_founded of Pilorus (id:0)
-- key: site_sniktrogtrak-warren_type
-  value: shrine
-  project: '*'
-  ident: '*/site_sniktrogtrak-warren_type'
-  why: site_sniktrogtrak-warren_type of Pilorus (id:0)
-- key: site_sniktrogtrak-warren_population
-  value: '931'
-  project: '*'
-  ident: '*/site_sniktrogtrak-warren_population'
-  why: site_sniktrogtrak-warren_population of Pilorus (id:0)
-- key: site_sniktrogtrak-warren_founded
-  value: '0'
-  project: '*'
-  ident: '*/site_sniktrogtrak-warren_founded'
-  why: site_sniktrogtrak-warren_founded of Pilorus (id:0)
-- key: site_spigsnikzit-hollow_type
-  value: shrine
-  project: '*'
-  ident: '*/site_spigsnikzit-hollow_type'
-  why: site_spigsnikzit-hollow_type of Pilorus (id:0)
-- key: site_spigsnikzit-hollow_population
-  value: '1007'
-  project: '*'
-  ident: '*/site_spigsnikzit-hollow_population'
-  why: site_spigsnikzit-hollow_population of Pilorus (id:0)
-- key: site_spigsnikzit-hollow_founded
-  value: '0'
-  project: '*'
-  ident: '*/site_spigsnikzit-hollow_founded'
-  why: site_spigsnikzit-hollow_founded of Pilorus (id:0)
-- key: site_tzibog-warren_type
-  value: fortress
-  project: '*'
-  ident: '*/site_tzibog-warren_type'
-  why: site_tzibog-warren_type of Pilorus (id:0)
-- key: site_tzibog-warren_population
-  value: '2623'
-  project: '*'
-  ident: '*/site_tzibog-warren_population'
-  why: site_tzibog-warren_population of Pilorus (id:0)
-- key: site_tzibog-warren_founded
-  value: '0'
-  project: '*'
-  ident: '*/site_tzibog-warren_founded'
-  why: site_tzibog-warren_founded of Pilorus (id:0)
-- key: site_radramwatch_type
-  value: city
-  project: '*'
-  ident: '*/site_radramwatch_type'
-  why: site_radramwatch_type of Pilorus (id:0)
-- key: site_radramwatch_population
-  value: '3554'
-  project: '*'
-  ident: '*/site_radramwatch_population'
-  why: site_radramwatch_population of Pilorus (id:0)
-- key: site_radramwatch_founded
-  value: '0'
-  project: '*'
-  ident: '*/site_radramwatch_founded'
-  why: site_radramwatch_founded of Pilorus (id:0)
-- key: site_winconram-bridge_type
-  value: fortress
-  project: '*'
-  ident: '*/site_winconram-bridge_type'
-  why: site_winconram-bridge_type of Pilorus (id:0)
-- key: site_winconram-bridge_population
-  value: '2690'
-  project: '*'
-  ident: '*/site_winconram-bridge_population'
-  why: site_winconram-bridge_population of Pilorus (id:0)
-- key: site_winconram-bridge_founded
-  value: '0'
-  project: '*'
-  ident: '*/site_winconram-bridge_founded'
-  why: site_winconram-bridge_founded of Pilorus (id:0)
-- key: site_godrichaven_type
-  value: fortress
-  project: '*'
-  ident: '*/site_godrichaven_type'
-  why: site_godrichaven_type of Pilorus (id:0)
-- key: site_godrichaven_population
-  value: '2725'
-  project: '*'
-  ident: '*/site_godrichaven_population'
-  why: site_godrichaven_population of Pilorus (id:0)
-- key: site_godrichaven_founded
-  value: '0'
-  project: '*'
-  ident: '*/site_godrichaven_founded'
-  why: site_godrichaven_founded of Pilorus (id:0)
-- key: site_radrickshire_type
+  ident: '*/site_ndwalak-vale_founded'
+  why: site_ndwalak-vale_founded of Pilorus (id:0)
+- key: site_nnazimfort_type
   value: tower
   project: '*'
-  ident: '*/site_radrickshire_type'
-  why: site_radrickshire_type of Pilorus (id:0)
-- key: site_radrickshire_population
-  value: '2691'
+  ident: '*/site_nnazimfort_type'
+  why: site_nnazimfort_type of Pilorus (id:0)
+- key: site_nnazimfort_population
+  value: '2736'
   project: '*'
-  ident: '*/site_radrickshire_population'
-  why: site_radrickshire_population of Pilorus (id:0)
-- key: site_radrickshire_founded
+  ident: '*/site_nnazimfort_population'
+  why: site_nnazimfort_population of Pilorus (id:0)
+- key: site_nnazimfort_founded
   value: '0'
   project: '*'
-  ident: '*/site_radrickshire_founded'
-  why: site_radrickshire_founded of Pilorus (id:0)
-- key: site_erithae-thorn_type
+  ident: '*/site_nnazimfort_founded'
+  why: site_nnazimfort_founded of Pilorus (id:0)
+- key: site_grimrakbram-hold_type
+  value: tower
+  project: '*'
+  ident: '*/site_grimrakbram-hold_type'
+  why: site_grimrakbram-hold_type of Pilorus (id:0)
+- key: site_grimrakbram-hold_population
+  value: '2678'
+  project: '*'
+  ident: '*/site_grimrakbram-hold_population'
+  why: site_grimrakbram-hold_population of Pilorus (id:0)
+- key: site_grimrakbram-hold_founded
+  value: '0'
+  project: '*'
+  ident: '*/site_grimrakbram-hold_founded'
+  why: site_grimrakbram-hold_founded of Pilorus (id:0)
+- key: site_kragkragkaz-vale_type
+  value: tower
+  project: '*'
+  ident: '*/site_kragkragkaz-vale_type'
+  why: site_kragkragkaz-vale_type of Pilorus (id:0)
+- key: site_kragkragkaz-vale_population
+  value: '2766'
+  project: '*'
+  ident: '*/site_kragkragkaz-vale_population'
+  why: site_kragkragkaz-vale_population of Pilorus (id:0)
+- key: site_kragkragkaz-vale_founded
+  value: '0'
+  project: '*'
+  ident: '*/site_kragkragkaz-vale_founded'
+  why: site_kragkragkaz-vale_founded of Pilorus (id:0)
+- key: site_mokornpeak_type
   value: city
   project: '*'
-  ident: '*/site_erithae-thorn_type'
-  why: site_erithae-thorn_type of Pilorus (id:0)
-- key: site_erithae-thorn_population
-  value: '3517'
+  ident: '*/site_mokornpeak_type'
+  why: site_mokornpeak_type of Pilorus (id:0)
+- key: site_mokornpeak_population
+  value: '3516'
   project: '*'
-  ident: '*/site_erithae-thorn_population'
-  why: site_erithae-thorn_population of Pilorus (id:0)
-- key: site_erithae-thorn_founded
+  ident: '*/site_mokornpeak_population'
+  why: site_mokornpeak_population of Pilorus (id:0)
+- key: site_mokornpeak_founded
   value: '0'
   project: '*'
-  ident: '*/site_erithae-thorn_founded'
-  why: site_erithae-thorn_founded of Pilorus (id:0)
-- key: site_galfalthal-thorn_type
-  value: shrine
+  ident: '*/site_mokornpeak_founded'
+  why: site_mokornpeak_founded of Pilorus (id:0)
+- key: site_gumganvale_type
+  value: fortress
   project: '*'
-  ident: '*/site_galfalthal-thorn_type'
-  why: site_galfalthal-thorn_type of Pilorus (id:0)
-- key: site_galfalthal-thorn_population
-  value: '1023'
+  ident: '*/site_gumganvale_type'
+  why: site_gumganvale_type of Pilorus (id:0)
+- key: site_gumganvale_population
+  value: '2688'
   project: '*'
-  ident: '*/site_galfalthal-thorn_population'
-  why: site_galfalthal-thorn_population of Pilorus (id:0)
-- key: site_galfalthal-thorn_founded
+  ident: '*/site_gumganvale_population'
+  why: site_gumganvale_population of Pilorus (id:0)
+- key: site_gumganvale_founded
   value: '0'
   project: '*'
-  ident: '*/site_galfalthal-thorn_founded'
-  why: site_galfalthal-thorn_founded of Pilorus (id:0)
-- key: figure_glrikik_race
-  value: Goblin
+  ident: '*/site_gumganvale_founded'
+  why: site_gumganvale_founded of Pilorus (id:0)
+- key: site_thrakkul-vale_type
+  value: tower
   project: '*'
-  ident: '*/figure_glrikik_race'
-  why: figure_glrikik_race of Pilorus (id:0)
-- key: figure_glrikik_title
-  value: Storm of
+  ident: '*/site_thrakkul-vale_type'
+  why: site_thrakkul-vale_type of Pilorus (id:0)
+- key: site_thrakkul-vale_population
+  value: '2704'
   project: '*'
-  ident: '*/figure_glrikik_title'
-  why: figure_glrikik_title of Pilorus (id:0)
-- key: figure_glrikik_alignment
-  value: chaos
+  ident: '*/site_thrakkul-vale_population'
+  why: site_thrakkul-vale_population of Pilorus (id:0)
+- key: site_thrakkul-vale_founded
+  value: '0'
   project: '*'
-  ident: '*/figure_glrikik_alignment'
-  why: figure_glrikik_alignment of Pilorus (id:0)
-- key: figure_glrikik_lifespan
-  value: 9-49
+  ident: '*/site_thrakkul-vale_founded'
+  why: site_thrakkul-vale_founded of Pilorus (id:0)
+- key: site_kmoken-deep_type
+  value: village
   project: '*'
-  ident: '*/figure_glrikik_lifespan'
-  why: figure_glrikik_lifespan of Pilorus (id:0)
-- key: figure_gakmek_race
-  value: Goblin
+  ident: '*/site_kmoken-deep_type'
+  why: site_kmoken-deep_type of Pilorus (id:0)
+- key: site_kmoken-deep_population
+  value: '1007'
   project: '*'
-  ident: '*/figure_gakmek_race'
-  why: figure_gakmek_race of Pilorus (id:0)
-- key: figure_gakmek_title
-  value: Captain
+  ident: '*/site_kmoken-deep_population'
+  why: site_kmoken-deep_population of Pilorus (id:0)
+- key: site_kmoken-deep_founded
+  value: '0'
   project: '*'
-  ident: '*/figure_gakmek_title'
-  why: figure_gakmek_title of Pilorus (id:0)
-- key: figure_gakmek_alignment
+  ident: '*/site_kmoken-deep_founded'
+  why: site_kmoken-deep_founded of Pilorus (id:0)
+- key: site_godwin-ford_type
+  value: city
+  project: '*'
+  ident: '*/site_godwin-ford_type'
+  why: site_godwin-ford_type of Pilorus (id:0)
+- key: site_godwin-ford_population
+  value: '3435'
+  project: '*'
+  ident: '*/site_godwin-ford_population'
+  why: site_godwin-ford_population of Pilorus (id:0)
+- key: site_godwin-ford_founded
+  value: '0'
+  project: '*'
+  ident: '*/site_godwin-ford_founded'
+  why: site_godwin-ford_founded of Pilorus (id:0)
+- key: site_conrick-watch_type
+  value: tower
+  project: '*'
+  ident: '*/site_conrick-watch_type'
+  why: site_conrick-watch_type of Pilorus (id:0)
+- key: site_conrick-watch_population
+  value: '2588'
+  project: '*'
+  ident: '*/site_conrick-watch_population'
+  why: site_conrick-watch_population of Pilorus (id:0)
+- key: site_conrick-watch_founded
+  value: '0'
+  project: '*'
+  ident: '*/site_conrick-watch_founded'
+  why: site_conrick-watch_founded of Pilorus (id:0)
+- key: figure_grimgund_race
+  value: Dwarf
+  project: '*'
+  ident: '*/figure_grimgund_race'
+  why: figure_grimgund_race of Pilorus (id:0)
+- key: figure_grimgund_title
+  value: Steward of Durgankaz
+  project: '*'
+  ident: '*/figure_grimgund_title'
+  why: figure_grimgund_title of Pilorus (id:0)
+- key: figure_grimgund_alignment
   value: neutral
   project: '*'
-  ident: '*/figure_gakmek_alignment'
-  why: figure_gakmek_alignment of Pilorus (id:0)
-- key: figure_gakmek_lifespan
-  value: -1-16
+  ident: '*/figure_grimgund_alignment'
+  why: figure_grimgund_alignment of Pilorus (id:0)
+- key: figure_grimgund_lifespan
+  value: -48-46
   project: '*'
-  ident: '*/figure_gakmek_lifespan'
-  why: figure_gakmek_lifespan of Pilorus (id:0)
-- key: figure_riktak_race
-  value: Goblin
+  ident: '*/figure_grimgund_lifespan'
+  why: figure_grimgund_lifespan of Pilorus (id:0)
+- key: figure_rakgrimmard_race
+  value: Dwarf
   project: '*'
-  ident: '*/figure_riktak_race'
-  why: figure_riktak_race of Pilorus (id:0)
-- key: figure_riktak_title
-  value: Berserker
+  ident: '*/figure_rakgrimmard_race'
+  why: figure_rakgrimmard_race of Pilorus (id:0)
+- key: figure_rakgrimmard_title
+  value: King
   project: '*'
-  ident: '*/figure_riktak_title'
-  why: figure_riktak_title of Pilorus (id:0)
-- key: figure_riktak_alignment
+  ident: '*/figure_rakgrimmard_title'
+  why: figure_rakgrimmard_title of Pilorus (id:0)
+- key: figure_rakgrimmard_alignment
+  value: neutral
+  project: '*'
+  ident: '*/figure_rakgrimmard_alignment'
+  why: figure_rakgrimmard_alignment of Pilorus (id:0)
+- key: figure_rakgrimmard_lifespan
+  value: -27-81
+  project: '*'
+  ident: '*/figure_rakgrimmard_lifespan'
+  why: figure_rakgrimmard_lifespan of Pilorus (id:0)
+- key: figure_dwalbalbor_race
+  value: Dwarf
+  project: '*'
+  ident: '*/figure_dwalbalbor_race'
+  why: figure_dwalbalbor_race of Pilorus (id:0)
+- key: figure_dwalbalbor_title
+  value: Monarch of Durgankaz
+  project: '*'
+  ident: '*/figure_dwalbalbor_title'
+  why: figure_dwalbalbor_title of Pilorus (id:0)
+- key: figure_dwalbalbor_alignment
+  value: neutral
+  project: '*'
+  ident: '*/figure_dwalbalbor_alignment'
+  why: figure_dwalbalbor_alignment of Pilorus (id:0)
+- key: figure_dwalbalbor_lifespan
+  value: -15-present (still alive)
+  project: '*'
+  ident: '*/figure_dwalbalbor_lifespan'
+  why: figure_dwalbalbor_lifespan of Pilorus (id:0)
+- key: figure_vbazur_race
+  value: Dwarf
+  project: '*'
+  ident: '*/figure_vbazur_race'
+  why: figure_vbazur_race of Pilorus (id:0)
+- key: figure_vbazur_title
+  value: Scholar
+  project: '*'
+  ident: '*/figure_vbazur_title'
+  why: figure_vbazur_title of Pilorus (id:0)
+- key: figure_vbazur_alignment
+  value: neutral
+  project: '*'
+  ident: '*/figure_vbazur_alignment'
+  why: figure_vbazur_alignment of Pilorus (id:0)
+- key: figure_vbazur_lifespan
+  value: -6-22
+  project: '*'
+  ident: '*/figure_vbazur_lifespan'
+  why: figure_vbazur_lifespan of Pilorus (id:0)
+- key: figure_durthrakgund_race
+  value: Dwarf
+  project: '*'
+  ident: '*/figure_durthrakgund_race'
+  why: figure_durthrakgund_race of Pilorus (id:0)
+- key: figure_durthrakgund_title
+  value: Trickster
+  project: '*'
+  ident: '*/figure_durthrakgund_title'
+  why: figure_durthrakgund_title of Pilorus (id:0)
+- key: figure_durthrakgund_alignment
   value: chaos
   project: '*'
-  ident: '*/figure_riktak_alignment'
-  why: figure_riktak_alignment of Pilorus (id:0)
-- key: figure_riktak_lifespan
-  value: -41-32
+  ident: '*/figure_durthrakgund_alignment'
+  why: figure_durthrakgund_alignment of Pilorus (id:0)
+- key: figure_durthrakgund_lifespan
+  value: -3-0
   project: '*'
-  ident: '*/figure_riktak_lifespan'
-  why: figure_riktak_lifespan of Pilorus (id:0)
-- key: figure_nogglib_race
-  value: Goblin
+  ident: '*/figure_durthrakgund_lifespan'
+  why: figure_durthrakgund_lifespan of Pilorus (id:0)
+- key: figure_thtoren_race
+  value: Dwarf
   project: '*'
-  ident: '*/figure_nogglib_race'
-  why: figure_nogglib_race of Pilorus (id:0)
-- key: figure_nogglib_title
-  value: Berserker
+  ident: '*/figure_thtoren_race'
+  why: figure_thtoren_race of Pilorus (id:0)
+- key: figure_thtoren_title
+  value: Duke of Durgankaz
   project: '*'
-  ident: '*/figure_nogglib_title'
-  why: figure_nogglib_title of Pilorus (id:0)
-- key: figure_nogglib_alignment
+  ident: '*/figure_thtoren_title'
+  why: figure_thtoren_title of Pilorus (id:0)
+- key: figure_thtoren_alignment
   value: chaos
   project: '*'
-  ident: '*/figure_nogglib_alignment'
-  why: figure_nogglib_alignment of Pilorus (id:0)
-- key: figure_nogglib_lifespan
-  value: -38-0
+  ident: '*/figure_thtoren_alignment'
+  why: figure_thtoren_alignment of Pilorus (id:0)
+- key: figure_thtoren_lifespan
+  value: -22-149
   project: '*'
-  ident: '*/figure_nogglib_lifespan'
-  why: figure_nogglib_lifespan of Pilorus (id:0)
-- key: figure_rammered_race
-  value: Human
+  ident: '*/figure_thtoren_lifespan'
+  why: figure_thtoren_lifespan of Pilorus (id:0)
+- key: figure_zolnur_race
+  value: Dwarf
   project: '*'
-  ident: '*/figure_rammered_race'
-  why: figure_rammered_race of Pilorus (id:0)
-- key: figure_rammered_title
-  value: Dark Lord
+  ident: '*/figure_zolnur_race'
+  why: figure_zolnur_race of Pilorus (id:0)
+- key: figure_zolnur_title
+  value: Nightmare of Dwalbram
   project: '*'
-  ident: '*/figure_rammered_title'
-  why: figure_rammered_title of Pilorus (id:0)
-- key: figure_rammered_alignment
-  value: evil
-  project: '*'
-  ident: '*/figure_rammered_alignment'
-  why: figure_rammered_alignment of Pilorus (id:0)
-- key: figure_rammered_lifespan
-  value: -13-present (still alive)
-  project: '*'
-  ident: '*/figure_rammered_lifespan'
-  why: figure_rammered_lifespan of Pilorus (id:0)
-- key: figure_cedganrick_race
-  value: Human
-  project: '*'
-  ident: '*/figure_cedganrick_race'
-  why: figure_cedganrick_race of Pilorus (id:0)
-- key: figure_cedganrick_title
-  value: Omen of Falconcon
-  project: '*'
-  ident: '*/figure_cedganrick_title'
-  why: figure_cedganrick_title of Pilorus (id:0)
-- key: figure_cedganrick_alignment
+  ident: '*/figure_zolnur_title'
+  why: figure_zolnur_title of Pilorus (id:0)
+- key: figure_zolnur_alignment
   value: chaos
   project: '*'
-  ident: '*/figure_cedganrick_alignment'
-  why: figure_cedganrick_alignment of Pilorus (id:0)
-- key: figure_cedganrick_lifespan
-  value: 4-present (still alive)
+  ident: '*/figure_zolnur_alignment'
+  why: figure_zolnur_alignment of Pilorus (id:0)
+- key: figure_zolnur_lifespan
+  value: -22-197
   project: '*'
-  ident: '*/figure_cedganrick_lifespan'
-  why: figure_cedganrick_lifespan of Pilorus (id:0)
-- key: figure_ricstan_race
-  value: Human
+  ident: '*/figure_zolnur_lifespan'
+  why: figure_zolnur_lifespan of Pilorus (id:0)
+- key: figure_rakkaz_race
+  value: Dwarf
   project: '*'
-  ident: '*/figure_ricstan_race'
-  why: figure_ricstan_race of Pilorus (id:0)
-- key: figure_ricstan_title
+  ident: '*/figure_rakkaz_race'
+  why: figure_rakkaz_race of Pilorus (id:0)
+- key: figure_rakkaz_title
+  value: Sovereign of Dwalbram
+  project: '*'
+  ident: '*/figure_rakkaz_title'
+  why: figure_rakkaz_title of Pilorus (id:0)
+- key: figure_rakkaz_alignment
+  value: neutral
+  project: '*'
+  ident: '*/figure_rakkaz_alignment'
+  why: figure_rakkaz_alignment of Pilorus (id:0)
+- key: figure_rakkaz_lifespan
+  value: 0-67
+  project: '*'
+  ident: '*/figure_rakkaz_lifespan'
+  why: figure_rakkaz_lifespan of Pilorus (id:0)
+- key: figure_turgund_race
+  value: Dwarf
+  project: '*'
+  ident: '*/figure_turgund_race'
+  why: figure_turgund_race of Pilorus (id:0)
+- key: figure_turgund_title
   value: Duke
   project: '*'
-  ident: '*/figure_ricstan_title'
-  why: figure_ricstan_title of Pilorus (id:0)
-- key: figure_ricstan_alignment
-  value: order
+  ident: '*/figure_turgund_title'
+  why: figure_turgund_title of Pilorus (id:0)
+- key: figure_turgund_alignment
+  value: neutral
   project: '*'
-  ident: '*/figure_ricstan_alignment'
-  why: figure_ricstan_alignment of Pilorus (id:0)
-- key: figure_ricstan_lifespan
-  value: 7-294
+  ident: '*/figure_turgund_alignment'
+  why: figure_turgund_alignment of Pilorus (id:0)
+- key: figure_turgund_lifespan
+  value: -18-82
   project: '*'
-  ident: '*/figure_ricstan_lifespan'
-  why: figure_ricstan_lifespan of Pilorus (id:0)
-- key: figure_ricric_race
-  value: Human
+  ident: '*/figure_turgund_lifespan'
+  why: figure_turgund_lifespan of Pilorus (id:0)
+- key: figure_gumkazthra_race
+  value: Dwarf
   project: '*'
-  ident: '*/figure_ricric_race'
-  why: figure_ricric_race of Pilorus (id:0)
-- key: figure_ricric_title
-  value: Saboteur
+  ident: '*/figure_gumkazthra_race'
+  why: figure_gumkazthra_race of Pilorus (id:0)
+- key: figure_gumkazthra_title
+  value: Berserker
   project: '*'
-  ident: '*/figure_ricric_title'
-  why: figure_ricric_title of Pilorus (id:0)
-- key: figure_ricric_alignment
+  ident: '*/figure_gumkazthra_title'
+  why: figure_gumkazthra_title of Pilorus (id:0)
+- key: figure_gumkazthra_alignment
   value: chaos
   project: '*'
-  ident: '*/figure_ricric_alignment'
-  why: figure_ricric_alignment of Pilorus (id:0)
-- key: figure_ricric_lifespan
-  value: -32-10
+  ident: '*/figure_gumkazthra_alignment'
+  why: figure_gumkazthra_alignment of Pilorus (id:0)
+- key: figure_gumkazthra_lifespan
+  value: -37-1
   project: '*'
-  ident: '*/figure_ricric_lifespan'
-  why: figure_ricric_lifespan of Pilorus (id:0)
-- key: figure_garolf_race
-  value: Human
-  project: '*'
-  ident: '*/figure_garolf_race'
-  why: figure_garolf_race of Pilorus (id:0)
-- key: figure_garolf_title
-  value: Tyrant of Falconcon
-  project: '*'
-  ident: '*/figure_garolf_title'
-  why: figure_garolf_title of Pilorus (id:0)
-- key: figure_garolf_alignment
-  value: evil
-  project: '*'
-  ident: '*/figure_garolf_alignment'
-  why: figure_garolf_alignment of Pilorus (id:0)
-- key: figure_garolf_lifespan
-  value: -40-132
-  project: '*'
-  ident: '*/figure_garolf_lifespan'
-  why: figure_garolf_lifespan of Pilorus (id:0)
-- key: figure_fordfal_race
-  value: Human
-  project: '*'
-  ident: '*/figure_fordfal_race'
-  why: figure_fordfal_race of Pilorus (id:0)
-- key: figure_fordfal_title
-  value: Duke of Falconcon
-  project: '*'
-  ident: '*/figure_fordfal_title'
-  why: figure_fordfal_title of Pilorus (id:0)
-- key: figure_fordfal_alignment
-  value: chaos
-  project: '*'
-  ident: '*/figure_fordfal_alignment'
-  why: figure_fordfal_alignment of Pilorus (id:0)
-- key: figure_fordfal_lifespan
-  value: -33-76
-  project: '*'
-  ident: '*/figure_fordfal_lifespan'
-  why: figure_fordfal_lifespan of Pilorus (id:0)
-- key: artifact_the_scepter_of_the_fallen_type
-  value: instrument
-  project: '*'
-  ident: '*/artifact_the_scepter_of_the_fallen_type'
-  why: artifact_the_scepter_of_the_fallen_type of Pilorus (id:0)
-- key: artifact_the_scepter_of_the_fallen_material
-  value: adamantine
-  project: '*'
-  ident: '*/artifact_the_scepter_of_the_fallen_material'
-  why: artifact_the_scepter_of_the_fallen_material of Pilorus (id:0)
-- key: artifact_the_scepter_of_the_fallen_created
-  value: '28'
-  project: '*'
-  ident: '*/artifact_the_scepter_of_the_fallen_created'
-  why: artifact_the_scepter_of_the_fallen_created of Pilorus (id:0)
-- key: artifact_the_crown_of_fate_type
-  value: crown
-  project: '*'
-  ident: '*/artifact_the_crown_of_fate_type'
-  why: artifact_the_crown_of_fate_type of Pilorus (id:0)
-- key: artifact_the_crown_of_fate_material
-  value: bone
-  project: '*'
-  ident: '*/artifact_the_crown_of_fate_material'
-  why: artifact_the_crown_of_fate_material of Pilorus (id:0)
-- key: artifact_the_crown_of_fate_created
-  value: '44'
-  project: '*'
-  ident: '*/artifact_the_crown_of_fate_created'
-  why: artifact_the_crown_of_fate_created of Pilorus (id:0)
-- key: artifact_the_shield_of_ages_type
+  ident: '*/figure_gumkazthra_lifespan'
+  why: figure_gumkazthra_lifespan of Pilorus (id:0)
+- key: artifact_the_shield_of_the_fallen_type
   value: shield
   project: '*'
-  ident: '*/artifact_the_shield_of_ages_type'
-  why: artifact_the_shield_of_ages_type of Pilorus (id:0)
-- key: artifact_the_shield_of_ages_material
-  value: iron
+  ident: '*/artifact_the_shield_of_the_fallen_type'
+  why: artifact_the_shield_of_the_fallen_type of Pilorus (id:0)
+- key: artifact_the_shield_of_the_fallen_material
+  value: mithril
   project: '*'
-  ident: '*/artifact_the_shield_of_ages_material'
-  why: artifact_the_shield_of_ages_material of Pilorus (id:0)
-- key: artifact_the_shield_of_ages_created
-  value: '31'
+  ident: '*/artifact_the_shield_of_the_fallen_material'
+  why: artifact_the_shield_of_the_fallen_material of Pilorus (id:0)
+- key: artifact_the_shield_of_the_fallen_created
+  value: '5'
   project: '*'
-  ident: '*/artifact_the_shield_of_ages_created'
-  why: artifact_the_shield_of_ages_created of Pilorus (id:0)
-- key: artifact_the_scepter_of_the_deep_type
+  ident: '*/artifact_the_shield_of_the_fallen_created'
+  why: artifact_the_shield_of_the_fallen_created of Pilorus (id:0)
+- key: artifact_the_key_of_darkness_type
   value: instrument
   project: '*'
-  ident: '*/artifact_the_scepter_of_the_deep_type'
-  why: artifact_the_scepter_of_the_deep_type of Pilorus (id:0)
-- key: artifact_the_scepter_of_the_deep_material
-  value: gold
+  ident: '*/artifact_the_key_of_darkness_type'
+  why: artifact_the_key_of_darkness_type of Pilorus (id:0)
+- key: artifact_the_key_of_darkness_material
+  value: wood
   project: '*'
-  ident: '*/artifact_the_scepter_of_the_deep_material'
-  why: artifact_the_scepter_of_the_deep_material of Pilorus (id:0)
-- key: artifact_the_scepter_of_the_deep_created
-  value: '63'
+  ident: '*/artifact_the_key_of_darkness_material'
+  why: artifact_the_key_of_darkness_material of Pilorus (id:0)
+- key: artifact_the_key_of_darkness_created
+  value: '10'
   project: '*'
-  ident: '*/artifact_the_scepter_of_the_deep_created'
-  why: artifact_the_scepter_of_the_deep_created of Pilorus (id:0)
-- key: artifact_the_blade_of_the_sky_type
-  value: weapon
-  project: '*'
-  ident: '*/artifact_the_blade_of_the_sky_type'
-  why: artifact_the_blade_of_the_sky_type of Pilorus (id:0)
-- key: artifact_the_blade_of_the_sky_material
-  value: steel
-  project: '*'
-  ident: '*/artifact_the_blade_of_the_sky_material'
-  why: artifact_the_blade_of_the_sky_material of Pilorus (id:0)
-- key: artifact_the_blade_of_the_sky_created
-  value: '31'
-  project: '*'
-  ident: '*/artifact_the_blade_of_the_sky_created'
-  why: artifact_the_blade_of_the_sky_created of Pilorus (id:0)
-- key: artifact_the_star_of_eternity_type
+  ident: '*/artifact_the_key_of_darkness_created'
+  why: artifact_the_key_of_darkness_created of Pilorus (id:0)
+- key: artifact_the_tome_of_the_deep_type
   value: tome
   project: '*'
-  ident: '*/artifact_the_star_of_eternity_type'
-  why: artifact_the_star_of_eternity_type of Pilorus (id:0)
-- key: artifact_the_star_of_eternity_material
+  ident: '*/artifact_the_tome_of_the_deep_type'
+  why: artifact_the_tome_of_the_deep_type of Pilorus (id:0)
+- key: artifact_the_tome_of_the_deep_material
   value: crystal
   project: '*'
-  ident: '*/artifact_the_star_of_eternity_material'
-  why: artifact_the_star_of_eternity_material of Pilorus (id:0)
-- key: artifact_the_star_of_eternity_created
+  ident: '*/artifact_the_tome_of_the_deep_material'
+  why: artifact_the_tome_of_the_deep_material of Pilorus (id:0)
+- key: artifact_the_tome_of_the_deep_created
+  value: '48'
+  project: '*'
+  ident: '*/artifact_the_tome_of_the_deep_created'
+  why: artifact_the_tome_of_the_deep_created of Pilorus (id:0)
+- key: artifact_the_star_of_the_deep_type
+  value: instrument
+  project: '*'
+  ident: '*/artifact_the_star_of_the_deep_type'
+  why: artifact_the_star_of_the_deep_type of Pilorus (id:0)
+- key: artifact_the_star_of_the_deep_material
+  value: silver
+  project: '*'
+  ident: '*/artifact_the_star_of_the_deep_material'
+  why: artifact_the_star_of_the_deep_material of Pilorus (id:0)
+- key: artifact_the_star_of_the_deep_created
+  value: '51'
+  project: '*'
+  ident: '*/artifact_the_star_of_the_deep_created'
+  why: artifact_the_star_of_the_deep_created of Pilorus (id:0)
+- key: artifact_the_sun_of_glory_type
+  value: tome
+  project: '*'
+  ident: '*/artifact_the_sun_of_glory_type'
+  why: artifact_the_sun_of_glory_type of Pilorus (id:0)
+- key: artifact_the_sun_of_glory_material
+  value: gold
+  project: '*'
+  ident: '*/artifact_the_sun_of_glory_material'
+  why: artifact_the_sun_of_glory_material of Pilorus (id:0)
+- key: artifact_the_sun_of_glory_created
   value: '11'
   project: '*'
-  ident: '*/artifact_the_star_of_eternity_created'
-  why: artifact_the_star_of_eternity_created of Pilorus (id:0)
-- key: artifact_the_flame_of_the_fallen_type
-  value: weapon
+  ident: '*/artifact_the_sun_of_glory_created'
+  why: artifact_the_sun_of_glory_created of Pilorus (id:0)
+- key: artifact_the_mirror_of_darkness_type
+  value: instrument
   project: '*'
-  ident: '*/artifact_the_flame_of_the_fallen_type'
-  why: artifact_the_flame_of_the_fallen_type of Pilorus (id:0)
-- key: artifact_the_flame_of_the_fallen_material
-  value: bone
+  ident: '*/artifact_the_mirror_of_darkness_type'
+  why: artifact_the_mirror_of_darkness_type of Pilorus (id:0)
+- key: artifact_the_mirror_of_darkness_material
+  value: silver
   project: '*'
-  ident: '*/artifact_the_flame_of_the_fallen_material'
-  why: artifact_the_flame_of_the_fallen_material of Pilorus (id:0)
-- key: artifact_the_flame_of_the_fallen_created
-  value: '20'
+  ident: '*/artifact_the_mirror_of_darkness_material'
+  why: artifact_the_mirror_of_darkness_material of Pilorus (id:0)
+- key: artifact_the_mirror_of_darkness_created
+  value: '34'
   project: '*'
-  ident: '*/artifact_the_flame_of_the_fallen_created'
-  why: artifact_the_flame_of_the_fallen_created of Pilorus (id:0)
+  ident: '*/artifact_the_mirror_of_darkness_created'
+  why: artifact_the_mirror_of_darkness_created of Pilorus (id:0)
+- key: artifact_the_key_of_the_deep_type
+  value: instrument
+  project: '*'
+  ident: '*/artifact_the_key_of_the_deep_type'
+  why: artifact_the_key_of_the_deep_type of Pilorus (id:0)
+- key: artifact_the_key_of_the_deep_material
+  value: iron
+  project: '*'
+  ident: '*/artifact_the_key_of_the_deep_material'
+  why: artifact_the_key_of_the_deep_material of Pilorus (id:0)
+- key: artifact_the_key_of_the_deep_created
+  value: '57'
+  project: '*'
+  ident: '*/artifact_the_key_of_the_deep_created'
+  why: artifact_the_key_of_the_deep_created of Pilorus (id:0)
+- key: artifact_the_mirror_of_eternity_type
+  value: instrument
+  project: '*'
+  ident: '*/artifact_the_mirror_of_eternity_type'
+  why: artifact_the_mirror_of_eternity_type of Pilorus (id:0)
+- key: artifact_the_mirror_of_eternity_material
+  value: gold
+  project: '*'
+  ident: '*/artifact_the_mirror_of_eternity_material'
+  why: artifact_the_mirror_of_eternity_material of Pilorus (id:0)
+- key: artifact_the_mirror_of_eternity_created
+  value: '123'
+  project: '*'
+  ident: '*/artifact_the_mirror_of_eternity_created'
+  why: artifact_the_mirror_of_eternity_created of Pilorus (id:0)
+- key: artifact_the_mirror_of_the_deep_type
+  value: armor
+  project: '*'
+  ident: '*/artifact_the_mirror_of_the_deep_type'
+  why: artifact_the_mirror_of_the_deep_type of Pilorus (id:0)
+- key: artifact_the_mirror_of_the_deep_material
+  value: crystal
+  project: '*'
+  ident: '*/artifact_the_mirror_of_the_deep_material'
+  why: artifact_the_mirror_of_the_deep_material of Pilorus (id:0)
+- key: artifact_the_mirror_of_the_deep_created
+  value: '132'
+  project: '*'
+  ident: '*/artifact_the_mirror_of_the_deep_created'
+  why: artifact_the_mirror_of_the_deep_created of Pilorus (id:0)
+- key: artifact_the_sun_of_ages_type
+  value: tome
+  project: '*'
+  ident: '*/artifact_the_sun_of_ages_type'
+  why: artifact_the_sun_of_ages_type of Pilorus (id:0)
+- key: artifact_the_sun_of_ages_material
+  value: iron
+  project: '*'
+  ident: '*/artifact_the_sun_of_ages_material'
+  why: artifact_the_sun_of_ages_material of Pilorus (id:0)
+- key: artifact_the_sun_of_ages_created
+  value: '161'
+  project: '*'
+  ident: '*/artifact_the_sun_of_ages_created'
+  why: artifact_the_sun_of_ages_created of Pilorus (id:0)
 - key: artifact_the_star_of_darkness_type
   value: tome
   project: '*'
@@ -985,182 +1190,52 @@
   ident: '*/artifact_the_star_of_darkness_material'
   why: artifact_the_star_of_darkness_material of Pilorus (id:0)
 - key: artifact_the_star_of_darkness_created
-  value: '71'
+  value: '375'
   project: '*'
   ident: '*/artifact_the_star_of_darkness_created'
   why: artifact_the_star_of_darkness_created of Pilorus (id:0)
-- key: artifact_the_ring_of_ruin_type
-  value: ring
-  project: '*'
-  ident: '*/artifact_the_ring_of_ruin_type'
-  why: artifact_the_ring_of_ruin_type of Pilorus (id:0)
-- key: artifact_the_ring_of_ruin_material
-  value: iron
-  project: '*'
-  ident: '*/artifact_the_ring_of_ruin_material'
-  why: artifact_the_ring_of_ruin_material of Pilorus (id:0)
-- key: artifact_the_ring_of_ruin_created
-  value: '138'
-  project: '*'
-  ident: '*/artifact_the_ring_of_ruin_created'
-  why: artifact_the_ring_of_ruin_created of Pilorus (id:0)
-- key: artifact_the_blade_of_kings_type
-  value: weapon
-  project: '*'
-  ident: '*/artifact_the_blade_of_kings_type'
-  why: artifact_the_blade_of_kings_type of Pilorus (id:0)
-- key: artifact_the_blade_of_kings_material
-  value: steel
-  project: '*'
-  ident: '*/artifact_the_blade_of_kings_material'
-  why: artifact_the_blade_of_kings_material of Pilorus (id:0)
-- key: artifact_the_blade_of_kings_created
-  value: '170'
-  project: '*'
-  ident: '*/artifact_the_blade_of_kings_created'
-  why: artifact_the_blade_of_kings_created of Pilorus (id:0)
-- key: artifact_the_crown_of_the_fallen_type
-  value: crown
-  project: '*'
-  ident: '*/artifact_the_crown_of_the_fallen_type'
-  why: artifact_the_crown_of_the_fallen_type of Pilorus (id:0)
-- key: artifact_the_crown_of_the_fallen_material
-  value: iron
-  project: '*'
-  ident: '*/artifact_the_crown_of_the_fallen_material'
-  why: artifact_the_crown_of_the_fallen_material of Pilorus (id:0)
-- key: artifact_the_crown_of_the_fallen_created
-  value: '186'
-  project: '*'
-  ident: '*/artifact_the_crown_of_the_fallen_created'
-  why: artifact_the_crown_of_the_fallen_created of Pilorus (id:0)
-- key: artifact_the_mirror_of_light_type
+- key: artifact_the_sun_of_dreams_type
   value: instrument
   project: '*'
-  ident: '*/artifact_the_mirror_of_light_type'
-  why: artifact_the_mirror_of_light_type of Pilorus (id:0)
-- key: artifact_the_mirror_of_light_material
-  value: gold
-  project: '*'
-  ident: '*/artifact_the_mirror_of_light_material'
-  why: artifact_the_mirror_of_light_material of Pilorus (id:0)
-- key: artifact_the_mirror_of_light_created
-  value: '223'
-  project: '*'
-  ident: '*/artifact_the_mirror_of_light_created'
-  why: artifact_the_mirror_of_light_created of Pilorus (id:0)
-- key: artifact_the_flame_of_dreams_type
-  value: weapon
-  project: '*'
-  ident: '*/artifact_the_flame_of_dreams_type'
-  why: artifact_the_flame_of_dreams_type of Pilorus (id:0)
-- key: artifact_the_flame_of_dreams_material
-  value: gold
-  project: '*'
-  ident: '*/artifact_the_flame_of_dreams_material'
-  why: artifact_the_flame_of_dreams_material of Pilorus (id:0)
-- key: artifact_the_flame_of_dreams_created
-  value: '247'
-  project: '*'
-  ident: '*/artifact_the_flame_of_dreams_created'
-  why: artifact_the_flame_of_dreams_created of Pilorus (id:0)
-- key: artifact_the_crown_of_the_ancients_type
-  value: crown
-  project: '*'
-  ident: '*/artifact_the_crown_of_the_ancients_type'
-  why: artifact_the_crown_of_the_ancients_type of Pilorus (id:0)
-- key: artifact_the_crown_of_the_ancients_material
-  value: crystal
-  project: '*'
-  ident: '*/artifact_the_crown_of_the_ancients_material'
-  why: artifact_the_crown_of_the_ancients_material of Pilorus (id:0)
-- key: artifact_the_crown_of_the_ancients_created
-  value: '321'
-  project: '*'
-  ident: '*/artifact_the_crown_of_the_ancients_created'
-  why: artifact_the_crown_of_the_ancients_created of Pilorus (id:0)
-- key: artifact_the_world_of_power_type
-  value: tome
-  project: '*'
-  ident: '*/artifact_the_world_of_power_type'
-  why: artifact_the_world_of_power_type of Pilorus (id:0)
-- key: artifact_the_world_of_power_material
-  value: crystal
-  project: '*'
-  ident: '*/artifact_the_world_of_power_material'
-  why: artifact_the_world_of_power_material of Pilorus (id:0)
-- key: artifact_the_world_of_power_created
-  value: '379'
-  project: '*'
-  ident: '*/artifact_the_world_of_power_created'
-  why: artifact_the_world_of_power_created of Pilorus (id:0)
-- key: artifact_the_world_of_the_deep_type
-  value: crown
-  project: '*'
-  ident: '*/artifact_the_world_of_the_deep_type'
-  why: artifact_the_world_of_the_deep_type of Pilorus (id:0)
-- key: artifact_the_world_of_the_deep_material
+  ident: '*/artifact_the_sun_of_dreams_type'
+  why: artifact_the_sun_of_dreams_type of Pilorus (id:0)
+- key: artifact_the_sun_of_dreams_material
   value: silver
   project: '*'
-  ident: '*/artifact_the_world_of_the_deep_material'
-  why: artifact_the_world_of_the_deep_material of Pilorus (id:0)
-- key: artifact_the_world_of_the_deep_created
-  value: '420'
+  ident: '*/artifact_the_sun_of_dreams_material'
+  why: artifact_the_sun_of_dreams_material of Pilorus (id:0)
+- key: artifact_the_sun_of_dreams_created
+  value: '463'
   project: '*'
-  ident: '*/artifact_the_world_of_the_deep_created'
-  why: artifact_the_world_of_the_deep_created of Pilorus (id:0)
-- key: artifact_the_sun_of_the_ancients_type
-  value: tome
-  project: '*'
-  ident: '*/artifact_the_sun_of_the_ancients_type'
-  why: artifact_the_sun_of_the_ancients_type of Pilorus (id:0)
-- key: artifact_the_sun_of_the_ancients_material
-  value: iron
-  project: '*'
-  ident: '*/artifact_the_sun_of_the_ancients_material'
-  why: artifact_the_sun_of_the_ancients_material of Pilorus (id:0)
-- key: artifact_the_sun_of_the_ancients_created
-  value: '465'
-  project: '*'
-  ident: '*/artifact_the_sun_of_the_ancients_created'
-  why: artifact_the_sun_of_the_ancients_created of Pilorus (id:0)
-- key: beast_doomdrake_type
-  value: megabeast
-  project: '*'
-  ident: '*/beast_doomdrake_type'
-  why: beast_doomdrake_type of Pilorus (id:0)
-- key: beast_doomdrake_kills
-  value: '194'
-  project: '*'
-  ident: '*/beast_doomdrake_kills'
-  why: beast_doomdrake_kills of Pilorus (id:0)
-- key: beast_boneking_type
-  value: dragon
-  project: '*'
-  ident: '*/beast_boneking_type'
-  why: beast_boneking_type of Pilorus (id:0)
-- key: beast_boneking_kills
-  value: '172'
-  project: '*'
-  ident: '*/beast_boneking_kills'
-  why: beast_boneking_kills of Pilorus (id:0)
-- key: beast_fangbeast_type
-  value: forgotten_beast
-  project: '*'
-  ident: '*/beast_fangbeast_type'
-  why: beast_fangbeast_type of Pilorus (id:0)
-- key: beast_fangbeast_kills
-  value: '184'
-  project: '*'
-  ident: '*/beast_fangbeast_kills'
-  why: beast_fangbeast_kills of Pilorus (id:0)
-- key: beast_fell_thunderking_type
+  ident: '*/artifact_the_sun_of_dreams_created'
+  why: artifact_the_sun_of_dreams_created of Pilorus (id:0)
+- key: beast_ancient_horndrake_type
   value: titan
   project: '*'
-  ident: '*/beast_fell_thunderking_type'
-  why: beast_fell_thunderking_type of Pilorus (id:0)
-- key: beast_fell_thunderking_kills
-  value: '183'
+  ident: '*/beast_ancient_horndrake_type'
+  why: beast_ancient_horndrake_type of Pilorus (id:0)
+- key: beast_ancient_horndrake_kills
+  value: '190'
   project: '*'
-  ident: '*/beast_fell_thunderking_kills'
-  why: beast_fell_thunderking_kills of Pilorus (id:0)
+  ident: '*/beast_ancient_horndrake_kills'
+  why: beast_ancient_horndrake_kills of Pilorus (id:0)
+- key: beast_vile_crystalfang_type
+  value: dragon
+  project: '*'
+  ident: '*/beast_vile_crystalfang_type'
+  why: beast_vile_crystalfang_type of Pilorus (id:0)
+- key: beast_vile_crystalfang_kills
+  value: '9'
+  project: '*'
+  ident: '*/beast_vile_crystalfang_kills'
+  why: beast_vile_crystalfang_kills of Pilorus (id:0)
+- key: beast_dread_shadowtail_type
+  value: dragon
+  project: '*'
+  ident: '*/beast_dread_shadowtail_type'
+  why: beast_dread_shadowtail_type of Pilorus (id:0)
+- key: beast_dread_shadowtail_kills
+  value: '142'
+  project: '*'
+  ident: '*/beast_dread_shadowtail_kills'
+  why: beast_dread_shadowtail_kills of Pilorus (id:0)
