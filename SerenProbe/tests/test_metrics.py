@@ -86,8 +86,11 @@ def test_ndcg_single_relevant_at_rank_two():
     assert val == pytest.approx(1.0 / math.log2(3))
 
 
-def test_ndcg_empty_relevant_is_one_edge_case():
-    assert _ndcg(["a", "b"], set(), 10) == 1.0
+def test_ndcg_empty_relevant_is_zero():
+    # was 1.0 ("no relevant docs -> any ranking is ideal"), which is defensible in
+    # isolation and a lie in an eval harness: empty `relevant` means ground truth
+    # failed to resolve, and that scored PERFECT while hit_rate scored 0.
+    assert _ndcg(["a", "b"], set(), 10) == 0.0
 
 
 # ── iou ─────────────────────────────────────────────────────────────────
