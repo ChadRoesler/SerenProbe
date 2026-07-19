@@ -56,6 +56,7 @@ ANCHOR_STOP = {
     "year", "years", "old", "time", "times", "season", "day", "days",
     "there", "too", "most", "much", "some", "all", "no", "not", "only",
     "very", "more", "less", "own", "one", "two", "back", "still", "just",
+    "between", "against", "during", "within", "toward", "towards",
 }
 
 # Verbs/pronouns that read badly immediately after the carrier's "about".
@@ -75,8 +76,14 @@ def strip_boilerplate(text: str) -> str:
     with "Year N (Era, year M):", those tokens cannot single one out. Stripping
     before anchoring is what stops the extractor from proudly returning a
     phrase that is present in all 43 rows.
+
+    Three prefix shapes exist across the generators and all three must go:
+      character/OOI  "Year 483 (The Marble Times, year 50): "
+      world event    "8 (The Frost Era): "        <- no 'Year' keyword
+      OOI decade     "The 181s (The Golden Times, year 58) "
     """
     t = re.sub(r'^Year \d+\s*(\([^)]*\))?:?\s*', '', text or "")
+    t = re.sub(r'^\d+\s*(\([^)]*\))?:?\s*', '', t)
     t = re.sub(r'^When I was \d+ years? old[,\s]+', '', t)
     return t
 
@@ -140,12 +147,26 @@ def extract_anchor(target_text: str, rival_texts: List[str],
 
     rival_grams: set = set()
     rival_vocab: set = set()
+    rival_doc_vocabs: List[set] = []
     for r in rival_texts:
         rc = strip_boilerplate(r)
         rival_grams |= _grams(rc)
-        rival_vocab |= set(content_words(rc))
+        dv = set(content_words(rc))
+        rival_doc_vocabs.append(dv)
+        rival_vocab |= dv
 
-    best, best_score = None, -1
+    def _rank(g: str, cw: List[str], rare_n: int) -> float:
+        # Rank: rarity first, then content density, then prefer a TIGHTER
+        # phrase so the question stays readable.
+        score = rare_n * 100 + len(cw) * 10 - len(g.split())
+        # Readability is a TIE-BREAK, never a veto. An anchor opening on a bare
+        # verb reads awkwardly after "about", so we dock it -- enough to lose to
+        # an equally-rare rival, never enough to lose to a less discriminating
+        # one. A question that scores and reads awkwardly beats a question that
+        # reads well and scores zero.
+        return score - (15 if cw and cw[0] in AWKWARD_OPENERS else 0)
+
+    candidates = []
     for g in _grams(tgt):
         if g in rival_grams:
             continue
@@ -157,21 +178,63 @@ def extract_anchor(target_text: str, rival_texts: List[str],
         # that share the surrounding boilerplate. Demand a real phrase.
         if len(cw) < min_content:
             continue
-        rare = [w for w in cw if w not in rival_vocab]
-        if len(rare) < min_rare:
+        candidates.append((g, cw))
+
+    # ── PASS 1: rare-token anchors (strongest) ────────────────────────
+    best, best_score = None, -1.0
+    for g, cw in candidates:
+        rare_n = sum(1 for w in cw if w not in rival_vocab)
+        if rare_n < min_rare:
             continue
-        # Rank: rarity first, then content density, then prefer a TIGHTER
-        # phrase so the question stays readable.
-        score = len(rare) * 100 + len(cw) * 10 - len(g.split())
-        # Readability is a TIE-BREAK, never a veto. An anchor opening on a bare
-        # verb reads awkwardly after "about", so we dock it -- enough to lose to
-        # an equally-rare rival, never enough to lose to a less discriminating
-        # one. A question that scores and reads awkwardly beats a question that
-        # reads well and scores zero.
-        if cw and cw[0] in AWKWARD_OPENERS:
-            score -= 15
-        if score > best_score:
-            best, best_score = g, score
+        s = _rank(g, cw, rare_n)
+        if s > best_score:
+            best, best_score = g, s
+    if best:
+        return best
+
+    # ── PASS 2: unique-CONJUNCTION anchors ────────────────────────────
+    #
+    # DISCRIMINABILITY LIVES IN THE CONJUNCTION, NOT THE TOKEN.
+    #
+    # Pass 1 asks "is any single word unique to this document". That is the
+    # right question for prose memories and the WRONG question for a
+    # combinatorial corpus. The world log is ten civilization names recombined
+    # across 55 rows -- "Battle between Aeanoran and Windoreford",
+    # "Battle between Rakmiz and Turdurnaz". Every token recurs, so pass 1
+    # finds nothing and skips, and 45 of 55 world memories produced no question
+    # at all. Yet "Aeanoran AND Windoreford AND battle" occurs exactly once.
+    # The set is unique even though no member of it is.
+    #
+    # So: accept a gram when NO SINGLE rival document contains all of its
+    # content words. The conjunction is then a term only the intended document
+    # carries, which is precisely what the linter asks for -- it just happens
+    # to be spelled across three words instead of one.
+    #
+    # This is strictly weaker than pass 1, which is why it only runs second.
+    for g, cw in candidates:
+        cws = set(cw)
+        if any(cws <= dv for dv in rival_doc_vocabs):
+            continue
+        # SUBSTANCE, NOT JUST NOVELTY. "Even now I look" is a unique conjunction
+        # of {even, now, look} and is worth nothing: those are three of the most
+        # common words in English, so the phrase is rare as a SEQUENCE and
+        # carries no retrievable signal. Shipped as-is it dropped memory hit_rate
+        # across every store in the topology (0.3-0.9 -> 0.2-0.6), because the
+        # linter is lexical and scores it as discriminating while the embedder
+        # cannot see it at all.
+        #
+        # Require at least two words with real specificity -- long or
+        # capitalised. Proper nouns and domain vocabulary qualify; function-word
+        # salad does not. This is a heuristic and it is deliberately blunt: a
+        # skipped question costs one row, a semantically-empty one costs a
+        # misleading score.
+        substantive = sum(1 for w in cw if len(w) >= 6) + sum(
+            1 for tok in g.split() if tok[:1].isupper())
+        if substantive < 2:
+            continue
+        s = _rank(g, cw, 1)   # rare_n=1: a unique conjunction, not a unique word
+        if s > best_score:
+            best, best_score = g, s
     return best
 
 

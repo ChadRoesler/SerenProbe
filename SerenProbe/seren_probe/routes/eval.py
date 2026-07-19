@@ -60,6 +60,34 @@ async def run_eval(request: Request):
         ts_seeded = bool(ts.get("seeded"))
         force_reseed = bool(body.get("reseed"))
         do_seed = ei.seed and (not ts_seeded or force_reseed)
+        # RECORD THE SEED BEFORE THE EVAL, NOT AFTER.
+        #
+        # Seeding runs FIRST, inside run_topology_evaluation, and is finished long
+        # before scoring starts. Recording it afterwards makes a completed side
+        # effect conditional on a later, unrelated step succeeding -- so any eval
+        # failure (a /fact timeout on the last corpus, an operator ctrl-C, a store
+        # falling over on question 900) leaves a FULLY SEEDED pod flagged unseeded.
+        # Adopt then carries seeded=False in good faith and the next run seeds a
+        # second copy on top. seed_from_plan is additive; nothing errors; every
+        # metric quietly lies. Observed live: a 54-minute run died at All-scc and
+        # the following eval duplicated short-term and facts across all 22 stores.
+        #
+        # THE TRADEOFF, NAMED. Marking early means a failure DURING seeding leaves
+        # a partially-seeded pod flagged as seeded, and the next eval scores low
+        # instead of topping it up. That is the better failure: low scores are LOUD
+        # and the fix (reseed:true on a partial pod) is one flag, whereas silent
+        # duplication corrupts every number without a single warning. Loud and wrong
+        # beats quiet and wrong.
+        if do_seed:
+            ts["seeded"] = True
+            try:
+                from ..runtime.docker_env import save_topology_state, load_topology_state
+                saved = load_topology_state() or {}
+                save_topology_state({**saved, **ts})
+            except Exception as exc:     # noqa: BLE001
+                # Do NOT swallow this silently -- an unpersisted flag is exactly how
+                # the duplicate-corpus bug reaches the next run.
+                logger.warning("could not persist seeded flag before eval: %s", exc)
         try:
             # run_in_threadpool: seeding is thousands of BLOCKING httpx round-trips and
             # takes HOURS on a big corpus. Called directly from this async route it
@@ -80,7 +108,8 @@ async def run_eval(request: Request):
             logger.error("Topology eval failed: %s", exc)
             raise HTTPException(status_code=500, detail=str(exc))
         if do_seed:
-            ts["seeded"] = True          # remember it, so the NEXT run doesn't double it
+            ts["seeded"] = True          # idempotent re-confirm; the authoritative write
+                                         # happened BEFORE the eval, see the note above
             try:
                 # ..runtime.docker_env, NOT ..docker_env -- docker_env moved into the
                 # runtime layer. The stale path raised ImportError, and the bare except
@@ -167,7 +196,8 @@ async def run_regrade(request: Request):
         results = await run_in_threadpool(
             run_live_regrade,
             topo, ts["url_of"], ei.questions,
-            sort_by=body.get("sort_by", "docket_coverage"))
+            sort_by=body.get("sort_by", "docket_coverage"),
+            max_parallel_corpora=body.get("max_parallel_corpora", 8))
     except Exception as exc:
         logger.error("Regrade failed: %s", exc)
         raise HTTPException(status_code=500, detail=str(exc))

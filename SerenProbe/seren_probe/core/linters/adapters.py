@@ -10,6 +10,31 @@ dropped on the way to the check that reads it, and it cost a day. Do not let it 
 from __future__ import annotations
 
 
+def _strip_store_qualifier(ident: str) -> str:
+    """'Kazornbram-loci:identity/profession' -> 'identity/profession'.
+
+    Multi-tenant corpora need expect_key to name WHICH tenant it means, because
+    loci keys are category-scoped ('stats/race') and six characters in one fan
+    all answer to that. live_eval.resolve_key routes a qualified key to that one
+    member store. The LINTER indexes the seed by bare ident, so the qualified
+    form matched nothing and check_existence reported facts that are demonstrably
+    present as 'NOT in the seed'.
+
+    Normalizing here rather than in each check is deliberate: existence,
+    discriminability and the rail check all key off the same string, and three
+    copies of this rule is three chances for them to disagree.
+
+    The split is shape-based, not name-based (the linter has no store list): a
+    qualifier has no '/' and what follows it does. A bare 'project/key' is
+    untouched, so nothing single-tenant changes.
+    """
+    if ":" in ident:
+        head, rest = ident.split(":", 1)
+        if "/" not in head and "/" in rest:
+            return rest
+    return ident
+
+
 def _item_to_dict(it):
     """Normalize a seed item (LociItem / MemoryItem dataclass, or a plain dict)."""
     if isinstance(it, dict):
@@ -29,7 +54,8 @@ def _question_to_dict(q):
     return {
         "asks": getattr(q, "asks", ""),
         "query": getattr(q, "query", ""),
-        "expect_key": list(getattr(q, "expect_key", []) or []),
+        "expect_key": [_strip_store_qualifier(str(x))
+                       for x in (getattr(q, "expect_key", []) or [])],
         "expect_ref": list(getattr(q, "expect_ref", []) or []),
         "expect_content": list(getattr(q, "expect_content", []) or []),
         "expect_empty": bool(getattr(q, "expect_empty", False)),

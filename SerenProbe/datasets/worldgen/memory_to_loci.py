@@ -157,6 +157,27 @@ def _fact_category(fact_key: str) -> str:
     return "misc"
 
 
+# Natural-language `why` for world scalars whose key name is nothing like the
+# words a question uses. Keys not listed here fall through to the generic why,
+# which is correct for anything a reader would name directly.
+#
+# {name} = world name, {value} = the fact's value. Phrase these the way the
+# QUESTION is phrased -- the whole point is lexical overlap with the query, and
+# the linter measures exactly that.
+#
+# ONLY KEYS THAT ACTUALLY EXIST. This map was first written with start_year,
+# end_year and seed in it, none of which world_gen emits -- three lines of dead
+# config that would read to the next person as documentation of a schema that
+# was never there. Verified against a real Pilorus_loci.yaml before landing.
+#
+# Note world_year_span's value is a RANGE ("0 to 500"), not a count, so the
+# sentence has to read correctly around it -- "spans 0 to 500 years" does not.
+_WORLD_PHRASE = {
+    "world_year_span": "The recorded history of the world of {name} spans the years {value}",
+    "world_name":      "The name of this world is {value}",
+}
+
+
 def convert_facts_to_loci(facts: dict, name: str, entity_id: int) -> List[dict]:
     """Convert a facts dict to loci entries using entity_slug keys.
 
@@ -192,6 +213,22 @@ def convert_facts_to_loci(facts: dict, name: str, entity_id: int) -> List[dict]:
         if key.startswith("num_") and entity_id == 0:
             noun = key.replace("num_", "").replace("_", " ")
             why = f"There are {safe_val} {noun} in the world of {safe_name}"
+        # Class 1b — world SCALARS that a person asks about by DESCRIPTION rather
+        # than by key name. This is the same defect the num_ class was fixed for,
+        # just one key further down.
+        #
+        # 'world_year_span' shipped as why="world_year_span of Pilorus (id:0)"
+        # while its question asks "How long is the recorded history of Pilorus?".
+        # The only word they share is the world's name -- which all 230 other
+        # world facts also carry, because they all sit in project '*' with the
+        # same why template. Overlap 1 against 230 ties: the store retrieves
+        # correctly and still scores near zero, which reads on the dashboard
+        # exactly like a dead store. It was the last surviving lint error.
+        #
+        # So the why is written the way the question is asked. Carry the terms
+        # the reader will use, not the terms the schema happens to use.
+        elif entity_id == 0 and key in _WORLD_PHRASE:
+            why = _WORLD_PHRASE[key].format(name=safe_name, value=safe_val)
         # Class 2 — character age: "X is N years old"
         elif key == "age":
             why = f"{safe_name} is {safe_val} years old"

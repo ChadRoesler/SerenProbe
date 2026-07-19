@@ -40,6 +40,16 @@ never enter top-k when k == n_results. Edge tuning wants its own capture (captur
 /by_topic with exclude=[] + the union of candidate topics, then recompute overlap
 per requested subset in replay); that's tune_edges, filed as the next step.
 
+══ CONCURRENCY ════════════════════════════════════════════════════════════════
+run_config_regrade fans OUT across corpora (asyncio.gather, bounded by
+max_parallel_corpora) since each corpus captures its own backing stores into
+its own frozen trace and sweeps that trace independently - nothing shared
+except the one RealTransport/httpx.AsyncClient, which is concurrency-safe.
+Combos within ONE corpus's sweep still run strictly serially. A corpus that
+fails to capture/sweep does not abort the others - read-only means a failure
+here can't corrupt anything, so the rest still finish and the failed corpus
+shows up as an "error" entry.
+
 Usage::
     # capture on the dev rig + sweep, save the trace for later
     python -m serenprobe.regrade \\
@@ -57,8 +67,11 @@ import argparse
 import asyncio
 import itertools
 import json
+import logging
 import sys
 from typing import Any, Optional
+
+logger = logging.getLogger(__name__)
 
 # SerenCorpusCallosum is the heavy backend regrade replays. Import it LAZILY so
 # that `import serenprobe` (and the store-path runner / longmemeval, which need no
@@ -330,15 +343,77 @@ class _RegradeQuery:
         self.expected_ids = list(expected_ids)
 
 
+async def _regrade_one_corpus_async(corpus, base_stores: list[StoreConfig], rqs,
+                                    transport, capture_n: int, eval_k: int,
+                                    sort_by: str, regrades: list, flag_map: dict,
+                                    sem: "asyncio.Semaphore") -> dict:
+    """One corpus's full regrade: ONE read-only capture of its backing stores,
+    then sweep every CorpusRegrades set's grid over the frozen capture. Fully
+    self-contained (its own base_stores, its own capture) so it's SAFE TO RUN
+    CONCURRENTLY with other corpora's calls to this function via asyncio.gather
+    - the shared `transport` is an httpx.AsyncClient, which supports concurrent
+    requests from multiple coroutines. `sem` bounds how many corpora capture at
+    once, same rationale as regrade_live's max_parallel_corpora.
+
+    Returns the same {"corpus", "flavor", "baseline", "sets"} shape the old
+    inline loop body produced. Raises on failure -- callers running this under
+    gather(return_exceptions=True) are responsible for catching per-corpus so
+    one bad SCC/store doesn't sink the others.
+    """
+    _METRICS = ("ndcg", "docket_coverage", "docket_density", "recall",
+                "mrr", "hit_rate", "iou", "prec_omega")
+    async with sem:
+        # ONE read-only capture per corpus, then sweep every set in-process.
+        capture = await capture_stores(base_stores, rqs, transport, capture_n)
+    set_rows: list[dict] = []
+    for rset in regrades:
+        best, _rows = await sweep(capture, base_stores, rqs, eval_k=eval_k,
+                                  sort_by=sort_by, grid=build_grid(rset.overrides))
+        set_rows.append({"name": rset.name,
+                         "metrics": {m: best.get(m, 0.0) for m in _METRICS},
+                         "params": best.get("params", {})})
+    baseline = next((r for r in set_rows if r["name"] == "baseline"),
+                    set_rows[0] if set_rows else None)
+    if baseline:
+        for r in set_rows:
+            r["delta"] = {m: round(r["metrics"][m] - baseline["metrics"][m], 4)
+                          for m in ("ndcg", "docket_coverage", "recall", "mrr")}
+    flavor = ("vector" if any("vector" in flag_map.get(st.name, [])
+                              for st in corpus.stores) else "lexical")
+    return {"corpus": corpus.name, "flavor": flavor,
+            "baseline": baseline["name"] if baseline else None, "sets": set_rows}
+
+
 async def run_config_regrade(topology, url_of: dict, questions, *,
                              capture_n: int = CAPTURE_N, eval_k: int = EVAL_K,
-                             sort_by: str = "ndcg") -> dict:
+                             sort_by: str = "ndcg",
+                             max_parallel_corpora: int = 8) -> dict:
     """Roll every CorpusRegrades set against every (non-catch-all) corpus in the
     topology. Per corpus: capture its backing stores' candidate pools ONCE
     (read-only /search on the eval containers - never live memory), then sweep
     each set's grid over the frozen capture. Returns per-corpus best-per-set with
     the delta vs the baseline set. Replays the REAL Federation, so it needs SCC
-    importable - raises via _require_scc() otherwise."""
+    importable - raises via _require_scc() otherwise.
+
+    PARALLEL ACROSS CORPORA, SERIAL WITHIN ONE.
+    Each corpus captures its OWN backing stores and sweeps its OWN frozen
+    capture - nothing is shared between corpora, so nothing contends. The
+    shared RealTransport is a single httpx.AsyncClient, which is safe for
+    concurrent requests from multiple coroutines. asyncio.gather fans the
+    per-corpus work out instead of doing it corpus-after-corpus; the same move
+    as regrade_live.run_live_regrade's ThreadPoolExecutor fan-out, just async
+    instead of threaded since this path is already async end-to-end.
+
+    A failing corpus does NOT abort the others: this harness is read-only
+    (capture is /search-only, never a write), so a corpus that fails to
+    capture/sweep doesn't corrupt anything - the rest still finish and report,
+    and the failed one shows up as an "error" entry in its slot.
+
+    max_parallel_corpora bounds how many corpora capture concurrently (a
+    semaphore around the capture step only - the in-process sweep is cheap and
+    unbounded), same rationale as regrade_live's cap: unbounded fan-out on a
+    big topology would open a pile of simultaneous connections at once.
+    """
     _require_scc()
     rqs = [_RegradeQuery(q.query, q.expect_content)
            for q in questions
@@ -350,11 +425,12 @@ async def run_config_regrade(topology, url_of: dict, questions, *,
         return {"corpora": [], "note": "No CorpusRegrades sets in the active ProbeConfig."}
 
     flag_map = {n.name: (n.flags or []) for n in topology.loci}
-    _METRICS = ("ndcg", "docket_coverage", "docket_density", "recall",
-                "mrr", "hit_rate", "iou", "prec_omega")
     transport = RealTransport()
+    sem = asyncio.Semaphore(max(1, int(max_parallel_corpora or 1)))
     corpora_out: list[dict] = []
     try:
+        tasks_meta = []
+        coros = []
         for corpus in topology.corpus:
             if corpus.is_catchall or not corpus.stores:
                 continue
@@ -364,30 +440,30 @@ async def run_config_regrade(topology, url_of: dict, questions, *,
             ]
             if not base_stores:
                 continue
-            # ONE read-only capture per corpus, then sweep every set in-process.
-            capture = await capture_stores(base_stores, rqs, transport, capture_n)
-            set_rows: list[dict] = []
-            for rset in regrades:
-                best, _rows = await sweep(capture, base_stores, rqs, eval_k=eval_k,
-                                          sort_by=sort_by, grid=build_grid(rset.overrides))
-                set_rows.append({"name": rset.name,
-                                 "metrics": {m: best.get(m, 0.0) for m in _METRICS},
-                                 "params": best.get("params", {})})
-            baseline = next((r for r in set_rows if r["name"] == "baseline"),
-                            set_rows[0] if set_rows else None)
-            if baseline:
-                for r in set_rows:
-                    r["delta"] = {m: round(r["metrics"][m] - baseline["metrics"][m], 4)
-                                  for m in ("ndcg", "docket_coverage", "recall", "mrr")}
-            flavor = ("vector" if any("vector" in flag_map.get(st.name, [])
-                                      for st in corpus.stores) else "lexical")
-            corpora_out.append({"corpus": corpus.name, "flavor": flavor,
-                                "baseline": baseline["name"] if baseline else None,
-                                "sets": set_rows})
+            tasks_meta.append(corpus)
+            coros.append(_regrade_one_corpus_async(
+                corpus, base_stores, rqs, transport, capture_n, eval_k,
+                sort_by, regrades, flag_map, sem))
+        results = await asyncio.gather(*coros, return_exceptions=True)
+        # results is in the SAME order as tasks_meta/coros (gather preserves
+        # input order regardless of completion order), so this merge is
+        # already in original topology order.
+        for corpus, result in zip(tasks_meta, results):
+            if isinstance(result, Exception):
+                # Caught per-corpus, NOT re-raised: the rest of the batch must
+                # still finish and report. This is the deliberate deviation
+                # from a loud re-raise -- see the docstring's PARALLEL ACROSS
+                # CORPORA note.
+                logger.error("Regrade failed for corpus %s: %s", corpus.name, result)
+                corpora_out.append({"corpus": corpus.name,
+                                    "error": f"{type(result).__name__}: {result}"})
+            else:
+                corpora_out.append(result)
     finally:
         await transport.aclose()
     return {"corpora": corpora_out, "sort_by": sort_by, "eval_k": eval_k,
             "set_names": [r.name for r in regrades], "question_count": len(rqs)}
+
 
 
 # ── trace persistence (the regrade-trace: capture once, re-sweep offline) ────

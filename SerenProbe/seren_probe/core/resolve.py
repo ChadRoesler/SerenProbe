@@ -116,10 +116,36 @@ def resolve_plan(topology: CompiledTopology, *,
         # Inheritance fires ONLY from members that declared an EXPLICIT set. If nobody scoped
         # anything, a corpus falls back to `asks: corpus` off the default -- byte-identical
         # to the old behaviour. You opt into the new shape by scoping.
+        _multi_tenant = sum(
+            1 for s in c.stores if getattr(s, "kind", "") == "seren_loci") > 1
         inherited: list = []
         for s in c.stores:
-            if s.name in explicit:
-                inherited.extend(questions_by_store.get(s.name, []))
+            if s.name not in explicit:
+                continue
+            qs = questions_by_store.get(s.name, [])
+            # QUALIFY INHERITED LOCI KEYS BY THEIR SOURCE STORE.
+            #
+            # An inherited question was written for a SINGLE-tenant store, where
+            # 'combat/weapon' means exactly one row. Adopted into a corpus fanning
+            # six characters it means six, and live_eval.resolve_key would bind it
+            # to whichever member answered first -- so five of six questions get
+            # graded against another tenant's row. Not a clean failure either:
+            # depending on whether that wrong row happened to rank, it reads as a
+            # miss OR as a hit, so the column becomes noise whose direction depends
+            # on member ordering.
+            #
+            # The inheritance step is the ONLY place that knows which member a
+            # question came from, so it is the only place that can say so. The
+            # member's own copy is left untouched -- bare is correct there, and
+            # mutating in place would corrupt the column that is currently scoring
+            # 1.000.
+            #
+            # Only when the corpus actually fans more than one Loci. A single-loci
+            # corpus has nothing to disambiguate, and qualifying there would change
+            # behaviour that is already right.
+            if _multi_tenant and getattr(s, "kind", "") == "seren_loci":
+                qs = [_qualify_expect_keys(q, s.name) for q in qs]
+            inherited.extend(qs)
         src = load_qs(c.questions_ref, warnings) if c.questions_ref else default_qs
         own = [q for q in src if q.asks == "corpus"]
         questions_by_store[c.name] = _dedupe(inherited + own)
@@ -131,6 +157,40 @@ def resolve_plan(topology: CompiledTopology, *,
 
     return ResolvedPlan(seed_by_store=seed_by_store, questions=questions,
                         questions_by_store=questions_by_store, warnings=warnings)
+
+
+def _qualify_expect_keys(q, store_name: str):
+    """A COPY of `q` whose expect_key entries name `store_name`, or `q` unchanged.
+
+    NEVER mutates. The same Question object is also handed to the member store's
+    own column, where a bare key is correct and currently scores 1.000 --
+    qualifying in place would break the working column to fix the broken one.
+
+    Already-qualified keys (a hand-written or cross-generated set) are left alone
+    rather than double-prefixed.
+    """
+    keys = list(getattr(q, "expect_key", []) or [])
+    if not keys or any(":" in str(k) for k in keys):
+        return q
+    new = [f"{store_name}:{k}" for k in keys]
+
+    from dataclasses import is_dataclass, replace
+    if is_dataclass(q):
+        try:
+            return replace(q, expect_key=new)
+        except Exception:      # noqa: BLE001 - non-init field / frozen / slots
+            pass
+    import copy as _copy
+    try:
+        q2 = _copy.copy(q)
+        q2.expect_key = new
+        return q2
+    except Exception:          # noqa: BLE001
+        # Could not copy safely. Return the ORIGINAL rather than mutate it: an
+        # un-qualified key produces a visibly ambiguous lint line, whereas a
+        # mutated shared object silently corrupts the member's own column. Loud
+        # and wrong beats quiet and wrong.
+        return q
 
 
 def _dedupe(qs: list) -> list:

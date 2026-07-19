@@ -21,12 +21,21 @@ SAFETY: the container's config (k, n_results, per-store weight/floor - everythin
 GET /stores exposes) is captured before the sweep and RESTORED after, so a regrade
 never leaves the container mistuned for the next /eval/run. The default sets sweep
 only those readable knobs, so restore is exact.
+
+CONCURRENCY: corpora run IN PARALLEL (each is a separate SCC container, so
+nothing contends), but combos within ONE corpus's sweep stay strictly serial -
+never two regrades in flight against the same SCC. See run_live_regrade's
+docstring for the fan-out details and why a failing corpus doesn't abort the
+others.
 """
 from __future__ import annotations
 
 import itertools
+import logging
 
 from ..core.metrics import compute_metrics_batch, normalize_text
+
+logger = logging.getLogger(__name__)
 
 _METRICS = ("ndcg", "docket_coverage", "docket_density", "recall",
             "mrr", "hit_rate", "iou", "prec_omega")
@@ -170,23 +179,143 @@ def _measure(scc_url: str, corpus_qs: list, n_results: int, k: int) -> dict:
     return agg
 
 
+def _regrade_one_corpus(corpus, scc_url: str, corpus_qs: list, regrades: list,
+                        all_override_keys: list, flag_map: dict, k: int,
+                        sort_by: str) -> dict:
+    """One corpus's full regrade: capture its current SCC config, force the
+    baseline, sweep every CorpusRegrades set's combos, restore the baseline.
+    Fully self-contained (its own scc_url, its own baseline/restore) so it is
+    SAFE TO RUN CONCURRENTLY with other corpora's calls to this function - the
+    only thing it touches outside its own args is the write_guard allowlist,
+    which is a lock-protected shared set the caller populates ONCE up front.
+
+    Returns the same {"corpus", "flavor", "baseline", "sets"} shape the old
+    inline loop body produced. Raises on failure -- callers running this in a
+    pool are responsible for catching per-corpus so one bad SCC doesn't sink
+    the others.
+    """
+    info = _get(scc_url, "/stores")
+    # Refuse to sweep a knob this SCC can't do - an ignored knob yields
+    # identical rows, which reads as a ceiling. Loud beats misleading.
+    from ..core.knob_caps import assert_knobs_supported
+    assert_knobs_supported(info, all_override_keys)
+    cur_k = info.get("k", 60)
+    cur_n = info.get("n_results", 10)
+    # Capture the hop config too, or a hops-sweep would LEAVE the SCC on the
+    # last value it tried - a silent state leak into everything that queries
+    # it afterwards. Restore is only honest if it captures every knob it sweeps.
+    cur_hops = info.get("hops")
+    cur_hop_terms = info.get("hop_terms")
+    cur_hop_budget = info.get("hop_budget")
+    rows = info.get("stores", []) or []
+    loci_row = next((s for s in rows if s.get("type") == "seren_loci"), None)
+    loci_name = loci_row.get("name") if loci_row else None
+    captured = [{"name": s.get("name"), "weight": s.get("weight", 1.0),
+                 "floor": s.get("floor", 0.0)} for s in rows if s.get("name")]
+    # The one config every combo is reset to, and the one we restore at the end.
+    # Built ONCE so "what we reset to" and "what we restore to" cannot drift apart.
+    baseline_cfg: dict = {"k": cur_k, "n_results": cur_n}
+    if cur_hops is not None:
+        baseline_cfg["hops"] = cur_hops
+    if cur_hop_terms is not None:
+        baseline_cfg["hop_terms"] = cur_hop_terms
+    if cur_hop_budget is not None:
+        baseline_cfg["hop_budget"] = cur_hop_budget
+    if captured:
+        baseline_cfg["stores"] = captured
+    try:
+        # Force the baseline before measuring it, so `current` is the config we
+        # SAY it is rather than whatever the container drifted to.
+        _post(scc_url, "/configure", baseline_cfg)
+        base = _measure(scc_url, corpus_qs, cur_n, k)
+        set_rows = [{"name": "current",
+                     "metrics": {m: base.get(m, 0.0) for m in _METRICS},
+                     "params": {"k": cur_k, "n_results": cur_n,
+                                **({"hops": cur_hops} if cur_hops is not None else {})},
+                     "delta": {m: 0.0 for m in ("ndcg", "docket_coverage", "recall", "mrr")}}]
+        for rset in regrades:
+            best = None
+            combo_rows: list[dict] = []
+            for combo in compact_combos(rset.overrides):
+                # Reset-then-override, EVERY combo. Never post just the combo's own
+                # knobs: /configure is cumulative and sets would inherit each other.
+                _post(scc_url, "/configure",
+                      full_config_body(combo, loci_name, baseline_cfg))
+                n_for = combo.get("n_results", cur_n)
+                agg = _measure(scc_url, corpus_qs, n_for, k)
+                row = {"metrics": {m: agg.get(m, 0.0) for m in _METRICS}, "params": combo}
+                row["delta"] = {m: round(row["metrics"][m] - base.get(m, 0.0), 4)
+                                for m in ("ndcg", "docket_coverage", "recall", "mrr")}
+                combo_rows.append(row)
+                if best is None or row["metrics"].get(sort_by, 0) > best["metrics"].get(sort_by, 0):
+                    best = row
+            if best:
+                # COPY before attaching combos: `best` IS one of the dicts inside
+                # combo_rows, so assigning combo_rows onto it in place would make
+                # the structure self-referential and blow up json encoding.
+                best = dict(best)
+                best["name"] = rset.name
+                # EVERY combo we measured, not just the winner. A sweep that reports
+                # only max() is unfalsifiable: you cannot tell "hops=2 did nothing"
+                # from "hops=2 did something the sort metric couldn't see." The whole
+                # point of a sweep is the CURVE. Show the curve.
+                best["combos"] = combo_rows
+                set_rows.append(best)
+    finally:
+        try:
+            _post(scc_url, "/configure", baseline_cfg)
+        except Exception:
+            pass
+    flavor = ("vector" if any("vector" in flag_map.get(s.name, []) for s in corpus.stores)
+              else "lexical")
+    return {"corpus": corpus.name, "flavor": flavor, "baseline": "current", "sets": set_rows}
+
+
 def run_live_regrade(topology, url_of: dict, questions, *, k: int = 10,
-                     sort_by: str = "docket_coverage") -> dict:
+                     sort_by: str = "docket_coverage",
+                     max_parallel_corpora: int = 8) -> dict:
     """Roll every CorpusRegrades set against every (non-catch-all) corpus by
     reconfiguring the LIVE SCC container and re-searching. Returns per-corpus
     best-per-set + EVERY combo it measured + the delta vs the container's CURRENT
     config (the 'current' baseline row). Captures + restores the config per corpus.
 
-    sort_by defaults to docket_coverage, NOT ndcg. This is not a preference, it is a
-    correctness fix. On a corpus store, ground truth is derived FROM THE HITS
-    (grade_corpus only marks a hit relevant if that hit's content matched), so
-    `relevant` is a subset of `retrieved` by construction -- and metrics._ndcg
-    returns **1.0 when `relevant` is empty**. A combo that retrieves NOTHING
-    therefore scores a PERFECT ndcg and wins the sweep. (Look at any negative-test
-    decoy row on the dashboard: HR 0.000, everything 0.000, ndcg 1.000.) Sorting a
-    knob sweep by ndcg selects for the combo that failed most gracefully.
-    docket_coverage divides by the ground-truth count, so it is the only metric here
-    that can actually see a miss.
+    sort_by defaults to docket_coverage, NOT ndcg. Coverage is the SCC's mission
+    metric: it divides matched docket items by the number the question ASKED for,
+    so it answers "did the assembled briefing carry the ground" rather than "was
+    the ranking pretty". A knob sweep on a fusion layer should be selected on
+    completeness of the packet, which is the thing SCC exists to assemble.
+
+    (This used to be justified differently, and that justification is now WRONG --
+    it survived a fix to the thing it described. metrics._ndcg once returned 1.0
+    when `relevant` was empty, so a combo that retrieved NOTHING scored a perfect
+    ndcg and won the sweep. _ndcg now returns 0.0 in that case, deliberately, so
+    unscorable questions score like HR and recall instead of inflating. The
+    free-1.0 hazard is gone; the reason to prefer coverage is the one above.
+
+    Note the flip side, because it bites: with _ndcg honest, a corpus question set
+    carrying NO expect_content grades every combo at 0.000 in EVERY column --
+    `relevant` on a corpus is derived from content matches, so no expect_content
+    means no relevant, means a uniform zero floor and a sweep with nothing to
+    sort. A flat regrade is the symptom of an unfed docket, not of inert knobs.)
+
+    PARALLEL ACROSS CORPORA, SERIAL WITHIN ONE.
+    Each corpus is a separate SCC container with fully independent state (its
+    own baseline_cfg, its own /configure history) -- nothing is shared between
+    corpora, so nothing contends. But a regrade with N sets x M combos each is
+    N*M /configure+/search round-trips PER CORPUS, and a multi-corpus topology
+    used to pay that serially, corpus after corpus. One worker per corpus
+    collapses that to max(corpus_times) instead of sum(corpus_times), same
+    move as seed_from_plan's parallel-across-stores fan-out.
+
+    UNLIKE seed_from_plan, a failing corpus does NOT abort the run: seeding a
+    half-seeded store is a data-integrity problem, but a corpus that fails to
+    regrade (SCC down, knob unsupported, etc.) is read-only and doesn't corrupt
+    anything -- so the other corpora still finish and report, and the failed
+    one shows up as an "error" entry instead of taking the whole request down.
+
+    max_parallel_corpora bounds the fan, same rationale as seed_from_plan's
+    max_parallel_stores: unbounded fan-out on a big topology would open a pile
+    of simultaneous connections against your own Docker host.
     """
     corpus_qs = [{"query": q.query, "expected_content": list(q.expect_content)}
                  for q in questions
@@ -202,90 +331,56 @@ def run_live_regrade(topology, url_of: dict, questions, *, k: int = 10,
         return {"corpora": [], "note": "No CorpusRegrades sets in the active ProbeConfig."}
 
     flag_map = {n.name: (n.flags or []) for n in topology.loci}
-    corpora_out: list[dict] = []
+    all_override_keys = [ok for rs in topology.corpus_regrades for ok in rs.overrides]
+
+    tasks = []
     for corpus in topology.corpus:
         if getattr(corpus, "is_catchall", False) or not corpus.stores:
             continue
         scc_url = url_of.get(corpus.name)
         if not scc_url:
             continue
-        info = _get(scc_url, "/stores")
-        # Refuse to sweep a knob this SCC can't do - an ignored knob yields
-        # identical rows, which reads as a ceiling. Loud beats misleading.
-        from ..core.knob_caps import assert_knobs_supported
-        assert_knobs_supported(info, [k for rs in topology.corpus_regrades
-                                      for k in rs.overrides])
-        cur_k = info.get("k", 60)
-        cur_n = info.get("n_results", 10)
-        # Capture the hop config too, or a hops-sweep would LEAVE the SCC on the
-        # last value it tried - a silent state leak into everything that queries
-        # it afterwards. Restore is only honest if it captures every knob it sweeps.
-        cur_hops = info.get("hops")
-        cur_hop_terms = info.get("hop_terms")
-        cur_hop_budget = info.get("hop_budget")
-        rows = info.get("stores", []) or []
-        loci_row = next((s for s in rows if s.get("type") == "seren_loci"), None)
-        loci_name = loci_row.get("name") if loci_row else None
-        captured = [{"name": s.get("name"), "weight": s.get("weight", 1.0),
-                     "floor": s.get("floor", 0.0)} for s in rows if s.get("name")]
-        # The one config every combo is reset to, and the one we restore at the end.
-        # Built ONCE so "what we reset to" and "what we restore to" cannot drift apart.
-        baseline_cfg: dict = {"k": cur_k, "n_results": cur_n}
-        if cur_hops is not None:
-            baseline_cfg["hops"] = cur_hops
-        if cur_hop_terms is not None:
-            baseline_cfg["hop_terms"] = cur_hop_terms
-        if cur_hop_budget is not None:
-            baseline_cfg["hop_budget"] = cur_hop_budget
-        if captured:
-            baseline_cfg["stores"] = captured
-        try:
-            # Force the baseline before measuring it, so `current` is the config we
-            # SAY it is rather than whatever the container drifted to.
-            _post(scc_url, "/configure", baseline_cfg)
-            base = _measure(scc_url, corpus_qs, cur_n, k)
-            set_rows = [{"name": "current",
-                         "metrics": {m: base.get(m, 0.0) for m in _METRICS},
-                         "params": {"k": cur_k, "n_results": cur_n,
-                                    **({"hops": cur_hops} if cur_hops is not None else {})},
-                         "delta": {m: 0.0 for m in ("ndcg", "docket_coverage", "recall", "mrr")}}]
-            for rset in regrades:
-                best = None
-                combo_rows: list[dict] = []
-                for combo in compact_combos(rset.overrides):
-                    # Reset-then-override, EVERY combo. Never post just the combo's own
-                    # knobs: /configure is cumulative and sets would inherit each other.
-                    _post(scc_url, "/configure",
-                          full_config_body(combo, loci_name, baseline_cfg))
-                    n_for = combo.get("n_results", cur_n)
-                    agg = _measure(scc_url, corpus_qs, n_for, k)
-                    row = {"metrics": {m: agg.get(m, 0.0) for m in _METRICS}, "params": combo}
-                    row["delta"] = {m: round(row["metrics"][m] - base.get(m, 0.0), 4)
-                                    for m in ("ndcg", "docket_coverage", "recall", "mrr")}
-                    combo_rows.append(row)
-                    if best is None or row["metrics"].get(sort_by, 0) > best["metrics"].get(sort_by, 0):
-                        best = row
-                if best:
-                    # COPY before attaching combos: `best` IS one of the dicts inside
-                    # combo_rows, so assigning combo_rows onto it in place would make
-                    # the structure self-referential and blow up json encoding.
-                    best = dict(best)
-                    best["name"] = rset.name
-                    # EVERY combo we measured, not just the winner. A sweep that reports
-                    # only max() is unfalsifiable: you cannot tell "hops=2 did nothing"
-                    # from "hops=2 did something the sort metric couldn't see." The whole
-                    # point of a sweep is the CURVE. Show the curve.
-                    best["combos"] = combo_rows
-                    set_rows.append(best)
-        finally:
+        tasks.append((corpus, scc_url))
+
+    corpora_out: list[dict] = []
+    if not tasks:
+        pass
+    elif max(1, min(int(max_parallel_corpora or 1), len(tasks))) == 1:
+        # Explicit serial path. Keeps single-corpus topologies (and every test
+        # that injects a fake transport) on a plain, thread-free code path.
+        for corpus, scc_url in tasks:
             try:
-                _post(scc_url, "/configure", baseline_cfg)
-            except Exception:
-                pass
-        flavor = ("vector" if any("vector" in flag_map.get(s.name, []) for s in corpus.stores)
-                  else "lexical")
-        corpora_out.append({"corpus": corpus.name, "flavor": flavor,
-                            "baseline": "current", "sets": set_rows})
+                corpora_out.append(_regrade_one_corpus(
+                    corpus, scc_url, corpus_qs, regrades, all_override_keys,
+                    flag_map, k, sort_by))
+            except Exception as exc:  # noqa: BLE001 - one bad SCC must not sink the run
+                logger.error("Regrade failed for corpus %s: %s", corpus.name, exc)
+                corpora_out.append({"corpus": corpus.name,
+                                    "error": f"{type(exc).__name__}: {exc}"})
+    else:
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+        width = max(1, min(int(max_parallel_corpora or 1), len(tasks)))
+        partials: dict[str, dict] = {}
+        with ThreadPoolExecutor(max_workers=width, thread_name_prefix="seren-regrade") as pool:
+            futures = {pool.submit(_regrade_one_corpus, corpus, scc_url, corpus_qs,
+                                   regrades, all_override_keys, flag_map, k, sort_by): corpus
+                       for corpus, scc_url in tasks}
+            for fut in as_completed(futures):
+                corpus = futures[fut]
+                try:
+                    partials[corpus.name] = fut.result()
+                except Exception as exc:  # noqa: BLE001 - caught per-corpus, NOT re-raised:
+                    # the rest of the pool must still finish and report. This is the
+                    # one deliberate deviation from seed_from_plan's loud .result()
+                    # re-raise -- see the docstring's PARALLEL ACROSS CORPORA note.
+                    logger.error("Regrade failed for corpus %s: %s", corpus.name, exc)
+                    partials[corpus.name] = {"corpus": corpus.name,
+                                             "error": f"{type(exc).__name__}: {exc}"}
+        # MERGE in original topology order, never completion order -- keeps the
+        # parallel result's corpus ordering identical to the serial path's.
+        for corpus, _scc_url in tasks:
+            corpora_out.append(partials[corpus.name])
+
     return {"corpora": corpora_out, "sort_by": sort_by, "eval_k": k,
             "set_names": ["current"] + [r.name for r in regrades],
             "question_count": len(corpus_qs)}
