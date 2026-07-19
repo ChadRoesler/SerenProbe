@@ -1,0 +1,272 @@
+- tier: short
+  ref: malgor_short_00
+  topic: recent
+  content: Malgor the Cruel survived an ambush near the Iron Wastes last week.
+- tier: short
+  ref: malgor_short_01
+  topic: recent
+  content: Malgor the Cruel discovered a hidden passage in the abandoned keep.
+- tier: short
+  ref: malgor_short_02
+  topic: recent
+  content: A traveling merchant told Malgor the Cruel of a rising threat in the east.
+- tier: short
+  ref: malgor_short_03
+  topic: recent
+  content: Malgor the Cruel trained under an ancient sage for three days.
+- tier: short
+  ref: malgor_short_04
+  topic: recent
+  content: Malgor the Cruel helped defend the Iron Wastes from a goblin raid.
+- tier: short
+  ref: malgor_short_05
+  topic: recent
+  content: A strange omen — a flock of ravens — was seen over the Iron Wastes.
+- tier: short
+  ref: malgor_short_06
+  topic: recent
+  content: Malgor the Cruel received a coded message from an old contact.
+- tier: short
+  ref: malgor_short_07
+  topic: recent
+  content: During a storm, Malgor the Cruel lost a valuable weapon in the river.
+- tier: short
+  ref: malgor_short_08
+  topic: recent
+  content: Malgor the Cruel overheard a plot to assassinate the ruler in the Iron Wastes.
+- tier: short
+  ref: malgor_short_09
+  topic: recent
+  content: A elf sage visited Malgor the Cruel seeking aid against the Shadow King.
+- tier: short
+  ref: malgor_short_10
+  topic: recent
+  content: Malgor the Cruel found a wounded griffin and nursed it back to health.
+- tier: short
+  ref: malgor_short_11
+  topic: recent
+  content: The local temple offered a bounty for a dangerous outlaw.
+- tier: short
+  ref: malgor_short_12
+  topic: recent
+  content: Malgor the Cruel participated in a hearing at the Iron Wastes.
+- tier: short
+  ref: malgor_short_13
+  topic: recent
+  content: A rival challenged Malgor the Cruel to a race and lost.
+- tier: short
+  ref: malgor_short_14
+  topic: recent
+  content: Malgor the Cruel deciphered an old prophecy mentioning the Sunken Temple.
+- tier: short
+  ref: malgor_short_15
+  topic: recent
+  content: A mysterious fog rolled into the Iron Wastes for three nights straight.
+- tier: short
+  ref: malgor_short_16
+  topic: recent
+  content: Malgor the Cruel was marked by a wandering priest.
+- tier: short
+  ref: malgor_short_17
+  topic: recent
+  content: Malgor the Cruel unearthed a mosaic from an forgotten era.
+- tier: short
+  ref: malgor_short_18
+  topic: recent
+  content: A fire damaged part of the Iron Wastes.
+- tier: short
+  ref: malgor_short_19
+  topic: recent
+  content: Malgor the Cruel swore a temporary truce with a former enemy.
+- tier: long
+  ref: malgor_long_00
+  topic: lore
+  content: Malgor the Cruel was born under the sign of the Serpent.
+- tier: long
+  ref: malgor_long_01
+  topic: lore
+  content: The Orc people believe Malgor the Cruel is a cursed soul.
+- tier: long
+  ref: malgor_long_02
+  topic: lore
+  content: Malgor the Cruel's mentor taught them the ways of the Berserker.
+- tier: long
+  ref: malgor_long_03
+  topic: lore
+  content: In Malgor the Cruel's youth, they sailed the abyssal sea.
+- tier: long
+  ref: malgor_long_04
+  topic: lore
+  content: Malgor the Cruel carries a tattoo shaped like a star.
+- tier: long
+  ref: malgor_long_05
+  topic: lore
+  content: A god once offered Malgor the Cruel a bargain — power in exchange for years of life.
+- tier: long
+  ref: malgor_long_06
+  topic: lore
+  content: Malgor the Cruel once burned a fortress.
+- tier: long
+  ref: malgor_long_07
+  topic: lore
+  content: The Orc see Malgor the Cruel as a bridge between the old world and the new.
+- tier: long
+  ref: malgor_long_08
+  topic: lore
+  content: Malgor the Cruel learned the staff from a wandering master.
+- tier: long
+  ref: malgor_long_09
+  topic: lore
+  content: In Malgor the Cruel's past, they crossed the burning desert.
+- tier: long
+  ref: malgor_long_10
+  topic: lore
+  content: A staff was forged for Malgor the Cruel.
+- tier: long
+  ref: malgor_long_11
+  topic: lore
+  content: Malgor the Cruel once defeated a champion.
+- tier: long
+  ref: malgor_long_12
+  topic: lore
+  content: The Orc ancestors spoke of Malgor the Cruel in dreams.
+- tier: long
+  ref: malgor_long_13
+  topic: lore
+  content: Malgor the Cruel carries a gift from the gods.
+- tier: long
+  ref: malgor_long_14
+  topic: lore
+  content: A battle in Malgor the Cruel's youth left a vow.
+- tier: long
+  ref: malgor_long_15
+  topic: lore
+  content: Malgor the Cruel broke an ancient oath.
+- tier: long
+  ref: malgor_long_16
+  topic: lore
+  content: The Orc elders fear Malgor the Cruel for their power.
+- tier: long
+  ref: malgor_long_17
+  topic: lore
+  content: Malgor the Cruel carries a forbidden spell.
+- tier: long
+  ref: malgor_long_18
+  topic: lore
+  content: The Orc race originated in the Iron Wastes long before the First Age.
+- tier: long
+  ref: malgor_long_19
+  topic: lore
+  content: Orc tradition holds that their creator, Moradin, shaped them from wood.
+- tier: long
+  ref: malgor_long_20
+  topic: lore
+  content: The Orc once fought a great war against the Fey Court.
+- tier: long
+  ref: malgor_long_21
+  topic: lore
+  content: A sacred mountain in the Iron Wastes is the spiritual heart of the Orc.
+- tier: long
+  ref: malgor_long_22
+  topic: lore
+  content: Orc smiths are known for crafting crystal armor.
+- tier: long
+  ref: malgor_long_23
+  topic: lore
+  content: The Orc calendar marks 8 seasons, each tied to a elemental festival.
+- tier: long
+  ref: malgor_long_24
+  topic: lore
+  content: Orc legends tell of a dragon who once ruled the Iron Wastes.
+- tier: long
+  ref: malgor_long_25
+  topic: lore
+  content: The Orc tongue has seven words for courage.
+- tier: long
+  ref: malgor_long_26
+  topic: lore
+  content: 'An ancient Orc prophecy says: ''When the forest weeps ...'''
+- tier: long
+  ref: malgor_long_27
+  topic: lore
+  content: The Orc once allied with the Humans to defeat the Undead Legion.
+- tier: long
+  ref: malgor_long_28
+  topic: lore
+  content: the Iron Wastes was founded by a legendary hero.
+- tier: long
+  ref: malgor_long_29
+  topic: lore
+  content: The first stone of the Iron Wastes was laid in the Age of Ancients.
+- tier: long
+  ref: malgor_long_30
+  topic: lore
+  content: A leviathan sleeps beneath the Iron Wastes.
+- tier: long
+  ref: malgor_long_31
+  topic: lore
+  content: The forests of the Iron Wastes are said to be blessed by the ancients.
+- tier: long
+  ref: malgor_long_32
+  topic: lore
+  content: Every 50 years, a great muster is held in the Iron Wastes.
+- tier: long
+  ref: malgor_long_33
+  topic: lore
+  content: the Iron Wastes exports precious gems to the rest of Aethelgard.
+- tier: long
+  ref: malgor_long_34
+  topic: lore
+  content: A riddle hangs over the Iron Wastes — 'the stones remember'.
+- tier: long
+  ref: malgor_long_35
+  topic: lore
+  content: The deepest part of the Iron Wastes is the Great Hall.
+- tier: long
+  ref: malgor_long_36
+  topic: lore
+  content: the Iron Wastes was once besieged by the Crimson Court.
+- tier: long
+  ref: malgor_long_37
+  topic: lore
+  content: A secret garden lies beneath the Iron Wastes.
+- tier: near
+  ref: malgor_near_00
+  topic: upcoming
+  content: Malgor the Cruel plans to raid the Shadow King's fortress next week.
+- tier: near
+  ref: malgor_near_01
+  topic: upcoming
+  content: A prophecy warns that the Shadow King will rise soon.
+- tier: near
+  ref: malgor_near_02
+  topic: upcoming
+  content: Malgor the Cruel must prepare a ritual before the next full moon.
+- tier: near
+  ref: malgor_near_03
+  topic: upcoming
+  content: A noble has summoned Malgor the Cruel to Silverwood for a parley.
+- tier: near
+  ref: malgor_near_04
+  topic: upcoming
+  content: Malgor the Cruel suspects a betrayal brewing in the Iron Wastes.
+- tier: near
+  ref: malgor_near_05
+  topic: upcoming
+  content: The season of stars approaches, bringing danger.
+- tier: near
+  ref: malgor_near_06
+  topic: upcoming
+  content: Malgor the Cruel was offered a key in exchange for a dangerous quest.
+- tier: near
+  ref: malgor_near_07
+  topic: upcoming
+  content: A rival courted Malgor the Cruel, forcing a difficult choice.
+- tier: near
+  ref: malgor_near_08
+  topic: upcoming
+  content: Malgor the Cruel will attend a coronation in Crossroads.
+- tier: near
+  ref: malgor_near_09
+  topic: upcoming
+  content: A mysterious artifact arrived for Malgor the Cruel, hinting at a greater plot.

@@ -1,0 +1,280 @@
+- project: loc_wyvernspeak
+  key: wyvernspeak_name
+  value: Wyvern's Peak
+  why: location name
+- project: loc_wyvernspeak
+  key: wyvernspeak_type
+  value: point-of-interest
+  why: location type
+- project: loc_wyvernspeak
+  key: wyvernspeak_population
+  value: '8455'
+  why: population count
+- project: loc_wyvernspeak
+  key: wyvernspeak_size
+  value: medium
+  why: relative size
+- project: loc_wyvernspeak
+  key: wyvernspeak_climate
+  value: mountain
+  why: climate zone
+- project: loc_wyvernspeak
+  key: wyvernspeak_terrain
+  value: forest
+  why: primary terrain
+- project: loc_wyvernspeak
+  key: wyvernspeak_government
+  value: autonomy
+  why: government type
+- project: loc_wyvernspeak
+  key: wyvernspeak_defense
+  value: militia
+  why: defense force
+- project: loc_wyvernspeak
+  key: wyvernspeak_economy
+  value: religious
+  why: economic base
+- project: loc_wyvernspeak
+  key: wyvernspeak_language
+  value: Dwarvish
+  why: primary language
+- project: loc_wyvernspeak
+  key: wyvernspeak_region
+  value: the north of Aethelgard
+  why: geographic region
+- project: loc_wyvernspeak
+  key: wyvernspeak_river
+  value: the Whitewater
+  why: nearby river
+- project: loc_wyvernspeak
+  key: wyvernspeak_mountain
+  value: the Crown Range
+  why: nearby mountain range
+- project: loc_wyvernspeak
+  key: wyvernspeak_forest
+  value: the Darkholt
+  why: nearby forest
+- project: loc_wyvernspeak
+  key: wyvernspeak_coast
+  value: the Sunken Coast
+  why: coastline
+- project: loc_wyvernspeak
+  key: wyvernspeak_elevation
+  value: 2751 ft
+  why: average elevation
+- project: loc_wyvernspeak
+  key: wyvernspeak_area
+  value: 3947 sq mi
+  why: total area
+- project: loc_wyvernspeak
+  key: wyvernspeak_biome
+  value: temperate forest
+  why: primary biome
+- project: loc_wyvernspeak
+  key: wyvernspeak_natural_port
+  value: 'yes'
+  why: natural harbor access
+- project: loc_wyvernspeak
+  key: wyvernspeak_resource_1
+  value: stone
+  why: primary natural resource
+- project: loc_wyvernspeak
+  key: wyvernspeak_district_1
+  value: Merchant Quarter
+  why: city district
+- project: loc_wyvernspeak
+  key: wyvernspeak_district_2
+  value: Scholar's Green
+  why: city district
+- project: loc_wyvernspeak
+  key: wyvernspeak_district_3
+  value: Artisan Alley
+  why: city district
+- project: loc_wyvernspeak
+  key: wyvernspeak_bldg_1
+  value: Grand Keep
+  why: seat of power
+- project: loc_wyvernspeak
+  key: wyvernspeak_bldg_2
+  value: Shrine of the Ancients
+  why: place of worship
+- project: loc_wyvernspeak
+  key: wyvernspeak_bldg_3
+  value: The Gilded Tankard
+  why: popular inn
+- project: loc_wyvernspeak
+  key: wyvernspeak_bldg_4
+  value: Crystal Exchange
+  why: main market
+- project: loc_wyvernspeak
+  key: wyvernspeak_bldg_5
+  value: Gate Fortress
+  why: defensive structure
+- project: loc_wyvernspeak
+  key: wyvernspeak_faction_1
+  value: Iron Guard
+  why: active faction
+- project: loc_wyvernspeak
+  key: wyvernspeak_faction_2
+  value: Emerald Enclave
+  why: active faction
+- project: loc_wyvernspeak
+  key: wyvernspeak_faction_3
+  value: Sage Academy
+  why: active faction
+- project: loc_wyvernspeak
+  key: wyvernspeak_export_1
+  value: ore
+  why: primary export
+- project: loc_wyvernspeak
+  key: wyvernspeak_export_2
+  value: cheese
+  why: secondary export
+- project: loc_wyvernspeak
+  key: wyvernspeak_export_3
+  value: rare herbs
+  why: tertiary export
+- project: loc_wyvernspeak
+  key: wyvernspeak_import_1
+  value: silk
+  why: primary import
+- project: loc_wyvernspeak
+  key: wyvernspeak_import_2
+  value: wine
+  why: secondary import
+- project: loc_wyvernspeak
+  key: wyvernspeak_history_0
+  value: Wyvern's Peak was founded by an exiled king in the Age of Ancients.
+  why: historical lore
+- project: loc_wyvernspeak
+  key: wyvernspeak_history_1
+  value: The first throne of Wyvern's Peak was laid in the 2nd century.
+  why: historical lore
+- project: loc_wyvernspeak
+  key: wyvernspeak_history_2
+  value: Wyvern's Peak withstood a siege by the Bone Horde for 186 days.
+  why: historical lore
+- project: loc_wyvernspeak
+  key: wyvernspeak_history_3
+  value: A dragon once attacked Wyvern's Peak, destroying the north wall.
+  why: historical lore
+- project: loc_wyvernspeak
+  key: wyvernspeak_history_4
+  value: The Great Fire devastated Wyvern's Peak.
+  why: historical lore
+- project: loc_wyvernspeak
+  key: wyvernspeak_history_5
+  value: Wyvern's Peak was rebuilt under a wise queen.
+  why: historical lore
+- project: loc_wyvernspeak
+  key: wyvernspeak_history_6
+  value: A secret garden lies beneath Wyvern's Peak.
+  why: historical lore
+- project: loc_wyvernspeak
+  key: wyvernspeak_history_7
+  value: Wyvern's Peak is protected by a ward from the gods.
+  why: historical lore
+- project: loc_wyvernspeak
+  key: wyvernspeak_history_8
+  value: The deepest part of Wyvern's Peak is the Great Hall.
+  why: historical lore
+- project: loc_wyvernspeak
+  key: wyvernspeak_history_9
+  value: A charter was signed in Wyvern's Peak that shaped the fate of Aethelgard.
+  why: historical lore
+- project: loc_wyvernspeak
+  key: wyvernspeak_notable_1
+  value: a bottomless well
+  why: notable feature
+- project: loc_wyvernspeak
+  key: wyvernspeak_notable_2
+  value: a tree that bears silver fruit
+  why: notable feature
+- project: loc_wyvernspeak
+  key: wyvernspeak_danger_1
+  value: undead crypts
+  why: local danger
+- project: loc_wyvernspeak
+  key: wyvernspeak_danger_2
+  value: quicksand pits
+  why: local danger
+- project: loc_wyvernspeak
+  key: wyvernspeak_race_1
+  value: Dwarf
+  why: common race
+- project: loc_wyvernspeak
+  key: wyvernspeak_race_2
+  value: Half-Elf
+  why: minority race
+- project: loc_wyvernspeak
+  key: wyvernspeak_religion_1
+  value: Altar of Moradin
+  why: primary religion
+- project: loc_wyvernspeak
+  key: wyvernspeak_religion_2
+  value: Cult of the Black Flame
+  why: secondary religion
+- project: loc_wyvernspeak
+  key: wyvernspeak_ruler
+  value: Queen Seraphina
+  why: current ruler
+- project: loc_wyvernspeak
+  key: wyvernspeak_guard
+  value: 202 guards
+  why: garrison size
+- project: loc_wyvernspeak
+  key: wyvernspeak_festival
+  value: Feast of the Harvest
+  why: annual festival
+- project: loc_wyvernspeak
+  key: wyvernspeak_trade_route
+  value: the Coast Road
+  why: major trade route
+- project: loc_wyvernspeak
+  key: wyvernspeak_ally
+  value: Silverwood
+  why: allied settlement
+- project: loc_wyvernspeak
+  key: wyvernspeak_enemy
+  value: the Orc Wastes
+  why: hostile neighbor
+- project: loc_wyvernspeak
+  key: wyvernspeak_status
+  value: booming
+  why: current status
+- project: loc_wyvernspeak
+  key: wyvernspeak_extra_566
+  value: hidden catacombs
+  why: notable detail
+- project: loc_wyvernspeak
+  key: wyvernspeak_extra_578
+  value: royal hunting grounds
+  why: notable detail
+- project: loc_wyvernspeak
+  key: wyvernspeak_extra_546
+  value: abandoned quarry
+  why: notable detail
+- project: loc_wyvernspeak
+  key: wyvernspeak_extra_687
+  value: abandoned quarry
+  why: notable detail
+- project: loc_wyvernspeak
+  key: wyvernspeak_extra_780
+  value: secret smuggler tunnels
+  why: notable detail
+- project: loc_wyvernspeak
+  key: wyvernspeak_extra_439
+  value: hidden catacombs
+  why: notable detail
+- project: loc_wyvernspeak
+  key: wyvernspeak_extra_321
+  value: enchanted grove
+  why: notable detail
+- project: loc_wyvernspeak
+  key: wyvernspeak_extra_220
+  value: enchanted grove
+  why: notable detail
+- project: loc_wyvernspeak
+  key: wyvernspeak_extra_912
+  value: ancient aqueduct
+  why: notable detail

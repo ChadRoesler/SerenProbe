@@ -1,0 +1,58 @@
+# SerenLoci Facts - multi-source export
+# Each entry is a fact about the world or its entities
+
+- key: site_type
+  value: shrine
+  project: geography
+  ident: geography/site_type
+  why: site_type of Galfalthal-thorn (id:25)
+- key: founded_year
+  value: '0'
+  project: geography
+  ident: geography/founded_year
+  why: founded_year of Galfalthal-thorn (id:25)
+- key: population
+  value: '1023'
+  project: demographics
+  ident: demographics/population
+  why: population of Galfalthal-thorn (id:25)
+- key: size_class
+  value: shrine
+  project: demographics
+  ident: demographics/size_class
+  why: size_class of Galfalthal-thorn (id:25)
+- key: primary_material
+  value: obsidian
+  project: misc
+  ident: misc/primary_material
+  why: primary_material of Galfalthal-thorn (id:25)
+- key: industry
+  value: pilgrimage
+  project: misc
+  ident: misc/industry
+  why: industry of Galfalthal-thorn (id:25)
+- key: defenses
+  value: sanctuary barrier
+  project: misc
+  ident: misc/defenses
+  why: defenses of Galfalthal-thorn (id:25)
+- key: is_capital
+  value: 'no'
+  project: geography
+  ident: geography/is_capital
+  why: is_capital of Galfalthal-thorn (id:25)
+- key: civ
+  value: Aeanoran
+  project: origin
+  ident: origin/civ
+  why: civ of Galfalthal-thorn (id:25)
+- key: ruler
+  value: Galoth
+  project: misc
+  ident: misc/ruler
+  why: ruler of Galfalthal-thorn (id:25)
+- key: ruler_title
+  value: Nightstalker
+  project: misc
+  ident: misc/ruler_title
+  why: ruler_title of Galfalthal-thorn (id:25)

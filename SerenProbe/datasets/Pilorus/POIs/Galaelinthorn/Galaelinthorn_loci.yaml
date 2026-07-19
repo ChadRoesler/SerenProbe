@@ -1,0 +1,58 @@
+# SerenLoci Facts - multi-source export
+# Each entry is a fact about the world or its entities
+
+- key: site_type
+  value: village
+  project: geography
+  ident: geography/site_type
+  why: site_type of Galaelinthorn (id:258)
+- key: founded_year
+  value: '65'
+  project: geography
+  ident: geography/founded_year
+  why: founded_year of Galaelinthorn (id:258)
+- key: population
+  value: '905'
+  project: demographics
+  ident: demographics/population
+  why: population of Galaelinthorn (id:258)
+- key: size_class
+  value: hamlet
+  project: demographics
+  ident: demographics/size_class
+  why: size_class of Galaelinthorn (id:258)
+- key: primary_material
+  value: thatch
+  project: misc
+  ident: misc/primary_material
+  why: primary_material of Galaelinthorn (id:258)
+- key: industry
+  value: fishing
+  project: misc
+  ident: misc/industry
+  why: industry of Galaelinthorn (id:258)
+- key: defenses
+  value: watch tower
+  project: misc
+  ident: misc/defenses
+  why: defenses of Galaelinthorn (id:258)
+- key: is_capital
+  value: 'no'
+  project: geography
+  ident: geography/is_capital
+  why: is_capital of Galaelinthorn (id:258)
+- key: civ
+  value: Aeanoran
+  project: origin
+  ident: origin/civ
+  why: civ of Galaelinthorn (id:258)
+- key: ruler
+  value: Sindnor
+  project: misc
+  ident: misc/ruler
+  why: ruler of Galaelinthorn (id:258)
+- key: ruler_title
+  value: Poison of Aeanoran
+  project: misc
+  ident: misc/ruler_title
+  why: ruler_title of Galaelinthorn (id:258)

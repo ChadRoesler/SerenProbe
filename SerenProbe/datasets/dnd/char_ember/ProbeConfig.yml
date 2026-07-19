@@ -1,0 +1,49 @@
+# Auto-generated eval topology for 'char_ember' (D&D realm).
+ProbeConfig:
+  StartingPort: 7700
+  DefaultQuestions: [datasets/dnd/char_ember/questions.yaml]
+  Memory:
+    MemoryCount: 1
+    MemoryConfigs:
+      - Name: char_ember-mem
+        Port: 7700
+        Seed: [datasets/dnd/char_ember/memory.yaml]
+        Questions: [datasets/dnd/char_ember/questions.yaml]
+  Loci:
+    LociCount: 2
+    LociConfigs:
+      - Name: char_ember-loci-v
+        Port: 7701
+        Flags: [vector]
+        Seed: [datasets/dnd/char_ember/loci.yaml]
+        Questions: [datasets/dnd/char_ember/questions.yaml]
+      - Name: char_ember-loci-nv
+        Port: 7702
+        Seed: [datasets/dnd/char_ember/loci.yaml]
+        Questions: [datasets/dnd/char_ember/questions.yaml]
+  Corpus:
+    CorpusRegrades:
+      - Name: hop-sweep
+        hops: [1, 2, 3]
+      - Name: rrf-sweep
+        rrf_k: [30, 60, 100]
+      - Name: floor-sweep
+        loci_floor: [0.0, 0.1, 0.3]
+      - Name: weight-sweep
+        loci_weight: [0.3, 0.5, 0.7, 1.0]
+      - Name: packet-sweep
+        n_results: [10, 15, 20, 30]
+    CorpusCount: 2
+    CorpusConfigs:
+      - Name: char_ember-scc-v
+        Port: 7704
+        Stores:
+          - Store: char_ember-loci-v
+          - Store: char_ember-mem
+        Questions: [datasets/dnd/char_ember/questions.yaml]
+      - Name: char_ember-scc-nv
+        Port: 7703
+        Stores:
+          - Store: char_ember-loci-nv
+          - Store: char_ember-mem
+        Questions: [datasets/dnd/char_ember/questions.yaml]

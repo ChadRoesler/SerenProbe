@@ -1,0 +1,87 @@
+questions:
+- asks: loci
+  query: what deck is vega on?
+  expect_key:
+  - halcyon/crew_vega_deck
+- asks: loci
+  query: what deck is orin on?
+  expect_key:
+  - halcyon/crew_orin_deck
+- asks: loci
+  query: what deck is sable on?
+  expect_key:
+  - halcyon/crew_sable_deck
+- asks: loci
+  query: what deck is quell on?
+  expect_key:
+  - halcyon/crew_quell_deck
+- asks: loci
+  query: what deck is brix on?
+  expect_key:
+  - halcyon/crew_brix_deck
+- asks: loci
+  query: what is vega's clearance?
+  expect_key:
+  - halcyon/crew_vega_clearance
+- asks: loci
+  query: what is orin's clearance?
+  expect_key:
+  - halcyon/crew_orin_clearance
+- asks: loci
+  query: what is sable's clearance?
+  expect_key:
+  - halcyon/crew_sable_clearance
+- asks: loci
+  query: what is the status of the reactor system?
+  expect_key:
+  - halcyon/sys_reactor_status
+- asks: loci
+  query: what is the status of the nav system?
+  expect_key:
+  - halcyon/sys_nav_status
+- asks: memory
+  query: what caused the Deck 6 anomaly?
+  expect_ref:
+  - log-anomaly-7
+  expect_content:
+  - plasma flux
+  - coolant
+- asks: memory
+  query: why was Deck 8 locked down?
+  expect_ref:
+  - ord-vega-lockdown
+  expect_content:
+  - lockdown
+  - spore
+- asks: corpus
+  query: give me a dossier on crew member vega
+  expect_content:
+  - Station Chief
+  - Command
+  - Deck 1
+  - Omega
+  - lockdown
+- asks: corpus
+  query: give me a dossier on crew member orin
+  expect_content:
+  - Chief Engineer
+  - Engineering
+  - Deck 6
+  - Delta
+  - plasma flux
+- asks: corpus
+  query: give me a dossier on crew member sable
+  expect_content:
+  - Medical Lead
+  - Medbay
+  - Deck 3
+  - Gamma
+  - quarantined
+- asks: corpus
+  query: give me a dossier on crew member quell
+  expect_content:
+  - Nav Officer
+  - Command
+  - Deck 1
+  - Delta
+  - degraded

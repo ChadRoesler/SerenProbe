@@ -1,0 +1,280 @@
+- project: char_malgor
+  key: malgor_name
+  value: Malgor the Cruel
+  why: character's full name
+- project: char_malgor
+  key: malgor_race
+  value: Orc
+  why: fantasy race
+- project: char_malgor
+  key: malgor_class
+  value: Berserker
+  why: character class
+- project: char_malgor
+  key: malgor_alignment
+  value: Chaotic Evil
+  why: moral alignment
+- project: char_malgor
+  key: malgor_role
+  value: Evil Minion
+  why: narrative role
+- project: char_malgor
+  key: malgor_level
+  value: '11'
+  why: character level
+- project: char_malgor
+  key: malgor_background
+  value: noble
+  why: life background
+- project: char_malgor
+  key: malgor_age
+  value: '177'
+  why: age in years
+- project: char_malgor
+  key: malgor_height
+  value: 53 inches
+  why: height
+- project: char_malgor
+  key: malgor_weight
+  value: 129 lbs
+  why: weight
+- project: char_malgor
+  key: malgor_stat_str
+  value: '20'
+  why: STR ability score
+- project: char_malgor
+  key: malgor_stat_str_mod
+  value: '+5'
+  why: STR modifier
+- project: char_malgor
+  key: malgor_stat_dex
+  value: '17'
+  why: DEX ability score
+- project: char_malgor
+  key: malgor_stat_dex_mod
+  value: '+3'
+  why: DEX modifier
+- project: char_malgor
+  key: malgor_stat_con
+  value: '15'
+  why: CON ability score
+- project: char_malgor
+  key: malgor_stat_con_mod
+  value: '+2'
+  why: CON modifier
+- project: char_malgor
+  key: malgor_stat_int
+  value: '10'
+  why: INT ability score
+- project: char_malgor
+  key: malgor_stat_int_mod
+  value: '+0'
+  why: INT modifier
+- project: char_malgor
+  key: malgor_stat_wis
+  value: '9'
+  why: WIS ability score
+- project: char_malgor
+  key: malgor_stat_wis_mod
+  value: '-1'
+  why: WIS modifier
+- project: char_malgor
+  key: malgor_stat_cha
+  value: '6'
+  why: CHA ability score
+- project: char_malgor
+  key: malgor_stat_cha_mod
+  value: '-2'
+  why: CHA modifier
+- project: char_malgor
+  key: malgor_skill_athletics
+  value: '+9'
+  why: athletics skill bonus
+- project: char_malgor
+  key: malgor_skill_acrobatics
+  value: '+4'
+  why: acrobatics skill bonus
+- project: char_malgor
+  key: malgor_skill_stealth
+  value: '+9'
+  why: stealth skill bonus
+- project: char_malgor
+  key: malgor_skill_perception
+  value: '+8'
+  why: perception skill bonus
+- project: char_malgor
+  key: malgor_skill_investigation
+  value: '+4'
+  why: investigation skill bonus
+- project: char_malgor
+  key: malgor_skill_survival
+  value: '+5'
+  why: survival skill bonus
+- project: char_malgor
+  key: malgor_skill_intimidation
+  value: '+8'
+  why: intimidation skill bonus
+- project: char_malgor
+  key: malgor_skill_persuasion
+  value: '+5'
+  why: persuasion skill bonus
+- project: char_malgor
+  key: malgor_skill_deception
+  value: '+6'
+  why: deception skill bonus
+- project: char_malgor
+  key: malgor_weapon_1
+  value: warhammer
+  why: primary weapon
+- project: char_malgor
+  key: malgor_weapon_2
+  value: whip
+  why: secondary weapon
+- project: char_malgor
+  key: malgor_armor
+  value: robe
+  why: worn armor
+- project: char_malgor
+  key: malgor_shield
+  value: buckler
+  why: carried shield
+- project: char_malgor
+  key: malgor_ranged
+  value: crossbow
+  why: ranged weapon
+- project: char_malgor
+  key: malgor_ammo
+  value: 22 arrows/bolts
+  why: ammunition supply
+- project: char_malgor
+  key: malgor_potion_1
+  value: potion of healing
+  why: healing potion
+- project: char_malgor
+  key: malgor_potion_2
+  value: potion of resistance
+  why: special potion
+- project: char_malgor
+  key: malgor_tool
+  value: disguise kit
+  why: tool kit
+- project: char_malgor
+  key: malgor_gold
+  value: 388 gp
+  why: carried gold
+- project: char_malgor
+  key: malgor_ability_1
+  value: sneak attack
+  why: class ability
+- project: char_malgor
+  key: malgor_ability_2
+  value: cunning action
+  why: class ability
+- project: char_malgor
+  key: malgor_ability_3
+  value: shield
+  why: combat ability
+- project: char_malgor
+  key: malgor_spell_1
+  value: darkness
+  why: known spell
+- project: char_malgor
+  key: malgor_spell_2
+  value: polymorph
+  why: known spell
+- project: char_malgor
+  key: malgor_spell_3
+  value: banishment
+  why: known spell
+- project: char_malgor
+  key: malgor_feat_1
+  value: alert
+  why: character feat
+- project: char_malgor
+  key: malgor_feat_2
+  value: tough
+  why: character feat
+- project: char_malgor
+  key: malgor_faction
+  value: Silverwood Circle
+  why: faction affiliation
+- project: char_malgor
+  key: malgor_deity
+  value: Tymora
+  why: worshipped deity
+- project: char_malgor
+  key: malgor_location
+  value: Wyvern's Peak
+  why: current location
+- project: char_malgor
+  key: malgor_homeland
+  value: the Iron Wastes
+  why: ancestral homeland
+- project: char_malgor
+  key: malgor_rel_0
+  value: Ferris the Fence (enemy)
+  why: enemy relationship
+- project: char_malgor
+  key: malgor_rel_1
+  value: Grickle (rival)
+  why: rival relationship
+- project: char_malgor
+  key: malgor_rel_2
+  value: Ember the Burner (enemy)
+  why: enemy relationship
+- project: char_malgor
+  key: malgor_backstory_0
+  value: Malgor the Cruel was born in the Iron Wastes to a family of scholars.
+  why: personal history
+- project: char_malgor
+  key: malgor_backstory_1
+  value: As a youth, Malgor the Cruel stole from a noble.
+  why: personal history
+- project: char_malgor
+  key: malgor_backstory_2
+  value: Malgor the Cruel swore an oath to a fallen friend.
+  why: personal history
+- project: char_malgor
+  key: malgor_backstory_3
+  value: Now Malgor the Cruel seeks redemption.
+  why: personal history
+- project: char_malgor
+  key: malgor_quest_1
+  value: Find the Hidden Vault
+  why: current quest
+- project: char_malgor
+  key: malgor_quest_2
+  value: Defeat the Ashen One
+  why: primary goal
+- project: char_malgor
+  key: malgor_ideal
+  value: freedom
+  why: core ideal
+- project: char_malgor
+  key: malgor_flaw
+  value: vanity
+  why: character flaw
+- project: char_malgor
+  key: malgor_bond
+  value: homeland
+  why: strong bond
+- project: char_malgor
+  key: malgor_note_449
+  value: carries a lucky charm
+  why: notable detail
+- project: char_malgor
+  key: malgor_note_922
+  value: carries a lucky charm
+  why: notable detail
+- project: char_malgor
+  key: malgor_note_257
+  value: speaks draconic
+  why: notable detail
+- project: char_malgor
+  key: malgor_note_347
+  value: has a secret identity
+  why: notable detail
+- project: char_malgor
+  key: malgor_note_475
+  value: speaks draconic
+  why: notable detail

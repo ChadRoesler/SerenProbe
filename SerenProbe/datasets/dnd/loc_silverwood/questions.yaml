@@ -1,0 +1,330 @@
+questions:
+- asks: loci
+  query: what type of location is Silverwood?
+  expect_key:
+  - loc_silverwood/silverwood_type
+  expect_content: []
+  hops: 1
+  quiet_in: &id001
+  - char_thorn-*
+  - char_elara-*
+  - char_kael-*
+  - char_riva-*
+  - char_zara-*
+  - char_malgor-*
+  - char_vexia-*
+  - char_grul-*
+  - char_shade-*
+  - char_ember-*
+  - char_shadowking-*
+  - char_grickle-*
+  - char_fluffy-*
+  - char_boris-*
+  - char_ferris-*
+  - char_seraphina-*
+  - loc_ironhold-*
+  - loc_crossroads-*
+  - loc_sunkentemple-*
+  - loc_wyvernspeak-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what population does Silverwood have?
+  expect_key:
+  - loc_silverwood/silverwood_population
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what climate is Silverwood in?
+  expect_key:
+  - loc_silverwood/silverwood_climate
+  expect_content:
+  - cold
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what terrain is Silverwood on?
+  expect_key:
+  - loc_silverwood/silverwood_terrain
+  expect_content:
+  - hills
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what government rules Silverwood?
+  expect_key:
+  - loc_silverwood/silverwood_government
+  expect_content:
+  - theocracy
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what defense protects Silverwood?
+  expect_key:
+  - loc_silverwood/silverwood_defense
+  expect_content:
+  - mercenary guild
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what export does Silverwood produce?
+  expect_key:
+  - loc_silverwood/silverwood_export_1
+  expect_content:
+  - ore
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what language does Silverwood speak?
+  expect_key:
+  - loc_silverwood/silverwood_language
+  expect_content:
+  - Gnomish
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what primary bldg is in Silverwood?
+  expect_key:
+  - loc_silverwood/silverwood_bldg_1
+  expect_content:
+  - Town Hall
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what festival does Silverwood celebrate?
+  expect_key:
+  - loc_silverwood/silverwood_festival
+  expect_content:
+  - Moonfall
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: what recent event happened in Silverwood — an incident involving travelers or merchants
+  expect_ref:
+  - silverwood_short_00
+  expect_content:
+  - A caravan arrived at Silverwood last week.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: tell me about a recent arrival to Silverwood — a newcomer who arrived recently
+  expect_ref:
+  - silverwood_short_01
+  expect_content:
+  - Silverwood suffered a fire in the temple ward.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: what is the founding lore of Silverwood — the legendary origins of the settlement
+  expect_ref:
+  - silverwood_long_00
+  expect_content:
+  - Silverwood was carved from ancient forest.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: tell me about the ancient history of Silverwood — tales from ages past
+  expect_ref:
+  - silverwood_long_05
+  expect_content:
+  - Silverwood was once a prison colony during the Dragon War.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: what upcoming event is planned for Silverwood — an upcoming festival or gathering
+  expect_ref:
+  - silverwood_near_00
+  expect_content:
+  - A caravan is expected to reach Silverwood within days.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: what future threat does Silverwood face — a looming danger or encroaching force
+  expect_ref:
+  - silverwood_near_01
+  expect_content:
+  - Silverwood plans to expand the market before winter.
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: tell me about Silverwood — its type, climate, and terrain
+  expect_content:
+  - city
+  - Silverwood
+  expect_key:
+  - loc_silverwood/silverwood_type
+  - loc_silverwood/silverwood_climate
+  - loc_silverwood/silverwood_terrain
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: describe Silverwood's government and defenses
+  expect_content:
+  - Silverwood
+  expect_key:
+  - loc_silverwood/silverwood_government
+  - loc_silverwood/silverwood_defense
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: give me a briefing on Silverwood's economy and exports
+  expect_content:
+  - Silverwood
+  expect_key:
+  - loc_silverwood/silverwood_export_1
+  - loc_silverwood/silverwood_export_2
+  - loc_silverwood/silverwood_economy
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what history does Silverwood have? tell me about its founding
+  expect_content:
+  - Silverwood
+  expect_key:
+  - loc_silverwood/silverwood_founding
+  - loc_silverwood/silverwood_history_1
+  - loc_silverwood/silverwood_history_2
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what factions and exports define Silverwood?
+  expect_content:
+  - Silverwood
+  expect_key:
+  - loc_silverwood/silverwood_export_1
+  - loc_silverwood/silverwood_export_2
+  - loc_silverwood/silverwood_economy
+  - loc_silverwood/silverwood_government
+  - loc_silverwood/silverwood_defense
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: describe the notable buildings and districts in Silverwood
+  expect_content:
+  - Silverwood
+  expect_key:
+  - loc_silverwood/silverwood_bldg_1
+  - loc_silverwood/silverwood_bldg_2
+  - loc_silverwood/silverwood_bldg_3
+  - loc_silverwood/silverwood_district_1
+  - loc_silverwood/silverwood_district_2
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what dangers lurk in and around Silverwood?
+  expect_content:
+  - Silverwood
+  expect_key:
+  - loc_silverwood/silverwood_danger_1
+  - loc_silverwood/silverwood_danger_2
+  - loc_silverwood/silverwood_danger_3
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: tell me about the races and religions found in Silverwood
+  expect_content:
+  - Silverwood
+  expect_key: &id002
+  - loc_silverwood/silverwood_festival
+  - loc_silverwood/silverwood_religion
+  - loc_silverwood/silverwood_race_1
+  - loc_silverwood/silverwood_race_2
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what trade routes connect Silverwood to the wider realm?
+  expect_content:
+  - Silverwood
+  expect_key:
+  - loc_silverwood/silverwood_trade_1
+  - loc_silverwood/silverwood_trade_2
+  - loc_silverwood/silverwood_resource_1
+  - loc_silverwood/silverwood_resource_2
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: summarize Silverwood's recent events and current status
+  expect_content:
+  - Silverwood
+  expect_key:
+  - loc_silverwood/silverwood_short_00
+  - loc_silverwood/silverwood_short_01
+  - loc_silverwood/silverwood_near_00
+  - loc_silverwood/silverwood_near_01
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what is the deep lore and ancient history of Silverwood?
+  expect_content:
+  - Silverwood
+  expect_key:
+  - loc_silverwood/silverwood_founding
+  - loc_silverwood/silverwood_history_1
+  - loc_silverwood/silverwood_history_2
+  - loc_silverwood/silverwood_long_00
+  - loc_silverwood/silverwood_long_05
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: describe the festivals and culture of Silverwood
+  expect_content:
+  - Silverwood
+  expect_key: *id002
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what resources and natural features does Silverwood have?
+  expect_content:
+  - Silverwood
+  expect_key:
+  - loc_silverwood/silverwood_river
+  - loc_silverwood/silverwood_mountain
+  - loc_silverwood/silverwood_forest
+  - loc_silverwood/silverwood_biome
+  - loc_silverwood/silverwood_region
+  - loc_silverwood/silverwood_trade_1
+  - loc_silverwood/silverwood_trade_2
+  - loc_silverwood/silverwood_resource_1
+  - loc_silverwood/silverwood_resource_2
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: give me a full dossier on Silverwood
+  expect_content:
+  - Silverwood
+  - city
+  expect_key:
+  - loc_silverwood/silverwood_type
+  - loc_silverwood/silverwood_climate
+  - loc_silverwood/silverwood_terrain
+  - loc_silverwood/silverwood_government
+  - loc_silverwood/silverwood_defense
+  - loc_silverwood/silverwood_export_1
+  - loc_silverwood/silverwood_export_2
+  - loc_silverwood/silverwood_economy
+  - loc_silverwood/silverwood_founding
+  - loc_silverwood/silverwood_history_1
+  - loc_silverwood/silverwood_history_2
+  - loc_silverwood/silverwood_bldg_1
+  - loc_silverwood/silverwood_bldg_2
+  - loc_silverwood/silverwood_bldg_3
+  - loc_silverwood/silverwood_district_1
+  - loc_silverwood/silverwood_district_2
+  - loc_silverwood/silverwood_danger_1
+  - loc_silverwood/silverwood_danger_2
+  - loc_silverwood/silverwood_danger_3
+  - loc_silverwood/silverwood_festival
+  - loc_silverwood/silverwood_religion
+  - loc_silverwood/silverwood_race_1
+  - loc_silverwood/silverwood_race_2
+  - loc_silverwood/silverwood_trade_1
+  - loc_silverwood/silverwood_trade_2
+  - loc_silverwood/silverwood_resource_1
+  - loc_silverwood/silverwood_resource_2
+  - loc_silverwood/silverwood_river
+  - loc_silverwood/silverwood_mountain
+  - loc_silverwood/silverwood_forest
+  - loc_silverwood/silverwood_biome
+  - loc_silverwood/silverwood_region
+  hops: 1
+  quiet_in: *id001

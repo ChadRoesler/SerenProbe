@@ -1,0 +1,280 @@
+- project: loc_sunkentemple
+  key: sunkentemple_name
+  value: The Sunken Temple
+  why: location name
+- project: loc_sunkentemple
+  key: sunkentemple_type
+  value: point-of-interest
+  why: location type
+- project: loc_sunkentemple
+  key: sunkentemple_population
+  value: '2620'
+  why: population count
+- project: loc_sunkentemple
+  key: sunkentemple_size
+  value: large
+  why: relative size
+- project: loc_sunkentemple
+  key: sunkentemple_climate
+  value: temperate
+  why: climate zone
+- project: loc_sunkentemple
+  key: sunkentemple_terrain
+  value: swamp
+  why: primary terrain
+- project: loc_sunkentemple
+  key: sunkentemple_government
+  value: theocracy
+  why: government type
+- project: loc_sunkentemple
+  key: sunkentemple_defense
+  value: militia
+  why: defense force
+- project: loc_sunkentemple
+  key: sunkentemple_economy
+  value: mining
+  why: economic base
+- project: loc_sunkentemple
+  key: sunkentemple_language
+  value: Elvish
+  why: primary language
+- project: loc_sunkentemple
+  key: sunkentemple_region
+  value: the south of Aethelgard
+  why: geographic region
+- project: loc_sunkentemple
+  key: sunkentemple_river
+  value: the Silverflow
+  why: nearby river
+- project: loc_sunkentemple
+  key: sunkentemple_mountain
+  value: the Crown Range
+  why: nearby mountain range
+- project: loc_sunkentemple
+  key: sunkentemple_forest
+  value: the Darkholt
+  why: nearby forest
+- project: loc_sunkentemple
+  key: sunkentemple_coast
+  value: the Sunken Coast
+  why: coastline
+- project: loc_sunkentemple
+  key: sunkentemple_elevation
+  value: 1535 ft
+  why: average elevation
+- project: loc_sunkentemple
+  key: sunkentemple_area
+  value: 4594 sq mi
+  why: total area
+- project: loc_sunkentemple
+  key: sunkentemple_biome
+  value: desert
+  why: primary biome
+- project: loc_sunkentemple
+  key: sunkentemple_natural_port
+  value: 'no'
+  why: natural harbor access
+- project: loc_sunkentemple
+  key: sunkentemple_resource_1
+  value: timber
+  why: primary natural resource
+- project: loc_sunkentemple
+  key: sunkentemple_district_1
+  value: Merchant Quarter
+  why: city district
+- project: loc_sunkentemple
+  key: sunkentemple_district_2
+  value: Scholar's Green
+  why: city district
+- project: loc_sunkentemple
+  key: sunkentemple_district_3
+  value: Temple Heights
+  why: city district
+- project: loc_sunkentemple
+  key: sunkentemple_bldg_1
+  value: Town Hall
+  why: seat of power
+- project: loc_sunkentemple
+  key: sunkentemple_bldg_2
+  value: Shrine of the Ancients
+  why: place of worship
+- project: loc_sunkentemple
+  key: sunkentemple_bldg_3
+  value: The Gilded Tankard
+  why: popular inn
+- project: loc_sunkentemple
+  key: sunkentemple_bldg_4
+  value: Crystal Exchange
+  why: main market
+- project: loc_sunkentemple
+  key: sunkentemple_bldg_5
+  value: Watchtower
+  why: defensive structure
+- project: loc_sunkentemple
+  key: sunkentemple_faction_1
+  value: Silverwood Circle
+  why: active faction
+- project: loc_sunkentemple
+  key: sunkentemple_faction_2
+  value: Emerald Enclave
+  why: active faction
+- project: loc_sunkentemple
+  key: sunkentemple_faction_3
+  value: Artisan Guild
+  why: active faction
+- project: loc_sunkentemple
+  key: sunkentemple_export_1
+  value: grain
+  why: primary export
+- project: loc_sunkentemple
+  key: sunkentemple_export_2
+  value: cheese
+  why: secondary export
+- project: loc_sunkentemple
+  key: sunkentemple_export_3
+  value: magic scrolls
+  why: tertiary export
+- project: loc_sunkentemple
+  key: sunkentemple_import_1
+  value: glass
+  why: primary import
+- project: loc_sunkentemple
+  key: sunkentemple_import_2
+  value: potions
+  why: secondary import
+- project: loc_sunkentemple
+  key: sunkentemple_history_0
+  value: The Sunken Temple was founded by a wandering tribe in the Age of Blood.
+  why: historical lore
+- project: loc_sunkentemple
+  key: sunkentemple_history_1
+  value: The first gate of The Sunken Temple was laid in the 1st century.
+  why: historical lore
+- project: loc_sunkentemple
+  key: sunkentemple_history_2
+  value: The Sunken Temple withstood a siege by the Shadow Legion for 241 days.
+  why: historical lore
+- project: loc_sunkentemple
+  key: sunkentemple_history_3
+  value: A leviathan once attacked The Sunken Temple, destroying the east gate.
+  why: historical lore
+- project: loc_sunkentemple
+  key: sunkentemple_history_4
+  value: The Winter of Sorrow devastated The Sunken Temple.
+  why: historical lore
+- project: loc_sunkentemple
+  key: sunkentemple_history_5
+  value: The Sunken Temple was rebuilt under an elven architect.
+  why: historical lore
+- project: loc_sunkentemple
+  key: sunkentemple_history_6
+  value: A secret garden lies beneath The Sunken Temple.
+  why: historical lore
+- project: loc_sunkentemple
+  key: sunkentemple_history_7
+  value: The Sunken Temple is protected by a ward from the elements.
+  why: historical lore
+- project: loc_sunkentemple
+  key: sunkentemple_history_8
+  value: The most sacred part of The Sunken Temple is the Iron Foundry.
+  why: historical lore
+- project: loc_sunkentemple
+  key: sunkentemple_history_9
+  value: A treaty was signed in The Sunken Temple that shaped the fate of Aethelgard.
+  why: historical lore
+- project: loc_sunkentemple
+  key: sunkentemple_notable_1
+  value: a singing fountain
+  why: notable feature
+- project: loc_sunkentemple
+  key: sunkentemple_notable_2
+  value: a giant statue of a forgotten king
+  why: notable feature
+- project: loc_sunkentemple
+  key: sunkentemple_danger_1
+  value: giant spiders
+  why: local danger
+- project: loc_sunkentemple
+  key: sunkentemple_danger_2
+  value: poisonous gas vents
+  why: local danger
+- project: loc_sunkentemple
+  key: sunkentemple_race_1
+  value: Elf
+  why: common race
+- project: loc_sunkentemple
+  key: sunkentemple_race_2
+  value: Goblin
+  why: minority race
+- project: loc_sunkentemple
+  key: sunkentemple_religion_1
+  value: Shrine of Corellon
+  why: primary religion
+- project: loc_sunkentemple
+  key: sunkentemple_religion_2
+  value: Star Faith
+  why: secondary religion
+- project: loc_sunkentemple
+  key: sunkentemple_ruler
+  value: Queen Seraphina
+  why: current ruler
+- project: loc_sunkentemple
+  key: sunkentemple_guard
+  value: 393 guards
+  why: garrison size
+- project: loc_sunkentemple
+  key: sunkentemple_festival
+  value: Dragon's Wake
+  why: annual festival
+- project: loc_sunkentemple
+  key: sunkentemple_trade_route
+  value: the Old Dwarf Way
+  why: major trade route
+- project: loc_sunkentemple
+  key: sunkentemple_ally
+  value: the Free Cities
+  why: allied settlement
+- project: loc_sunkentemple
+  key: sunkentemple_enemy
+  value: the Underdark
+  why: hostile neighbor
+- project: loc_sunkentemple
+  key: sunkentemple_status
+  value: booming
+  why: current status
+- project: loc_sunkentemple
+  key: sunkentemple_extra_304
+  value: ancient aqueduct
+  why: notable detail
+- project: loc_sunkentemple
+  key: sunkentemple_extra_243
+  value: royal hunting grounds
+  why: notable detail
+- project: loc_sunkentemple
+  key: sunkentemple_extra_335
+  value: abandoned quarry
+  why: notable detail
+- project: loc_sunkentemple
+  key: sunkentemple_extra_410
+  value: royal hunting grounds
+  why: notable detail
+- project: loc_sunkentemple
+  key: sunkentemple_extra_639
+  value: royal hunting grounds
+  why: notable detail
+- project: loc_sunkentemple
+  key: sunkentemple_extra_158
+  value: secret smuggler tunnels
+  why: notable detail
+- project: loc_sunkentemple
+  key: sunkentemple_extra_325
+  value: enchanted grove
+  why: notable detail
+- project: loc_sunkentemple
+  key: sunkentemple_extra_535
+  value: royal hunting grounds
+  why: notable detail
+- project: loc_sunkentemple
+  key: sunkentemple_extra_868
+  value: ancient aqueduct
+  why: notable detail

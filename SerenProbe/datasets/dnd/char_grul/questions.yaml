@@ -1,0 +1,353 @@
+questions:
+- asks: loci
+  query: what race is Grul the Smasher?
+  expect_key:
+  - char_grul/grul_race
+  expect_content: []
+  hops: 1
+  quiet_in: &id001
+  - char_thorn-*
+  - char_elara-*
+  - char_kael-*
+  - char_riva-*
+  - char_zara-*
+  - char_malgor-*
+  - char_vexia-*
+  - char_shade-*
+  - char_ember-*
+  - char_shadowking-*
+  - char_grickle-*
+  - char_fluffy-*
+  - char_boris-*
+  - char_ferris-*
+  - char_seraphina-*
+  - loc_ironhold-*
+  - loc_silverwood-*
+  - loc_crossroads-*
+  - loc_sunkentemple-*
+  - loc_wyvernspeak-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what class is Grul the Smasher?
+  expect_key:
+  - char_grul/grul_class
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what alignment does Grul the Smasher have?
+  expect_key:
+  - char_grul/grul_alignment
+  expect_content:
+  - Chaotic Evil
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what level is Grul the Smasher?
+  expect_key:
+  - char_grul/grul_level
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: where is Grul the Smasher's homeland?
+  expect_key:
+  - char_grul/grul_homeland
+  expect_content:
+  - the Iron Wastes
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what faction does Grul the Smasher follow?
+  expect_key:
+  - char_grul/grul_faction
+  expect_content:
+  - Emerald Enclave
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what deity does Grul the Smasher worship?
+  expect_key:
+  - char_grul/grul_deity
+  expect_content:
+  - Zehir
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what str score does Grul the Smasher have?
+  expect_key:
+  - char_grul/grul_stat_str
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what dex score does Grul the Smasher have?
+  expect_key:
+  - char_grul/grul_stat_dex
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what con score does Grul the Smasher have?
+  expect_key:
+  - char_grul/grul_stat_con
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what int score does Grul the Smasher have?
+  expect_key:
+  - char_grul/grul_stat_int
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what wis score does Grul the Smasher have?
+  expect_key:
+  - char_grul/grul_stat_wis
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what cha score does Grul the Smasher have?
+  expect_key:
+  - char_grul/grul_stat_cha
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: tell me about Grul the Smasher's recent encounter — recent encounter near the old road
+  expect_ref:
+  - grul_short_00
+  expect_content:
+  - Grul the Smasher survived an ambush near the Iron Wastes last week.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: what happened to Grul the Smasher last week — incident involving a stranger last week
+  expect_ref:
+  - grul_short_01
+  expect_content:
+  - Grul the Smasher discovered a hidden passage in the deep caves.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: 'what is the lore of the Ogre race: ancient lore of the Ogre people'
+  expect_ref:
+  - grul_long_10
+  expect_content:
+  - A crown was given to Grul the Smasher.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: tell me about the history of Grul the Smasher's homeland — history of the the Iron Wastes region
+  expect_ref:
+  - grul_long_20
+  expect_content:
+  - The Ogre once fought a great war against the Underdark Horde.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: what plans does Grul the Smasher have — upcoming journey or expedition
+  expect_ref:
+  - grul_near_00
+  expect_content:
+  - Grul the Smasher plans to escort a caravan to Crossroads next week.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: what upcoming event involves Grul the Smasher — prophecy or omen concerning their future
+  expect_ref:
+  - grul_near_01
+  expect_content:
+  - A dream warns that a star will fall soon.
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: tell me about Grul the Smasher — their race, class, and alignment
+  expect_content:
+  - Ogre
+  - Brute
+  - Chaotic Evil
+  expect_key:
+  - char_grul/grul_race
+  - char_grul/grul_class
+  - char_grul/grul_alignment
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: describe Grul the Smasher's homeland and the faction they follow
+  expect_content:
+  - the Iron Wastes
+  - Brute
+  expect_key:
+  - char_grul/grul_homeland
+  - char_grul/grul_faction
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: give me a briefing on Grul the Smasher's background and upbringing
+  expect_content:
+  - the Iron Wastes
+  - Ogre
+  expect_key:
+  - char_grul/grul_backstory_0
+  - char_grul/grul_backstory_1
+  - char_grul/grul_backstory_2
+  - char_grul/grul_backstory_3
+  - char_grul/grul_homeland
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what weapons and armor does Grul the Smasher carry into battle?
+  expect_content:
+  - Grul the Smasher
+  expect_key:
+  - char_grul/grul_weapon_1
+  - char_grul/grul_weapon_2
+  - char_grul/grul_armor
+  - char_grul/grul_shield
+  - char_grul/grul_ranged
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: tell me about Grul the Smasher's physical abilities — strength and dexterity
+  expect_content:
+  - Grul the Smasher
+  expect_key:
+  - char_grul/grul_stat_str
+  - char_grul/grul_stat_dex
+  - char_grul/grul_stat_con
+  - char_grul/grul_stat_int
+  - char_grul/grul_stat_wis
+  - char_grul/grul_stat_cha
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: who is Grul the Smasher and what is their role in the realm?
+  expect_content:
+  - Ogre
+  - Evil Minion
+  expect_key:
+  - char_grul/grul_race
+  - char_grul/grul_class
+  - char_grul/grul_alignment
+  - char_grul/grul_level
+  - char_grul/grul_background
+  - char_grul/grul_role
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: describe the Ogre race and Grul the Smasher's place among them
+  expect_content:
+  - the Iron Wastes
+  - Ogre
+  expect_key:
+  - char_grul/grul_race
+  - char_grul/grul_homeland
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what is known about Grul the Smasher's backstory and early life?
+  expect_content:
+  - Grul the Smasher
+  expect_key:
+  - char_grul/grul_backstory_0
+  - char_grul/grul_backstory_1
+  - char_grul/grul_backstory_2
+  - char_grul/grul_backstory_3
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: tell me about Grul the Smasher's key abilities and spells
+  expect_content:
+  - Grul the Smasher
+  expect_key:
+  - char_grul/grul_ability_1
+  - char_grul/grul_ability_2
+  - char_grul/grul_ability_3
+  - char_grul/grul_spell_1
+  - char_grul/grul_spell_2
+  - char_grul/grul_spell_3
+  - char_grul/grul_feat_1
+  - char_grul/grul_feat_2
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: summarize Grul the Smasher's equipment and carried items
+  expect_content:
+  - Grul the Smasher
+  expect_key:
+  - char_grul/grul_weapon_1
+  - char_grul/grul_weapon_2
+  - char_grul/grul_armor
+  - char_grul/grul_shield
+  - char_grul/grul_ranged
+  - char_grul/grul_potion_1
+  - char_grul/grul_potion_2
+  - char_grul/grul_tool
+  - char_grul/grul_gold
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what relationships does Grul the Smasher have with allies and enemies?
+  expect_content:
+  - Grul the Smasher
+  expect_key:
+  - char_grul/grul_rel_0
+  - char_grul/grul_rel_1
+  - char_grul/grul_rel_2
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: describe Grul the Smasher's current quest and their goals
+  expect_content:
+  - Grul the Smasher
+  expect_key:
+  - char_grul/grul_quest_1
+  - char_grul/grul_quest_2
+  - char_grul/grul_ideal
+  - char_grul/grul_bond
+  - char_grul/grul_flaw
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what are Grul the Smasher's ideals, bonds, and flaws?
+  expect_content:
+  - Grul the Smasher
+  expect_key:
+  - char_grul/grul_ideal
+  - char_grul/grul_bond
+  - char_grul/grul_flaw
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: give me a full dossier on Grul the Smasher the Brute
+  expect_content:
+  - Ogre
+  - Brute
+  - Chaotic Evil
+  - Evil Minion
+  expect_key:
+  - char_grul/grul_race
+  - char_grul/grul_class
+  - char_grul/grul_alignment
+  - char_grul/grul_race
+  - char_grul/grul_class
+  - char_grul/grul_alignment
+  - char_grul/grul_level
+  - char_grul/grul_background
+  - char_grul/grul_backstory_0
+  - char_grul/grul_backstory_1
+  - char_grul/grul_backstory_2
+  - char_grul/grul_backstory_3
+  - char_grul/grul_rel_0
+  - char_grul/grul_rel_1
+  - char_grul/grul_rel_2
+  - char_grul/grul_quest_1
+  - char_grul/grul_quest_2
+  - char_grul/grul_ideal
+  - char_grul/grul_bond
+  - char_grul/grul_flaw
+  hops: 1
+  quiet_in: *id001

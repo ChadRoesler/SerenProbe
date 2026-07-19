@@ -1,0 +1,264 @@
+# SerenProbe Question Provenance - audit trail
+# Generated for character
+
+provenance:
+- query: What is the alignment of Nazgundvorn?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: figure:784 --facts.alignment--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: What is Nazgundvorn's profession?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: figure:784 --facts.profession--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: What weapon does Nazgundvorn carry?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: figure:784 --facts.weapon--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: What is Nazgundvorn's favorite food?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: figure:784 --facts.favorite_food--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: What is Nazgundvorn's favorite drink?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: figure:784 --facts.favorite_drink--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: What is Nazgundvorn's favorite color?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: figure:784 --facts.favorite_color--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: What race is Nazgundvorn?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: figure:784 --facts.race--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: What title does Nazgundvorn hold?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: figure:784 --facts.title--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: How old is Nazgundvorn?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: figure:784 --facts.age--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: What armor does Nazgundvorn wear?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: figure:784 --facts.armor--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: What does Nazgundvorn remember about great hall that echoed with song?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'nazgundvorn_784 --memory[long]--> nazgundvorn_784_long_69 (anchor: great
+      hall that echoed with song)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What does Nazgundvorn remember about halls that glowed with forgotten light?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'nazgundvorn_784 --memory[long]--> nazgundvorn_784_long_71 (anchor: halls
+      that glowed with forgotten light)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What does Nazgundvorn remember about plague reached our village?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'nazgundvorn_784 --memory[long]--> nazgundvorn_784_long_75 (anchor: plague
+      reached our village)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What has Nazgundvorn been thinking about feels charged with meaning?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'nazgundvorn_784 --memory[short]--> nazgundvorn_784_short_14 (anchor: feels
+      charged with meaning)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What does Nazgundvorn intend to do about return a favor?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'nazgundvorn_784 --memory[near]--> nazgundvorn_784_near_0 (anchor: need
+      to return a favor)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What has Nazgundvorn been thinking about find myself thinking about the passage?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'nazgundvorn_784 --memory[short]--> nazgundvorn_784_short_9 (anchor: find
+      myself thinking about the passage)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What does Nazgundvorn intend to do about visit the old shrine?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'nazgundvorn_784 --memory[near]--> nazgundvorn_784_near_5 (anchor: intend
+      to visit the old shrine)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What does Nazgundvorn remember about runes of the deep earth?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'nazgundvorn_784 --memory[long]--> nazgundvorn_784_long_4 (anchor: runes
+      of the deep earth)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What does Nazgundvorn intend to do about befriend a neighboring tribe?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'nazgundvorn_784 --memory[near]--> nazgundvorn_784_near_3 (anchor: want
+      to befriend a neighboring tribe)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What does Nazgundvorn remember about committed a grave mistake?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'nazgundvorn_784 --memory[long]--> nazgundvorn_784_long_31 (anchor: committed
+      a grave mistake)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What is known about Murkfang Warren?
+  hops: 1
+  asks: corpus
+  _gen:
+    edge: phantom entity 'Murkfang Warren' -- expect_empty (bait)
+    hops_computed: 1
+    archetype: quiet
+    shortcut_test: passed
+- query: What is the race of Nazgundvorn, and what does Nazgundvorn recall about prepare
+    for the coming journey?
+  hops: 2
+  asks: corpus
+  _gen:
+    edge: loci:stats/race + memory:nazgundvorn_784_near_1 -- answerable only by the
+      fan
+    hops_computed: 2
+    archetype: cross_organ
+    shortcut_test: passed
+- query: What is the favorite color of Nazgundvorn, and what does Nazgundvorn recall
+    about need to return a favor?
+  hops: 2
+  asks: corpus
+  _gen:
+    edge: loci:identity/favorite_color + memory:nazgundvorn_784_near_0 -- answerable
+      only by the fan
+    hops_computed: 2
+    archetype: cross_organ
+    shortcut_test: passed
+- query: What is the favorite food of Nazgundvorn, and what does Nazgundvorn recall
+    about forges burn all night mesmerized?
+  hops: 2
+  asks: corpus
+  _gen:
+    edge: loci:identity/favorite_food + memory:nazgundvorn_784_long_5 -- answerable
+      only by the fan
+    hops_computed: 2
+    archetype: cross_organ
+    shortcut_test: passed
+- query: What is known about Glimmerstone Cavern?
+  hops: 1
+  asks: corpus
+  _gen:
+    edge: phantom entity 'Glimmerstone Cavern' -- expect_empty (bait)
+    hops_computed: 1
+    archetype: quiet
+    shortcut_test: passed
+- query: What is the civ and home site of Nazgundvorn?
+  hops: 1
+  asks: corpus
+  _gen:
+    edge: loci project 'origin' -- 2 facts, docket coverage
+    hops_computed: 1
+    archetype: briefing
+    shortcut_test: passed
+- query: What is known about Bleakmire Fen?
+  hops: 1
+  asks: corpus
+  _gen:
+    edge: phantom entity 'Bleakmire Fen' -- expect_empty (bait)
+    hops_computed: 1
+    archetype: quiet
+    shortcut_test: passed
+- query: What is the civ of Nazgundvorn, and what does Nazgundvorn recall about vein
+    of adamantine and was hailed?
+  hops: 2
+  asks: corpus
+  _gen:
+    edge: loci:origin/civ + memory:nazgundvorn_784_long_56 -- answerable only by the
+      fan
+    hops_computed: 2
+    archetype: cross_organ
+    shortcut_test: passed
+- query: What is the home site of Nazgundvorn, and what does Nazgundvorn recall about
+    committed a grave mistake?
+  hops: 2
+  asks: corpus
+  _gen:
+    edge: loci:origin/home_site + memory:nazgundvorn_784_long_31 -- answerable only
+      by the fan
+    hops_computed: 2
+    archetype: cross_organ
+    shortcut_test: passed
+- query: What is the weapon and armor of Nazgundvorn?
+  hops: 1
+  asks: corpus
+  _gen:
+    edge: loci project 'combat' -- 2 facts, docket coverage
+    hops_computed: 1
+    archetype: briefing
+    shortcut_test: passed

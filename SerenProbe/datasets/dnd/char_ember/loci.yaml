@@ -1,0 +1,280 @@
+- project: char_ember
+  key: ember_name
+  value: Ember the Burner
+  why: character's full name
+- project: char_ember
+  key: ember_race
+  value: Fire Gnome
+  why: fantasy race
+- project: char_ember
+  key: ember_class
+  value: Pyromancer
+  why: character class
+- project: char_ember
+  key: ember_alignment
+  value: Chaotic Evil
+  why: moral alignment
+- project: char_ember
+  key: ember_role
+  value: Evil Minion
+  why: narrative role
+- project: char_ember
+  key: ember_level
+  value: '7'
+  why: character level
+- project: char_ember
+  key: ember_background
+  value: urchin
+  why: life background
+- project: char_ember
+  key: ember_age
+  value: '47'
+  why: age in years
+- project: char_ember
+  key: ember_height
+  value: 70 inches
+  why: height
+- project: char_ember
+  key: ember_weight
+  value: 235 lbs
+  why: weight
+- project: char_ember
+  key: ember_stat_str
+  value: '17'
+  why: STR ability score
+- project: char_ember
+  key: ember_stat_str_mod
+  value: '+3'
+  why: STR modifier
+- project: char_ember
+  key: ember_stat_dex
+  value: '15'
+  why: DEX ability score
+- project: char_ember
+  key: ember_stat_dex_mod
+  value: '+2'
+  why: DEX modifier
+- project: char_ember
+  key: ember_stat_con
+  value: '14'
+  why: CON ability score
+- project: char_ember
+  key: ember_stat_con_mod
+  value: '+2'
+  why: CON modifier
+- project: char_ember
+  key: ember_stat_int
+  value: '13'
+  why: INT ability score
+- project: char_ember
+  key: ember_stat_int_mod
+  value: '+1'
+  why: INT modifier
+- project: char_ember
+  key: ember_stat_wis
+  value: '9'
+  why: WIS ability score
+- project: char_ember
+  key: ember_stat_wis_mod
+  value: '-1'
+  why: WIS modifier
+- project: char_ember
+  key: ember_stat_cha
+  value: '7'
+  why: CHA ability score
+- project: char_ember
+  key: ember_stat_cha_mod
+  value: '-2'
+  why: CHA modifier
+- project: char_ember
+  key: ember_skill_athletics
+  value: '+10'
+  why: athletics skill bonus
+- project: char_ember
+  key: ember_skill_acrobatics
+  value: '+12'
+  why: acrobatics skill bonus
+- project: char_ember
+  key: ember_skill_stealth
+  value: '+4'
+  why: stealth skill bonus
+- project: char_ember
+  key: ember_skill_perception
+  value: '+9'
+  why: perception skill bonus
+- project: char_ember
+  key: ember_skill_investigation
+  value: '+12'
+  why: investigation skill bonus
+- project: char_ember
+  key: ember_skill_survival
+  value: '+9'
+  why: survival skill bonus
+- project: char_ember
+  key: ember_skill_intimidation
+  value: '+7'
+  why: intimidation skill bonus
+- project: char_ember
+  key: ember_skill_persuasion
+  value: '+6'
+  why: persuasion skill bonus
+- project: char_ember
+  key: ember_skill_deception
+  value: '+5'
+  why: deception skill bonus
+- project: char_ember
+  key: ember_weapon_1
+  value: staff
+  why: primary weapon
+- project: char_ember
+  key: ember_weapon_2
+  value: whip
+  why: secondary weapon
+- project: char_ember
+  key: ember_armor
+  value: studded leather
+  why: worn armor
+- project: char_ember
+  key: ember_shield
+  value: buckler
+  why: carried shield
+- project: char_ember
+  key: ember_ranged
+  value: longbow
+  why: ranged weapon
+- project: char_ember
+  key: ember_ammo
+  value: 36 arrows/bolts
+  why: ammunition supply
+- project: char_ember
+  key: ember_potion_1
+  value: potion of healing
+  why: healing potion
+- project: char_ember
+  key: ember_potion_2
+  value: potion of invisibility
+  why: special potion
+- project: char_ember
+  key: ember_tool
+  value: smith's tools
+  why: tool kit
+- project: char_ember
+  key: ember_gold
+  value: 56 gp
+  why: carried gold
+- project: char_ember
+  key: ember_ability_1
+  value: second wind
+  why: class ability
+- project: char_ember
+  key: ember_ability_2
+  value: divine smite
+  why: class ability
+- project: char_ember
+  key: ember_ability_3
+  value: uncanny dodge
+  why: combat ability
+- project: char_ember
+  key: ember_spell_1
+  value: magic missile
+  why: known spell
+- project: char_ember
+  key: ember_spell_2
+  value: haste
+  why: known spell
+- project: char_ember
+  key: ember_spell_3
+  value: death ward
+  why: known spell
+- project: char_ember
+  key: ember_feat_1
+  value: mobile
+  why: character feat
+- project: char_ember
+  key: ember_feat_2
+  value: dual wielder
+  why: character feat
+- project: char_ember
+  key: ember_faction
+  value: Iron Guard
+  why: faction affiliation
+- project: char_ember
+  key: ember_deity
+  value: Asmodeus
+  why: worshipped deity
+- project: char_ember
+  key: ember_location
+  value: Wyvern's Peak
+  why: current location
+- project: char_ember
+  key: ember_homeland
+  value: Wyvern's Peak
+  why: ancestral homeland
+- project: char_ember
+  key: ember_rel_0
+  value: The Shadow King (rival)
+  why: rival relationship
+- project: char_ember
+  key: ember_rel_1
+  value: Vexia the Venomous (contact)
+  why: contact relationship
+- project: char_ember
+  key: ember_rel_2
+  value: Riva Swiftfoot (enemy)
+  why: enemy relationship
+- project: char_ember
+  key: ember_backstory_0
+  value: Ember the Burner was born in Wyvern's Peak to a family of smiths.
+  why: personal history
+- project: char_ember
+  key: ember_backstory_1
+  value: As a youth, Ember the Burner sailed across the sea.
+  why: personal history
+- project: char_ember
+  key: ember_backstory_2
+  value: Ember the Burner discovered a hidden artifact.
+  why: personal history
+- project: char_ember
+  key: ember_backstory_3
+  value: Now Ember the Burner seeks redemption.
+  why: personal history
+- project: char_ember
+  key: ember_quest_1
+  value: Find the Crystal Cave
+  why: current quest
+- project: char_ember
+  key: ember_quest_2
+  value: Defeat the Void Walker
+  why: primary goal
+- project: char_ember
+  key: ember_ideal
+  value: honor
+  why: core ideal
+- project: char_ember
+  key: ember_flaw
+  value: greed
+  why: character flaw
+- project: char_ember
+  key: ember_bond
+  value: oath
+  why: strong bond
+- project: char_ember
+  key: ember_note_525
+  value: carries a lucky charm
+  why: notable detail
+- project: char_ember
+  key: ember_note_142
+  value: speaks draconic
+  why: notable detail
+- project: char_ember
+  key: ember_note_779
+  value: owes a life debt
+  why: notable detail
+- project: char_ember
+  key: ember_note_218
+  value: scarred from battle
+  why: notable detail
+- project: char_ember
+  key: ember_note_526
+  value: speaks draconic
+  why: notable detail

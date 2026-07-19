@@ -1,0 +1,664 @@
+- project: halcyon
+  key: crew_vega_role
+  value: Station Chief
+  why: duty role
+- project: halcyon
+  key: crew_vega_dept
+  value: Command
+  why: department
+- project: halcyon
+  key: crew_vega_deck
+  value: Deck 1
+  why: assigned deck
+- project: halcyon
+  key: crew_vega_clearance
+  value: Omega
+  why: security clearance
+- project: halcyon
+  key: crew_vega_origin
+  value: Ceres
+  why: homeworld
+- project: halcyon
+  key: crew_vega_species
+  value: human
+  why: species
+- project: halcyon
+  key: crew_orin_role
+  value: Chief Engineer
+  why: duty role
+- project: halcyon
+  key: crew_orin_dept
+  value: Engineering
+  why: department
+- project: halcyon
+  key: crew_orin_deck
+  value: Deck 6
+  why: assigned deck
+- project: halcyon
+  key: crew_orin_clearance
+  value: Delta
+  why: security clearance
+- project: halcyon
+  key: crew_orin_origin
+  value: Titan
+  why: homeworld
+- project: halcyon
+  key: crew_orin_species
+  value: human
+  why: species
+- project: halcyon
+  key: crew_sable_role
+  value: Medical Lead
+  why: duty role
+- project: halcyon
+  key: crew_sable_dept
+  value: Medbay
+  why: department
+- project: halcyon
+  key: crew_sable_deck
+  value: Deck 3
+  why: assigned deck
+- project: halcyon
+  key: crew_sable_clearance
+  value: Gamma
+  why: security clearance
+- project: halcyon
+  key: crew_sable_origin
+  value: Luna
+  why: homeworld
+- project: halcyon
+  key: crew_sable_species
+  value: human
+  why: species
+- project: halcyon
+  key: crew_quell_role
+  value: Nav Officer
+  why: duty role
+- project: halcyon
+  key: crew_quell_dept
+  value: Command
+  why: department
+- project: halcyon
+  key: crew_quell_deck
+  value: Deck 1
+  why: assigned deck
+- project: halcyon
+  key: crew_quell_clearance
+  value: Delta
+  why: security clearance
+- project: halcyon
+  key: crew_quell_origin
+  value: Europa
+  why: homeworld
+- project: halcyon
+  key: crew_quell_species
+  value: synth
+  why: species
+- project: halcyon
+  key: crew_brix_role
+  value: Cargo Master
+  why: duty role
+- project: halcyon
+  key: crew_brix_dept
+  value: Logistics
+  why: department
+- project: halcyon
+  key: crew_brix_deck
+  value: Deck 8
+  why: assigned deck
+- project: halcyon
+  key: crew_brix_clearance
+  value: Beta
+  why: security clearance
+- project: halcyon
+  key: crew_brix_origin
+  value: Mars
+  why: homeworld
+- project: halcyon
+  key: crew_brix_species
+  value: human
+  why: species
+- project: halcyon
+  key: sys_reactor_status
+  value: nominal
+  why: status of the reactor system
+- project: halcyon
+  key: sys_reactor_deck
+  value: Deck 9
+  why: deck of the reactor system
+- project: halcyon
+  key: sys_reactor_draw
+  value: 40 MW
+  why: draw of the reactor system
+- project: halcyon
+  key: sys_reactor_owner
+  value: orin
+  why: owner of the reactor system
+- project: halcyon
+  key: sys_lifesupport_status
+  value: nominal
+  why: status of the lifesupport system
+- project: halcyon
+  key: sys_lifesupport_deck
+  value: Deck 4
+  why: deck of the lifesupport system
+- project: halcyon
+  key: sys_lifesupport_draw
+  value: 6 MW
+  why: draw of the lifesupport system
+- project: halcyon
+  key: sys_lifesupport_owner
+  value: orin
+  why: owner of the lifesupport system
+- project: halcyon
+  key: sys_nav_status
+  value: degraded
+  why: status of the nav system
+- project: halcyon
+  key: sys_nav_deck
+  value: Deck 1
+  why: deck of the nav system
+- project: halcyon
+  key: sys_nav_draw
+  value: 2 MW
+  why: draw of the nav system
+- project: halcyon
+  key: sys_nav_owner
+  value: quell
+  why: owner of the nav system
+- project: halcyon
+  key: sys_comms_status
+  value: nominal
+  why: status of the comms system
+- project: halcyon
+  key: sys_comms_deck
+  value: Deck 2
+  why: deck of the comms system
+- project: halcyon
+  key: sys_comms_draw
+  value: 1 MW
+  why: draw of the comms system
+- project: halcyon
+  key: sys_comms_owner
+  value: vega
+  why: owner of the comms system
+- project: halcyon
+  key: crew_r000_deck
+  value: Deck 8
+  why: Lio the specialist berths here
+- project: halcyon
+  key: crew_r001_deck
+  value: Deck 9
+  why: Bex the specialist berths here
+- project: halcyon
+  key: crew_r002_deck
+  value: Deck 1
+  why: Ovo the technician berths here
+- project: halcyon
+  key: crew_r003_deck
+  value: Deck 7
+  why: Vok the steward berths here
+- project: halcyon
+  key: crew_r004_deck
+  value: Deck 4
+  why: Hux the specialist berths here
+- project: halcyon
+  key: crew_r005_deck
+  value: Deck 4
+  why: Vok the rating berths here
+- project: halcyon
+  key: crew_r006_deck
+  value: Deck 4
+  why: Ash the gunner berths here
+- project: halcyon
+  key: crew_r007_deck
+  value: Deck 2
+  why: Syl the medic berths here
+- project: halcyon
+  key: crew_r008_deck
+  value: Deck 10
+  why: Dov the medic berths here
+- project: halcyon
+  key: crew_r009_deck
+  value: Deck 9
+  why: Tae the medic berths here
+- project: halcyon
+  key: crew_r010_deck
+  value: Deck 5
+  why: Pyr the ensign berths here
+- project: halcyon
+  key: crew_r011_deck
+  value: Deck 5
+  why: Enn the technician berths here
+- project: halcyon
+  key: crew_r012_deck
+  value: Deck 4
+  why: Enn the ensign berths here
+- project: halcyon
+  key: crew_r013_deck
+  value: Deck 1
+  why: Gale the specialist berths here
+- project: halcyon
+  key: crew_r014_deck
+  value: Deck 3
+  why: Mko the ensign berths here
+- project: halcyon
+  key: crew_r015_deck
+  value: Deck 5
+  why: Vok the technician berths here
+- project: halcyon
+  key: crew_r016_deck
+  value: Deck 1
+  why: Lio the medic berths here
+- project: halcyon
+  key: crew_r017_deck
+  value: Deck 8
+  why: Syl the medic berths here
+- project: halcyon
+  key: crew_r018_deck
+  value: Deck 3
+  why: Syl the medic berths here
+- project: halcyon
+  key: crew_r019_deck
+  value: Deck 6
+  why: Hux the medic berths here
+- project: halcyon
+  key: crew_r020_deck
+  value: Deck 6
+  why: Ovo the steward berths here
+- project: halcyon
+  key: crew_r021_deck
+  value: Deck 9
+  why: Lio the specialist berths here
+- project: halcyon
+  key: crew_r022_deck
+  value: Deck 1
+  why: Vok the medic berths here
+- project: halcyon
+  key: crew_r023_deck
+  value: Deck 10
+  why: Bex the gunner berths here
+- project: halcyon
+  key: crew_r024_deck
+  value: Deck 7
+  why: Pyr the ensign berths here
+- project: halcyon
+  key: crew_r025_deck
+  value: Deck 6
+  why: Rho the rating berths here
+- project: halcyon
+  key: crew_r026_deck
+  value: Deck 10
+  why: Jax the technician berths here
+- project: halcyon
+  key: crew_r027_deck
+  value: Deck 6
+  why: Vok the ensign berths here
+- project: halcyon
+  key: crew_r028_deck
+  value: Deck 2
+  why: Mko the steward berths here
+- project: halcyon
+  key: crew_r029_deck
+  value: Deck 7
+  why: Hux the rating berths here
+- project: halcyon
+  key: crew_r030_deck
+  value: Deck 3
+  why: Ovo the technician berths here
+- project: halcyon
+  key: crew_r031_deck
+  value: Deck 8
+  why: Fen the ensign berths here
+- project: halcyon
+  key: crew_r032_deck
+  value: Deck 4
+  why: Hux the medic berths here
+- project: halcyon
+  key: crew_r033_deck
+  value: Deck 1
+  why: Pyr the specialist berths here
+- project: halcyon
+  key: crew_r034_deck
+  value: Deck 2
+  why: Enn the technician berths here
+- project: halcyon
+  key: crew_r035_deck
+  value: Deck 1
+  why: Lio the medic berths here
+- project: halcyon
+  key: crew_r036_deck
+  value: Deck 7
+  why: Enn the gunner berths here
+- project: halcyon
+  key: crew_r037_deck
+  value: Deck 4
+  why: Lio the ensign berths here
+- project: halcyon
+  key: crew_r038_deck
+  value: Deck 5
+  why: Syl the specialist berths here
+- project: halcyon
+  key: crew_r039_deck
+  value: Deck 7
+  why: Nyx the technician berths here
+- project: halcyon
+  key: crew_r040_deck
+  value: Deck 6
+  why: Jax the ensign berths here
+- project: halcyon
+  key: crew_r041_deck
+  value: Deck 2
+  why: Syl the technician berths here
+- project: halcyon
+  key: crew_r042_deck
+  value: Deck 6
+  why: Jax the rating berths here
+- project: halcyon
+  key: crew_r043_deck
+  value: Deck 9
+  why: Dov the technician berths here
+- project: halcyon
+  key: crew_r044_deck
+  value: Deck 3
+  why: Rho the technician berths here
+- project: halcyon
+  key: crew_r045_deck
+  value: Deck 4
+  why: Cyr the medic berths here
+- project: halcyon
+  key: crew_r046_deck
+  value: Deck 3
+  why: Fen the medic berths here
+- project: halcyon
+  key: crew_r047_deck
+  value: Deck 9
+  why: Cyr the medic berths here
+- project: halcyon
+  key: crew_r048_deck
+  value: Deck 9
+  why: Kwe the medic berths here
+- project: halcyon
+  key: crew_r049_deck
+  value: Deck 8
+  why: Pyr the steward berths here
+- project: halcyon
+  key: crew_r050_deck
+  value: Deck 9
+  why: Nyx the steward berths here
+- project: halcyon
+  key: crew_r051_deck
+  value: Deck 3
+  why: Gale the steward berths here
+- project: halcyon
+  key: crew_r052_deck
+  value: Deck 5
+  why: Fen the medic berths here
+- project: halcyon
+  key: crew_r053_deck
+  value: Deck 9
+  why: Hux the steward berths here
+- project: halcyon
+  key: crew_r054_deck
+  value: Deck 2
+  why: Hux the gunner berths here
+- project: halcyon
+  key: crew_r055_deck
+  value: Deck 3
+  why: Lio the medic berths here
+- project: halcyon
+  key: crew_r056_deck
+  value: Deck 8
+  why: Mko the medic berths here
+- project: halcyon
+  key: crew_r057_deck
+  value: Deck 6
+  why: Syl the specialist berths here
+- project: halcyon
+  key: crew_r058_deck
+  value: Deck 2
+  why: Pyr the specialist berths here
+- project: halcyon
+  key: crew_r059_deck
+  value: Deck 6
+  why: Syl the rating berths here
+- project: halcyon
+  key: crew_r060_deck
+  value: Deck 4
+  why: Pyr the rating berths here
+- project: halcyon
+  key: crew_r061_deck
+  value: Deck 1
+  why: Lio the technician berths here
+- project: halcyon
+  key: crew_r062_deck
+  value: Deck 3
+  why: Bex the steward berths here
+- project: halcyon
+  key: crew_r063_deck
+  value: Deck 5
+  why: Dov the medic berths here
+- project: halcyon
+  key: crew_r064_deck
+  value: Deck 3
+  why: Pyr the medic berths here
+- project: halcyon
+  key: crew_r065_deck
+  value: Deck 6
+  why: Fen the technician berths here
+- project: halcyon
+  key: crew_r066_deck
+  value: Deck 3
+  why: Vok the medic berths here
+- project: halcyon
+  key: crew_r067_deck
+  value: Deck 5
+  why: Enn the ensign berths here
+- project: halcyon
+  key: crew_r068_deck
+  value: Deck 6
+  why: Gale the specialist berths here
+- project: halcyon
+  key: crew_r069_deck
+  value: Deck 6
+  why: Enn the steward berths here
+- project: halcyon
+  key: crew_r070_deck
+  value: Deck 6
+  why: Gale the medic berths here
+- project: halcyon
+  key: crew_r071_deck
+  value: Deck 1
+  why: Rho the steward berths here
+- project: halcyon
+  key: crew_r072_deck
+  value: Deck 7
+  why: Ovo the gunner berths here
+- project: halcyon
+  key: crew_r073_deck
+  value: Deck 8
+  why: Mko the specialist berths here
+- project: halcyon
+  key: crew_r074_deck
+  value: Deck 5
+  why: Dov the medic berths here
+- project: halcyon
+  key: crew_r075_deck
+  value: Deck 9
+  why: Enn the specialist berths here
+- project: halcyon
+  key: crew_r076_deck
+  value: Deck 8
+  why: Kwe the rating berths here
+- project: halcyon
+  key: crew_r077_deck
+  value: Deck 2
+  why: Pyr the ensign berths here
+- project: halcyon
+  key: crew_r078_deck
+  value: Deck 7
+  why: Hux the steward berths here
+- project: halcyon
+  key: crew_r079_deck
+  value: Deck 6
+  why: Cyr the rating berths here
+- project: halcyon
+  key: crew_r080_deck
+  value: Deck 9
+  why: Vok the ensign berths here
+- project: halcyon
+  key: crew_r081_deck
+  value: Deck 1
+  why: Cyr the gunner berths here
+- project: halcyon
+  key: crew_r082_deck
+  value: Deck 5
+  why: Pyr the gunner berths here
+- project: halcyon
+  key: crew_r083_deck
+  value: Deck 5
+  why: Lio the rating berths here
+- project: halcyon
+  key: crew_r084_deck
+  value: Deck 3
+  why: Ovo the technician berths here
+- project: halcyon
+  key: crew_r085_deck
+  value: Deck 7
+  why: Gale the specialist berths here
+- project: halcyon
+  key: crew_r086_deck
+  value: Deck 8
+  why: Jax the technician berths here
+- project: halcyon
+  key: crew_r087_deck
+  value: Deck 10
+  why: Enn the technician berths here
+- project: halcyon
+  key: crew_r088_deck
+  value: Deck 10
+  why: Mko the technician berths here
+- project: halcyon
+  key: crew_r089_deck
+  value: Deck 2
+  why: Hux the gunner berths here
+- project: halcyon
+  key: crew_r090_deck
+  value: Deck 8
+  why: Lio the gunner berths here
+- project: halcyon
+  key: crew_r091_deck
+  value: Deck 8
+  why: Pyr the steward berths here
+- project: halcyon
+  key: crew_r092_deck
+  value: Deck 9
+  why: Mko the specialist berths here
+- project: halcyon
+  key: crew_r093_deck
+  value: Deck 5
+  why: Kwe the medic berths here
+- project: halcyon
+  key: crew_r094_deck
+  value: Deck 6
+  why: Enn the technician berths here
+- project: halcyon
+  key: crew_r095_deck
+  value: Deck 7
+  why: Cyr the ensign berths here
+- project: halcyon
+  key: crew_r096_deck
+  value: Deck 10
+  why: Rho the gunner berths here
+- project: halcyon
+  key: crew_r097_deck
+  value: Deck 3
+  why: Iri the technician berths here
+- project: halcyon
+  key: crew_r098_deck
+  value: Deck 10
+  why: Ovo the medic berths here
+- project: halcyon
+  key: crew_r099_deck
+  value: Deck 8
+  why: Gale the steward berths here
+- project: halcyon
+  key: crew_r100_deck
+  value: Deck 3
+  why: Syl the rating berths here
+- project: halcyon
+  key: crew_r101_deck
+  value: Deck 9
+  why: Hux the ensign berths here
+- project: halcyon
+  key: crew_r102_deck
+  value: Deck 4
+  why: Enn the steward berths here
+- project: halcyon
+  key: crew_r103_deck
+  value: Deck 6
+  why: Iri the technician berths here
+- project: halcyon
+  key: crew_r104_deck
+  value: Deck 5
+  why: Vok the rating berths here
+- project: halcyon
+  key: crew_r105_deck
+  value: Deck 9
+  why: Ash the gunner berths here
+- project: halcyon
+  key: crew_r106_deck
+  value: Deck 7
+  why: Lio the steward berths here
+- project: halcyon
+  key: crew_r107_deck
+  value: Deck 3
+  why: Hux the medic berths here
+- project: halcyon
+  key: crew_r108_deck
+  value: Deck 3
+  why: Vok the steward berths here
+- project: halcyon
+  key: crew_r109_deck
+  value: Deck 6
+  why: Nyx the rating berths here
+- project: halcyon
+  key: crew_r110_deck
+  value: Deck 3
+  why: Bex the ensign berths here
+- project: halcyon
+  key: crew_r111_deck
+  value: Deck 7
+  why: Iri the gunner berths here
+- project: halcyon
+  key: crew_r112_deck
+  value: Deck 8
+  why: Ovo the gunner berths here
+- project: halcyon
+  key: crew_r113_deck
+  value: Deck 3
+  why: Ovo the technician berths here
+- project: halcyon
+  key: crew_r114_deck
+  value: Deck 4
+  why: Cyr the specialist berths here
+- project: halcyon
+  key: crew_r115_deck
+  value: Deck 2
+  why: Ash the medic berths here
+- project: halcyon
+  key: crew_r116_deck
+  value: Deck 4
+  why: Bex the ensign berths here
+- project: halcyon
+  key: crew_r117_deck
+  value: Deck 8
+  why: Iri the specialist berths here
+- project: halcyon
+  key: crew_r118_deck
+  value: Deck 10
+  why: Syl the gunner berths here
+- project: halcyon
+  key: crew_r119_deck
+  value: Deck 5
+  why: Jax the technician berths here

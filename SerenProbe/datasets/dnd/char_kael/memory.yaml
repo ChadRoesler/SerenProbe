@@ -1,0 +1,272 @@
+- tier: short
+  ref: kael_short_00
+  topic: recent
+  content: Kael Stormwind survived an ambush near Crossroads last week.
+- tier: short
+  ref: kael_short_01
+  topic: recent
+  content: Kael Stormwind discovered a hidden passage in the old ruins.
+- tier: short
+  ref: kael_short_02
+  topic: recent
+  content: A traveling merchant told Kael Stormwind of a rising threat in the east.
+- tier: short
+  ref: kael_short_03
+  topic: recent
+  content: Kael Stormwind trained under an ancient sage for three days.
+- tier: short
+  ref: kael_short_04
+  topic: recent
+  content: Kael Stormwind helped defend Crossroads from a goblin raid.
+- tier: short
+  ref: kael_short_05
+  topic: recent
+  content: A strange omen — a blood-red sunrise — was seen over Crossroads.
+- tier: short
+  ref: kael_short_06
+  topic: recent
+  content: Kael Stormwind received a coded message from an old contact.
+- tier: short
+  ref: kael_short_07
+  topic: recent
+  content: During a storm, Kael Stormwind lost a valuable weapon in the river.
+- tier: short
+  ref: kael_short_08
+  topic: recent
+  content: Kael Stormwind overheard a plot to poison the well in Crossroads.
+- tier: short
+  ref: kael_short_09
+  topic: recent
+  content: A dwarf sage visited Kael Stormwind seeking aid against the Shadow King.
+- tier: short
+  ref: kael_short_10
+  topic: recent
+  content: Kael Stormwind found a wounded wolf and nursed it back to health.
+- tier: short
+  ref: kael_short_11
+  topic: recent
+  content: The local temple offered a bounty for a dangerous necromancer.
+- tier: short
+  ref: kael_short_12
+  topic: recent
+  content: Kael Stormwind participated in a hearing at Crossroads.
+- tier: short
+  ref: kael_short_13
+  topic: recent
+  content: A rival challenged Kael Stormwind to a debate and lost.
+- tier: short
+  ref: kael_short_14
+  topic: recent
+  content: Kael Stormwind deciphered an old prophecy mentioning the Crystal Crown.
+- tier: short
+  ref: kael_short_15
+  topic: recent
+  content: A mysterious fog rolled into Crossroads for three nights straight.
+- tier: short
+  ref: kael_short_16
+  topic: recent
+  content: Kael Stormwind was marked by a wandering druid.
+- tier: short
+  ref: kael_short_17
+  topic: recent
+  content: Kael Stormwind unearthed a altar from an forgotten era.
+- tier: short
+  ref: kael_short_18
+  topic: recent
+  content: A flood damaged part of Crossroads.
+- tier: short
+  ref: kael_short_19
+  topic: recent
+  content: Kael Stormwind swore a temporary truce with a former enemy.
+- tier: long
+  ref: kael_long_00
+  topic: lore
+  content: Kael Stormwind was born under the sign of the Wolf.
+- tier: long
+  ref: kael_long_01
+  topic: lore
+  content: The Human people believe Kael Stormwind is a prophesied child.
+- tier: long
+  ref: kael_long_02
+  topic: lore
+  content: Kael Stormwind's father taught them the ways of the Paladin.
+- tier: long
+  ref: kael_long_03
+  topic: lore
+  content: In Kael Stormwind's youth, they climbed a frozen peak.
+- tier: long
+  ref: kael_long_04
+  topic: lore
+  content: Kael Stormwind carries a tattoo shaped like a skull.
+- tier: long
+  ref: kael_long_05
+  topic: lore
+  content: A god once offered Kael Stormwind a bargain — power in exchange for years of life.
+- tier: long
+  ref: kael_long_06
+  topic: lore
+  content: Kael Stormwind once betrayed a comrade.
+- tier: long
+  ref: kael_long_07
+  topic: lore
+  content: The Human see Kael Stormwind as a warning between the old world and the new.
+- tier: long
+  ref: kael_long_08
+  topic: lore
+  content: Kael Stormwind learned the bow from a ancient text.
+- tier: long
+  ref: kael_long_09
+  topic: lore
+  content: In Kael Stormwind's past, they climbed the world's edge.
+- tier: long
+  ref: kael_long_10
+  topic: lore
+  content: A staff was hidden by Kael Stormwind.
+- tier: long
+  ref: kael_long_11
+  topic: lore
+  content: Kael Stormwind once defeated a champion.
+- tier: long
+  ref: kael_long_12
+  topic: lore
+  content: The Human ancestors spoke of Kael Stormwind in prophecies.
+- tier: long
+  ref: kael_long_13
+  topic: lore
+  content: Kael Stormwind carries a mark from the fey.
+- tier: long
+  ref: kael_long_14
+  topic: lore
+  content: A ritual in Kael Stormwind's youth left a scar.
+- tier: long
+  ref: kael_long_15
+  topic: lore
+  content: Kael Stormwind broke an ancient oath.
+- tier: long
+  ref: kael_long_16
+  topic: lore
+  content: The Human elders warn Kael Stormwind for their mercy.
+- tier: long
+  ref: kael_long_17
+  topic: lore
+  content: Kael Stormwind wields a legendary weapon.
+- tier: long
+  ref: kael_long_18
+  topic: lore
+  content: The Human race originated in Crossroads long before the First Age.
+- tier: long
+  ref: kael_long_19
+  topic: lore
+  content: Human tradition holds that their creator, the Earth Mother, shaped them from stone.
+- tier: long
+  ref: kael_long_20
+  topic: lore
+  content: The Human once fought a great war against the Fey Court.
+- tier: long
+  ref: kael_long_21
+  topic: lore
+  content: A sacred forest in Crossroads is the spiritual heart of the Human.
+- tier: long
+  ref: kael_long_22
+  topic: lore
+  content: Human smiths are known for crafting starlight blades.
+- tier: long
+  ref: kael_long_23
+  topic: lore
+  content: The Human calendar marks 7 seasons, each tied to a elemental festival.
+- tier: long
+  ref: kael_long_24
+  topic: lore
+  content: Human legends tell of a demon who once ruled Crossroads.
+- tier: long
+  ref: kael_long_25
+  topic: lore
+  content: The Human tongue has seven words for courage.
+- tier: long
+  ref: kael_long_26
+  topic: lore
+  content: 'An ancient Human prophecy says: ''When the star falls ...'''
+- tier: long
+  ref: kael_long_27
+  topic: lore
+  content: The Human once allied with the Gnomes to defeat the Demon Invasion.
+- tier: long
+  ref: kael_long_28
+  topic: lore
+  content: Crossroads was founded by an exiled king.
+- tier: long
+  ref: kael_long_29
+  topic: lore
+  content: The first stone of Crossroads was laid in the Age of Stars.
+- tier: long
+  ref: kael_long_30
+  topic: lore
+  content: A leviathan sleeps beneath Crossroads.
+- tier: long
+  ref: kael_long_31
+  topic: lore
+  content: The forests of Crossroads are said to be blessed by the ancients.
+- tier: long
+  ref: kael_long_32
+  topic: lore
+  content: Every 42 years, a great fair is held in Crossroads.
+- tier: long
+  ref: kael_long_33
+  topic: lore
+  content: Crossroads exports rare timber to the rest of Aethelgard.
+- tier: long
+  ref: kael_long_34
+  topic: lore
+  content: A blessing hangs over Crossroads — 'the wind carries secrets'.
+- tier: long
+  ref: kael_long_35
+  topic: lore
+  content: The oldest part of Crossroads is the Iron Foundry.
+- tier: long
+  ref: kael_long_36
+  topic: lore
+  content: Crossroads was once besieged by the Crimson Court.
+- tier: long
+  ref: kael_long_37
+  topic: lore
+  content: A ancient forge lies beneath Crossroads.
+- tier: near
+  ref: kael_near_00
+  topic: upcoming
+  content: Kael Stormwind plans to escort a caravan to Crossroads next week.
+- tier: near
+  ref: kael_near_01
+  topic: upcoming
+  content: A prophecy warns that a great flood will come soon.
+- tier: near
+  ref: kael_near_02
+  topic: upcoming
+  content: Kael Stormwind must prepare a ritual before the next full moon.
+- tier: near
+  ref: kael_near_03
+  topic: upcoming
+  content: A noble has summoned Kael Stormwind to Silverwood for a parley.
+- tier: near
+  ref: kael_near_04
+  topic: upcoming
+  content: Kael Stormwind suspects a ambush brewing in Crossroads.
+- tier: near
+  ref: kael_near_05
+  topic: upcoming
+  content: The season of stars approaches, bringing change.
+- tier: near
+  ref: kael_near_06
+  topic: upcoming
+  content: Kael Stormwind was offered a title in exchange for a dangerous quest.
+- tier: near
+  ref: kael_near_07
+  topic: upcoming
+  content: A rival bribed Kael Stormwind, forcing a difficult choice.
+- tier: near
+  ref: kael_near_08
+  topic: upcoming
+  content: Kael Stormwind will attend a funeral in Ironhold.
+- tier: near
+  ref: kael_near_09
+  topic: upcoming
+  content: A mysterious letter arrived for Kael Stormwind, hinting at a greater plot.

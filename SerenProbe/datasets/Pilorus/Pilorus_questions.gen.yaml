@@ -1,0 +1,130 @@
+# SerenProbe Question Provenance - audit trail
+# Generated for world
+
+provenance:
+- query: How many sites exist in this world?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: world --facts.num_sites--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: How many eras span the history of this world?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: world --facts.num_eras--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: How long is the recorded history of Pilorus?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: world --facts.world_year_span--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: What is the name of the world?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: world --facts.world_name--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: How many civilizations exist in this world?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: world --facts.num_civilizations--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: How many artifacts exist in this world?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: world --facts.num_artifacts--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: How many beasts exist in this world?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: world --facts.num_beasts--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: How many historical figures exist in this world?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: world --facts.num_figures--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: How many events are recorded in this world?
+  hops: 1
+  asks: loci
+  _gen:
+    edge: world --facts.num_events--> value
+    hops_computed: 1
+    archetype: direct
+    shortcut_test: passed
+- query: What does Unknown intend to do about people whisper about dragon activity?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'unknown_0 --memory[near]--> pilorus_0_near_6 (anchor: people whisper about
+      dragon activity)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What does Unknown intend to do about Falconcon civilization concerns about
+    border disputes?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'unknown_0 --memory[near]--> pilorus_0_near_4 (anchor: Falconcon civilization
+      concerns about border disputes)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What has Unknown heard recently about Age of Radiant Aldrad became Sage?
+  hops: 1
+  asks: memory
+  _gen:
+    edge: 'unknown_0 --memory[short]--> pilorus_0_short_13 (anchor: Age of Radiant
+      Aldrad became Sage)'
+    hops_computed: 1
+    archetype: temporal
+    shortcut_test: passed
+- query: What is known about Velskudel's Last Stand?
+  hops: 1
+  asks: corpus
+  _gen:
+    edge: phantom entity 'Velskudel's Last Stand' -- expect_empty (bait)
+    hops_computed: 1
+    archetype: quiet
+    shortcut_test: passed
+- query: What is known about Zalthar the Unseen?
+  hops: 1
+  asks: corpus
+  _gen:
+    edge: phantom entity 'Zalthar the Unseen' -- expect_empty (bait)
+    hops_computed: 1
+    archetype: quiet
+    shortcut_test: passed
+- query: What is the artifact the world of the deep material of Unknown, and what
+    does Unknown recall about Falconcon civilization concerns about border disputes?
+  hops: 2
+  asks: corpus
+  _gen:
+    edge: loci:*/artifact_the_world_of_the_deep_material + memory:pilorus_0_near_4
+      -- answerable only by the fan
+    hops_computed: 2
+    archetype: cross_organ
+    shortcut_test: passed

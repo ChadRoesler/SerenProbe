@@ -1,0 +1,88 @@
+questions:
+- asks: loci
+  query: what port does the gateway service listen on?
+  expect_key:
+  - helix/gateway_port
+- asks: loci
+  query: what port does the auth service listen on?
+  expect_key:
+  - helix/auth_port
+- asks: loci
+  query: what port does the billing service listen on?
+  expect_key:
+  - helix/billing_port
+- asks: loci
+  query: what port does the search service listen on?
+  expect_key:
+  - helix/search_port
+- asks: loci
+  query: what port does the notify service listen on?
+  expect_key:
+  - helix/notify_port
+- asks: loci
+  query: what port does the ledger service listen on?
+  expect_key:
+  - helix/ledger_port
+- asks: loci
+  query: which database backs the auth service?
+  expect_key:
+  - helix/auth_db
+- asks: loci
+  query: which database backs the billing service?
+  expect_key:
+  - helix/billing_db
+- asks: loci
+  query: which database backs the search service?
+  expect_key:
+  - helix/search_db
+- asks: memory
+  query: what caused the auth 401 storm?
+  expect_ref:
+  - inc-auth-clockskew
+  expect_content:
+  - clock-skew
+  - '401'
+- asks: memory
+  query: why did billing deadlock at month-end?
+  expect_ref:
+  - inc-billing-deadlock
+  expect_content:
+  - deadlock
+  - statement_timeout
+- asks: memory
+  query: what open work is queued before the audit?
+  expect_content:
+  - signing keys
+  - SOC2
+- asks: corpus
+  query: give me a briefing on the auth service
+  expect_content:
+  - Rust
+  - PostgreSQL 16
+  - team-atlas
+  - '8091'
+  - clock-skew
+- asks: corpus
+  query: give me a briefing on the billing service
+  expect_content:
+  - Java 21
+  - PostgreSQL 16
+  - team-ledger
+  - '8092'
+  - deadlock
+- asks: corpus
+  query: give me a briefing on the search service
+  expect_content:
+  - Python
+  - Elasticsearch
+  - team-atlas
+  - '8093'
+  - OOM
+- asks: corpus
+  query: give me a briefing on the gateway service
+  expect_content:
+  - Go
+  - none
+  - team-edge
+  - '8080'
+  - circuit breaker

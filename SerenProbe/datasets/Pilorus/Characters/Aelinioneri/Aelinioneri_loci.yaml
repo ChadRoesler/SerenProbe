@@ -1,0 +1,93 @@
+# SerenLoci Facts - multi-source export
+# Each entry is a fact about the world or its entities
+
+- key: race
+  value: Elf
+  project: stats
+  ident: stats/race
+  why: race of Aelinioneri (id:497)
+- key: age
+  value: '100'
+  project: stats
+  ident: stats/age
+  why: Aelinioneri is 100 years old
+- key: alignment
+  value: chaos
+  project: stats
+  ident: stats/alignment
+  why: alignment of Aelinioneri (id:497)
+- key: title
+  value: Trickster of Aeanoran
+  project: identity
+  ident: identity/title
+  why: title of Aelinioneri (id:497)
+- key: civ
+  value: Aeanoran
+  project: origin
+  ident: origin/civ
+  why: civ of Aelinioneri (id:497)
+- key: home_site
+  value: Aelinar-wood
+  project: origin
+  ident: origin/home_site
+  why: home_site of Aelinioneri (id:497)
+- key: profession
+  value: healer
+  project: identity
+  ident: identity/profession
+  why: profession of Aelinioneri (id:497)
+- key: weapon
+  value: spear
+  project: combat
+  ident: combat/weapon
+  why: weapon of Aelinioneri (id:497)
+- key: armor
+  value: studded leather
+  project: combat
+  ident: combat/armor
+  why: armor of Aelinioneri (id:497)
+- key: favorite_food
+  value: wild game
+  project: identity
+  ident: identity/favorite_food
+  why: favorite_food of Aelinioneri (id:497)
+- key: favorite_drink
+  value: nectar
+  project: identity
+  ident: identity/favorite_drink
+  why: favorite_drink of Aelinioneri (id:497)
+- key: favorite_color
+  value: silver
+  project: identity
+  ident: identity/favorite_color
+  why: favorite_color of Aelinioneri (id:497)
+- key: stat_str
+  value: '6'
+  project: misc
+  ident: misc/stat_str
+  why: stat_str of Aelinioneri (id:497)
+- key: stat_agi
+  value: '9'
+  project: misc
+  ident: misc/stat_agi
+  why: stat_agi of Aelinioneri (id:497)
+- key: stat_end
+  value: '7'
+  project: misc
+  ident: misc/stat_end
+  why: stat_end of Aelinioneri (id:497)
+- key: stat_int
+  value: '8'
+  project: misc
+  ident: misc/stat_int
+  why: stat_int of Aelinioneri (id:497)
+- key: stat_wis
+  value: '6'
+  project: misc
+  ident: misc/stat_wis
+  why: stat_wis of Aelinioneri (id:497)
+- key: stat_cha
+  value: '6'
+  project: misc
+  ident: misc/stat_cha
+  why: stat_cha of Aelinioneri (id:497)

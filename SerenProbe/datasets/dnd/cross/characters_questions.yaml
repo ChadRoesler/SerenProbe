@@ -1,0 +1,1589 @@
+questions:
+- asks: loci
+  query: what race is Thorne Ironheart?
+  expect_key:
+  - char_thorn/thorn_race
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what class is Thorne Ironheart?
+  expect_key:
+  - char_thorn/thorn_class
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what alignment does Thorne Ironheart have?
+  expect_key:
+  - char_thorn/thorn_alignment
+  expect_content:
+  - Lawful Good
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what level is Thorne Ironheart?
+  expect_key:
+  - char_thorn/thorn_level
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: where is Thorne Ironheart's homeland?
+  expect_key:
+  - char_thorn/thorn_homeland
+  expect_content:
+  - Ironhold
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what faction does Thorne Ironheart follow?
+  expect_key:
+  - char_thorn/thorn_faction
+  expect_content:
+  - Free Traders
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what deity does Thorne Ironheart worship?
+  expect_key:
+  - char_thorn/thorn_deity
+  expect_content:
+  - Gruumsh
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what str score does Thorne Ironheart have?
+  expect_key:
+  - char_thorn/thorn_stat_str
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what dex score does Thorne Ironheart have?
+  expect_key:
+  - char_thorn/thorn_stat_dex
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what con score does Thorne Ironheart have?
+  expect_key:
+  - char_thorn/thorn_stat_con
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what int score does Thorne Ironheart have?
+  expect_key:
+  - char_thorn/thorn_stat_int
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what wis score does Thorne Ironheart have?
+  expect_key:
+  - char_thorn/thorn_stat_wis
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what cha score does Thorne Ironheart have?
+  expect_key:
+  - char_thorn/thorn_stat_cha
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: memory
+  query: tell me about Thorne Ironheart's recent encounter — recent encounter near the old road
+  expect_ref:
+  - thorn_short_00
+  expect_content:
+  - Thorne Ironheart survived an ambush near Ironhold last week.
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: memory
+  query: what happened to Thorne Ironheart last week — incident involving a stranger last week
+  expect_ref:
+  - thorn_short_01
+  expect_content:
+  - Thorne Ironheart discovered a hidden passage in the old ruins.
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: memory
+  query: 'what is the lore of the Dwarf race: ancient lore of the Dwarf people'
+  expect_ref:
+  - thorn_long_10
+  expect_content:
+  - A mask was forged for Thorne Ironheart.
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: memory
+  query: tell me about the history of Thorne Ironheart's homeland — history of the Ironhold region
+  expect_ref:
+  - thorn_long_20
+  expect_content:
+  - The Dwarf once fought a great war against the Fey Court.
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: memory
+  query: what plans does Thorne Ironheart have — upcoming journey or expedition
+  expect_ref:
+  - thorn_near_00
+  expect_content:
+  - Thorne Ironheart plans to study under a master in Silverwood next week.
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: memory
+  query: what upcoming event involves Thorne Ironheart — prophecy or omen concerning their future
+  expect_ref:
+  - thorn_near_01
+  expect_content:
+  - A omen warns that the dead will walk soon.
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: tell me about Thorne Ironheart — their race, class, and alignment
+  expect_content:
+  - Dwarf
+  - Fighter
+  - Lawful Good
+  expect_key:
+  - char_thorn/thorn_race
+  - char_thorn/thorn_class
+  - char_thorn/thorn_alignment
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: describe Thorne Ironheart's homeland and the faction they follow
+  expect_content:
+  - Ironhold
+  - Fighter
+  expect_key:
+  - char_thorn/thorn_homeland
+  - char_thorn/thorn_faction
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: give me a briefing on Thorne Ironheart's background and upbringing
+  expect_content:
+  - Ironhold
+  - Dwarf
+  expect_key:
+  - char_thorn/thorn_backstory_0
+  - char_thorn/thorn_backstory_1
+  - char_thorn/thorn_backstory_2
+  - char_thorn/thorn_backstory_3
+  - char_thorn/thorn_homeland
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: what weapons and armor does Thorne Ironheart carry into battle?
+  expect_content:
+  - Thorne Ironheart
+  expect_key:
+  - char_thorn/thorn_weapon_1
+  - char_thorn/thorn_weapon_2
+  - char_thorn/thorn_armor
+  - char_thorn/thorn_shield
+  - char_thorn/thorn_ranged
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: tell me about Thorne Ironheart's physical abilities — strength and dexterity
+  expect_content:
+  - Thorne Ironheart
+  expect_key:
+  - char_thorn/thorn_stat_str
+  - char_thorn/thorn_stat_dex
+  - char_thorn/thorn_stat_con
+  - char_thorn/thorn_stat_int
+  - char_thorn/thorn_stat_wis
+  - char_thorn/thorn_stat_cha
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: who is Thorne Ironheart and what is their role in the realm?
+  expect_content:
+  - Dwarf
+  - Major NPC
+  expect_key:
+  - char_thorn/thorn_race
+  - char_thorn/thorn_class
+  - char_thorn/thorn_alignment
+  - char_thorn/thorn_level
+  - char_thorn/thorn_background
+  - char_thorn/thorn_role
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: describe the Dwarf race and Thorne Ironheart's place among them
+  expect_content:
+  - Ironhold
+  - Dwarf
+  expect_key:
+  - char_thorn/thorn_race
+  - char_thorn/thorn_homeland
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: what is known about Thorne Ironheart's backstory and early life?
+  expect_content:
+  - Thorne Ironheart
+  expect_key:
+  - char_thorn/thorn_backstory_0
+  - char_thorn/thorn_backstory_1
+  - char_thorn/thorn_backstory_2
+  - char_thorn/thorn_backstory_3
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: tell me about Thorne Ironheart's key abilities and spells
+  expect_content:
+  - Thorne Ironheart
+  expect_key:
+  - char_thorn/thorn_ability_1
+  - char_thorn/thorn_ability_2
+  - char_thorn/thorn_ability_3
+  - char_thorn/thorn_spell_1
+  - char_thorn/thorn_spell_2
+  - char_thorn/thorn_spell_3
+  - char_thorn/thorn_feat_1
+  - char_thorn/thorn_feat_2
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: summarize Thorne Ironheart's equipment and carried items
+  expect_content:
+  - Thorne Ironheart
+  expect_key:
+  - char_thorn/thorn_weapon_1
+  - char_thorn/thorn_weapon_2
+  - char_thorn/thorn_armor
+  - char_thorn/thorn_shield
+  - char_thorn/thorn_ranged
+  - char_thorn/thorn_potion_1
+  - char_thorn/thorn_potion_2
+  - char_thorn/thorn_tool
+  - char_thorn/thorn_gold
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: what relationships does Thorne Ironheart have with allies and enemies?
+  expect_content:
+  - Thorne Ironheart
+  expect_key:
+  - char_thorn/thorn_rel_0
+  - char_thorn/thorn_rel_1
+  - char_thorn/thorn_rel_2
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: describe Thorne Ironheart's current quest and their goals
+  expect_content:
+  - Thorne Ironheart
+  expect_key:
+  - char_thorn/thorn_quest_1
+  - char_thorn/thorn_quest_2
+  - char_thorn/thorn_ideal
+  - char_thorn/thorn_bond
+  - char_thorn/thorn_flaw
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: what are Thorne Ironheart's ideals, bonds, and flaws?
+  expect_content:
+  - Thorne Ironheart
+  expect_key:
+  - char_thorn/thorn_ideal
+  - char_thorn/thorn_bond
+  - char_thorn/thorn_flaw
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: give me a full dossier on Thorne Ironheart the Fighter
+  expect_content:
+  - Dwarf
+  - Fighter
+  - Lawful Good
+  - Major NPC
+  expect_key:
+  - char_thorn/thorn_race
+  - char_thorn/thorn_class
+  - char_thorn/thorn_alignment
+  - char_thorn/thorn_race
+  - char_thorn/thorn_class
+  - char_thorn/thorn_alignment
+  - char_thorn/thorn_level
+  - char_thorn/thorn_background
+  - char_thorn/thorn_backstory_0
+  - char_thorn/thorn_backstory_1
+  - char_thorn/thorn_backstory_2
+  - char_thorn/thorn_backstory_3
+  - char_thorn/thorn_rel_0
+  - char_thorn/thorn_rel_1
+  - char_thorn/thorn_rel_2
+  - char_thorn/thorn_quest_1
+  - char_thorn/thorn_quest_2
+  - char_thorn/thorn_ideal
+  - char_thorn/thorn_bond
+  - char_thorn/thorn_flaw
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what race is Elara Moonshadow?
+  expect_key:
+  - char_elara/elara_race
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what class is Elara Moonshadow?
+  expect_key:
+  - char_elara/elara_class
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what alignment does Elara Moonshadow have?
+  expect_key:
+  - char_elara/elara_alignment
+  expect_content:
+  - Neutral Good
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what level is Elara Moonshadow?
+  expect_key:
+  - char_elara/elara_level
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: where is Elara Moonshadow's homeland?
+  expect_key:
+  - char_elara/elara_homeland
+  expect_content:
+  - Silverwood
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what faction does Elara Moonshadow follow?
+  expect_key:
+  - char_elara/elara_faction
+  expect_content:
+  - Shadow Syndicate
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what deity does Elara Moonshadow worship?
+  expect_key:
+  - char_elara/elara_deity
+  expect_content:
+  - Corellon
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what str score does Elara Moonshadow have?
+  expect_key:
+  - char_elara/elara_stat_str
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what dex score does Elara Moonshadow have?
+  expect_key:
+  - char_elara/elara_stat_dex
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what con score does Elara Moonshadow have?
+  expect_key:
+  - char_elara/elara_stat_con
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what int score does Elara Moonshadow have?
+  expect_key:
+  - char_elara/elara_stat_int
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what wis score does Elara Moonshadow have?
+  expect_key:
+  - char_elara/elara_stat_wis
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what cha score does Elara Moonshadow have?
+  expect_key:
+  - char_elara/elara_stat_cha
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: memory
+  query: tell me about Elara Moonshadow's recent encounter — recent encounter near the old road
+  expect_ref:
+  - elara_short_00
+  expect_content:
+  - Elara Moonshadow survived an ambush near Silverwood last week.
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: memory
+  query: what happened to Elara Moonshadow last week — incident involving a stranger last week
+  expect_ref:
+  - elara_short_01
+  expect_content:
+  - Elara Moonshadow discovered a hidden passage in the deep caves.
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: memory
+  query: 'what is the lore of the Elf race: ancient lore of the Elf people'
+  expect_ref:
+  - elara_long_10
+  expect_content:
+  - A mask was hidden by Elara Moonshadow.
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: memory
+  query: tell me about the history of Elara Moonshadow's homeland — history of the Silverwood region
+  expect_ref:
+  - elara_long_20
+  expect_content:
+  - The Elf once fought a great war against the Fey Court.
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: memory
+  query: what plans does Elara Moonshadow have — upcoming journey or expedition
+  expect_ref:
+  - elara_near_00
+  expect_content:
+  - Elara Moonshadow plans to escort a caravan to Crossroads next week.
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: memory
+  query: what upcoming event involves Elara Moonshadow — prophecy or omen concerning their future
+  expect_ref:
+  - elara_near_01
+  expect_content:
+  - A vision warns that the dead will walk soon.
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: tell me about Elara Moonshadow — their race, class, and alignment
+  expect_content:
+  - Elf
+  - Wizard
+  - Neutral Good
+  expect_key:
+  - char_elara/elara_race
+  - char_elara/elara_class
+  - char_elara/elara_alignment
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: describe Elara Moonshadow's homeland and the faction they follow
+  expect_content:
+  - Silverwood
+  - Wizard
+  expect_key:
+  - char_elara/elara_homeland
+  - char_elara/elara_faction
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: give me a briefing on Elara Moonshadow's background and upbringing
+  expect_content:
+  - Silverwood
+  - Elf
+  expect_key:
+  - char_elara/elara_backstory_0
+  - char_elara/elara_backstory_1
+  - char_elara/elara_backstory_2
+  - char_elara/elara_backstory_3
+  - char_elara/elara_homeland
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: what weapons and armor does Elara Moonshadow carry into battle?
+  expect_content:
+  - Elara Moonshadow
+  expect_key:
+  - char_elara/elara_weapon_1
+  - char_elara/elara_weapon_2
+  - char_elara/elara_armor
+  - char_elara/elara_shield
+  - char_elara/elara_ranged
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: tell me about Elara Moonshadow's physical abilities — strength and dexterity
+  expect_content:
+  - Elara Moonshadow
+  expect_key:
+  - char_elara/elara_stat_str
+  - char_elara/elara_stat_dex
+  - char_elara/elara_stat_con
+  - char_elara/elara_stat_int
+  - char_elara/elara_stat_wis
+  - char_elara/elara_stat_cha
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: who is Elara Moonshadow and what is their role in the realm?
+  expect_content:
+  - Elf
+  - Major NPC
+  expect_key:
+  - char_elara/elara_race
+  - char_elara/elara_class
+  - char_elara/elara_alignment
+  - char_elara/elara_level
+  - char_elara/elara_background
+  - char_elara/elara_role
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: describe the Elf race and Elara Moonshadow's place among them
+  expect_content:
+  - Silverwood
+  - Elf
+  expect_key:
+  - char_elara/elara_race
+  - char_elara/elara_homeland
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: what is known about Elara Moonshadow's backstory and early life?
+  expect_content:
+  - Elara Moonshadow
+  expect_key:
+  - char_elara/elara_backstory_0
+  - char_elara/elara_backstory_1
+  - char_elara/elara_backstory_2
+  - char_elara/elara_backstory_3
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: tell me about Elara Moonshadow's key abilities and spells
+  expect_content:
+  - Elara Moonshadow
+  expect_key:
+  - char_elara/elara_ability_1
+  - char_elara/elara_ability_2
+  - char_elara/elara_ability_3
+  - char_elara/elara_spell_1
+  - char_elara/elara_spell_2
+  - char_elara/elara_spell_3
+  - char_elara/elara_feat_1
+  - char_elara/elara_feat_2
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: summarize Elara Moonshadow's equipment and carried items
+  expect_content:
+  - Elara Moonshadow
+  expect_key:
+  - char_elara/elara_weapon_1
+  - char_elara/elara_weapon_2
+  - char_elara/elara_armor
+  - char_elara/elara_shield
+  - char_elara/elara_ranged
+  - char_elara/elara_potion_1
+  - char_elara/elara_potion_2
+  - char_elara/elara_tool
+  - char_elara/elara_gold
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: what relationships does Elara Moonshadow have with allies and enemies?
+  expect_content:
+  - Elara Moonshadow
+  expect_key:
+  - char_elara/elara_rel_0
+  - char_elara/elara_rel_1
+  - char_elara/elara_rel_2
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: describe Elara Moonshadow's current quest and their goals
+  expect_content:
+  - Elara Moonshadow
+  expect_key:
+  - char_elara/elara_quest_1
+  - char_elara/elara_quest_2
+  - char_elara/elara_ideal
+  - char_elara/elara_bond
+  - char_elara/elara_flaw
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: what are Elara Moonshadow's ideals, bonds, and flaws?
+  expect_content:
+  - Elara Moonshadow
+  expect_key:
+  - char_elara/elara_ideal
+  - char_elara/elara_bond
+  - char_elara/elara_flaw
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: give me a full dossier on Elara Moonshadow the Wizard
+  expect_content:
+  - Elf
+  - Wizard
+  - Neutral Good
+  - Major NPC
+  expect_key:
+  - char_elara/elara_race
+  - char_elara/elara_class
+  - char_elara/elara_alignment
+  - char_elara/elara_race
+  - char_elara/elara_class
+  - char_elara/elara_alignment
+  - char_elara/elara_level
+  - char_elara/elara_background
+  - char_elara/elara_backstory_0
+  - char_elara/elara_backstory_1
+  - char_elara/elara_backstory_2
+  - char_elara/elara_backstory_3
+  - char_elara/elara_rel_0
+  - char_elara/elara_rel_1
+  - char_elara/elara_rel_2
+  - char_elara/elara_quest_1
+  - char_elara/elara_quest_2
+  - char_elara/elara_ideal
+  - char_elara/elara_bond
+  - char_elara/elara_flaw
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what race is The Shadow King?
+  expect_key:
+  - char_shadowking/shadowking_race
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what class is The Shadow King?
+  expect_key:
+  - char_shadowking/shadowking_class
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what alignment does The Shadow King have?
+  expect_key:
+  - char_shadowking/shadowking_alignment
+  expect_content:
+  - Lawful Evil
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what level is The Shadow King?
+  expect_key:
+  - char_shadowking/shadowking_level
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: where is The Shadow King's homeland?
+  expect_key:
+  - char_shadowking/shadowking_homeland
+  expect_content:
+  - the Shadowfell
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what faction does The Shadow King follow?
+  expect_key:
+  - char_shadowking/shadowking_faction
+  expect_content:
+  - Shadow Syndicate
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what deity does The Shadow King worship?
+  expect_key:
+  - char_shadowking/shadowking_deity
+  expect_content:
+  - Asmodeus
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what str score does The Shadow King have?
+  expect_key:
+  - char_shadowking/shadowking_stat_str
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what dex score does The Shadow King have?
+  expect_key:
+  - char_shadowking/shadowking_stat_dex
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what con score does The Shadow King have?
+  expect_key:
+  - char_shadowking/shadowking_stat_con
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what int score does The Shadow King have?
+  expect_key:
+  - char_shadowking/shadowking_stat_int
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what wis score does The Shadow King have?
+  expect_key:
+  - char_shadowking/shadowking_stat_wis
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what cha score does The Shadow King have?
+  expect_key:
+  - char_shadowking/shadowking_stat_cha
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: memory
+  query: tell me about The Shadow King's recent encounter — recent encounter near the old road
+  expect_ref:
+  - shadowking_short_00
+  expect_content:
+  - The Shadow King survived an ambush near the Shadowfell last week.
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: memory
+  query: what happened to The Shadow King last week — incident involving a stranger last week
+  expect_ref:
+  - shadowking_short_01
+  expect_content:
+  - The Shadow King discovered a hidden passage in the deep caves.
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: memory
+  query: 'what is the lore of the Wraith race: ancient lore of the Wraith people'
+  expect_ref:
+  - shadowking_long_10
+  expect_content:
+  - A staff was forged for The Shadow King.
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: memory
+  query: tell me about the history of The Shadow King's homeland — history of the the Shadowfell region
+  expect_ref:
+  - shadowking_long_20
+  expect_content:
+  - The Wraith once fought a great war against the Dragon Empire.
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: memory
+  query: what plans does The Shadow King have — upcoming journey or expedition
+  expect_ref:
+  - shadowking_near_00
+  expect_content:
+  - The Shadow King plans to study under a master in Silverwood next week.
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: memory
+  query: what upcoming event involves The Shadow King — prophecy or omen concerning their future
+  expect_ref:
+  - shadowking_near_01
+  expect_content:
+  - A prophecy warns that the dead will walk soon.
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: tell me about The Shadow King — their race, class, and alignment
+  expect_content:
+  - Wraith
+  - Warlock
+  - Lawful Evil
+  expect_key:
+  - char_shadowking/shadowking_race
+  - char_shadowking/shadowking_class
+  - char_shadowking/shadowking_alignment
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: describe The Shadow King's homeland and the faction they follow
+  expect_content:
+  - the Shadowfell
+  - Warlock
+  expect_key:
+  - char_shadowking/shadowking_homeland
+  - char_shadowking/shadowking_faction
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: give me a briefing on The Shadow King's background and upbringing
+  expect_content:
+  - the Shadowfell
+  - Wraith
+  expect_key:
+  - char_shadowking/shadowking_backstory_0
+  - char_shadowking/shadowking_backstory_1
+  - char_shadowking/shadowking_backstory_2
+  - char_shadowking/shadowking_backstory_3
+  - char_shadowking/shadowking_homeland
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: what weapons and armor does The Shadow King carry into battle?
+  expect_content:
+  - The Shadow King
+  expect_key:
+  - char_shadowking/shadowking_weapon_1
+  - char_shadowking/shadowking_weapon_2
+  - char_shadowking/shadowking_armor
+  - char_shadowking/shadowking_shield
+  - char_shadowking/shadowking_ranged
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: tell me about The Shadow King's physical abilities — strength and dexterity
+  expect_content:
+  - The Shadow King
+  expect_key:
+  - char_shadowking/shadowking_stat_str
+  - char_shadowking/shadowking_stat_dex
+  - char_shadowking/shadowking_stat_con
+  - char_shadowking/shadowking_stat_int
+  - char_shadowking/shadowking_stat_wis
+  - char_shadowking/shadowking_stat_cha
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: who is The Shadow King and what is their role in the realm?
+  expect_content:
+  - Wraith
+  - Big Bad Guy
+  expect_key:
+  - char_shadowking/shadowking_race
+  - char_shadowking/shadowking_class
+  - char_shadowking/shadowking_alignment
+  - char_shadowking/shadowking_level
+  - char_shadowking/shadowking_background
+  - char_shadowking/shadowking_role
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: describe the Wraith race and The Shadow King's place among them
+  expect_content:
+  - the Shadowfell
+  - Wraith
+  expect_key:
+  - char_shadowking/shadowking_race
+  - char_shadowking/shadowking_homeland
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: what is known about The Shadow King's backstory and early life?
+  expect_content:
+  - The Shadow King
+  expect_key:
+  - char_shadowking/shadowking_backstory_0
+  - char_shadowking/shadowking_backstory_1
+  - char_shadowking/shadowking_backstory_2
+  - char_shadowking/shadowking_backstory_3
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: tell me about The Shadow King's key abilities and spells
+  expect_content:
+  - The Shadow King
+  expect_key:
+  - char_shadowking/shadowking_ability_1
+  - char_shadowking/shadowking_ability_2
+  - char_shadowking/shadowking_ability_3
+  - char_shadowking/shadowking_spell_1
+  - char_shadowking/shadowking_spell_2
+  - char_shadowking/shadowking_spell_3
+  - char_shadowking/shadowking_feat_1
+  - char_shadowking/shadowking_feat_2
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: summarize The Shadow King's equipment and carried items
+  expect_content:
+  - The Shadow King
+  expect_key:
+  - char_shadowking/shadowking_weapon_1
+  - char_shadowking/shadowking_weapon_2
+  - char_shadowking/shadowking_armor
+  - char_shadowking/shadowking_shield
+  - char_shadowking/shadowking_ranged
+  - char_shadowking/shadowking_potion_1
+  - char_shadowking/shadowking_potion_2
+  - char_shadowking/shadowking_tool
+  - char_shadowking/shadowking_gold
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: what relationships does The Shadow King have with allies and enemies?
+  expect_content:
+  - The Shadow King
+  expect_key:
+  - char_shadowking/shadowking_rel_0
+  - char_shadowking/shadowking_rel_1
+  - char_shadowking/shadowking_rel_2
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: describe The Shadow King's current quest and their goals
+  expect_content:
+  - The Shadow King
+  expect_key:
+  - char_shadowking/shadowking_quest_1
+  - char_shadowking/shadowking_quest_2
+  - char_shadowking/shadowking_ideal
+  - char_shadowking/shadowking_bond
+  - char_shadowking/shadowking_flaw
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: what are The Shadow King's ideals, bonds, and flaws?
+  expect_content:
+  - The Shadow King
+  expect_key:
+  - char_shadowking/shadowking_ideal
+  - char_shadowking/shadowking_bond
+  - char_shadowking/shadowking_flaw
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: give me a full dossier on The Shadow King the Warlock
+  expect_content:
+  - Wraith
+  - Warlock
+  - Lawful Evil
+  - Big Bad Guy
+  expect_key:
+  - char_shadowking/shadowking_race
+  - char_shadowking/shadowking_class
+  - char_shadowking/shadowking_alignment
+  - char_shadowking/shadowking_race
+  - char_shadowking/shadowking_class
+  - char_shadowking/shadowking_alignment
+  - char_shadowking/shadowking_level
+  - char_shadowking/shadowking_background
+  - char_shadowking/shadowking_backstory_0
+  - char_shadowking/shadowking_backstory_1
+  - char_shadowking/shadowking_backstory_2
+  - char_shadowking/shadowking_backstory_3
+  - char_shadowking/shadowking_rel_0
+  - char_shadowking/shadowking_rel_1
+  - char_shadowking/shadowking_rel_2
+  - char_shadowking/shadowking_quest_1
+  - char_shadowking/shadowking_quest_2
+  - char_shadowking/shadowking_ideal
+  - char_shadowking/shadowking_bond
+  - char_shadowking/shadowking_flaw
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what race is Grickle?
+  expect_key:
+  - char_grickle/grickle_race
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what class is Grickle?
+  expect_key:
+  - char_grickle/grickle_class
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what alignment does Grickle have?
+  expect_key:
+  - char_grickle/grickle_alignment
+  expect_content:
+  - Unaligned
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what level is Grickle?
+  expect_key:
+  - char_grickle/grickle_level
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: where is Grickle's homeland?
+  expect_key:
+  - char_grickle/grickle_homeland
+  expect_content:
+  - the Sunken Temple
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what faction does Grickle follow?
+  expect_key:
+  - char_grickle/grickle_faction
+  expect_content:
+  - Free Traders
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what deity does Grickle worship?
+  expect_key:
+  - char_grickle/grickle_deity
+  expect_content:
+  - Zehir
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what str score does Grickle have?
+  expect_key:
+  - char_grickle/grickle_stat_str
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what dex score does Grickle have?
+  expect_key:
+  - char_grickle/grickle_stat_dex
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what con score does Grickle have?
+  expect_key:
+  - char_grickle/grickle_stat_con
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what int score does Grickle have?
+  expect_key:
+  - char_grickle/grickle_stat_int
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what wis score does Grickle have?
+  expect_key:
+  - char_grickle/grickle_stat_wis
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what cha score does Grickle have?
+  expect_key:
+  - char_grickle/grickle_stat_cha
+  expect_content: []
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: memory
+  query: tell me about Grickle's recent encounter — recent encounter near the old road
+  expect_ref:
+  - grickle_short_00
+  expect_content:
+  - Grickle survived an ambush near the Sunken Temple last week.
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: memory
+  query: what happened to Grickle last week — incident involving a stranger last week
+  expect_ref:
+  - grickle_short_01
+  expect_content:
+  - Grickle discovered a hidden passage in the old ruins.
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: memory
+  query: 'what is the lore of the Grick race: ancient lore of the Grick people'
+  expect_ref:
+  - grickle_long_10
+  expect_content:
+  - A crown was forged for Grickle.
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: memory
+  query: tell me about the history of Grickle's homeland — history of the the Sunken Temple region
+  expect_ref:
+  - grickle_long_20
+  expect_content:
+  - The Grick once fought a great war against the Dragon Empire.
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: memory
+  query: what plans does Grickle have — upcoming journey or expedition
+  expect_ref:
+  - grickle_near_00
+  expect_content:
+  - Grickle plans to escort a caravan to Crossroads next week.
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: memory
+  query: what upcoming event involves Grickle — prophecy or omen concerning their future
+  expect_ref:
+  - grickle_near_01
+  expect_content:
+  - A prophecy warns that the dead will walk soon.
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: tell me about Grickle — their race, class, and alignment
+  expect_content:
+  - Grick
+  - Monster
+  - Unaligned
+  expect_key:
+  - char_grickle/grickle_race
+  - char_grickle/grickle_class
+  - char_grickle/grickle_alignment
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: describe Grickle's homeland and the faction they follow
+  expect_content:
+  - the Sunken Temple
+  - Monster
+  expect_key:
+  - char_grickle/grickle_homeland
+  - char_grickle/grickle_faction
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: give me a briefing on Grickle's background and upbringing
+  expect_content:
+  - the Sunken Temple
+  - Grick
+  expect_key:
+  - char_grickle/grickle_backstory_0
+  - char_grickle/grickle_backstory_1
+  - char_grickle/grickle_backstory_2
+  - char_grickle/grickle_backstory_3
+  - char_grickle/grickle_homeland
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: what weapons and armor does Grickle carry into battle?
+  expect_content:
+  - Grickle
+  expect_key:
+  - char_grickle/grickle_weapon_1
+  - char_grickle/grickle_weapon_2
+  - char_grickle/grickle_armor
+  - char_grickle/grickle_shield
+  - char_grickle/grickle_ranged
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: tell me about Grickle's physical abilities — strength and dexterity
+  expect_content:
+  - Grickle
+  expect_key:
+  - char_grickle/grickle_stat_str
+  - char_grickle/grickle_stat_dex
+  - char_grickle/grickle_stat_con
+  - char_grickle/grickle_stat_int
+  - char_grickle/grickle_stat_wis
+  - char_grickle/grickle_stat_cha
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: who is Grickle and what is their role in the realm?
+  expect_content:
+  - Grick
+  - Semi-Intelligent
+  expect_key:
+  - char_grickle/grickle_race
+  - char_grickle/grickle_class
+  - char_grickle/grickle_alignment
+  - char_grickle/grickle_level
+  - char_grickle/grickle_background
+  - char_grickle/grickle_role
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: describe the Grick race and Grickle's place among them
+  expect_content:
+  - the Sunken Temple
+  - Grick
+  expect_key:
+  - char_grickle/grickle_race
+  - char_grickle/grickle_homeland
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: what is known about Grickle's backstory and early life?
+  expect_content:
+  - Grickle
+  expect_key:
+  - char_grickle/grickle_backstory_0
+  - char_grickle/grickle_backstory_1
+  - char_grickle/grickle_backstory_2
+  - char_grickle/grickle_backstory_3
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: tell me about Grickle's key abilities and spells
+  expect_content:
+  - Grickle
+  expect_key:
+  - char_grickle/grickle_ability_1
+  - char_grickle/grickle_ability_2
+  - char_grickle/grickle_ability_3
+  - char_grickle/grickle_spell_1
+  - char_grickle/grickle_spell_2
+  - char_grickle/grickle_spell_3
+  - char_grickle/grickle_feat_1
+  - char_grickle/grickle_feat_2
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: summarize Grickle's equipment and carried items
+  expect_content:
+  - Grickle
+  expect_key:
+  - char_grickle/grickle_weapon_1
+  - char_grickle/grickle_weapon_2
+  - char_grickle/grickle_armor
+  - char_grickle/grickle_shield
+  - char_grickle/grickle_ranged
+  - char_grickle/grickle_potion_1
+  - char_grickle/grickle_potion_2
+  - char_grickle/grickle_tool
+  - char_grickle/grickle_gold
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: what relationships does Grickle have with allies and enemies?
+  expect_content:
+  - Grickle
+  expect_key:
+  - char_grickle/grickle_rel_0
+  - char_grickle/grickle_rel_1
+  - char_grickle/grickle_rel_2
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: describe Grickle's current quest and their goals
+  expect_content:
+  - Grickle
+  expect_key:
+  - char_grickle/grickle_quest_1
+  - char_grickle/grickle_quest_2
+  - char_grickle/grickle_ideal
+  - char_grickle/grickle_bond
+  - char_grickle/grickle_flaw
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: what are Grickle's ideals, bonds, and flaws?
+  expect_content:
+  - Grickle
+  expect_key:
+  - char_grickle/grickle_ideal
+  - char_grickle/grickle_bond
+  - char_grickle/grickle_flaw
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*
+- asks: corpus
+  query: give me a full dossier on Grickle the Monster
+  expect_content:
+  - Grick
+  - Monster
+  - Unaligned
+  - Semi-Intelligent
+  expect_key:
+  - char_grickle/grickle_race
+  - char_grickle/grickle_class
+  - char_grickle/grickle_alignment
+  - char_grickle/grickle_race
+  - char_grickle/grickle_class
+  - char_grickle/grickle_alignment
+  - char_grickle/grickle_level
+  - char_grickle/grickle_background
+  - char_grickle/grickle_backstory_0
+  - char_grickle/grickle_backstory_1
+  - char_grickle/grickle_backstory_2
+  - char_grickle/grickle_backstory_3
+  - char_grickle/grickle_rel_0
+  - char_grickle/grickle_rel_1
+  - char_grickle/grickle_rel_2
+  - char_grickle/grickle_quest_1
+  - char_grickle/grickle_quest_2
+  - char_grickle/grickle_ideal
+  - char_grickle/grickle_bond
+  - char_grickle/grickle_flaw
+  hops: 1
+  quiet_in:
+  - loc_ironhold-*
+  - loc_aethelgard-*

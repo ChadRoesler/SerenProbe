@@ -1,0 +1,50 @@
+questions:
+- asks: loci
+  query: what module is collapse in and what does it raise?
+  expect_key:
+  - lattice/collapse_module
+  - lattice/collapse_raises
+- asks: loci
+  query: what does hydrate return and what error can it throw?
+  expect_key:
+  - lattice/hydrate_returns
+  - lattice/hydrate_raises
+- asks: loci
+  query: what are the default and type of the shard count setting?
+  expect_key:
+  - lattice/cfg_shard_count_default
+  - lattice/cfg_shard_count_type
+- asks: memory
+  query: why does building a fabric blow up when nodes reference each other in a loop?
+  expect_ref:
+  - gotcha-weave-cycle
+  expect_content:
+  - CycleError
+  - topo-sort
+- asks: memory
+  query: what do I change if I was calling the old top-level load function?
+  expect_ref:
+  - mig-0.3-io
+  expect_content:
+  - hydrate
+  - Update imports
+- asks: corpus
+  query: what changed with collapse in 0.6 and what does it raise?
+  expect_content:
+  - collapse
+  - EmptyError
+  - '0.6'
+  - Result
+- asks: corpus
+  query: how do I safely call weave and what breaks it?
+  expect_content:
+  - lattice.core
+  - Fabric
+  - CycleError
+  - topo-sort
+- asks: loci
+  query: what does obliterate() return?
+  expect_empty: true
+- asks: corpus
+  query: how do I use teleport() in Lattice?
+  expect_empty: true

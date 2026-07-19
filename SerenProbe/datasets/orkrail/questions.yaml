@@ -1,0 +1,480 @@
+questions:
+- asks: loci
+  query: wot line runs ta gorkamork-central station?
+  expect_key:
+  - orkrail/station_gorkamork-central_line
+  hops: 1
+- asks: loci
+  query: ow much dakka at dakka-junction station?
+  expect_key:
+  - orkrail/station_dakka-junction_dakka
+  hops: 1
+- asks: loci
+  query: wot fuel does big-choppa-0 guzzle?
+  expect_key:
+  - orkrail/loco_big-choppa-0_fuel
+  hops: 1
+- asks: loci
+  query: wot cargo does srv-000 carry?
+  expect_key:
+  - orkrail/sched_srv-000_cargo
+  hops: 1
+- asks: loci
+  query: wot kinda depot type is gork-forge?
+  expect_key:
+  - orkrail/depot_gork-forge_type
+  hops: 1
+- asks: loci
+  query: gimme da warboss of gorkamork-central station — boss-promethium-lord — an da clan goff
+  expect_key:
+  - orkrail/station_gorkamork-central_warboss
+  - orkrail/boss_boss-promethium-lord_clan
+  hops: 2
+- asks: loci
+  query: gimme da warboss of dakka-junction station — boss-promethium-master — an da clan gork
+  expect_key:
+  - orkrail/station_dakka-junction_warboss
+  - orkrail/boss_boss-promethium-master_clan
+  hops: 2
+- asks: loci
+  query: gimme da warboss of dakka-line line — boss-grotkeeper — an da clan gork
+  expect_key:
+  - orkrail/line_dakka-line_warboss
+  - orkrail/boss_boss-grotkeeper_clan
+  hops: 2
+- asks: loci
+  query: gimme da warboss of teef-railway line — boss-high-dakka — an da clan gork
+  expect_key:
+  - orkrail/line_teef-railway_warboss
+  - orkrail/boss_boss-high-dakka_clan
+  hops: 2
+- asks: loci
+  query: gimme da warboss of gork-forge depot — boss-promethium — an da clan snakebite
+  expect_key:
+  - orkrail/depot_gork-forge_warboss
+  - orkrail/boss_boss-promethium_clan
+  hops: 2
+- asks: loci
+  query: gimme da warboss of mork-foundry depot — boss-teefsnatcha — an da clan evil-sunz
+  expect_key:
+  - orkrail/depot_mork-foundry_warboss
+  - orkrail/boss_boss-teefsnatcha_clan
+  hops: 2
+- asks: loci
+  query: gimme da loco teef-train-3 on srv-000, depot deff-dread-garage — type armory
+  expect_key:
+  - orkrail/sched_srv-000_loco
+  - orkrail/loco_teef-train-3_depot
+  - orkrail/depot_deff-dread-garage_type
+  hops: 3
+- asks: loci
+  query: gimme da loco big-choppa-4 on srv-001, depot armor-plate — type armory
+  expect_key:
+  - orkrail/sched_srv-001_loco
+  - orkrail/loco_big-choppa-4_depot
+  - orkrail/depot_armor-plate_type
+  hops: 3
+- asks: loci
+  query: gimme da loco kustom-kroozer-2 on srv-002, depot gork-furnace — supplier armor-plate-co
+  expect_key:
+  - orkrail/sched_srv-002_loco
+  - orkrail/loco_kustom-kroozer-2_depot
+  - orkrail/depot_gork-furnace_supplier
+  hops: 3
+- asks: loci
+  query: wot loco runs srv-003 service?
+  expect_key:
+  - orkrail/sched_srv-003_loco
+  hops: 1
+- asks: loci
+  query: wot depot keeps battle-barge-0?
+  expect_key:
+  - orkrail/loco_battle-barge-0_depot
+  hops: 1
+- asks: loci
+  query: wot supplier serves mork-foundry?
+  expect_key:
+  - orkrail/depot_mork-foundry_supplier
+  hops: 1
+- asks: loci
+  query: wot part does kustom-gubbinz supply?
+  expect_key:
+  - orkrail/supp_kustom-gubbinz_part
+  hops: 1
+- asks: loci
+  query: gimme da loco armor-wagon-0 on srv-005, line teef-railway, warboss boss-high-dakka — clan gork
+  expect_key:
+  - orkrail/sched_srv-005_loco
+  - orkrail/loco_armor-wagon-0_line
+  - orkrail/line_teef-railway_warboss
+  - orkrail/boss_boss-high-dakka_clan
+  hops: 4
+- asks: loci
+  query: gimme da loco squig-hauler-2 on srv-006, depot warboss-armory, supplier teef-collectors, warboss boss-mekboy-overlord — clan evil-sunz
+  expect_key:
+  - orkrail/sched_srv-006_loco
+  - orkrail/loco_squig-hauler-2_depot
+  - orkrail/depot_warboss-armory_supplier
+  - orkrail/supp_teef-collectors_warboss
+  - orkrail/boss_boss-mekboy-overlord_clan
+  hops: 5
+- asks: memory
+  query: gimme evt-000 — bridge fell down at deff-dread-halt on Night
+  expect_ref:
+  - evt-000
+  hops: 1
+- asks: memory
+  query: gimme rep-000 — Q2 235.M41 goff-rock promethium delivery
+  expect_ref:
+  - rep-000
+  hops: 1
+- asks: memory
+  query: gimme todo-000 — Fix loco at goff-rock
+  expect_ref:
+  - todo-000
+  hops: 1
+- asks: corpus
+  query: tell me about gorkamork-central station — warboss an clan
+  expect_content:
+  - boss-promethium-lord
+  - goff
+  - station
+  hops: 2
+- asks: corpus
+  query: tell me about da dakka-line — warboss an clan
+  expect_content:
+  - boss-grotkeeper
+  - gork
+  - line
+  hops: 2
+- asks: corpus
+  query: tell me about gork-forge depot — warboss, clan, an supplier
+  expect_content:
+  - boss-promethium
+  - snakebite
+  - kustom-katalog
+  - forge
+  hops: 2
+- asks: corpus
+  query: tell me about boss-gitsnik — clan, rank, an domain
+  expect_content:
+  - mork
+  - warboss
+  - station
+  hops: 1
+- asks: corpus
+  query: tell me about srv-000 — loco an cargo
+  expect_content:
+  - teef-train-3
+  - squigs
+  hops: 2
+- asks: loci
+  query: wot zone is gorkamork-central station in?
+  expect_key:
+  - orkrail/station_gorkamork-central_zone
+  hops: 1
+- asks: loci
+  query: wot zone is dakka-junction station in?
+  expect_key:
+  - orkrail/station_dakka-junction_zone
+  hops: 1
+- asks: loci
+  query: wot zone is teef-exchange station in?
+  expect_key:
+  - orkrail/station_teef-exchange_zone
+  hops: 1
+- asks: loci
+  query: wot zone is squig-market station in?
+  expect_key:
+  - orkrail/station_squig-market_zone
+  hops: 1
+- asks: loci
+  query: wot zone is promethium-depot station in?
+  expect_key:
+  - orkrail/station_promethium-depot_zone
+  hops: 1
+- asks: loci
+  query: wot zone is armor-yard station in?
+  expect_key:
+  - orkrail/station_armor-yard_zone
+  hops: 1
+- asks: loci
+  query: wot zone is grot-halt station in?
+  expect_key:
+  - orkrail/station_grot-halt_zone
+  hops: 1
+- asks: loci
+  query: wot zone is mekboy-forge station in?
+  expect_key:
+  - orkrail/station_mekboy-forge_zone
+  hops: 1
+- asks: loci
+  query: wot zone is waagh-gate station in?
+  expect_key:
+  - orkrail/station_waagh-gate_zone
+  hops: 1
+- asks: loci
+  query: wot zone is kustom-kutter station in?
+  expect_key:
+  - orkrail/station_kustom-kutter_zone
+  hops: 1
+- asks: loci
+  query: wot gauge is da dakka-line line?
+  expect_key:
+  - orkrail/line_dakka-line_gauge
+  hops: 1
+- asks: loci
+  query: wot gauge is da teef-railway line?
+  expect_key:
+  - orkrail/line_teef-railway_gauge
+  hops: 1
+- asks: loci
+  query: wot gauge is da waagh-express line?
+  expect_key:
+  - orkrail/line_waagh-express_gauge
+  hops: 1
+- asks: loci
+  query: wot gauge is da squig-belt line?
+  expect_key:
+  - orkrail/line_squig-belt_gauge
+  hops: 1
+- asks: loci
+  query: wot gauge is da promethium-main line?
+  expect_key:
+  - orkrail/line_promethium-main_gauge
+  hops: 1
+- asks: loci
+  query: wot gauge is da armored-corridor line?
+  expect_key:
+  - orkrail/line_armored-corridor_gauge
+  hops: 1
+- asks: loci
+  query: wot armor does big-choppa-0 loco have?
+  expect_key:
+  - orkrail/loco_big-choppa-0_armor
+  hops: 1
+- asks: loci
+  query: wot armor does big-choppa-1 loco have?
+  expect_key:
+  - orkrail/loco_big-choppa-1_armor
+  hops: 1
+- asks: loci
+  query: wot armor does big-choppa-2 loco have?
+  expect_key:
+  - orkrail/loco_big-choppa-2_armor
+  hops: 1
+- asks: loci
+  query: wot armor does big-choppa-3 loco have?
+  expect_key:
+  - orkrail/loco_big-choppa-3_armor
+  hops: 1
+- asks: loci
+  query: wot armor does big-choppa-4 loco have?
+  expect_key:
+  - orkrail/loco_big-choppa-4_armor
+  hops: 1
+- asks: loci
+  query: wot armor does dakka-jet-0 loco have?
+  expect_key:
+  - orkrail/loco_dakka-jet-0_armor
+  hops: 1
+- asks: loci
+  query: wot armor does dakka-jet-1 loco have?
+  expect_key:
+  - orkrail/loco_dakka-jet-1_armor
+  hops: 1
+- asks: loci
+  query: wot armor does dakka-jet-2 loco have?
+  expect_key:
+  - orkrail/loco_dakka-jet-2_armor
+  hops: 1
+- asks: loci
+  query: wot armor does dakka-jet-3 loco have?
+  expect_key:
+  - orkrail/loco_dakka-jet-3_armor
+  hops: 1
+- asks: loci
+  query: wot armor does dakka-jet-4 loco have?
+  expect_key:
+  - orkrail/loco_dakka-jet-4_armor
+  hops: 1
+- asks: loci
+  query: ow big capacity is gork-forge depot?
+  expect_key:
+  - orkrail/depot_gork-forge_capacity
+  hops: 1
+- asks: loci
+  query: ow big capacity is mork-foundry depot?
+  expect_key:
+  - orkrail/depot_mork-foundry_capacity
+  hops: 1
+- asks: loci
+  query: ow big capacity is mekboy-yard depot?
+  expect_key:
+  - orkrail/depot_mekboy-yard_capacity
+  hops: 1
+- asks: loci
+  query: ow big capacity is teef-smelter depot?
+  expect_key:
+  - orkrail/depot_teef-smelter_capacity
+  hops: 1
+- asks: loci
+  query: ow big capacity is armor-plate depot?
+  expect_key:
+  - orkrail/depot_armor-plate_capacity
+  hops: 1
+- asks: loci
+  query: wot zone does squig-feeders supplier operate in?
+  expect_key:
+  - orkrail/supp_squig-feeders_zone
+  hops: 1
+- asks: loci
+  query: wot zone does teef-traders supplier operate in?
+  expect_key:
+  - orkrail/supp_teef-traders_zone
+  hops: 1
+- asks: loci
+  query: wot zone does promethium-peddlers supplier operate in?
+  expect_key:
+  - orkrail/supp_promethium-peddlers_zone
+  hops: 1
+- asks: loci
+  query: wot zone does grot-labor supplier operate in?
+  expect_key:
+  - orkrail/supp_grot-labor_zone
+  hops: 1
+- asks: loci
+  query: wot zone does mekboy-parts supplier operate in?
+  expect_key:
+  - orkrail/supp_mekboy-parts_zone
+  hops: 1
+- asks: loci
+  query: wot zone does dakka-dealers supplier operate in?
+  expect_key:
+  - orkrail/supp_dakka-dealers_zone
+  hops: 1
+- asks: loci
+  query: wot zone does armor-acquirers supplier operate in?
+  expect_key:
+  - orkrail/supp_armor-acquirers_zone
+  hops: 1
+- asks: loci
+  query: wot zone does kustom-katalog supplier operate in?
+  expect_key:
+  - orkrail/supp_kustom-katalog_zone
+  hops: 1
+- asks: loci
+  query: wot rank is boss-gitsnik boss?
+  expect_key:
+  - orkrail/boss_boss-gitsnik_rank
+  hops: 1
+- asks: loci
+  query: wot rank is boss-skragbad boss?
+  expect_key:
+  - orkrail/boss_boss-skragbad_rank
+  hops: 1
+- asks: loci
+  query: wot rank is boss-mogrok boss?
+  expect_key:
+  - orkrail/boss_boss-mogrok_rank
+  hops: 1
+- asks: loci
+  query: wot rank is boss-zogwort boss?
+  expect_key:
+  - orkrail/boss_boss-zogwort_rank
+  hops: 1
+- asks: loci
+  query: wot rank is boss-snaggletooth boss?
+  expect_key:
+  - orkrail/boss_boss-snaggletooth_rank
+  hops: 1
+- asks: loci
+  query: wot rank is boss-gutfang boss?
+  expect_key:
+  - orkrail/boss_boss-gutfang_rank
+  hops: 1
+- asks: loci
+  query: wot rank is boss-rottenjaw boss?
+  expect_key:
+  - orkrail/boss_boss-rottenjaw_rank
+  hops: 1
+- asks: loci
+  query: wot rank is boss-blackfang boss?
+  expect_key:
+  - orkrail/boss_boss-blackfang_rank
+  hops: 1
+- asks: loci
+  query: wot origin station does srv-000 start from?
+  expect_key:
+  - orkrail/sched_srv-000_origin
+  hops: 1
+- asks: loci
+  query: wot origin station does srv-001 start from?
+  expect_key:
+  - orkrail/sched_srv-001_origin
+  hops: 1
+- asks: loci
+  query: wot origin station does srv-002 start from?
+  expect_key:
+  - orkrail/sched_srv-002_origin
+  hops: 1
+- asks: loci
+  query: wot origin station does srv-003 start from?
+  expect_key:
+  - orkrail/sched_srv-003_origin
+  hops: 1
+- asks: loci
+  query: wot origin station does srv-004 start from?
+  expect_key:
+  - orkrail/sched_srv-004_origin
+  hops: 1
+- asks: loci
+  query: wot origin station does srv-005 start from?
+  expect_key:
+  - orkrail/sched_srv-005_origin
+  hops: 1
+- asks: loci
+  query: wot origin station does srv-006 start from?
+  expect_key:
+  - orkrail/sched_srv-006_origin
+  hops: 1
+- asks: loci
+  query: wot origin station does srv-007 start from?
+  expect_key:
+  - orkrail/sched_srv-007_origin
+  hops: 1
+- asks: loci
+  query: wot origin station does srv-008 start from?
+  expect_key:
+  - orkrail/sched_srv-008_origin
+  hops: 1
+- asks: loci
+  query: wot origin station does srv-009 start from?
+  expect_key:
+  - orkrail/sched_srv-009_origin
+  hops: 1
+- asks: memory
+  query: tell me about incident evt-000 — bridge fell down at deff-dread-halt
+  expect_ref:
+  - evt-000
+  hops: 1
+- asks: memory
+  query: tell me about incident evt-001 — squigs stampeded at promethium-pit
+  expect_ref:
+  - evt-001
+  hops: 1
+- asks: memory
+  query: tell me about incident evt-002 — grots escaped at zogwort-folly
+  expect_ref:
+  - evt-002
+  hops: 1
+- asks: memory
+  query: tell me about incident evt-003 — track broke at kustom-keep
+  expect_ref:
+  - evt-003
+  hops: 1
+- asks: memory
+  query: tell me about incident evt-004 — squigs stampeded at mekboy-forge
+  expect_ref:
+  - evt-004
+  hops: 1

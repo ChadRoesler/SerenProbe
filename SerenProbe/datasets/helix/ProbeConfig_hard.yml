@@ -1,0 +1,163 @@
+# Auto-generated eval topology for the 'helix' dataset.
+# scc-v vs scc-nv over the SAME corpus, plus a decoy store as a leak test.
+ProbeConfig:
+  StartingPort: 7520
+
+  DefaultQuestions:         datasets/helix/questions_hard.yaml
+  DefaultLociSeed:   datasets/helix/loci.yaml
+  DefaultMemorySeed: datasets/helix/memory.yaml
+
+  Memory:
+    MemoryCount: 1
+    MemoryConfigs:
+      - { Name: helix-mem, Port: 7520 }
+
+  Loci:
+    LociCount: 3
+    LociConfigs:
+      - { Name: helix-loci-v,  Port: 7521, Flags: [vector] }
+      - { Name: helix-loci-nv, Port: 7522 }
+      - { Name: helix-decoy,   Port: 7529, NegativeTest: true, Seed: datasets/helix/decoy_hard.yaml }
+
+  Corpus:
+    # Regrade sets: named knob sweeps the Regrades button rolls against every
+    # corpus (it reconfigures the LIVE SCC container per combo, so keep them
+    # COMPACT - a set sweeps only the knobs it names; unnamed knobs stay put).
+    # A 'current' baseline row is measured automatically. Edit freely.
+    CorpusRegrades:
+      # THE TEST. hops=1 is today: coverage ~0.60, and six expectations the
+      # linter flagged as having NO lexical bridge from their query. hops=2
+      # runs a second retrieval round against a query expanded with round-1
+      # hit text, which is the only thing that can reach them.
+      #
+      # PREDICTION (falsifiable, on the record before we look):
+      #   hops=1 -> coverage ~0.600  (baseline)
+      #   hops=2 -> coverage climbs toward 1.0, and the gain lands on EXACTLY
+      #             the six linter-flagged expectations: Sigma-Aldrich,
+      #             2027-06, team-ledger, and their kin. No others.
+      # If it moves questions the linter DIDN'T flag, my linter is wrong.
+      # If it doesn't move at all, the hop is broken. Either way we learn.
+      #
+      # ---- RESULT (2026-07-13, orkrail_hard, fair trial, all combos shown) ----
+      # FALSIFIED. And the disjunction above was incomplete -- reality took a
+      # third branch neither option covered.
+      #
+      #   hops=1 -> coverage 0.482 (scc-v) / 0.500 (scc-nv)
+      #   hops=2 -> coverage 0.482 / 0.500   (delta EXACTLY zero)
+      #   hops=3 -> coverage 0.482 / 0.500   (delta EXACTLY zero)
+      #
+      # "It doesn't move, so the hop is broken" was WRONG. Direct row dump on the
+      # live container: hops=1 returns 13 hits, hops=2 returns 18 -- eight NEW
+      # document ids. The hop runs. /configure takes it. It retrieves.
+      # It just retrieves the WRONG THINGS.
+      #
+      # Two things fell out of the fair trial that matter more than the prediction:
+      #
+      # 1. THE HOP APPENDS; IT NEVER REORDERS. The top-10 at hops=2 is byte-identical
+      #    to hops=1 -- the new docs land at ranks 11-18. So every @k metric
+      #    (hit_rate/mrr/precision/recall/ndcg/iou/prec_omega) is STRUCTURALLY BLIND
+      #    to a hop, forever, at any k. docket_coverage scans all hits and is the only
+      #    metric in the harness that can see one. Grade hops on coverage or don't
+      #    grade them.
+      #
+      # 2. JUST ASKING FOR MORE BEATS HOPPING. n_results=30 buys +0.161 coverage;
+      #    hops=2 buys +0.000 at a whole extra retrieval round. The answers were at
+      #    ranks 10-30 of round ONE the entire time. The hop expanded the query and
+      #    walked away from them.
+      #
+      # HYPOTHESIS for (2), and the reason for the two new sets below: hop_terms=4
+      # lifts its expansion terms from round-1 hit text. In a corpus where every
+      # entry is the SAME TEMPLATE ("<thing> happened at <station> on <time> -- <outcome>"),
+      # the highest-signal terms in round-1 text ARE THE TEMPLATE. So the hop expands
+      # toward "more sentences shaped like this" instead of toward the bridge fact.
+      # Same OOD/templating pathology that has orkrail-mem at HR 0.083, different hat.
+      - Name: hop-sweep
+        hops: [1, 2, 3]
+
+      # NEVER ACTUALLY TESTED. Every set is a product over ONLY the knobs it names,
+      # so hop-sweep ran at n_results=10 -- appending the hop's extra docs to a packet
+      # that was ALREADY truncating the answers away. The hop was being graded with its
+      # hands tied. This is the honest trial.
+      #
+      # PREDICTION (on the record, before we look):
+      #   hops has a real effect ONLY once the packet is deep enough to hold what it
+      #   finds. Expect n_results to carry the gain again (~0.64) and hops to add
+      #   ~nothing ON TOP of it -- because the hop's docs aren't the missing ones,
+      #   they're just more template. If hops=2 x n_results=30 beats hops=1 x
+      #   n_results=30, I'm wrong and the hop DOES reach something depth alone can't.
+      - Name: hop-x-packet
+        hops: [1, 2]
+        n_results: [10, 30]
+
+      # THE REAL SUSPECT. If the hop expands toward the template, the fix isn't MORE
+      # hops -- it's better expansion terms. hop_terms controls how many terms it
+      # lifts; hop_budget how many docs it may pull back.
+      #
+      # PREDICTION: fewer, sharper terms beat more. hop_terms=2 should outperform
+      # hop_terms=8, because 8 terms on a templated corpus is 8 pieces of boilerplate.
+      # If MORE terms wins, the templating story is wrong and I need a new one.
+      #
+      # ---- RESULT: FALSIFIED. Flat. All six combos identical, both SCCs. Neither
+      # branch of my disjunction happened -- same third-branch outcome I'd just
+      # finished grading Chad on. But hop_terms IS behaviourally live (18 hits vs 19,
+      # different ids on a direct dump), so it steers -- it just steers into the same
+      # swamp every time. Which meant the terms were never the problem. The
+      # DESTINATION was.
+      - Name: hop-terms
+        hops: [2]
+        hop_terms: [2, 4, 8]
+        hop_budget: [5, 10]
+      - Name: rrf-sweep         # RRF k: how sharply top ranks dominate the merge
+        rrf_k: [30, 60, 100]
+      - Name: floor-sweep       # drop weak loci hits (precision / abstention)
+        loci_floor: [0.0, 0.1, 0.3]
+
+      # WE ONLY EVER SWEPT THIS KNOB DOWNWARD. [0.3 .. 1.0] is the half of the range
+      # that pushes the packet TOWARD memory -- and memory is the store sitting at
+      # HR 0.083. Every value below 1.0 hands rank-1 to a dead store and craters MRR
+      # to 0.052; we watched that cliff four separate times today and never once
+      # turned around and walked the other way.
+      #
+      # RRF weights are RELATIVE, so loci_weight ABOVE 1.0 is the memory-suppression
+      # knob viewed from the other side (there is no memory_weight in REGRADE_KNOBS --
+      # see the TODO below). Direct row dump on the live container, hops=2:
+      #
+      #   loci_weight=1  -> hop added 8 docs,  SIX from mem   (75% templated noise)
+      #   loci_weight=3  -> hop added 10 docs, ONE from mem    (90% loci facts)
+      #   loci_weight=10 -> identical to 3                     (saturates)
+      #
+      # The hop budget is allocated AFTER fusion weighting. Starve the corpse and the
+      # hop eats FACTS -- depot->supplier->promethium-grade, the exact relation chain
+      # a supply-chain query wants. The hop was never lost. It was being strangled.
+      #
+      # A KNOB SWEPT IN ONE DIRECTION IS HALF A KNOB.
+      - Name: weight-sweep      # how hard to lean on the deterministic store
+        loci_weight: [0.3, 0.5, 0.7, 1.0, 2.0, 3.0, 5.0, 10.0]
+
+      # THE ACTUAL EXPERIMENT. The hop only ever failed because the fusion fed it a
+      # dead store as an equal partner. Give it a starved corpse AND a deep enough
+      # packet to hold what it finds, and ask the ONLY metric that can see a hop.
+      #
+      # PREDICTION (mine, on the record, before we look):
+      #   The hop's DIET is fixed -- we watched that in the row dump. Whether that
+      #   converts to COVERAGE is a different question and I do NOT know the answer.
+      #   The facts it pulled at loci_weight=3 were the right RELATION (supplier,
+      #   promethium grade) but I did not see srv-000's OWN depot in there. So:
+      #   I expect hops=2 x loci_weight>=3 x n_results=30 to beat every cell in this
+      #   grid -- but by LESS than the +0.161 that n_results alone already buys.
+      #   If hops=2 still adds exactly 0.000 on top of hops=1 at the same weight and
+      #   packet, then the hop is genuinely retrieving relation-correct/entity-WRONG
+      #   documents, and the fix is the seed graph, not the fusion.
+      - Name: hop-x-weight
+        hops: [1, 2]
+        loci_weight: [1.0, 3.0]
+        n_results: [10, 30]
+      - Name: packet-sweep      # briefing size - the coverage lever
+        n_results: [10, 15, 20, 30]
+      - Name: floor-x-weight    # the interaction of the two loci knobs
+        loci_floor: [0.1, 0.3]
+        loci_weight: [0.5, 1.0]
+    CorpusCount: 2
+    CorpusConfigs:
+      - { Name: helix-scc-v,  Port: 7524, Stores: [{ Store: helix-loci-v },  { Store: helix-mem }] }
+      - { Name: helix-scc-nv, Port: 7523, Stores: [{ Store: helix-loci-nv }, { Store: helix-mem }] }

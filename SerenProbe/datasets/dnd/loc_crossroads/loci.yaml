@@ -1,0 +1,280 @@
+- project: loc_crossroads
+  key: crossroads_name
+  value: Crossroads
+  why: location name
+- project: loc_crossroads
+  key: crossroads_type
+  value: city
+  why: location type
+- project: loc_crossroads
+  key: crossroads_population
+  value: '26412'
+  why: population count
+- project: loc_crossroads
+  key: crossroads_size
+  value: small
+  why: relative size
+- project: loc_crossroads
+  key: crossroads_climate
+  value: tropical
+  why: climate zone
+- project: loc_crossroads
+  key: crossroads_terrain
+  value: forest
+  why: primary terrain
+- project: loc_crossroads
+  key: crossroads_government
+  value: council
+  why: government type
+- project: loc_crossroads
+  key: crossroads_defense
+  value: militia
+  why: defense force
+- project: loc_crossroads
+  key: crossroads_economy
+  value: trade hub
+  why: economic base
+- project: loc_crossroads
+  key: crossroads_language
+  value: Gnomish
+  why: primary language
+- project: loc_crossroads
+  key: crossroads_region
+  value: the east of Aethelgard
+  why: geographic region
+- project: loc_crossroads
+  key: crossroads_river
+  value: the Whitewater
+  why: nearby river
+- project: loc_crossroads
+  key: crossroads_mountain
+  value: the Spine
+  why: nearby mountain range
+- project: loc_crossroads
+  key: crossroads_forest
+  value: the Silverwood
+  why: nearby forest
+- project: loc_crossroads
+  key: crossroads_coast
+  value: the Sunken Coast
+  why: coastline
+- project: loc_crossroads
+  key: crossroads_elevation
+  value: 621 ft
+  why: average elevation
+- project: loc_crossroads
+  key: crossroads_area
+  value: 1427 sq mi
+  why: total area
+- project: loc_crossroads
+  key: crossroads_biome
+  value: grassland
+  why: primary biome
+- project: loc_crossroads
+  key: crossroads_natural_port
+  value: seasonal
+  why: natural harbor access
+- project: loc_crossroads
+  key: crossroads_resource_1
+  value: timber
+  why: primary natural resource
+- project: loc_crossroads
+  key: crossroads_district_1
+  value: Merchant Quarter
+  why: city district
+- project: loc_crossroads
+  key: crossroads_district_2
+  value: Dock Ward
+  why: city district
+- project: loc_crossroads
+  key: crossroads_district_3
+  value: Temple Heights
+  why: city district
+- project: loc_crossroads
+  key: crossroads_bldg_1
+  value: Grand Keep
+  why: seat of power
+- project: loc_crossroads
+  key: crossroads_bldg_2
+  value: Shrine of the Ancients
+  why: place of worship
+- project: loc_crossroads
+  key: crossroads_bldg_3
+  value: The Gilded Tankard
+  why: popular inn
+- project: loc_crossroads
+  key: crossroads_bldg_4
+  value: Crystal Exchange
+  why: main market
+- project: loc_crossroads
+  key: crossroads_bldg_5
+  value: City Garrison
+  why: defensive structure
+- project: loc_crossroads
+  key: crossroads_faction_1
+  value: Iron Guard
+  why: active faction
+- project: loc_crossroads
+  key: crossroads_faction_2
+  value: Emerald Enclave
+  why: active faction
+- project: loc_crossroads
+  key: crossroads_faction_3
+  value: Watch Brotherhood
+  why: active faction
+- project: loc_crossroads
+  key: crossroads_export_1
+  value: grain
+  why: primary export
+- project: loc_crossroads
+  key: crossroads_export_2
+  value: ale
+  why: secondary export
+- project: loc_crossroads
+  key: crossroads_export_3
+  value: magic scrolls
+  why: tertiary export
+- project: loc_crossroads
+  key: crossroads_import_1
+  value: silk
+  why: primary import
+- project: loc_crossroads
+  key: crossroads_import_2
+  value: potions
+  why: secondary import
+- project: loc_crossroads
+  key: crossroads_history_0
+  value: Crossroads was founded by an exiled king in the Age of Bones.
+  why: historical lore
+- project: loc_crossroads
+  key: crossroads_history_1
+  value: The first tree of Crossroads was laid in the 3rd century.
+  why: historical lore
+- project: loc_crossroads
+  key: crossroads_history_2
+  value: Crossroads withstood a siege by the Iron Pact for 151 days.
+  why: historical lore
+- project: loc_crossroads
+  key: crossroads_history_3
+  value: A behemoth once attacked Crossroads, destroying the main temple.
+  why: historical lore
+- project: loc_crossroads
+  key: crossroads_history_4
+  value: The Winter of Sorrow devastated Crossroads.
+  why: historical lore
+- project: loc_crossroads
+  key: crossroads_history_5
+  value: Crossroads was rebuilt under a council of elders.
+  why: historical lore
+- project: loc_crossroads
+  key: crossroads_history_6
+  value: A forgotten library lies beneath Crossroads.
+  why: historical lore
+- project: loc_crossroads
+  key: crossroads_history_7
+  value: Crossroads is protected by a blessing from the elements.
+  why: historical lore
+- project: loc_crossroads
+  key: crossroads_history_8
+  value: The tallest part of Crossroads is the Star Tower.
+  why: historical lore
+- project: loc_crossroads
+  key: crossroads_history_9
+  value: A treaty was signed in Crossroads that shaped the fate of Aethelgard.
+  why: historical lore
+- project: loc_crossroads
+  key: crossroads_notable_1
+  value: a bottomless well
+  why: notable feature
+- project: loc_crossroads
+  key: crossroads_notable_2
+  value: a tree that bears silver fruit
+  why: notable feature
+- project: loc_crossroads
+  key: crossroads_danger_1
+  value: goblin tunnels
+  why: local danger
+- project: loc_crossroads
+  key: crossroads_danger_2
+  value: cursed ruins
+  why: local danger
+- project: loc_crossroads
+  key: crossroads_race_1
+  value: Gnome
+  why: common race
+- project: loc_crossroads
+  key: crossroads_race_2
+  value: Half-Elf
+  why: minority race
+- project: loc_crossroads
+  key: crossroads_religion_1
+  value: Shrine of Corellon
+  why: primary religion
+- project: loc_crossroads
+  key: crossroads_religion_2
+  value: Star Faith
+  why: secondary religion
+- project: loc_crossroads
+  key: crossroads_ruler
+  value: Queen Seraphina
+  why: current ruler
+- project: loc_crossroads
+  key: crossroads_guard
+  value: 265 guards
+  why: garrison size
+- project: loc_crossroads
+  key: crossroads_festival
+  value: Feast of the Harvest
+  why: annual festival
+- project: loc_crossroads
+  key: crossroads_trade_route
+  value: the Northern Road
+  why: major trade route
+- project: loc_crossroads
+  key: crossroads_ally
+  value: Silverwood
+  why: allied settlement
+- project: loc_crossroads
+  key: crossroads_enemy
+  value: the Underdark
+  why: hostile neighbor
+- project: loc_crossroads
+  key: crossroads_status
+  value: besieged
+  why: current status
+- project: loc_crossroads
+  key: crossroads_extra_937
+  value: secret smuggler tunnels
+  why: notable detail
+- project: loc_crossroads
+  key: crossroads_extra_654
+  value: enchanted grove
+  why: notable detail
+- project: loc_crossroads
+  key: crossroads_extra_194
+  value: hidden catacombs
+  why: notable detail
+- project: loc_crossroads
+  key: crossroads_extra_159
+  value: secret smuggler tunnels
+  why: notable detail
+- project: loc_crossroads
+  key: crossroads_extra_391
+  value: ancient aqueduct
+  why: notable detail
+- project: loc_crossroads
+  key: crossroads_extra_847
+  value: abandoned quarry
+  why: notable detail
+- project: loc_crossroads
+  key: crossroads_extra_382
+  value: royal hunting grounds
+  why: notable detail
+- project: loc_crossroads
+  key: crossroads_extra_872
+  value: abandoned quarry
+  why: notable detail
+- project: loc_crossroads
+  key: crossroads_extra_684
+  value: ancient aqueduct
+  why: notable detail

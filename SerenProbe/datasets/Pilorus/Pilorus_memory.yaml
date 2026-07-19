@@ -1,0 +1,255 @@
+# SerenMemory entries - multi-source export
+# Three-tier memory system: long, short, near
+
+- tier: long
+  ref: pilorus_0_long_0
+  topic: world_event, war_declared, the_frost_era, 0_(The_Frost_Era)
+  content: '0 (The Frost Era): War declared: Windoreford attacked Turdurnaz'
+- tier: long
+  ref: pilorus_0_long_1
+  topic: world_event, battle, the_frost_era, 8_(The_Frost_Era)
+  content: '8 (The Frost Era): Battle between Aeanoran and Windoreford'
+- tier: long
+  ref: pilorus_0_long_2
+  topic: world_event, battle, the_frost_era, 11_(The_Frost_Era)
+  content: '11 (The Frost Era): Battle between Rakmiz and Turdurnaz'
+- tier: long
+  ref: pilorus_0_long_3
+  topic: world_event, war_ended, the_frost_era, 16_(The_Frost_Era)
+  content: '16 (The Frost Era): War ended: Falconcon defeated Windoreford'
+- tier: long
+  ref: pilorus_0_long_4
+  topic: world_event, war_declared, the_frost_era, 26_(The_Frost_Era)
+  content: '26 (The Frost Era): War declared: Falconcon attacked Turdurnaz'
+- tier: long
+  ref: pilorus_0_long_5
+  topic: world_event, war_declared, the_frost_era, 31_(The_Frost_Era)
+  content: '31 (The Frost Era): War declared: Aeanoran attacked Mokthragorn'
+- tier: long
+  ref: pilorus_0_long_6
+  topic: world_event, war_ended, the_frost_era, 37_(The_Frost_Era)
+  content: '37 (The Frost Era): War ended: Rakmiz defeated Aeanoran'
+- tier: long
+  ref: pilorus_0_long_7
+  topic: world_event, war_ended, the_frost_era, 49_(The_Frost_Era)
+  content: '49 (The Frost Era): War ended: Miznok defeated Aeanoran'
+- tier: long
+  ref: pilorus_0_long_8
+  topic: world_event, beast_attack, the_frost_era, 58_(The_Frost_Era)
+  content: '58 (The Frost Era): The megabeast Doomdrake attacked Thrathulvale, killing
+    39'
+- tier: long
+  ref: pilorus_0_long_9
+  topic: world_event, battle, age_of_ashen, 65_(Age_of_Ashen)
+  content: '65 (Age of Ashen): Battle between Falconcon and Rakmiz'
+- tier: long
+  ref: pilorus_0_long_10
+  topic: world_event, war_ended, age_of_ashen, 74_(Age_of_Ashen)
+  content: '74 (Age of Ashen): War ended: Falconcon defeated Mokthragorn'
+- tier: long
+  ref: pilorus_0_long_11
+  topic: world_event, beast_attack, age_of_ashen, 90_(Age_of_Ashen)
+  content: '90 (Age of Ashen): The megabeast Doomdrake attacked Ulfstan-watch, killing
+    49'
+- tier: long
+  ref: pilorus_0_long_12
+  topic: world_event, war_ended, age_of_ashen, 99_(Age_of_Ashen)
+  content: '99 (Age of Ashen): War ended: Miznok defeated Rakmiz'
+- tier: long
+  ref: pilorus_0_long_13
+  topic: world_event, beast_attack, age_of_ashen, 121_(Age_of_Ashen)
+  content: '121 (Age of Ashen): The megabeast Doomdrake attacked Skabsnikhollow, killing
+    60'
+- tier: long
+  ref: pilorus_0_long_14
+  topic: world_event, war_ended, the_golden_times, 137_(The_Golden_Times)
+  content: '137 (The Golden Times): War ended: Aeanoran defeated Mokthragorn'
+- tier: long
+  ref: pilorus_0_long_15
+  topic: world_event, beast_attack, the_golden_times, 151_(The_Golden_Times)
+  content: '151 (The Golden Times): The dragon Boneking attacked Mundric-shire, killing
+    42'
+- tier: long
+  ref: pilorus_0_long_16
+  topic: world_event, beast_attack, the_golden_times, 160_(The_Golden_Times)
+  content: '160 (The Golden Times): The titan Fell Thunderking attacked Nrakoth-hall,
+    killing 58'
+- tier: long
+  ref: pilorus_0_long_17
+  topic: world_event, beast_attack, the_golden_times, 174_(The_Golden_Times)
+  content: '174 (The Golden Times): The megabeast Doomdrake attacked Nobgrik-hive,
+    killing 82'
+- tier: long
+  ref: pilorus_0_long_18
+  topic: world_event, beast_attack, the_pearl_years, 191_(The_Pearl_Years)
+  content: '191 (The Pearl Years): The megabeast Doomdrake attacked Kazkazadnaz-hearth,
+    killing 90'
+- tier: long
+  ref: pilorus_0_long_19
+  topic: world_event, beast_attack, the_pearl_years, 201_(The_Pearl_Years)
+  content: '201 (The Pearl Years): The titan Fell Thunderking attacked Zbazaz-gate,
+    killing 98'
+- tier: long
+  ref: pilorus_0_long_20
+  topic: world_event, beast_attack, the_pearl_years, 229_(The_Pearl_Years)
+  content: '229 (The Pearl Years): The forgotten_beast Fangbeast attacked Durorn-deep,
+    killing 82'
+- tier: long
+  ref: pilorus_0_long_21
+  topic: world_event, beast_attack, the_pearl_years, 247_(The_Pearl_Years)
+  content: '247 (The Pearl Years): The dragon Boneking attacked Kulmokhall, killing
+    76'
+- tier: long
+  ref: pilorus_0_long_22
+  topic: world_event, beast_attack, the_dawn_age, 260_(The_Dawn_Age)
+  content: '260 (The Dawn Age): The dragon Boneking attacked Vorntorthrak-fort, killing
+    87'
+- tier: long
+  ref: pilorus_0_long_23
+  topic: world_event, beast_attack, the_dawn_age, 275_(The_Dawn_Age)
+  content: '275 (The Dawn Age): The megabeast Doomdrake attacked Vkragur-hall, killing
+    109'
+- tier: long
+  ref: pilorus_0_long_24
+  topic: world_event, beast_attack, the_dawn_age, 293_(The_Dawn_Age)
+  content: '293 (The Dawn Age): The megabeast Doomdrake attacked Linmar-haven, killing
+    112'
+- tier: long
+  ref: pilorus_0_long_25
+  topic: world_event, beast_attack, the_crystal_epoch, 325_(The_Crystal_Epoch)
+  content: '325 (The Crystal Epoch): The megabeast Doomdrake attacked Trakskigblip-hive,
+    killing 121'
+- tier: long
+  ref: pilorus_0_long_26
+  topic: world_event, beast_attack, the_crystal_epoch, 345_(The_Crystal_Epoch)
+  content: '345 (The Crystal Epoch): The forgotten_beast Fangbeast attacked Thokmor-deep,
+    killing 139'
+- tier: long
+  ref: pilorus_0_long_27
+  topic: world_event, beast_attack, the_crystal_epoch, 364_(The_Crystal_Epoch)
+  content: '364 (The Crystal Epoch): The dragon Boneking attacked Skigklikgloppit,
+    killing 121'
+- tier: long
+  ref: pilorus_0_long_28
+  topic: world_event, beast_attack, the_sapphire_era, 386_(The_Sapphire_Era)
+  content: '386 (The Sapphire Era): The forgotten_beast Fangbeast attacked Cedald-haven,
+    killing 142'
+- tier: long
+  ref: pilorus_0_long_29
+  topic: world_event, beast_attack, the_sapphire_era, 412_(The_Sapphire_Era)
+  content: '412 (The Sapphire Era): The titan Fell Thunderking attacked Nobgrik-hive,
+    killing 164'
+- tier: short
+  ref: pilorus_0_short_0
+  topic: recent_event, war_ended, age_of_radiant, 485_(Age_of_Radiant)
+  content: '485 (Age of Radiant): War ended: Windoreford defeated Miznok'
+- tier: short
+  ref: pilorus_0_short_1
+  topic: recent_event, battle, age_of_radiant, 485_(Age_of_Radiant)
+  content: '485 (Age of Radiant): Battle between Falconcon and Windoreford'
+- tier: short
+  ref: pilorus_0_short_2
+  topic: recent_event, battle, age_of_radiant, 485_(Age_of_Radiant)
+  content: '485 (Age of Radiant): Battle between Aeanoran and Turdurnaz'
+- tier: short
+  ref: pilorus_0_short_3
+  topic: recent_event, death, age_of_radiant, 485_(Age_of_Radiant)
+  content: '485 (Age of Radiant): Balraddore died of accident'
+- tier: short
+  ref: pilorus_0_short_4
+  topic: recent_event, title_promotion, age_of_radiant, 485_(Age_of_Radiant)
+  content: '485 (Age of Radiant): Gaknobsnag became Ravager'
+- tier: short
+  ref: pilorus_0_short_5
+  topic: recent_event, beast_attack, age_of_radiant, 485_(Age_of_Radiant)
+  content: '485 (Age of Radiant): The dragon Boneking attacked Iondirthas-dell, killing
+    161'
+- tier: short
+  ref: pilorus_0_short_6
+  topic: recent_event, birth, age_of_radiant, 485_(Age_of_Radiant)
+  content: '485 (Age of Radiant): Olfrick was born, a Human'
+- tier: short
+  ref: pilorus_0_short_7
+  topic: recent_event, title_promotion, age_of_radiant, 485_(Age_of_Radiant)
+  content: '485 (Age of Radiant): Wilconfred became Duke'
+- tier: short
+  ref: pilorus_0_short_8
+  topic: recent_event, war_ended, age_of_radiant, 485_(Age_of_Radiant)
+  content: '485 (Age of Radiant): War ended: Mokthragorn defeated Miznok'
+- tier: short
+  ref: pilorus_0_short_9
+  topic: recent_event, birth, age_of_radiant, 486_(Age_of_Radiant)
+  content: '486 (Age of Radiant): Ceddorecon was born, a Human'
+- tier: short
+  ref: pilorus_0_short_10
+  topic: recent_event, title_promotion, age_of_radiant, 486_(Age_of_Radiant)
+  content: '486 (Age of Radiant): Mundbran became Berserker'
+- tier: short
+  ref: pilorus_0_short_11
+  topic: recent_event, battle, age_of_radiant, 486_(Age_of_Radiant)
+  content: '486 (Age of Radiant): Battle between Falconcon and Windoreford'
+- tier: short
+  ref: pilorus_0_short_12
+  topic: recent_event, death, age_of_radiant, 486_(Age_of_Radiant)
+  content: '486 (Age of Radiant): Garfal died of hunting accident'
+- tier: short
+  ref: pilorus_0_short_13
+  topic: recent_event, title_promotion, age_of_radiant, 486_(Age_of_Radiant)
+  content: '486 (Age of Radiant): Aldrad became Sage of Windoreford'
+- tier: short
+  ref: pilorus_0_short_14
+  topic: recent_event, title_promotion, age_of_radiant, 486_(Age_of_Radiant)
+  content: '486 (Age of Radiant): Kazadborkad became Tempest of Mokthragorn'
+- tier: near
+  ref: pilorus_0_near_0
+  topic: ongoing_conflict, age_of_radiant, 490_(Age_of_Radiant)
+  content: '490 (Age of Radiant): War declared: Falconcon attacked Rakmiz'
+  intent: 'War declared: Falconcon attacked Rakmiz'
+- tier: near
+  ref: pilorus_0_near_1
+  topic: ongoing_conflict, age_of_radiant, 490_(Age_of_Radiant)
+  content: '490 (Age of Radiant): War ended: Aeanoran defeated Miznok'
+  intent: 'War ended: Aeanoran defeated Miznok'
+- tier: near
+  ref: pilorus_0_near_2
+  topic: ongoing_conflict, age_of_radiant, 490_(Age_of_Radiant)
+  content: '490 (Age of Radiant): War ended: Falconcon defeated Windoreford'
+  intent: 'War ended: Falconcon defeated Windoreford'
+- tier: near
+  ref: pilorus_0_near_3
+  topic: ongoing_conflict, age_of_radiant, 493_(Age_of_Radiant)
+  content: '493 (Age of Radiant): War ended: Rakmiz defeated Turdurnaz'
+  intent: 'War ended: Rakmiz defeated Turdurnaz'
+- tier: near
+  ref: pilorus_0_near_4
+  topic: concern, age_of_radiant, 500_(Age_of_Radiant)
+  content: '500 (Age of Radiant): The Falconcon civilization concerns about border
+    disputes'
+  intent: The Falconcon civilization concerns about border disputes
+- tier: near
+  ref: pilorus_0_near_5
+  topic: concern, age_of_radiant, 500_(Age_of_Radiant)
+  content: '500 (Age of Radiant): The Miznok civilization concerns about forgotten
+    magic'
+  intent: The Miznok civilization concerns about forgotten magic
+- tier: near
+  ref: pilorus_0_near_6
+  topic: concern, age_of_radiant, 500_(Age_of_Radiant)
+  content: '500 (Age of Radiant): The people whisper about dragon activity'
+  intent: The people whisper about dragon activity
+- tier: near
+  ref: pilorus_0_near_7
+  topic: concern, age_of_radiant, 500_(Age_of_Radiant)
+  content: '500 (Age of Radiant): A goblin raids is said to be stirring'
+  intent: A goblin raids is said to be stirring
+- tier: near
+  ref: pilorus_0_near_8
+  topic: concern, age_of_radiant, 500_(Age_of_Radiant)
+  content: '500 (Age of Radiant): The Falconcon civilization concerns about goblin
+    raids'
+  intent: The Falconcon civilization concerns about goblin raids
+- tier: near
+  ref: pilorus_0_near_9
+  topic: concern, age_of_radiant, 500_(Age_of_Radiant)
+  content: '500 (Age of Radiant): A beast sightings is said to be stirring'
+  intent: A beast sightings is said to be stirring

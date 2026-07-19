@@ -1,0 +1,120 @@
+- project: flora
+  key: fern_0_light
+  value: full sun
+  why: light needs of fern
+- project: flora
+  key: moss_1_light
+  value: shade
+  why: light needs of moss
+- project: flora
+  key: lichen_2_light
+  value: shade
+  why: light needs of lichen
+- project: flora
+  key: sedge_3_light
+  value: full sun
+  why: light needs of sedge
+- project: flora
+  key: reed_4_light
+  value: full sun
+  why: light needs of reed
+- project: flora
+  key: ivy_5_light
+  value: partial
+  why: light needs of ivy
+- project: flora
+  key: fern_6_light
+  value: shade
+  why: light needs of fern
+- project: flora
+  key: moss_7_light
+  value: partial
+  why: light needs of moss
+- project: flora
+  key: lichen_8_light
+  value: partial
+  why: light needs of lichen
+- project: flora
+  key: sedge_9_light
+  value: partial
+  why: light needs of sedge
+- project: flora
+  key: reed_10_light
+  value: partial
+  why: light needs of reed
+- project: flora
+  key: ivy_11_light
+  value: partial
+  why: light needs of ivy
+- project: flora
+  key: fern_12_light
+  value: shade
+  why: light needs of fern
+- project: flora
+  key: moss_13_light
+  value: shade
+  why: light needs of moss
+- project: flora
+  key: lichen_14_light
+  value: shade
+  why: light needs of lichen
+- project: flora
+  key: sedge_15_light
+  value: shade
+  why: light needs of sedge
+- project: flora
+  key: reed_16_light
+  value: partial
+  why: light needs of reed
+- project: flora
+  key: ivy_17_light
+  value: shade
+  why: light needs of ivy
+- project: flora
+  key: fern_18_light
+  value: full sun
+  why: light needs of fern
+- project: flora
+  key: moss_19_light
+  value: full sun
+  why: light needs of moss
+- project: flora
+  key: lichen_20_light
+  value: partial
+  why: light needs of lichen
+- project: flora
+  key: sedge_21_light
+  value: shade
+  why: light needs of sedge
+- project: flora
+  key: reed_22_light
+  value: full sun
+  why: light needs of reed
+- project: flora
+  key: ivy_23_light
+  value: partial
+  why: light needs of ivy
+- project: flora
+  key: fern_24_light
+  value: shade
+  why: light needs of fern
+- project: flora
+  key: moss_25_light
+  value: full sun
+  why: light needs of moss
+- project: flora
+  key: lichen_26_light
+  value: full sun
+  why: light needs of lichen
+- project: flora
+  key: sedge_27_light
+  value: partial
+  why: light needs of sedge
+- project: flora
+  key: reed_28_light
+  value: full sun
+  why: light needs of reed
+- project: flora
+  key: ivy_29_light
+  value: full sun
+  why: light needs of ivy

@@ -1,0 +1,280 @@
+- project: loc_ironhold
+  key: ironhold_name
+  value: Ironhold
+  why: location name
+- project: loc_ironhold
+  key: ironhold_type
+  value: city
+  why: location type
+- project: loc_ironhold
+  key: ironhold_population
+  value: '40304'
+  why: population count
+- project: loc_ironhold
+  key: ironhold_size
+  value: large
+  why: relative size
+- project: loc_ironhold
+  key: ironhold_climate
+  value: arid
+  why: climate zone
+- project: loc_ironhold
+  key: ironhold_terrain
+  value: coast
+  why: primary terrain
+- project: loc_ironhold
+  key: ironhold_government
+  value: monarchy
+  why: government type
+- project: loc_ironhold
+  key: ironhold_defense
+  value: standing army
+  why: defense force
+- project: loc_ironhold
+  key: ironhold_economy
+  value: religious
+  why: economic base
+- project: loc_ironhold
+  key: ironhold_language
+  value: Dwarvish
+  why: primary language
+- project: loc_ironhold
+  key: ironhold_region
+  value: the west of Aethelgard
+  why: geographic region
+- project: loc_ironhold
+  key: ironhold_river
+  value: the Winding
+  why: nearby river
+- project: loc_ironhold
+  key: ironhold_mountain
+  value: the Misthorns
+  why: nearby mountain range
+- project: loc_ironhold
+  key: ironhold_forest
+  value: the Silverwood
+  why: nearby forest
+- project: loc_ironhold
+  key: ironhold_coast
+  value: the Pearl Strand
+  why: coastline
+- project: loc_ironhold
+  key: ironhold_elevation
+  value: 3875 ft
+  why: average elevation
+- project: loc_ironhold
+  key: ironhold_area
+  value: 2313 sq mi
+  why: total area
+- project: loc_ironhold
+  key: ironhold_biome
+  value: desert
+  why: primary biome
+- project: loc_ironhold
+  key: ironhold_natural_port
+  value: 'no'
+  why: natural harbor access
+- project: loc_ironhold
+  key: ironhold_resource_1
+  value: iron ore
+  why: primary natural resource
+- project: loc_ironhold
+  key: ironhold_district_1
+  value: Noble Enclave
+  why: city district
+- project: loc_ironhold
+  key: ironhold_district_2
+  value: Dock Ward
+  why: city district
+- project: loc_ironhold
+  key: ironhold_district_3
+  value: Foreign Quarter
+  why: city district
+- project: loc_ironhold
+  key: ironhold_bldg_1
+  value: Governor's Palace
+  why: seat of power
+- project: loc_ironhold
+  key: ironhold_bldg_2
+  value: Chapel of Storms
+  why: place of worship
+- project: loc_ironhold
+  key: ironhold_bldg_3
+  value: The Rusty Anchor
+  why: popular inn
+- project: loc_ironhold
+  key: ironhold_bldg_4
+  value: Timber Bazaar
+  why: main market
+- project: loc_ironhold
+  key: ironhold_bldg_5
+  value: City Garrison
+  why: defensive structure
+- project: loc_ironhold
+  key: ironhold_faction_1
+  value: Free Traders
+  why: active faction
+- project: loc_ironhold
+  key: ironhold_faction_2
+  value: Miner's Union
+  why: active faction
+- project: loc_ironhold
+  key: ironhold_faction_3
+  value: Watch Brotherhood
+  why: active faction
+- project: loc_ironhold
+  key: ironhold_export_1
+  value: weapons
+  why: primary export
+- project: loc_ironhold
+  key: ironhold_export_2
+  value: cheese
+  why: secondary export
+- project: loc_ironhold
+  key: ironhold_export_3
+  value: artwork
+  why: tertiary export
+- project: loc_ironhold
+  key: ironhold_import_1
+  value: oil
+  why: primary import
+- project: loc_ironhold
+  key: ironhold_import_2
+  value: wine
+  why: secondary import
+- project: loc_ironhold
+  key: ironhold_history_0
+  value: Ironhold was founded by an exiled king in the Age of Bones.
+  why: historical lore
+- project: loc_ironhold
+  key: ironhold_history_1
+  value: The first stone of Ironhold was laid in the 3rd century.
+  why: historical lore
+- project: loc_ironhold
+  key: ironhold_history_2
+  value: Ironhold withstood a siege by the Iron Pact for 263 days.
+  why: historical lore
+- project: loc_ironhold
+  key: ironhold_history_3
+  value: A behemoth once attacked Ironhold, destroying the north wall.
+  why: historical lore
+- project: loc_ironhold
+  key: ironhold_history_4
+  value: The Plague of Shadows devastated Ironhold.
+  why: historical lore
+- project: loc_ironhold
+  key: ironhold_history_5
+  value: Ironhold was rebuilt under an elven architect.
+  why: historical lore
+- project: loc_ironhold
+  key: ironhold_history_6
+  value: A forgotten library lies beneath Ironhold.
+  why: historical lore
+- project: loc_ironhold
+  key: ironhold_history_7
+  value: Ironhold is protected by a blessing from the gods.
+  why: historical lore
+- project: loc_ironhold
+  key: ironhold_history_8
+  value: The deepest part of Ironhold is the Iron Foundry.
+  why: historical lore
+- project: loc_ironhold
+  key: ironhold_history_9
+  value: A pact was signed in Ironhold that shaped the fate of Aethelgard.
+  why: historical lore
+- project: loc_ironhold
+  key: ironhold_notable_1
+  value: a singing fountain
+  why: notable feature
+- project: loc_ironhold
+  key: ironhold_notable_2
+  value: a giant statue of a forgotten king
+  why: notable feature
+- project: loc_ironhold
+  key: ironhold_danger_1
+  value: shifting sands
+  why: local danger
+- project: loc_ironhold
+  key: ironhold_danger_2
+  value: poisonous gas vents
+  why: local danger
+- project: loc_ironhold
+  key: ironhold_race_1
+  value: Dwarf
+  why: common race
+- project: loc_ironhold
+  key: ironhold_race_2
+  value: Orc
+  why: minority race
+- project: loc_ironhold
+  key: ironhold_religion_1
+  value: Altar of Moradin
+  why: primary religion
+- project: loc_ironhold
+  key: ironhold_religion_2
+  value: Cult of the Black Flame
+  why: secondary religion
+- project: loc_ironhold
+  key: ironhold_ruler
+  value: Lord Tamsin
+  why: current ruler
+- project: loc_ironhold
+  key: ironhold_guard
+  value: 353 guards
+  why: garrison size
+- project: loc_ironhold
+  key: ironhold_festival
+  value: Dragon's Wake
+  why: annual festival
+- project: loc_ironhold
+  key: ironhold_trade_route
+  value: the Northern Road
+  why: major trade route
+- project: loc_ironhold
+  key: ironhold_ally
+  value: Silverwood
+  why: allied settlement
+- project: loc_ironhold
+  key: ironhold_enemy
+  value: the Shadow Lands
+  why: hostile neighbor
+- project: loc_ironhold
+  key: ironhold_status
+  value: prosperous
+  why: current status
+- project: loc_ironhold
+  key: ironhold_extra_677
+  value: enchanted grove
+  why: notable detail
+- project: loc_ironhold
+  key: ironhold_extra_173
+  value: hidden catacombs
+  why: notable detail
+- project: loc_ironhold
+  key: ironhold_extra_450
+  value: secret smuggler tunnels
+  why: notable detail
+- project: loc_ironhold
+  key: ironhold_extra_234
+  value: royal hunting grounds
+  why: notable detail
+- project: loc_ironhold
+  key: ironhold_extra_271
+  value: ancient aqueduct
+  why: notable detail
+- project: loc_ironhold
+  key: ironhold_extra_286
+  value: abandoned quarry
+  why: notable detail
+- project: loc_ironhold
+  key: ironhold_extra_461
+  value: hidden catacombs
+  why: notable detail
+- project: loc_ironhold
+  key: ironhold_extra_825
+  value: ancient aqueduct
+  why: notable detail
+- project: loc_ironhold
+  key: ironhold_extra_348
+  value: royal hunting grounds
+  why: notable detail

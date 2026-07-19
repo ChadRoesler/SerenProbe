@@ -1,0 +1,32 @@
+- project: helix
+  key: shadow_gateway_port
+  value: '9101'
+  why: shadow-gateway listens here
+- project: helix
+  key: shadow_gateway_lang
+  value: Zig
+  why: shadow-gateway language
+- project: helix
+  key: shadow_gateway_owner
+  value: team-void
+  why: shadow-gateway owner
+- project: helix
+  key: auth_relay_port
+  value: '9102'
+  why: auth-relay listens here
+- project: helix
+  key: auth_relay_lang
+  value: Haskell
+  why: auth-relay language
+- project: helix
+  key: billing_mirror_port
+  value: '9103'
+  why: billing-mirror listens here
+- project: helix
+  key: billing_mirror_db
+  value: Firebird
+  why: billing-mirror datastore
+- project: helix
+  key: search_ghost_owner
+  value: team-void
+  why: search-ghost owner

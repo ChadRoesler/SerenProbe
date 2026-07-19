@@ -1,0 +1,272 @@
+- tier: short
+  ref: vexia_short_00
+  topic: recent
+  content: Vexia the Venomous survived an ambush near the Sunken Temple last week.
+- tier: short
+  ref: vexia_short_01
+  topic: recent
+  content: Vexia the Venomous discovered a hidden passage in the old ruins.
+- tier: short
+  ref: vexia_short_02
+  topic: recent
+  content: A traveling merchant told Vexia the Venomous of a rising threat in the east.
+- tier: short
+  ref: vexia_short_03
+  topic: recent
+  content: Vexia the Venomous trained under a wandering monk for three days.
+- tier: short
+  ref: vexia_short_04
+  topic: recent
+  content: Vexia the Venomous helped defend the Sunken Temple from a goblin raid.
+- tier: short
+  ref: vexia_short_05
+  topic: recent
+  content: A strange omen — a blood-red sunrise — was seen over the Sunken Temple.
+- tier: short
+  ref: vexia_short_06
+  topic: recent
+  content: Vexia the Venomous received a coded message from an old contact.
+- tier: short
+  ref: vexia_short_07
+  topic: recent
+  content: During a storm, Vexia the Venomous lost a valuable weapon in the river.
+- tier: short
+  ref: vexia_short_08
+  topic: recent
+  content: Vexia the Venomous overheard a plot to poison the well in the Sunken Temple.
+- tier: short
+  ref: vexia_short_09
+  topic: recent
+  content: A dwarf sage visited Vexia the Venomous seeking aid against the Shadow King.
+- tier: short
+  ref: vexia_short_10
+  topic: recent
+  content: Vexia the Venomous found a wounded wolf and nursed it back to health.
+- tier: short
+  ref: vexia_short_11
+  topic: recent
+  content: The local guild offered a bounty for a dangerous necromancer.
+- tier: short
+  ref: vexia_short_12
+  topic: recent
+  content: Vexia the Venomous participated in a moot at the Sunken Temple.
+- tier: short
+  ref: vexia_short_13
+  topic: recent
+  content: A rival challenged Vexia the Venomous to a debate and lost.
+- tier: short
+  ref: vexia_short_14
+  topic: recent
+  content: Vexia the Venomous deciphered an old prophecy mentioning the Crystal Crown.
+- tier: short
+  ref: vexia_short_15
+  topic: recent
+  content: A mysterious fog rolled into the Sunken Temple for three nights straight.
+- tier: short
+  ref: vexia_short_16
+  topic: recent
+  content: Vexia the Venomous was chosen by a wandering druid.
+- tier: short
+  ref: vexia_short_17
+  topic: recent
+  content: Vexia the Venomous unearthed a statue from an forgotten era.
+- tier: short
+  ref: vexia_short_18
+  topic: recent
+  content: A quake damaged part of the Sunken Temple.
+- tier: short
+  ref: vexia_short_19
+  topic: recent
+  content: Vexia the Venomous swore a temporary truce with a former enemy.
+- tier: long
+  ref: vexia_long_00
+  topic: lore
+  content: Vexia the Venomous was born under the sign of the Serpent.
+- tier: long
+  ref: vexia_long_01
+  topic: lore
+  content: The Lizardfolk people believe Vexia the Venomous is a reborn hero.
+- tier: long
+  ref: vexia_long_02
+  topic: lore
+  content: Vexia the Venomous's father taught them the ways of the Assassin.
+- tier: long
+  ref: vexia_long_03
+  topic: lore
+  content: In Vexia the Venomous's youth, they tamed a wild beast.
+- tier: long
+  ref: vexia_long_04
+  topic: lore
+  content: Vexia the Venomous carries a scar shaped like a crown.
+- tier: long
+  ref: vexia_long_05
+  topic: lore
+  content: A fey lord once offered Vexia the Venomous a bargain — power in exchange for years of life.
+- tier: long
+  ref: vexia_long_06
+  topic: lore
+  content: Vexia the Venomous once saved a village.
+- tier: long
+  ref: vexia_long_07
+  topic: lore
+  content: The Lizardfolk see Vexia the Venomous as a hero between the old world and the new.
+- tier: long
+  ref: vexia_long_08
+  topic: lore
+  content: Vexia the Venomous learned the tome from a wandering master.
+- tier: long
+  ref: vexia_long_09
+  topic: lore
+  content: In Vexia the Venomous's past, they crossed the burning desert.
+- tier: long
+  ref: vexia_long_10
+  topic: lore
+  content: A mask was given to Vexia the Venomous.
+- tier: long
+  ref: vexia_long_11
+  topic: lore
+  content: Vexia the Venomous once healed a plague.
+- tier: long
+  ref: vexia_long_12
+  topic: lore
+  content: The Lizardfolk ancestors spoke of Vexia the Venomous in dreams.
+- tier: long
+  ref: vexia_long_13
+  topic: lore
+  content: Vexia the Venomous carries a blessing from the ancients.
+- tier: long
+  ref: vexia_long_14
+  topic: lore
+  content: A journey in Vexia the Venomous's youth left a grudge.
+- tier: long
+  ref: vexia_long_15
+  topic: lore
+  content: Vexia the Venomous broke an ancient oath.
+- tier: long
+  ref: vexia_long_16
+  topic: lore
+  content: The Lizardfolk elders warn Vexia the Venomous for their courage.
+- tier: long
+  ref: vexia_long_17
+  topic: lore
+  content: Vexia the Venomous knows a secret path.
+- tier: long
+  ref: vexia_long_18
+  topic: lore
+  content: The Lizardfolk race originated in the Sunken Temple long before the First Age.
+- tier: long
+  ref: vexia_long_19
+  topic: lore
+  content: Lizardfolk tradition holds that their creator, the Storm Lord, shaped them from wood.
+- tier: long
+  ref: vexia_long_20
+  topic: lore
+  content: The Lizardfolk once fought a great war against the Fey Court.
+- tier: long
+  ref: vexia_long_21
+  topic: lore
+  content: A sacred cave in the Sunken Temple is the spiritual heart of the Lizardfolk.
+- tier: long
+  ref: vexia_long_22
+  topic: lore
+  content: Lizardfolk smiths are known for crafting thunder hammers.
+- tier: long
+  ref: vexia_long_23
+  topic: lore
+  content: The Lizardfolk calendar marks 6 seasons, each tied to a celestial festival.
+- tier: long
+  ref: vexia_long_24
+  topic: lore
+  content: Lizardfolk legends tell of a god who once ruled the Sunken Temple.
+- tier: long
+  ref: vexia_long_25
+  topic: lore
+  content: The Lizardfolk tongue has ancient runic script.
+- tier: long
+  ref: vexia_long_26
+  topic: lore
+  content: 'An ancient Lizardfolk prophecy says: ''When the mountain burns ...'''
+- tier: long
+  ref: vexia_long_27
+  topic: lore
+  content: The Lizardfolk once allied with the Elves to defeat the Undead Legion.
+- tier: long
+  ref: vexia_long_28
+  topic: lore
+  content: the Sunken Temple was founded by a legendary hero.
+- tier: long
+  ref: vexia_long_29
+  topic: lore
+  content: The first stone of the Sunken Temple was laid in the Age of Ancients.
+- tier: long
+  ref: vexia_long_30
+  topic: lore
+  content: A dragon sleeps beneath the Sunken Temple.
+- tier: long
+  ref: vexia_long_31
+  topic: lore
+  content: The wells of the Sunken Temple are said to be blessed by the gods.
+- tier: long
+  ref: vexia_long_32
+  topic: lore
+  content: Every 43 years, a great pilgrimage is held in the Sunken Temple.
+- tier: long
+  ref: vexia_long_33
+  topic: lore
+  content: the Sunken Temple exports fine ore to the rest of Aethelgard.
+- tier: long
+  ref: vexia_long_34
+  topic: lore
+  content: A curse hangs over the Sunken Temple — 'the trees whisper'.
+- tier: long
+  ref: vexia_long_35
+  topic: lore
+  content: The most sacred part of the Sunken Temple is the Star Tower.
+- tier: long
+  ref: vexia_long_36
+  topic: lore
+  content: the Sunken Temple was once besieged by the Iron Pact.
+- tier: long
+  ref: vexia_long_37
+  topic: lore
+  content: A forgotten library lies beneath the Sunken Temple.
+- tier: near
+  ref: vexia_near_00
+  topic: upcoming
+  content: Vexia the Venomous plans to explore the Sunken Temple next week.
+- tier: near
+  ref: vexia_near_01
+  topic: upcoming
+  content: A prophecy warns that a great flood will come soon.
+- tier: near
+  ref: vexia_near_02
+  topic: upcoming
+  content: Vexia the Venomous must prepare a ritual before the next full moon.
+- tier: near
+  ref: vexia_near_03
+  topic: upcoming
+  content: A noble has summoned Vexia the Venomous to Crossroads for a parley.
+- tier: near
+  ref: vexia_near_04
+  topic: upcoming
+  content: Vexia the Venomous suspects a ambush brewing in the Sunken Temple.
+- tier: near
+  ref: vexia_near_05
+  topic: upcoming
+  content: The season of mists approaches, bringing danger.
+- tier: near
+  ref: vexia_near_06
+  topic: upcoming
+  content: Vexia the Venomous was offered a title in exchange for a dangerous quest.
+- tier: near
+  ref: vexia_near_07
+  topic: upcoming
+  content: A rival threatened Vexia the Venomous, forcing a difficult choice.
+- tier: near
+  ref: vexia_near_08
+  topic: upcoming
+  content: Vexia the Venomous will attend a funeral in Crossroads.
+- tier: near
+  ref: vexia_near_09
+  topic: upcoming
+  content: A mysterious package arrived for Vexia the Venomous, hinting at a greater plot.

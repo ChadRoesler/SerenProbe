@@ -1,0 +1,353 @@
+questions:
+- asks: loci
+  query: what race is Vexia the Venomous?
+  expect_key:
+  - char_vexia/vexia_race
+  expect_content: []
+  hops: 1
+  quiet_in: &id001
+  - char_thorn-*
+  - char_elara-*
+  - char_kael-*
+  - char_riva-*
+  - char_zara-*
+  - char_malgor-*
+  - char_grul-*
+  - char_shade-*
+  - char_ember-*
+  - char_shadowking-*
+  - char_grickle-*
+  - char_fluffy-*
+  - char_boris-*
+  - char_ferris-*
+  - char_seraphina-*
+  - loc_ironhold-*
+  - loc_silverwood-*
+  - loc_crossroads-*
+  - loc_sunkentemple-*
+  - loc_wyvernspeak-*
+  - loc_aethelgard-*
+- asks: loci
+  query: what class is Vexia the Venomous?
+  expect_key:
+  - char_vexia/vexia_class
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what alignment does Vexia the Venomous have?
+  expect_key:
+  - char_vexia/vexia_alignment
+  expect_content:
+  - Neutral Evil
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what level is Vexia the Venomous?
+  expect_key:
+  - char_vexia/vexia_level
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: where is Vexia the Venomous's homeland?
+  expect_key:
+  - char_vexia/vexia_homeland
+  expect_content:
+  - the Sunken Temple
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what faction does Vexia the Venomous follow?
+  expect_key:
+  - char_vexia/vexia_faction
+  expect_content:
+  - Free Traders
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what deity does Vexia the Venomous worship?
+  expect_key:
+  - char_vexia/vexia_deity
+  expect_content:
+  - Moradin
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what str score does Vexia the Venomous have?
+  expect_key:
+  - char_vexia/vexia_stat_str
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what dex score does Vexia the Venomous have?
+  expect_key:
+  - char_vexia/vexia_stat_dex
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what con score does Vexia the Venomous have?
+  expect_key:
+  - char_vexia/vexia_stat_con
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what int score does Vexia the Venomous have?
+  expect_key:
+  - char_vexia/vexia_stat_int
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what wis score does Vexia the Venomous have?
+  expect_key:
+  - char_vexia/vexia_stat_wis
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: loci
+  query: what cha score does Vexia the Venomous have?
+  expect_key:
+  - char_vexia/vexia_stat_cha
+  expect_content: []
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: tell me about Vexia the Venomous's recent encounter — recent encounter near the old road
+  expect_ref:
+  - vexia_short_00
+  expect_content:
+  - Vexia the Venomous survived an ambush near the Sunken Temple last week.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: what happened to Vexia the Venomous last week — incident involving a stranger last week
+  expect_ref:
+  - vexia_short_01
+  expect_content:
+  - Vexia the Venomous discovered a hidden passage in the old ruins.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: 'what is the lore of the Lizardfolk race: ancient lore of the Lizardfolk people'
+  expect_ref:
+  - vexia_long_10
+  expect_content:
+  - A mask was given to Vexia the Venomous.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: tell me about the history of Vexia the Venomous's homeland — history of the the Sunken Temple region
+  expect_ref:
+  - vexia_long_20
+  expect_content:
+  - The Lizardfolk once fought a great war against the Fey Court.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: what plans does Vexia the Venomous have — upcoming journey or expedition
+  expect_ref:
+  - vexia_near_00
+  expect_content:
+  - Vexia the Venomous plans to explore the Sunken Temple next week.
+  hops: 1
+  quiet_in: *id001
+- asks: memory
+  query: what upcoming event involves Vexia the Venomous — prophecy or omen concerning their future
+  expect_ref:
+  - vexia_near_01
+  expect_content:
+  - A prophecy warns that a great flood will come soon.
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: tell me about Vexia the Venomous — their race, class, and alignment
+  expect_content:
+  - Lizardfolk
+  - Assassin
+  - Neutral Evil
+  expect_key:
+  - char_vexia/vexia_race
+  - char_vexia/vexia_class
+  - char_vexia/vexia_alignment
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: describe Vexia the Venomous's homeland and the faction they follow
+  expect_content:
+  - the Sunken Temple
+  - Assassin
+  expect_key:
+  - char_vexia/vexia_homeland
+  - char_vexia/vexia_faction
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: give me a briefing on Vexia the Venomous's background and upbringing
+  expect_content:
+  - the Sunken Temple
+  - Lizardfolk
+  expect_key:
+  - char_vexia/vexia_backstory_0
+  - char_vexia/vexia_backstory_1
+  - char_vexia/vexia_backstory_2
+  - char_vexia/vexia_backstory_3
+  - char_vexia/vexia_homeland
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what weapons and armor does Vexia the Venomous carry into battle?
+  expect_content:
+  - Vexia the Venomous
+  expect_key:
+  - char_vexia/vexia_weapon_1
+  - char_vexia/vexia_weapon_2
+  - char_vexia/vexia_armor
+  - char_vexia/vexia_shield
+  - char_vexia/vexia_ranged
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: tell me about Vexia the Venomous's physical abilities — strength and dexterity
+  expect_content:
+  - Vexia the Venomous
+  expect_key:
+  - char_vexia/vexia_stat_str
+  - char_vexia/vexia_stat_dex
+  - char_vexia/vexia_stat_con
+  - char_vexia/vexia_stat_int
+  - char_vexia/vexia_stat_wis
+  - char_vexia/vexia_stat_cha
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: who is Vexia the Venomous and what is their role in the realm?
+  expect_content:
+  - Lizardfolk
+  - Evil Minion
+  expect_key:
+  - char_vexia/vexia_race
+  - char_vexia/vexia_class
+  - char_vexia/vexia_alignment
+  - char_vexia/vexia_level
+  - char_vexia/vexia_background
+  - char_vexia/vexia_role
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: describe the Lizardfolk race and Vexia the Venomous's place among them
+  expect_content:
+  - the Sunken Temple
+  - Lizardfolk
+  expect_key:
+  - char_vexia/vexia_race
+  - char_vexia/vexia_homeland
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what is known about Vexia the Venomous's backstory and early life?
+  expect_content:
+  - Vexia the Venomous
+  expect_key:
+  - char_vexia/vexia_backstory_0
+  - char_vexia/vexia_backstory_1
+  - char_vexia/vexia_backstory_2
+  - char_vexia/vexia_backstory_3
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: tell me about Vexia the Venomous's key abilities and spells
+  expect_content:
+  - Vexia the Venomous
+  expect_key:
+  - char_vexia/vexia_ability_1
+  - char_vexia/vexia_ability_2
+  - char_vexia/vexia_ability_3
+  - char_vexia/vexia_spell_1
+  - char_vexia/vexia_spell_2
+  - char_vexia/vexia_spell_3
+  - char_vexia/vexia_feat_1
+  - char_vexia/vexia_feat_2
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: summarize Vexia the Venomous's equipment and carried items
+  expect_content:
+  - Vexia the Venomous
+  expect_key:
+  - char_vexia/vexia_weapon_1
+  - char_vexia/vexia_weapon_2
+  - char_vexia/vexia_armor
+  - char_vexia/vexia_shield
+  - char_vexia/vexia_ranged
+  - char_vexia/vexia_potion_1
+  - char_vexia/vexia_potion_2
+  - char_vexia/vexia_tool
+  - char_vexia/vexia_gold
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what relationships does Vexia the Venomous have with allies and enemies?
+  expect_content:
+  - Vexia the Venomous
+  expect_key:
+  - char_vexia/vexia_rel_0
+  - char_vexia/vexia_rel_1
+  - char_vexia/vexia_rel_2
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: describe Vexia the Venomous's current quest and their goals
+  expect_content:
+  - Vexia the Venomous
+  expect_key:
+  - char_vexia/vexia_quest_1
+  - char_vexia/vexia_quest_2
+  - char_vexia/vexia_ideal
+  - char_vexia/vexia_bond
+  - char_vexia/vexia_flaw
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: what are Vexia the Venomous's ideals, bonds, and flaws?
+  expect_content:
+  - Vexia the Venomous
+  expect_key:
+  - char_vexia/vexia_ideal
+  - char_vexia/vexia_bond
+  - char_vexia/vexia_flaw
+  hops: 1
+  quiet_in: *id001
+- asks: corpus
+  query: give me a full dossier on Vexia the Venomous the Assassin
+  expect_content:
+  - Lizardfolk
+  - Assassin
+  - Neutral Evil
+  - Evil Minion
+  expect_key:
+  - char_vexia/vexia_race
+  - char_vexia/vexia_class
+  - char_vexia/vexia_alignment
+  - char_vexia/vexia_race
+  - char_vexia/vexia_class
+  - char_vexia/vexia_alignment
+  - char_vexia/vexia_level
+  - char_vexia/vexia_background
+  - char_vexia/vexia_backstory_0
+  - char_vexia/vexia_backstory_1
+  - char_vexia/vexia_backstory_2
+  - char_vexia/vexia_backstory_3
+  - char_vexia/vexia_rel_0
+  - char_vexia/vexia_rel_1
+  - char_vexia/vexia_rel_2
+  - char_vexia/vexia_quest_1
+  - char_vexia/vexia_quest_2
+  - char_vexia/vexia_ideal
+  - char_vexia/vexia_bond
+  - char_vexia/vexia_flaw
+  hops: 1
+  quiet_in: *id001

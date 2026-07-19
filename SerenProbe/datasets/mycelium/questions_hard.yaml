@@ -1,0 +1,111 @@
+questions:
+- asks: loci
+  query: which strains are hosted in S. cerevisiae?
+  expect_key:
+  - mycelium/strain_yeast-e2_host
+  - mycelium/strain_yeast-o1_host
+- asks: loci
+  query: which enzymes target cellulose as substrate?
+  expect_key:
+  - mycelium/enz_cellB_substrate
+  - mycelium/enz_xynA_substrate
+- asks: loci
+  query: who works in Strain Eng and what is their specialty?
+  expect_key:
+  - mycelium/person_ljm_role
+  - mycelium/person_ljm_specialty
+  - mycelium/person_ljm_dept
+- asks: memory
+  query: what incidents happened in the analytics lab?
+  expect_ref:
+  - evt-002
+  expect_content:
+  - alarm triggered
+  - media lab
+- asks: memory
+  query: how did the Q3 2024 review for pichia-x7 go?
+  expect_ref:
+  - rep-002
+  expect_content:
+  - Q3
+  - '2024'
+  - pichia-x7
+  - contamination
+- asks: corpus
+  query: which strain produces cellulase and what enzyme does it use?
+  expect_content:
+  - asper-k1
+  - cellB
+  - cellulase
+  - A. sojae
+- asks: corpus
+  query: brief me on the regulatory landscape for cellB
+  expect_content:
+  - FDA
+  - GRAS
+  - food processing
+  - 2027-06
+- asks: loci
+  query: what host does the strain phony-z9 use?
+  expect_empty: true
+- asks: corpus
+  query: brief me on the fictional strain xeno-7
+  expect_empty: true
+- asks: loci
+  query: which sensors detect heavy metals?
+  expect_key:
+  - mycelium/sense_toxAlert_target
+  - mycelium/sense_metalLock_target
+- asks: loci
+  query: what are the clearance levels of the R&D leads?
+  expect_key:
+  - mycelium/person_drm_clearance
+  - mycelium/person_ljm_clearance
+  - mycelium/person_rkb_clearance
+- asks: loci
+  query: which materials need cold storage?
+  expect_key:
+  - mycelium/mat_IPTG_storage
+  - mycelium/mat_hygromycin_storage
+- asks: memory
+  query: what long-term reviews cover the bac-m1 strain?
+  expect_ref:
+  - rep-018
+  expect_content:
+  - bac-m1
+  - collaboration started
+- asks: memory
+  query: what near-term tasks involve the analytical lab?
+  expect_ref:
+  - todo-001
+  expect_content:
+  - QC HPLC
+  - cellB
+  - FDA
+- asks: corpus
+  query: brief me on the full supply chain for the asper-k1 strain
+  expect_content:
+  - A. sojae
+  - pEX-2A
+  - glaA
+  - cellulase
+  - Sigma-Aldrich
+- asks: corpus
+  query: who is responsible for the lipA project and what enzyme do they use?
+  expect_content:
+  - team-ledger
+  - lipA
+  - C. antarctica
+  - bioremediation
+- asks: loci
+  query: what plasmid does the fake strain zeta-null use?
+  expect_empty: true
+- asks: memory
+  query: what happened with the phantom enzyme calibration?
+  expect_empty: true
+- asks: corpus
+  query: brief me on the non-existent bio-sensor xenoScan
+  expect_empty: true
+- asks: corpus
+  query: dossier on the fictional person Dr. Null
+  expect_empty: true

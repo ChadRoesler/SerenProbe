@@ -1,0 +1,280 @@
+- project: char_fluffy
+  key: fluffy_name
+  value: Fluffy
+  why: character's full name
+- project: char_fluffy
+  key: fluffy_race
+  value: Phase Spider
+  why: fantasy race
+- project: char_fluffy
+  key: fluffy_class
+  value: Monster
+  why: character class
+- project: char_fluffy
+  key: fluffy_alignment
+  value: Unaligned
+  why: moral alignment
+- project: char_fluffy
+  key: fluffy_role
+  value: Semi-Intelligent
+  why: narrative role
+- project: char_fluffy
+  key: fluffy_level
+  value: '12'
+  why: character level
+- project: char_fluffy
+  key: fluffy_background
+  value: soldier
+  why: life background
+- project: char_fluffy
+  key: fluffy_age
+  value: '62'
+  why: age in years
+- project: char_fluffy
+  key: fluffy_height
+  value: 55 inches
+  why: height
+- project: char_fluffy
+  key: fluffy_weight
+  value: 204 lbs
+  why: weight
+- project: char_fluffy
+  key: fluffy_stat_str
+  value: '18'
+  why: STR ability score
+- project: char_fluffy
+  key: fluffy_stat_str_mod
+  value: '+4'
+  why: STR modifier
+- project: char_fluffy
+  key: fluffy_stat_dex
+  value: '17'
+  why: DEX ability score
+- project: char_fluffy
+  key: fluffy_stat_dex_mod
+  value: '+3'
+  why: DEX modifier
+- project: char_fluffy
+  key: fluffy_stat_con
+  value: '15'
+  why: CON ability score
+- project: char_fluffy
+  key: fluffy_stat_con_mod
+  value: '+2'
+  why: CON modifier
+- project: char_fluffy
+  key: fluffy_stat_int
+  value: '7'
+  why: INT ability score
+- project: char_fluffy
+  key: fluffy_stat_int_mod
+  value: '-2'
+  why: INT modifier
+- project: char_fluffy
+  key: fluffy_stat_wis
+  value: '13'
+  why: WIS ability score
+- project: char_fluffy
+  key: fluffy_stat_wis_mod
+  value: '+1'
+  why: WIS modifier
+- project: char_fluffy
+  key: fluffy_stat_cha
+  value: '8'
+  why: CHA ability score
+- project: char_fluffy
+  key: fluffy_stat_cha_mod
+  value: '-1'
+  why: CHA modifier
+- project: char_fluffy
+  key: fluffy_skill_athletics
+  value: '+14'
+  why: athletics skill bonus
+- project: char_fluffy
+  key: fluffy_skill_acrobatics
+  value: '+7'
+  why: acrobatics skill bonus
+- project: char_fluffy
+  key: fluffy_skill_stealth
+  value: '+13'
+  why: stealth skill bonus
+- project: char_fluffy
+  key: fluffy_skill_perception
+  value: '+9'
+  why: perception skill bonus
+- project: char_fluffy
+  key: fluffy_skill_investigation
+  value: '+6'
+  why: investigation skill bonus
+- project: char_fluffy
+  key: fluffy_skill_survival
+  value: '+6'
+  why: survival skill bonus
+- project: char_fluffy
+  key: fluffy_skill_intimidation
+  value: '+13'
+  why: intimidation skill bonus
+- project: char_fluffy
+  key: fluffy_skill_persuasion
+  value: '+9'
+  why: persuasion skill bonus
+- project: char_fluffy
+  key: fluffy_skill_deception
+  value: '+6'
+  why: deception skill bonus
+- project: char_fluffy
+  key: fluffy_weapon_1
+  value: warhammer
+  why: primary weapon
+- project: char_fluffy
+  key: fluffy_weapon_2
+  value: club
+  why: secondary weapon
+- project: char_fluffy
+  key: fluffy_armor
+  value: leather armor
+  why: worn armor
+- project: char_fluffy
+  key: fluffy_shield
+  value: none
+  why: carried shield
+- project: char_fluffy
+  key: fluffy_ranged
+  value: none
+  why: ranged weapon
+- project: char_fluffy
+  key: fluffy_ammo
+  value: 39 arrows/bolts
+  why: ammunition supply
+- project: char_fluffy
+  key: fluffy_potion_1
+  value: potion of healing
+  why: healing potion
+- project: char_fluffy
+  key: fluffy_potion_2
+  value: potion of resistance
+  why: special potion
+- project: char_fluffy
+  key: fluffy_tool
+  value: disguise kit
+  why: tool kit
+- project: char_fluffy
+  key: fluffy_gold
+  value: 249 gp
+  why: carried gold
+- project: char_fluffy
+  key: fluffy_ability_1
+  value: sneak attack
+  why: class ability
+- project: char_fluffy
+  key: fluffy_ability_2
+  value: divine smite
+  why: class ability
+- project: char_fluffy
+  key: fluffy_ability_3
+  value: counter spell
+  why: combat ability
+- project: char_fluffy
+  key: fluffy_spell_1
+  value: bless
+  why: known spell
+- project: char_fluffy
+  key: fluffy_spell_2
+  value: blight
+  why: known spell
+- project: char_fluffy
+  key: fluffy_spell_3
+  value: ice storm
+  why: known spell
+- project: char_fluffy
+  key: fluffy_feat_1
+  value: sentinel
+  why: character feat
+- project: char_fluffy
+  key: fluffy_feat_2
+  value: polearm master
+  why: character feat
+- project: char_fluffy
+  key: fluffy_faction
+  value: Shadow Syndicate
+  why: faction affiliation
+- project: char_fluffy
+  key: fluffy_deity
+  value: Gruumsh
+  why: worshipped deity
+- project: char_fluffy
+  key: fluffy_location
+  value: The Sunken Temple
+  why: current location
+- project: char_fluffy
+  key: fluffy_homeland
+  value: the Ethereal Plane
+  why: ancestral homeland
+- project: char_fluffy
+  key: fluffy_rel_0
+  value: Ember the Burner (ally)
+  why: ally relationship
+- project: char_fluffy
+  key: fluffy_rel_1
+  value: Vexia the Venomous (ally)
+  why: ally relationship
+- project: char_fluffy
+  key: fluffy_rel_2
+  value: Thorne Ironheart (ally)
+  why: ally relationship
+- project: char_fluffy
+  key: fluffy_backstory_0
+  value: Fluffy was born in the Ethereal Plane to a family of herders.
+  why: personal history
+- project: char_fluffy
+  key: fluffy_backstory_1
+  value: As a youth, Fluffy stole from a noble.
+  why: personal history
+- project: char_fluffy
+  key: fluffy_backstory_2
+  value: Fluffy broke a family curse.
+  why: personal history
+- project: char_fluffy
+  key: fluffy_backstory_3
+  value: Now Fluffy seeks knowledge.
+  why: personal history
+- project: char_fluffy
+  key: fluffy_quest_1
+  value: Find the Lost Mine
+  why: current quest
+- project: char_fluffy
+  key: fluffy_quest_2
+  value: Defeat the Crimson Lord
+  why: primary goal
+- project: char_fluffy
+  key: fluffy_ideal
+  value: greed
+  why: core ideal
+- project: char_fluffy
+  key: fluffy_flaw
+  value: greed
+  why: character flaw
+- project: char_fluffy
+  key: fluffy_bond
+  value: treasure
+  why: strong bond
+- project: char_fluffy
+  key: fluffy_note_790
+  value: owes a life debt
+  why: notable detail
+- project: char_fluffy
+  key: fluffy_note_136
+  value: owes a life debt
+  why: notable detail
+- project: char_fluffy
+  key: fluffy_note_412
+  value: trained in heavy armor
+  why: notable detail
+- project: char_fluffy
+  key: fluffy_note_102
+  value: scarred from battle
+  why: notable detail
+- project: char_fluffy
+  key: fluffy_note_146
+  value: trained in heavy armor
+  why: notable detail

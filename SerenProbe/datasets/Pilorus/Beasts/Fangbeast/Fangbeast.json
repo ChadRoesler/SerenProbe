@@ -1,0 +1,670 @@
+{
+  "ooi": {
+    "id": 82,
+    "name": "Fangbeast",
+    "type": "beast",
+    "subtype": "forgotten_beast",
+    "description": "A terrifying forgotten_beast of immense power",
+    "year_spawned": 36,
+    "season_spawned": "autumn",
+    "alignment": "chaos",
+    "active": true,
+    "kills": 184
+  },
+  "context": {
+    "civ_name": "the wilds",
+    "civ_alignment": "chaos",
+    "biome_name": "unknown",
+    "num_decades": 30,
+    "num_site_events": 58,
+    "num_same_civ_figures": 0,
+    "num_same_civ_sites": 0,
+    "num_civ_artifacts": 0,
+    "num_site_beasts": 1
+  },
+  "facts": {
+    "beast_type": "forgotten_beast",
+    "alignment": "chaos",
+    "kills": "184",
+    "active": "yes",
+    "stat_str": "26",
+    "stat_spd": "21",
+    "stat_tough": "26",
+    "stat_int": "20",
+    "habitat": "cursed ruins",
+    "size_class": "small"
+  },
+  "memories": {
+    "long_term": {
+      "count": 30,
+      "items": [
+        {
+          "decade": "36s (The Frost Era, year 37)",
+          "year_range": [
+            36,
+            51
+          ],
+          "type": "foundation",
+          "memory": "In the beginning, was driven from its territory by a greater predator, coming to this land This was the start of its story. The Boneking was a constant rival \u2014 our territories clashed.  The land churned with disorder and upheaval.",
+          "reflection": "The beast is a force of nature \u2014 untamed and unbroken.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "The Frost Era"
+        },
+        {
+          "decade": "51s (The Frost Era, year 52)",
+          "year_range": [
+            51,
+            66
+          ],
+          "type": "life_event",
+          "memory": "Looking back at the 51s (The Frost Era, year 52), it stands out \u2014 the nights were long. What marked that decade was I attacked Trograkgrik-mound, killing 22. The most poignant moment was I attacked Rikspigklik-hollow, killing 15. The shadows of that time linger still. The Fangbeast terrorized the region.  The world was wild and unpredictable.",
+          "reflection": "There is a primal intelligence in the beast's eyes.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "The Frost Era"
+        },
+        {
+          "decade": "66s (Age of Ashen, year 5)",
+          "year_range": [
+            66,
+            82
+          ],
+          "type": "life_event",
+          "memory": "In the 66s (Age of Ashen, year 5), the forgotten_beast felt heavy with change. During this time, the beast grew in size and power, becoming a greater threat over time It was a decade that tested the forgotten_beast. The settlement of Winconram-bridge was a hated foe.  Turbulence marked every season.",
+          "reflection": "The beast does not hate \u2014 it simply exists.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "Age of Ashen"
+        },
+        {
+          "decade": "82s (Age of Ashen, year 21)",
+          "year_range": [
+            82,
+            97
+          ],
+          "type": "life_event",
+          "memory": "In the 82s (Age of Ashen, year 21), the forgotten_beast felt alive with possibility. During this time, the beast was tracked by a band of adventurers who sought to slay it It was a decade that shaped the forgotten_beast.  Chaos reigned \u2014 nothing was certain.",
+          "reflection": "The beast is a reminder that the wild still endures.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "Age of Ashen"
+        },
+        {
+          "decade": "97s (Age of Ashen, year 36)",
+          "year_range": [
+            97,
+            113
+          ],
+          "type": "life_event",
+          "memory": "Looking back at the 97s (Age of Ashen, year 36), it stands out \u2014 the nights were long. During this time, the beast claimed a territory and defended it against all intruders The shadows of that time linger still. The Doomdrake was a constant rival \u2014 our territories clashed. The settlement of Winconram-bridge was a hated foe.  Madness and flux were the rulers of those days.",
+          "reflection": "The beast's presence shapes the land around it.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "Age of Ashen"
+        },
+        {
+          "decade": "113s (Age of Ashen, year 52)",
+          "year_range": [
+            113,
+            128
+          ],
+          "type": "life_event",
+          "memory": "In the 113s (Age of Ashen, year 52), the forgotten_beast felt sharp and dangerous. During this time, the beast was encountered by a traveling merchant who barely escaped That decade taught the wilds that the world is cruel. The settlement of Winconram-bridge was a hated foe.  The old certainties burned away in the fire of change.",
+          "reflection": "The beast is a force of nature \u2014 untamed and unbroken.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "Age of Ashen"
+        },
+        {
+          "decade": "128s (The Golden Times, year 5)",
+          "year_range": [
+            128,
+            144
+          ],
+          "type": "life_event",
+          "memory": "The 128s (The Golden Times, year 5) was a prosperous decade for this forgotten_beast. During this time, the beast was rumored to possess supernatural qualities The shadows of that time linger still. The Fangbeast terrorized the region. The Doomdrake was a constant rival \u2014 our territories clashed.  Nothing was safe \u2014 the very earth seemed to shift.",
+          "reflection": "The beast does not hate \u2014 it simply exists.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "The Golden Times"
+        },
+        {
+          "decade": "144s (The Golden Times, year 21)",
+          "year_range": [
+            144,
+            159
+          ],
+          "type": "life_event",
+          "memory": "Looking back at the 144s (The Golden Times, year 21), it stands out \u2014 the air smelled of smoke. What marked that decade was I attacked Bertaldolf-burg, killing 56. What marked that decade was I attacked Gakskigglibwarren, killing 57. It was a decade that shaped the forgotten_beast.  Anarchy and change were the only constants.",
+          "reflection": "The beast remembers the ancient ways of the wild.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "The Golden Times"
+        },
+        {
+          "decade": "159s (The Golden Times, year 36)",
+          "year_range": [
+            159,
+            175
+          ],
+          "type": "life_event",
+          "memory": "In the 159s (The Golden Times, year 36), the forgotten_beast felt alive with possibility. During this time, the beast was driven into a new region by a natural disaster It was a decade that marked the forgotten_beast.  The old certainties burned away in the fire of change.",
+          "reflection": "The beast remembers the ancient ways of the wild.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "The Golden Times"
+        },
+        {
+          "decade": "175s (The Golden Times, year 52)",
+          "year_range": [
+            175,
+            190
+          ],
+          "type": "life_event",
+          "memory": "Looking back at the 175s (The Golden Times, year 52), it stands out \u2014 the nights were long. During this time, the beast's lair was discovered \u2014 filled with the remains of its victims It was a decade that shaped the forgotten_beast. The settlement of Kazadkulzolgate was a hated foe.  Nothing was safe \u2014 the very earth seemed to shift.",
+          "reflection": "The beast does not hate \u2014 it simply exists.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "The Golden Times"
+        },
+        {
+          "decade": "190s (The Pearl Years, year 5)",
+          "year_range": [
+            190,
+            206
+          ],
+          "type": "life_event",
+          "memory": "Looking back at the 190s (The Pearl Years, year 5), it stands out \u2014 everything felt fragile. During this time, the beast's roars were heard for miles, marking its dominance The shadows of that time linger still.  Chaos reigned \u2014 nothing was certain.",
+          "reflection": "The beast does not hate \u2014 it simply exists.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "The Pearl Years"
+        },
+        {
+          "decade": "206s (The Pearl Years, year 21)",
+          "year_range": [
+            206,
+            221
+          ],
+          "type": "life_event",
+          "memory": "The 206s (The Pearl Years, year 21) was a dark decade for this forgotten_beast. During this time, the beast was wounded in a battle with hunters and retreated to its lair The shadows of that time linger still. The settlement of Kazadkulzolgate was a hated foe.  Anarchy and change were the only constants.",
+          "reflection": "The beast is part of the world's raw power \u2014 dangerous and beautiful.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "The Pearl Years"
+        },
+        {
+          "decade": "221s (The Pearl Years, year 36)",
+          "year_range": [
+            221,
+            237
+          ],
+          "type": "life_event",
+          "memory": "Looking back at the 221s (The Pearl Years, year 36), it stands out \u2014 the air smelled of smoke. The defining event was I attacked Durorn-deep, killing 82. The defining event was I attacked Bertulframbridge, killing 79. It was a decade that tested the forgotten_beast. The Fangbeast terrorized the region. The Doomdrake was a constant rival \u2014 our territories clashed.  The old certainties burned away in the fire of change.",
+          "reflection": "The beast is part of the world's raw power \u2014 dangerous and beautiful.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "The Pearl Years"
+        },
+        {
+          "decade": "237s (The Pearl Years, year 52)",
+          "year_range": [
+            237,
+            252
+          ],
+          "type": "life_event",
+          "memory": "In the 237s (The Pearl Years, year 52), the forgotten_beast felt worn and tired. The most poignant moment was I attacked Balbazgate, killing 88. What marked that decade was I attacked Mundaldbert-ford, killing 93. That decade taught the wilds that the world is cruel. The settlement of Winconram-bridge was a hated foe.  Turbulence marked every season.",
+          "reflection": "The beast is a force of nature \u2014 untamed and unbroken.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "The Pearl Years"
+        },
+        {
+          "decade": "252s (The Dawn Age, year 5)",
+          "year_range": [
+            252,
+            268
+          ],
+          "type": "life_event",
+          "memory": "In the 252s (The Dawn Age, year 5), the forgotten_beast felt alive with possibility. The defining event was I attacked Kazmok-deep, killing 101. The most poignant moment was I attacked Morgund-fort, killing 97. The lessons of that time linger still. The Fangbeast terrorized the region.  The world was wild and unpredictable.",
+          "reflection": "The beast remembers the ancient ways of the wild.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "The Dawn Age"
+        },
+        {
+          "decade": "268s (The Dawn Age, year 21)",
+          "year_range": [
+            268,
+            283
+          ],
+          "type": "life_event",
+          "memory": "In the 268s (The Dawn Age, year 21), the forgotten_beast felt alive with possibility. The defining event was I attacked Vkragur-hall, killing 103. The defining event was I attacked Snikglotgak-hive, killing 110. It was a decade that tested the forgotten_beast. The Fangbeast terrorized the region.  Turbulence marked every season.",
+          "reflection": "The beast is a reminder that the wild still endures.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "The Dawn Age"
+        },
+        {
+          "decade": "283s (The Dawn Age, year 36)",
+          "year_range": [
+            283,
+            298
+          ],
+          "type": "life_event",
+          "memory": "In the 283s (The Dawn Age, year 36), the forgotten_beast felt still and waiting. During this time, the beast was sighted near a settlement, causing panic and fear It was a decade that marked the forgotten_beast. The settlement of Winconram-bridge was a hated foe.  Chaos reigned \u2014 nothing was certain.",
+          "reflection": "The beast does not hate \u2014 it simply exists.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "The Dawn Age"
+        },
+        {
+          "decade": "298s (The Dawn Age, year 51)",
+          "year_range": [
+            298,
+            314
+          ],
+          "type": "life_event",
+          "memory": "The 298s (The Dawn Age, year 51) was a forgotten decade for this forgotten_beast. What marked that decade was I attacked Winwell-shire, killing 129. The most poignant moment was I attacked Torkul-deep, killing 125. It was a decade that shaped the forgotten_beast.  The world was wild and unpredictable.",
+          "reflection": "There is a primal intelligence in the beast's eyes.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "The Dawn Age"
+        },
+        {
+          "decade": "314s (The Crystal Epoch, year 5)",
+          "year_range": [
+            314,
+            329
+          ],
+          "type": "life_event",
+          "memory": "In the 314s (The Crystal Epoch, year 5), the forgotten_beast felt sharp and dangerous. What marked that decade was I attacked Nthokazgate, killing 133. It was a decade that marked the forgotten_beast. The settlement of Winconram-bridge was a hated foe.  The old certainties burned away in the fire of change.",
+          "reflection": "The beast is a force of nature \u2014 untamed and unbroken.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "The Crystal Epoch"
+        },
+        {
+          "decade": "329s (The Crystal Epoch, year 20)",
+          "year_range": [
+            329,
+            345
+          ],
+          "type": "life_event",
+          "memory": "The 329s (The Crystal Epoch, year 20) was a bright decade for this forgotten_beast. During this time, the beast was wounded in a battle with hunters and retreated to its lair The shadows of that time linger still.  The world was wild and unpredictable.",
+          "reflection": "The beast is a force of nature \u2014 untamed and unbroken.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "The Crystal Epoch"
+        },
+        {
+          "decade": "345s (The Crystal Epoch, year 36)",
+          "year_range": [
+            345,
+            360
+          ],
+          "type": "life_event",
+          "memory": "The 345s (The Crystal Epoch, year 36) was a quiet decade for this forgotten_beast. During this time, the beast grew in size and power, becoming a greater threat over time That decade taught the wilds that hope endures.  The land churned with disorder and upheaval.",
+          "reflection": "The beast's presence shapes the land around it.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "The Crystal Epoch"
+        },
+        {
+          "decade": "360s (The Crystal Epoch, year 51)",
+          "year_range": [
+            360,
+            376
+          ],
+          "type": "life_event",
+          "memory": "In the 360s (The Crystal Epoch, year 51), the forgotten_beast felt worn and tired. During this time, the beast's roars were heard for miles, marking its dominance That decade taught the wilds that the world is cruel. The settlement of Kazadkulzolgate was a hated foe.  Nothing was safe \u2014 the very earth seemed to shift.",
+          "reflection": "The beast is a force of nature \u2014 untamed and unbroken.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "The Crystal Epoch"
+        },
+        {
+          "decade": "376s (The Sapphire Era, year 5)",
+          "year_range": [
+            376,
+            391
+          ],
+          "type": "life_event",
+          "memory": "Looking back at the 376s (The Sapphire Era, year 5), it stands out \u2014 the wind carried strange news. During this time, the beast was tracked by a band of adventurers who sought to slay it The shadows of that time linger still.  Turbulence marked every season.",
+          "reflection": "The beast is part of the world's raw power \u2014 dangerous and beautiful.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "The Sapphire Era"
+        },
+        {
+          "decade": "391s (The Sapphire Era, year 20)",
+          "year_range": [
+            391,
+            407
+          ],
+          "type": "life_event",
+          "memory": "Looking back at the 391s (The Sapphire Era, year 20), it stands out \u2014 everything felt fragile. During this time, the beast was sighted near a settlement, causing panic and fear That decade taught the wilds that hope endures.  Nothing was safe \u2014 the very earth seemed to shift.",
+          "reflection": "The beast is part of the world's raw power \u2014 dangerous and beautiful.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "The Sapphire Era"
+        },
+        {
+          "decade": "407s (The Sapphire Era, year 36)",
+          "year_range": [
+            407,
+            422
+          ],
+          "type": "life_event",
+          "memory": "The 407s (The Sapphire Era, year 36) was a bright decade for this forgotten_beast. What marked that decade was I attacked Nthulan-vale, killing 149. The most poignant moment was I attacked Blikzithollow, killing 153. It was a decade that tested the forgotten_beast.  Chaos reigned \u2014 nothing was certain.",
+          "reflection": "There is a primal intelligence in the beast's eyes.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "The Sapphire Era"
+        },
+        {
+          "decade": "422s (The Sapphire Era, year 51)",
+          "year_range": [
+            422,
+            438
+          ],
+          "type": "life_event",
+          "memory": "Looking back at the 422s (The Sapphire Era, year 51), it stands out \u2014 the nights were long. During this time, the beast claimed a territory and defended it against all intruders The lessons of that time linger still.  Anarchy and change were the only constants.",
+          "reflection": "The beast is part of the world's raw power \u2014 dangerous and beautiful.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "The Sapphire Era"
+        },
+        {
+          "decade": "438s (Age of Radiant, year 5)",
+          "year_range": [
+            438,
+            453
+          ],
+          "type": "life_event",
+          "memory": "The 438s (Age of Radiant, year 5) was a dark decade for this forgotten_beast. The most poignant moment was I attacked Blikzithollow, killing 166. The defining event was I attacked Fredcon-ford, killing 169. It was a decade that tested the forgotten_beast.  Madness and flux were the rulers of those days.",
+          "reflection": "The beast remembers the ancient ways of the wild.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "Age of Radiant"
+        },
+        {
+          "decade": "453s (Age of Radiant, year 20)",
+          "year_range": [
+            453,
+            469
+          ],
+          "type": "life_event",
+          "memory": "The 453s (Age of Radiant, year 20) was a forgotten decade for this forgotten_beast. During this time, the beast was encountered by a traveling merchant who barely escaped That decade taught the wilds that a good plan saves lives. The Fangbeast terrorized the region.  Turbulence marked every season.",
+          "reflection": "The beast's presence shapes the land around it.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "Age of Radiant"
+        },
+        {
+          "decade": "469s (Age of Radiant, year 36)",
+          "year_range": [
+            469,
+            484
+          ],
+          "type": "life_event",
+          "memory": "The 469s (Age of Radiant, year 36) was a prosperous decade for this forgotten_beast. What marked that decade was I attacked Zittockwarren, killing 182. The most poignant moment was I attacked Olfbaldwin-hall, killing 178. That decade taught the wilds that hope endures. The Boneking was a constant rival \u2014 our territories clashed. The settlement of Kazadkulzolgate was a hated foe.  The land churned with disorder and upheaval.",
+          "reflection": "The beast's presence shapes the land around it.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "Age of Radiant"
+        },
+        {
+          "decade": "484s (Age of Radiant, year 51)",
+          "year_range": [
+            484,
+            500
+          ],
+          "type": "life_event",
+          "memory": "In the 484s (Age of Radiant, year 51), the forgotten_beast felt worn and tired. During this time, the beast was rumored to possess supernatural qualities It was a decade that shaped the forgotten_beast. The settlement of Winconram-bridge was a hated foe.  Anarchy and change were the only constants.",
+          "reflection": "The beast remembers the ancient ways of the wild.",
+          "civ_alignment": "chaos",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast",
+          "era": "Age of Radiant"
+        }
+      ]
+    },
+    "short_term": {
+      "count": 15,
+      "items": [
+        {
+          "type": "seasonal_observation",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "Signs of bandits were noted near the forgotten_beast.",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast"
+        },
+        {
+          "type": "seasonal_observation",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "A stranger arrived carrying news from distant lands \u2014 the forgotten_beast drew their gaze.",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast"
+        },
+        {
+          "type": "seasonal_observation",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "A master made a proclamation about the forgotten_beast.",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast"
+        },
+        {
+          "type": "seasonal_observation",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "A nearby field was damaged.",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast"
+        },
+        {
+          "type": "seasonal_observation",
+          "season": "winter",
+          "year": 499,
+          "year_label": "Year 499 (Age of Radiant, year 66)",
+          "memory": "The weather this season was unusual \u2014 it affected the forgotten_beast.",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast"
+        },
+        {
+          "type": "seasonal_observation",
+          "season": "winter",
+          "year": 499,
+          "year_label": "Year 499 (Age of Radiant, year 66)",
+          "memory": "Supplies for tending the forgotten_beast were found lacking.",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast"
+        },
+        {
+          "type": "seasonal_observation",
+          "season": "winter",
+          "year": 499,
+          "year_label": "Year 499 (Age of Radiant, year 66)",
+          "memory": "The forgotten_beast was examined this season.",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast"
+        },
+        {
+          "type": "seasonal_observation",
+          "season": "winter",
+          "year": 499,
+          "year_label": "Year 499 (Age of Radiant, year 66)",
+          "memory": "The land around the forgotten_beast changed with the seasons \u2014 golden and alive.",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast"
+        },
+        {
+          "type": "seasonal_thought",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "Considering the wilds. I wonder what the coming year will bring to the forgotten_beast.",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast"
+        },
+        {
+          "type": "seasonal_thought",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "This season last year was better \u2014 the forgotten_beast has suffered since then.",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast"
+        },
+        {
+          "type": "seasonal_thought",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "The future is uncertain. This season feels fleeting \u2014 the forgotten_beast fights it.",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast"
+        },
+        {
+          "type": "seasonal_thought",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "The elders say that this season is sacred.",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast"
+        },
+        {
+          "type": "seasonal_thought",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "The future is uncertain. The forgotten_beast has been working more than usual this season.",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast"
+        },
+        {
+          "type": "seasonal_thought",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "Considering the wilds. This spring, the forgotten_beast feels forgotten.",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast"
+        },
+        {
+          "type": "seasonal_thought",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "The spring cold hangs over the wilds \u2014 it makes the forgotten_beast feel fragile.",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast"
+        }
+      ]
+    },
+    "near_term": {
+      "count": 10,
+      "items": [
+        {
+          "type": "future_plan",
+          "memory": "I will expand my territory \u2014 the land will be mine.",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast"
+        },
+        {
+          "type": "future_plan",
+          "memory": "I will climb the peak and survey my domain \u2014 from there all is visible.",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast"
+        },
+        {
+          "type": "future_plan",
+          "memory": "I will teach the young ones to stalk and kill \u2014 they must learn.",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast"
+        },
+        {
+          "type": "future_plan",
+          "memory": "I will mark my scent across the ridge \u2014 the pack will know my range.",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast"
+        },
+        {
+          "type": "future_plan",
+          "memory": "I will delve deeper into the caves \u2014 there is something ancient there.",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast"
+        },
+        {
+          "type": "future_plan",
+          "memory": "I will grow stronger \u2014 the wild will make me fiercer.",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast"
+        },
+        {
+          "type": "future_worry",
+          "memory": "I worry about the sickness among the herd \u2014 the meat is thin.",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast"
+        },
+        {
+          "type": "future_worry",
+          "memory": "I worry about Kazadkulzolgate \u2014 they send hunters after us.",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast"
+        },
+        {
+          "type": "future_worry",
+          "memory": "I worry about the strange scents on the wind \u2014 something new is coming.",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast"
+        },
+        {
+          "type": "future_worry",
+          "memory": "I worry about the hunters \u2014 they track me with iron and fire.",
+          "ooi_type": "beast",
+          "ooi_subtype": "forgotten_beast"
+        }
+      ]
+    }
+  },
+  "seed": 142
+}

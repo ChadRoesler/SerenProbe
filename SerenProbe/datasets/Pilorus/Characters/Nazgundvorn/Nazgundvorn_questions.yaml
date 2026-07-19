@@ -1,0 +1,168 @@
+# SerenProbe Questions - entity question set
+# Generated for character
+
+questions:
+- query: What is the alignment of Nazgundvorn?
+  asks: loci
+  expect_key:
+  - stats/alignment
+  hops: 1
+- query: What is Nazgundvorn's profession?
+  asks: loci
+  expect_key:
+  - identity/profession
+  hops: 1
+- query: What weapon does Nazgundvorn carry?
+  asks: loci
+  expect_key:
+  - combat/weapon
+  hops: 1
+- query: What is Nazgundvorn's favorite food?
+  asks: loci
+  expect_key:
+  - identity/favorite_food
+  hops: 1
+- query: What is Nazgundvorn's favorite drink?
+  asks: loci
+  expect_key:
+  - identity/favorite_drink
+  hops: 1
+- query: What is Nazgundvorn's favorite color?
+  asks: loci
+  expect_key:
+  - identity/favorite_color
+  hops: 1
+- query: What race is Nazgundvorn?
+  asks: loci
+  expect_key:
+  - stats/race
+  hops: 1
+- query: What title does Nazgundvorn hold?
+  asks: loci
+  expect_key:
+  - identity/title
+  hops: 1
+- query: How old is Nazgundvorn?
+  asks: loci
+  expect_key:
+  - stats/age
+  hops: 1
+- query: What armor does Nazgundvorn wear?
+  asks: loci
+  expect_key:
+  - combat/armor
+  hops: 1
+- query: What does Nazgundvorn remember about great hall that echoed with song?
+  asks: memory
+  expect_ref:
+  - nazgundvorn_784_long_69
+  hops: 1
+- query: What does Nazgundvorn remember about halls that glowed with forgotten light?
+  asks: memory
+  expect_ref:
+  - nazgundvorn_784_long_71
+  hops: 1
+- query: What does Nazgundvorn remember about plague reached our village?
+  asks: memory
+  expect_ref:
+  - nazgundvorn_784_long_75
+  hops: 1
+- query: What has Nazgundvorn been thinking about feels charged with meaning?
+  asks: memory
+  expect_ref:
+  - nazgundvorn_784_short_14
+  hops: 1
+- query: What does Nazgundvorn intend to do about return a favor?
+  asks: memory
+  expect_ref:
+  - nazgundvorn_784_near_0
+  hops: 1
+- query: What has Nazgundvorn been thinking about find myself thinking about the passage?
+  asks: memory
+  expect_ref:
+  - nazgundvorn_784_short_9
+  hops: 1
+- query: What does Nazgundvorn intend to do about visit the old shrine?
+  asks: memory
+  expect_ref:
+  - nazgundvorn_784_near_5
+  hops: 1
+- query: What does Nazgundvorn remember about runes of the deep earth?
+  asks: memory
+  expect_ref:
+  - nazgundvorn_784_long_4
+  hops: 1
+- query: What does Nazgundvorn intend to do about befriend a neighboring tribe?
+  asks: memory
+  expect_ref:
+  - nazgundvorn_784_near_3
+  hops: 1
+- query: What does Nazgundvorn remember about committed a grave mistake?
+  asks: memory
+  expect_ref:
+  - nazgundvorn_784_long_31
+  hops: 1
+- query: What is known about Murkfang Warren?
+  asks: corpus
+  expect_empty: true
+  hops: 1
+- query: What is the race of Nazgundvorn, and what does Nazgundvorn recall about prepare
+    for the coming journey?
+  asks: corpus
+  expect_key:
+  - stats/race
+  expect_ref:
+  - nazgundvorn_784_near_1
+  hops: 2
+- query: What is the favorite color of Nazgundvorn, and what does Nazgundvorn recall
+    about need to return a favor?
+  asks: corpus
+  expect_key:
+  - identity/favorite_color
+  expect_ref:
+  - nazgundvorn_784_near_0
+  hops: 2
+- query: What is the favorite food of Nazgundvorn, and what does Nazgundvorn recall
+    about forges burn all night mesmerized?
+  asks: corpus
+  expect_key:
+  - identity/favorite_food
+  expect_ref:
+  - nazgundvorn_784_long_5
+  hops: 2
+- query: What is known about Glimmerstone Cavern?
+  asks: corpus
+  expect_empty: true
+  hops: 1
+- query: What is the civ and home site of Nazgundvorn?
+  asks: corpus
+  expect_key:
+  - origin/civ
+  - origin/home_site
+  hops: 1
+- query: What is known about Bleakmire Fen?
+  asks: corpus
+  expect_empty: true
+  hops: 1
+- query: What is the civ of Nazgundvorn, and what does Nazgundvorn recall about vein
+    of adamantine and was hailed?
+  asks: corpus
+  expect_key:
+  - origin/civ
+  expect_ref:
+  - nazgundvorn_784_long_56
+  hops: 2
+- query: What is the home site of Nazgundvorn, and what does Nazgundvorn recall about
+    committed a grave mistake?
+  asks: corpus
+  expect_key:
+  - origin/home_site
+  expect_ref:
+  - nazgundvorn_784_long_31
+  hops: 2
+- query: What is the weapon and armor of Nazgundvorn?
+  asks: corpus
+  expect_key:
+  - combat/weapon
+  - combat/armor
+  hops: 1

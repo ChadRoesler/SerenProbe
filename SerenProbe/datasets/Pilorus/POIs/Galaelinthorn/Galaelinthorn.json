@@ -1,0 +1,651 @@
+{
+  "poi": {
+    "id": 258,
+    "name": "Galaelinthorn",
+    "type": "site",
+    "subtype": "village",
+    "biome_id": 4,
+    "biome_name": "Grassland",
+    "founded_year": 65,
+    "founded_season": "summer",
+    "population": 905,
+    "is_capital": false,
+    "civ_id": 23
+  },
+  "context": {
+    "civ_name": "Aeanoran",
+    "civ_alignment": "order",
+    "biome_name": "Grassland",
+    "num_decades": 30,
+    "num_site_events": 1,
+    "num_same_civ_figures": 99,
+    "num_same_civ_sites": 20,
+    "num_civ_artifacts": 4,
+    "num_site_beasts": 0
+  },
+  "facts": {
+    "site_type": "village",
+    "founded_year": "65",
+    "population": "905",
+    "size_class": "hamlet",
+    "primary_material": "thatch",
+    "industry": "fishing",
+    "defenses": "watch tower",
+    "is_capital": "no",
+    "civ": "Aeanoran",
+    "ruler": "Sindnor",
+    "ruler_title": "Poison of Aeanoran"
+  },
+  "memories": {
+    "long_term": {
+      "count": 30,
+      "items": [
+        {
+          "decade": "65s (Age of Ashen, year 4)",
+          "year_range": [
+            65,
+            79
+          ],
+          "type": "foundation",
+          "memory": "In the beginning, was built around an old shrine that had long been a local landmark Shortly after, a new site was founded nearby: Galaelinthorn. This was the start of its story.  Structure and hierarchy shaped every aspect of life.  The village weathered every storm, small but unbroken.",
+          "reflection": "The old ways keep us rooted, but change comes nonetheless.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "Age of Ashen"
+        },
+        {
+          "decade": "79s (Age of Ashen, year 18)",
+          "year_range": [
+            79,
+            94
+          ],
+          "type": "life_event",
+          "memory": "The 79s (Age of Ashen, year 18) was a forgotten decade for Aeanoran. During this time, the village council was formed to settle disputes and plan for the future That decade taught Aeanoran that a good plan saves lives.  Rules governed all \u2014 and all obeyed.  Village life continued \u2014 planting, harvesting, living.",
+          "reflection": "The old ways keep us rooted, but change comes nonetheless.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "Age of Ashen"
+        },
+        {
+          "decade": "94s (Age of Ashen, year 33)",
+          "year_range": [
+            94,
+            108
+          ],
+          "type": "life_event",
+          "memory": "In the 94s (Age of Ashen, year 33), the site felt still and waiting. The site grew \u2014 the market was established, drawing traders from the surrounding lands It was a decade that shaped the site. The Scepter of the Fallen was held in the area.  Order and discipline prevailed.  The village prospered in its quiet way.",
+          "reflection": "Every family here has a story that intertwines with the others.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "Age of Ashen"
+        },
+        {
+          "decade": "108s (Age of Ashen, year 47)",
+          "year_range": [
+            108,
+            123
+          ],
+          "type": "life_event",
+          "memory": "Looking back at the 108s (Age of Ashen, year 47), it stands out \u2014 the nights were long. During this time, the road was paved to connect the village to the nearest town That decade taught Aeanoran that the world is cruel.  The machinery of society ran without pause.  The village survived \u2014 humble, stubborn, and alive.",
+          "reflection": "The village knows the rhythm of the seasons \u2014 planting, growing, harvesting.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "Age of Ashen"
+        },
+        {
+          "decade": "123s (Age of Ashen, year 62)",
+          "year_range": [
+            123,
+            137
+          ],
+          "type": "life_event",
+          "memory": "In the 123s (Age of Ashen, year 62), the site felt still and waiting. The site grew \u2014 the village smithy was upgraded to work iron for tools and weapons That decade taught Aeanoran that the world is cruel. The Mirror of Light was held in the area.  Precision and control defined those years.  The village's hearths burned steady through every season.",
+          "reflection": "The village sleeps under the stars, dreaming of the next dawn.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "Age of Ashen"
+        },
+        {
+          "decade": "137s (The Golden Times, year 14)",
+          "year_range": [
+            137,
+            152
+          ],
+          "type": "life_event",
+          "memory": "In the 137s (The Golden Times, year 14), the site felt alive with possibility. During this time, the village chapel was built, becoming a center of community life That decade taught Aeanoran that hope endures.  The land was measured and accounted for.  The village endured through the years.",
+          "reflection": "We are small, but we endure.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "The Golden Times"
+        },
+        {
+          "decade": "152s (The Golden Times, year 29)",
+          "year_range": [
+            152,
+            166
+          ],
+          "type": "life_event",
+          "memory": "Looking back at the 152s (The Golden Times, year 29), it stands out \u2014 the harvest was bountiful. The site grew \u2014 the village expanded its fields to feed the growing population The sounds of that time linger still.  Every stone had its place and every soul its duty.  The village grew slowly, one generation at a time.",
+          "reflection": "The village sleeps under the stars, dreaming of the next dawn.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "The Golden Times"
+        },
+        {
+          "decade": "166s (The Golden Times, year 43)",
+          "year_range": [
+            166,
+            181
+          ],
+          "type": "life_event",
+          "memory": "The 166s (The Golden Times, year 43) was a dark decade for Aeanoran. The site grew \u2014 the village's first school was built to teach the children The silences of that time linger still. The Scepter of the Fallen was held in the area.  The law held firm through the seasons.  The village was a quiet heart in a loud world.",
+          "reflection": "The village knows the rhythm of the seasons \u2014 planting, growing, harvesting.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "The Golden Times"
+        },
+        {
+          "decade": "181s (The Golden Times, year 58)",
+          "year_range": [
+            181,
+            195
+          ],
+          "type": "life_event",
+          "memory": "The 181s (The Golden Times, year 58) was a quiet decade for Aeanoran. The site grew \u2014 a new well was dug to serve the expanding outskirts The faces of that time linger still.  The law held firm through the seasons.  The village survived \u2014 humble, stubborn, and alive.",
+          "reflection": "The village knows the rhythm of the seasons \u2014 planting, growing, harvesting.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "The Golden Times"
+        },
+        {
+          "decade": "195s (The Pearl Years, year 10)",
+          "year_range": [
+            195,
+            210
+          ],
+          "type": "life_event",
+          "memory": "In the 195s (The Pearl Years, year 10), the site felt worn and tired. The site grew \u2014 a new neighborhood was settled beyond the old boundaries It was a decade that shaped the site.  The machinery of society ran without pause.  The village weathered every storm, small but unbroken.",
+          "reflection": "The old ways keep us rooted, but change comes nonetheless.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "The Pearl Years"
+        },
+        {
+          "decade": "210s (The Pearl Years, year 25)",
+          "year_range": [
+            210,
+            224
+          ],
+          "type": "life_event",
+          "memory": "Looking back at the 210s (The Pearl Years, year 25), it stands out \u2014 everything felt fragile. During this time, the mill was built by the river, grinding grain for the whole community That decade taught Aeanoran that strength alone is not enough. Meloror was active during this time.  The machinery of society ran without pause.  The village's hearths burned steady through every season.",
+          "reflection": "We are small, but we endure.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "The Pearl Years"
+        },
+        {
+          "decade": "224s (The Pearl Years, year 39)",
+          "year_range": [
+            224,
+            239
+          ],
+          "type": "life_event",
+          "memory": "The 224s (The Pearl Years, year 39) was a prosperous decade for Aeanoran. The site grew \u2014 the village palisade was upgraded to a proper wooden wall It was a decade that tested its limits. Mirdir was active during this time.  Rules governed all \u2014 and all obeyed.  The village prospered in its quiet way.",
+          "reflection": "The fields remember the hands that worked them.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "The Pearl Years"
+        },
+        {
+          "decade": "239s (The Pearl Years, year 54)",
+          "year_range": [
+            239,
+            253
+          ],
+          "type": "life_event",
+          "memory": "The 239s (The Pearl Years, year 54) was a turbulent decade for Aeanoran. During this time, a terrible blight struck the crops \u2014 the village nearly starved The lessons of that time linger still.  Precision and control defined those years.  The village's hearths burned steady through every season.",
+          "reflection": "The village sleeps under the stars, dreaming of the next dawn.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "The Pearl Years"
+        },
+        {
+          "decade": "253s (The Dawn Age, year 6)",
+          "year_range": [
+            253,
+            268
+          ],
+          "type": "life_event",
+          "memory": "Looking back at the 253s (The Dawn Age, year 6), it stands out \u2014 the air smelled of smoke. During this time, a traveling fair came to the village and brought goods from afar It was a decade that broke its spirit. The Scepter of the Fallen was held in the area.  Precision and control defined those years.  The village prospered in its quiet way.",
+          "reflection": "The land gives and takes \u2014 we are part of its cycle.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "The Dawn Age"
+        },
+        {
+          "decade": "268s (The Dawn Age, year 21)",
+          "year_range": [
+            268,
+            282
+          ],
+          "type": "life_event",
+          "memory": "The 268s (The Dawn Age, year 21) was a forgotten decade for Aeanoran. During this time, the village well was dug, providing clean water for all That decade taught Aeanoran that the world is cruel.  The land was measured and accounted for.  The village was a quiet heart in a loud world.",
+          "reflection": "Every family here has a story that intertwines with the others.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "The Dawn Age"
+        },
+        {
+          "decade": "282s (The Dawn Age, year 35)",
+          "year_range": [
+            282,
+            297
+          ],
+          "type": "life_event",
+          "memory": "In the 282s (The Dawn Age, year 35), the site felt alive with possibility. The site grew \u2014 the village smithy was upgraded to work iron for tools and weapons That decade taught Aeanoran that time changes everything. Thaefalmir was active during this time.  The machinery of society ran without pause.  The village was a quiet heart in a loud world.",
+          "reflection": "The village sleeps under the stars, dreaming of the next dawn.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "The Dawn Age"
+        },
+        {
+          "decade": "297s (The Dawn Age, year 50)",
+          "year_range": [
+            297,
+            311
+          ],
+          "type": "life_event",
+          "memory": "In the 297s (The Dawn Age, year 50), the site felt still and waiting. During this time, the village was raided \u2014 the palisade was rebuilt and strengthened It was a decade that left its mark. Roseriion was active during this time.  Precision and control defined those years.  The village was a quiet heart in a loud world.",
+          "reflection": "Every family here has a story that intertwines with the others.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "The Dawn Age"
+        },
+        {
+          "decade": "311s (The Crystal Epoch, year 2)",
+          "year_range": [
+            311,
+            326
+          ],
+          "type": "life_event",
+          "memory": "The 311s (The Crystal Epoch, year 2) was a turbulent decade for Aeanoran. The site grew \u2014 a new well was dug to serve the expanding outskirts It was a decade that left its mark. Anoreri was active during this time. The Mirror of Light was held in the area.  Precision and control defined those years.  The village was a quiet heart in a loud world.",
+          "reflection": "The village sleeps under the stars, dreaming of the next dawn.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "The Crystal Epoch"
+        },
+        {
+          "decade": "326s (The Crystal Epoch, year 17)",
+          "year_range": [
+            326,
+            340
+          ],
+          "type": "life_event",
+          "memory": "In the 326s (The Crystal Epoch, year 17), the site felt heavy with change. During this time, a plague swept through \u2014 many were lost, but the village endured That decade taught Aeanoran that strength alone is not enough. Lormarion was active during this time.  The law held firm through the seasons.  The village endured through the years.",
+          "reflection": "The land gives and takes \u2014 we are part of its cycle.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "The Crystal Epoch"
+        },
+        {
+          "decade": "340s (The Crystal Epoch, year 31)",
+          "year_range": [
+            340,
+            355
+          ],
+          "type": "life_event",
+          "memory": "In the 340s (The Crystal Epoch, year 31), the site felt still and waiting. During this time, the village was granted a charter by the local lord, becoming a true settlement It was a decade that shaped the site. Norlaer was active during this time. The Mirror of Light was held in the area.  Rules governed all \u2014 and all obeyed.  Village life continued \u2014 planting, harvesting, living.",
+          "reflection": "The land gives and takes \u2014 we are part of its cycle.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "The Crystal Epoch"
+        },
+        {
+          "decade": "355s (The Crystal Epoch, year 46)",
+          "year_range": [
+            355,
+            369
+          ],
+          "type": "life_event",
+          "memory": "Looking back at the 355s (The Crystal Epoch, year 46), it stands out \u2014 the air smelled of smoke. During this time, a terrible blight struck the crops \u2014 the village nearly starved The faces of that time linger still.  Rules governed all \u2014 and all obeyed.  The village weathered every storm, small but unbroken.",
+          "reflection": "The village knows the rhythm of the seasons \u2014 planting, growing, harvesting.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "The Crystal Epoch"
+        },
+        {
+          "decade": "369s (The Crystal Epoch, year 60)",
+          "year_range": [
+            369,
+            384
+          ],
+          "type": "life_event",
+          "memory": "Looking back at the 369s (The Crystal Epoch, year 60), it stands out \u2014 the air smelled of smoke. The site grew \u2014 a new neighborhood was settled beyond the old boundaries It was a decade that made it what it is. Galaelin was active during this time.  Every stone had its place and every soul its duty.  The village's hearths burned steady through every season.",
+          "reflection": "The village knows the rhythm of the seasons \u2014 planting, growing, harvesting.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "The Crystal Epoch"
+        },
+        {
+          "decade": "384s (The Sapphire Era, year 13)",
+          "year_range": [
+            384,
+            398
+          ],
+          "type": "life_event",
+          "memory": "Looking back at the 384s (The Sapphire Era, year 13), it stands out \u2014 the wind carried strange news. The site grew \u2014 the market was established, drawing traders from the surrounding lands It was a decade that made it what it is.  Structure and hierarchy shaped every aspect of life.  Village life continued \u2014 planting, harvesting, living.",
+          "reflection": "The village knows the rhythm of the seasons \u2014 planting, growing, harvesting.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "The Sapphire Era"
+        },
+        {
+          "decade": "398s (The Sapphire Era, year 27)",
+          "year_range": [
+            398,
+            413
+          ],
+          "type": "life_event",
+          "memory": "Looking back at the 398s (The Sapphire Era, year 27), it stands out \u2014 the harvest was bountiful. The site grew \u2014 the village palisade was upgraded to a proper wooden wall That decade taught Aeanoran that strength alone is not enough.  Rules governed all \u2014 and all obeyed.  The village endured through the years.",
+          "reflection": "Every family here has a story that intertwines with the others.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "The Sapphire Era"
+        },
+        {
+          "decade": "413s (The Sapphire Era, year 42)",
+          "year_range": [
+            413,
+            427
+          ],
+          "type": "life_event",
+          "memory": "The 413s (The Sapphire Era, year 42) was a quiet decade for Aeanoran. The site grew \u2014 the village expanded its fields to feed the growing population That decade taught Aeanoran that strength alone is not enough.  Precision and control defined those years.  The village survived \u2014 humble, stubborn, and alive.",
+          "reflection": "The village sleeps under the stars, dreaming of the next dawn.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "The Sapphire Era"
+        },
+        {
+          "decade": "427s (The Sapphire Era, year 56)",
+          "year_range": [
+            427,
+            442
+          ],
+          "type": "life_event",
+          "memory": "Looking back at the 427s (The Sapphire Era, year 56), it stands out \u2014 the harvest was bountiful. During this time, the village was raided \u2014 the palisade was rebuilt and strengthened That decade taught Aeanoran that hope endures. The Flame of the Fallen was held in the area.  The land was measured and accounted for.  The village grew slowly, one generation at a time.",
+          "reflection": "The village knows the rhythm of the seasons \u2014 planting, growing, harvesting.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "The Sapphire Era"
+        },
+        {
+          "decade": "442s (Age of Radiant, year 9)",
+          "year_range": [
+            442,
+            456
+          ],
+          "type": "life_event",
+          "memory": "In the 442s (Age of Radiant, year 9), the site felt alive with possibility. During this time, the village chapel was built, becoming a center of community life That decade taught Aeanoran that a good plan saves lives.  Structure and hierarchy shaped every aspect of life.  The village survived \u2014 humble, stubborn, and alive.",
+          "reflection": "The old ways keep us rooted, but change comes nonetheless.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "Age of Radiant"
+        },
+        {
+          "decade": "456s (Age of Radiant, year 23)",
+          "year_range": [
+            456,
+            471
+          ],
+          "type": "life_event",
+          "memory": "The 456s (Age of Radiant, year 23) was a forgotten decade for Aeanoran. The site grew \u2014 the village's first school was built to teach the children The silences of that time linger still. The Scepter of the Fallen was held in the area.  Every stone had its place and every soul its duty.  The village grew slowly, one generation at a time.",
+          "reflection": "The land gives and takes \u2014 we are part of its cycle.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "Age of Radiant"
+        },
+        {
+          "decade": "471s (Age of Radiant, year 38)",
+          "year_range": [
+            471,
+            485
+          ],
+          "type": "life_event",
+          "memory": "In the 471s (Age of Radiant, year 38), the site felt worn and tired. The site grew \u2014 the village expanded its fields to feed the growing population It was a decade that left its mark. Mirdir was active during this time.  Rules governed all \u2014 and all obeyed.  The village's hearths burned steady through every season.",
+          "reflection": "We are small, but we endure.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "Age of Radiant"
+        },
+        {
+          "decade": "485s (Age of Radiant, year 52)",
+          "year_range": [
+            485,
+            500
+          ],
+          "type": "life_event",
+          "memory": "The 485s (Age of Radiant, year 52) was a prosperous decade for Aeanoran. During this time, the road was paved to connect the village to the nearest town The lessons of that time linger still.  The law held firm through the seasons.  The village's hearths burned steady through every season.",
+          "reflection": "Every family here has a story that intertwines with the others.",
+          "civ_alignment": "order",
+          "poi_type": "site",
+          "poi_subtype": "village",
+          "era": "Age of Radiant"
+        }
+      ]
+    },
+    "short_term": {
+      "count": 15,
+      "items": [
+        {
+          "type": "seasonal_observation",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "The site's master made a proclamation.",
+          "poi_type": "site",
+          "poi_subtype": "village"
+        },
+        {
+          "type": "seasonal_observation",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "Signs of weather change were noted.",
+          "poi_type": "site",
+          "poi_subtype": "village"
+        },
+        {
+          "type": "seasonal_observation",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "The site's population shrank this season.",
+          "poi_type": "site",
+          "poi_subtype": "village"
+        },
+        {
+          "type": "seasonal_observation",
+          "season": "spring",
+          "year": 500,
+          "year_label": "Year 500 (Age of Radiant, year 67)",
+          "memory": "The weather this season was terrible \u2014 it affected daily life.",
+          "poi_type": "site",
+          "poi_subtype": "village"
+        },
+        {
+          "type": "seasonal_observation",
+          "season": "winter",
+          "year": 499,
+          "year_label": "Year 499 (Age of Radiant, year 66)",
+          "memory": "Repairs were made to the roof.",
+          "poi_type": "site",
+          "poi_subtype": "village"
+        },
+        {
+          "type": "seasonal_observation",
+          "season": "winter",
+          "year": 499,
+          "year_label": "Year 499 (Age of Radiant, year 66)",
+          "memory": "A stranger arrived at the site \u2014 they carried news from distant lands.",
+          "poi_type": "site",
+          "poi_subtype": "village"
+        },
+        {
+          "type": "seasonal_observation",
+          "season": "winter",
+          "year": 499,
+          "year_label": "Year 499 (Age of Radiant, year 66)",
+          "memory": "A tournament was held at the site.",
+          "poi_type": "site",
+          "poi_subtype": "village"
+        },
+        {
+          "type": "seasonal_observation",
+          "season": "winter",
+          "year": 499,
+          "year_label": "Year 499 (Age of Radiant, year 66)",
+          "memory": "A couple married at the site.",
+          "poi_type": "site",
+          "poi_subtype": "village"
+        },
+        {
+          "type": "recent_thought",
+          "memory": "The spring air hangs over Aeanoran \u2014 it makes the site feel melancholy.",
+          "poi_type": "site",
+          "poi_subtype": "village"
+        },
+        {
+          "type": "recent_thought",
+          "memory": "Considering Aeanoran. This spring, the site feels haunted.",
+          "poi_type": "site",
+          "poi_subtype": "village"
+        },
+        {
+          "type": "recent_thought",
+          "memory": "This season last year was better \u2014 the site has endured since then.",
+          "poi_type": "site",
+          "poi_subtype": "village"
+        },
+        {
+          "type": "recent_thought",
+          "memory": "Considering Aeanoran. I wonder what the next season will bring to this place.",
+          "poi_type": "site",
+          "poi_subtype": "village"
+        },
+        {
+          "type": "recent_thought",
+          "memory": "The future is uncertain. The site has been dreaming more than usual this season.",
+          "poi_type": "site",
+          "poi_subtype": "village"
+        },
+        {
+          "type": "recent_thought",
+          "memory": "Considering Aeanoran. This season feels precious \u2014 the site surrenders to it.",
+          "poi_type": "site",
+          "poi_subtype": "village"
+        },
+        {
+          "type": "recent_thought",
+          "memory": "The future is uncertain. The songs remember that the autumn is for remembrance.",
+          "poi_type": "site",
+          "poi_subtype": "village"
+        }
+      ]
+    },
+    "near_term": {
+      "count": 10,
+      "items": [
+        {
+          "type": "future_plan",
+          "memory": "There is a vision to discover the truth of the past.",
+          "poi_type": "site",
+          "poi_subtype": "village"
+        },
+        {
+          "type": "future_plan",
+          "memory": "We dream of understanding the old mysteries.",
+          "poi_type": "site",
+          "poi_subtype": "village"
+        },
+        {
+          "type": "future_plan",
+          "memory": "A new gate is to be built this coming year.",
+          "poi_type": "site",
+          "poi_subtype": "village"
+        },
+        {
+          "type": "future_plan",
+          "memory": "The site intends to fortify against threats.",
+          "poi_type": "site",
+          "poi_subtype": "village"
+        },
+        {
+          "type": "future_plan",
+          "memory": "We must prepare for the coming journey.",
+          "poi_type": "site",
+          "poi_subtype": "village"
+        },
+        {
+          "type": "future_plan",
+          "memory": "We hope to recover from recent hardships.",
+          "poi_type": "site",
+          "poi_subtype": "village"
+        },
+        {
+          "type": "future_worry",
+          "memory": "I worry about the river drying up \u2014 it has never done that before.",
+          "poi_type": "site",
+          "poi_subtype": "village"
+        },
+        {
+          "type": "future_worry",
+          "memory": "I fear that our enemies are closing in \u2014 we can feel them watching.",
+          "poi_type": "site",
+          "poi_subtype": "village"
+        },
+        {
+          "type": "future_worry",
+          "memory": "I fear that we are being forgotten \u2014 our name will not live on.",
+          "poi_type": "site",
+          "poi_subtype": "village"
+        },
+        {
+          "type": "future_worry",
+          "memory": "I fear that change is coming \u2014 and we are not ready for it.",
+          "poi_type": "site",
+          "poi_subtype": "village"
+        }
+      ]
+    }
+  },
+  "seed": 837
+}

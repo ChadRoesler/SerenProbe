@@ -1,0 +1,145 @@
+# SerenProbe Questions - entity question set
+# Generated for poi
+
+questions:
+- query: What is the population of Galfalthal-thorn?
+  asks: loci
+  expect_key:
+  - demographics/population
+  hops: 1
+- query: What year was Galfalthal-thorn founded?
+  asks: loci
+  expect_key:
+  - geography/founded_year
+  hops: 1
+- query: What type of site is Galfalthal-thorn?
+  asks: loci
+  expect_key:
+  - geography/site_type
+  hops: 1
+- query: Is Galfalthal-thorn a capital?
+  asks: loci
+  expect_key:
+  - geography/is_capital
+  hops: 1
+- query: What does Galfalthal-thorn remember about great pilgrimage that brought blessings?
+  asks: memory
+  expect_ref:
+  - galfalthal_thorn_25_long_2
+  hops: 1
+- query: What has Galfalthal-thorn heard recently about site's leader made a proclamation?
+  asks: memory
+  expect_ref:
+  - galfalthal_thorn_25_short_4
+  hops: 1
+- query: What has Galfalthal-thorn heard recently about makes the site feel timeless?
+  asks: memory
+  expect_ref:
+  - galfalthal_thorn_25_short_10
+  hops: 1
+- query: What does Galfalthal-thorn intend to do about new walls new quarters new
+    hope?
+  asks: memory
+  expect_ref:
+  - galfalthal_thorn_25_near_2
+  hops: 1
+- query: What does Galfalthal-thorn worry about regarding promise we cannot keep?
+  asks: memory
+  expect_ref:
+  - galfalthal_thorn_25_near_7
+  hops: 1
+- query: What does Galfalthal-thorn remember about titan called Fell Thunderking attacked
+    killing?
+  asks: memory
+  expect_ref:
+  - galfalthal_thorn_25_long_22
+  hops: 1
+- query: What has Galfalthal-thorn heard recently about couple married at the site?
+  asks: memory
+  expect_ref:
+  - galfalthal_thorn_25_short_5
+  hops: 1
+- query: What has Galfalthal-thorn heard recently about distant future will bring?
+  asks: memory
+  expect_ref:
+  - galfalthal_thorn_25_short_14
+  hops: 1
+- query: What has Galfalthal-thorn heard recently about Forest around the site changed?
+  asks: memory
+  expect_ref:
+  - galfalthal_thorn_25_short_3
+  hops: 1
+- query: What does Galfalthal-thorn remember about site felt heavy with change?
+  asks: memory
+  expect_ref:
+  - galfalthal_thorn_25_long_3
+  hops: 1
+- query: What is the size class of Galfalthal-thorn, and what does Galfalthal-thorn
+    recall about couple married at the site?
+  asks: corpus
+  expect_key:
+  - demographics/size_class
+  expect_ref:
+  - galfalthal_thorn_25_short_5
+  hops: 2
+- query: What is known about Throgdak the Whisperer?
+  asks: corpus
+  expect_empty: true
+  hops: 1
+- query: What is the primary material of Galfalthal-thorn, and what does Galfalthal-thorn
+    recall about promise we cannot keep?
+  asks: corpus
+  expect_key:
+  - misc/primary_material
+  expect_ref:
+  - galfalthal_thorn_25_near_7
+  hops: 2
+- query: What is the civ of Galfalthal-thorn, and what does Galfalthal-thorn recall
+    about Supplies were gathered for the coming?
+  asks: corpus
+  expect_key:
+  - origin/civ
+  expect_ref:
+  - galfalthal_thorn_25_short_0
+  hops: 2
+- query: What is the defenses of Galfalthal-thorn, and what does Galfalthal-thorn
+    recall about great pilgrimage that brought blessings?
+  asks: corpus
+  expect_key:
+  - misc/defenses
+  expect_ref:
+  - galfalthal_thorn_25_long_2
+  hops: 2
+- query: What is known about Kragmorn Hollow?
+  asks: corpus
+  expect_empty: true
+  hops: 1
+- query: What is the site type, founded year and is capital of Galfalthal-thorn?
+  asks: corpus
+  expect_key:
+  - geography/site_type
+  - geography/founded_year
+  - geography/is_capital
+  hops: 1
+- query: What is the population and size class of Galfalthal-thorn?
+  asks: corpus
+  expect_key:
+  - demographics/population
+  - demographics/size_class
+  hops: 1
+- query: What is the ruler of Galfalthal-thorn, and what does Galfalthal-thorn recall
+    about site's leader made a proclamation?
+  asks: corpus
+  expect_key:
+  - misc/ruler
+  expect_ref:
+  - galfalthal_thorn_25_short_4
+  hops: 2
+- query: What is the industry of Galfalthal-thorn, and what does Galfalthal-thorn
+    recall about distant future will bring?
+  asks: corpus
+  expect_key:
+  - misc/industry
+  expect_ref:
+  - galfalthal_thorn_25_short_14
+  hops: 2

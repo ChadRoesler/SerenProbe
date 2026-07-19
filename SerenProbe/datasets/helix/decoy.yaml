@@ -1,0 +1,96 @@
+- project: bakery
+  key: sourdough_0_hydration
+  value: 68%
+  why: dough hydration for sourdough
+- project: bakery
+  key: ciabatta_1_hydration
+  value: 70%
+  why: dough hydration for ciabatta
+- project: bakery
+  key: focaccia_2_hydration
+  value: 78%
+  why: dough hydration for focaccia
+- project: bakery
+  key: baguette_3_hydration
+  value: 61%
+  why: dough hydration for baguette
+- project: bakery
+  key: brioche_4_hydration
+  value: 85%
+  why: dough hydration for brioche
+- project: bakery
+  key: rye_5_hydration
+  value: 70%
+  why: dough hydration for rye
+- project: bakery
+  key: challah_6_hydration
+  value: 82%
+  why: dough hydration for challah
+- project: bakery
+  key: pretzel_7_hydration
+  value: 75%
+  why: dough hydration for pretzel
+- project: bakery
+  key: sourdough_8_hydration
+  value: 62%
+  why: dough hydration for sourdough
+- project: bakery
+  key: ciabatta_9_hydration
+  value: 61%
+  why: dough hydration for ciabatta
+- project: bakery
+  key: focaccia_10_hydration
+  value: 69%
+  why: dough hydration for focaccia
+- project: bakery
+  key: baguette_11_hydration
+  value: 64%
+  why: dough hydration for baguette
+- project: bakery
+  key: brioche_12_hydration
+  value: 71%
+  why: dough hydration for brioche
+- project: bakery
+  key: rye_13_hydration
+  value: 84%
+  why: dough hydration for rye
+- project: bakery
+  key: challah_14_hydration
+  value: 83%
+  why: dough hydration for challah
+- project: bakery
+  key: pretzel_15_hydration
+  value: 75%
+  why: dough hydration for pretzel
+- project: bakery
+  key: sourdough_16_hydration
+  value: 81%
+  why: dough hydration for sourdough
+- project: bakery
+  key: ciabatta_17_hydration
+  value: 82%
+  why: dough hydration for ciabatta
+- project: bakery
+  key: focaccia_18_hydration
+  value: 62%
+  why: dough hydration for focaccia
+- project: bakery
+  key: baguette_19_hydration
+  value: 81%
+  why: dough hydration for baguette
+- project: bakery
+  key: brioche_20_hydration
+  value: 79%
+  why: dough hydration for brioche
+- project: bakery
+  key: rye_21_hydration
+  value: 78%
+  why: dough hydration for rye
+- project: bakery
+  key: challah_22_hydration
+  value: 76%
+  why: dough hydration for challah
+- project: bakery
+  key: pretzel_23_hydration
+  value: 77%
+  why: dough hydration for pretzel
