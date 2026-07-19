@@ -223,7 +223,8 @@ def resolve_eval_inputs(topology: CompiledTopology, body: dict | None = None, *,
     """Config-DRIVEN eval inputs. Seeds + questions come from the compiled
     ProbeConfig (DefaultLociSeed / DefaultMemorySeed / per-node Seed / Questions).
     The request body can OVERRIDE questions (body.questions); seeding is entirely
-    config-driven (no pools upload path).
+    config-driven (no pools upload path), UNLESS the body explicitly forces it
+    off with `seed: false` -- see below.
 
     A config with NO seed sources at all means 'the stores are pre-seeded - eval
     them as-is', so we DON'T plan-seed and don't raise the empty-seed warnings.
@@ -239,6 +240,14 @@ def resolve_eval_inputs(topology: CompiledTopology, body: dict | None = None, *,
         or any(n.live_url for n in topology.loci + topology.memory))
     seed_by_store = plan.seed_by_store if has_seed_intent else None
     warnings = list(plan.warnings) if has_seed_intent else []
+
+    # EXPLICIT OFF-SWITCH. `body.seed is False` (not merely falsy/absent) means the
+    # caller -- the Eval tab's "▶ Evaluate" button, now split off from seeding --
+    # wants to score the stores AS THEY ARE and never touch them. Distinct from
+    # has_seed_intent being false: a config CAN declare seed sources and still be
+    # asked, this one time, not to run them.
+    if body.get("seed") is False:
+        seed_by_store = None
 
     questions_by_store = plan.questions_by_store or None
 

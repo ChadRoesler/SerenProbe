@@ -70,3 +70,22 @@ def test_preseeded_no_questions_yields_empty():
 def test_malformed_body_questions_raises():
     with pytest.raises(SeedError):
         resolve_eval_inputs(_config_driven_topo(), {"questions": [{"asks": "bogus"}]})
+
+
+def test_explicit_seed_false_overrides_config_seed_intent():
+    # The split-off "▶ Evaluate" button sends seed:false so it never reseeds, even
+    # though the config itself declares seed sources (has_seed_intent is True here).
+    ei = resolve_eval_inputs(_config_driven_topo(), {"seed": False})
+    assert ei.seed is False
+    assert ei.seed_by_store is None
+    # Questions still resolve normally -- only seeding is suppressed.
+    assert len(ei.questions) == 10
+
+
+def test_seed_false_does_not_affect_preseeded_topo():
+    # Already seed=False/seed_by_store=None via has_seed_intent; the explicit
+    # override should be a no-op here, not raise or change anything.
+    ei = resolve_eval_inputs(_preseeded_topo(), {"seed": False, "questions": [
+        {"asks": "loci", "query": "q", "expect_content": ["x"]}]})
+    assert ei.seed is False
+    assert ei.seed_by_store is None

@@ -84,6 +84,7 @@
     <Compile Include="seren_probe\runtime\docker_env.py" />
     <Compile Include="seren_probe\runtime\live_eval.py" />
     <Compile Include="seren_probe\runtime\live_import.py" />
+    <Compile Include="seren_probe\runtime\progress.py" />
     <Compile Include="seren_probe\runtime\regrade.py" />
     <Compile Include="seren_probe\runtime\regrade_live.py" />
     <Compile Include="seren_probe\runtime\write_guard.py" />
