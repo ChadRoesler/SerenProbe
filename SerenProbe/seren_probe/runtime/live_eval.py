@@ -38,16 +38,31 @@ refuses the write at the transport even if someone finds a fifth way in.
 
 Do not reintroduce a module-level default that names a live port. There is no
 safe way to hold that.
+
+CONCURRENCY: stores run IN PARALLEL (each is a separate container - loci, memory,
+and corpus columns share nothing but the read-only ref_to_id/gt_notes lookups and
+the lock-protected write_guard allowlist), and WITHIN one store, its own questions'
+/search calls also fan out (bounded separately, since that's concurrent traffic
+against the SAME container). Grading itself stays single-threaded per store - only
+the network fetch is parallelized, so nothing needs to lock the per-store
+accumulators. A failing store or a failing question's search does NOT abort the
+run: eval is read-only, so isolating the failure and reporting it inline (an
+"error" snapshot for a store, a scored miss for a question) beats losing every
+other column over one flaky container. See run_topology_evaluation's docstring.
 """
 from __future__ import annotations
 
+import logging
 import os
 import sys
+import threading
 import time
 
 import httpx
 
 from ..core.metrics import compute_metrics_batch, normalize_text
+
+logger = logging.getLogger(__name__)
 
 # A /search on a cold vector store runs ~6s; a CORPUS search fans N stores and does N of
 # them, so cross-everything (6+ stores) can legitimately exceed 30s on a first hit. 30s
@@ -179,11 +194,29 @@ def _grade(hits, q, kind, resolve_key, resolve_ref, k):
 def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
                             seed_result=None, questions_by_store=None,
                             k: int = 10, post=post, delete=_delete, get_params=_get_params,
-                            seed: bool = True) -> dict:
+                            seed: bool = True, max_parallel_stores: int = 8,
+                            max_parallel_questions: int = 8) -> dict:
     """Eval every store in a compiled topology as a dynamic column against the
     uploaded questions. Seeds via seed_from_plan first (unless a seed_result is
     passed or seed=False). Transport is injectable for testing; defaults hit the
     real services over httpx.
+
+    CONCURRENCY -- mirrors seeding's template (bounded ThreadPoolExecutor,
+    width==1 runs thread-free, parallel-across / serial-within):
+
+      max_parallel_stores: stores are independent containers, so they run
+        concurrently up to this width. A store that raises does NOT sink the
+        run -- it's read-only, so the failure is isolated and reported as an
+        "error" snapshot for that column while every other store finishes and
+        scores normally.
+
+      max_parallel_questions: WITHIN one store, that store's own /search calls
+        also fan out up to this width (bounded separately -- it's concurrent
+        traffic against the SAME container, not independent containers). A
+        question whose search blows up is isolated the same way: scored as a
+        miss (empty hits) rather than losing the rest of that store's column.
+        Grading stays single-threaded per store; only the network fetch is
+        parallelized, so the accumulators below never need a lock.
 
     Returns {stores: {name: snapshot+kind+flags}, question_count, topology, k, date}.
     """
@@ -314,7 +347,7 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
                     for s in (c.stores if c else []) if s.name in _loci_urls]
         return []          # memory has no /fact; expect_key on a memory question is already warned
 
-    def eval_store(name, url, kind, qs, fact_urls):
+    def eval_store(name, url, kind, qs, fact_urls, max_parallel_questions=8):
         _key_cache: dict[str, str] = {}
         _fact_by_store = dict(fact_urls)
         _ambiguous_keys: set[str] = set()
@@ -443,17 +476,38 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
         # fanning SCC costs seconds; issuing it twice is pure waste. Key on (query, k) --
         # the only two things that change the result for a given store.
         _search_cache: dict[tuple, list] = {}
+        _search_lock = threading.Lock()
         def _search(query: str) -> list:
             ck = (query, k)
-            if ck in _search_cache:
-                return _search_cache[ck]
-            resp = post(url, "/search", _search_payload(kind, query, k))
-            hits = resp.get("hits", []) if isinstance(resp, dict) else []
-            _search_cache[ck] = hits
+            with _search_lock:
+                cached = _search_cache.get(ck)
+            if cached is not None:
+                return cached
+            try:
+                resp = post(url, "/search", _search_payload(kind, query, k))
+                hits = resp.get("hits", []) if isinstance(resp, dict) else []
+            except Exception as exc:
+                # Isolated per-question failure: a flaky search scores as a miss
+                # (empty hits), not a lost column -- eval is read-only.
+                logger.warning("search failed for %r on %s: %s", query, name, exc)
+                hits = []
+            with _search_lock:
+                _search_cache[ck] = hits
             return hits
 
-        for q in normal_qs:
-            hits = _search(q.query)
+        def _search_many(qlist) -> list:
+            """Fan out /search across this store's own questions, bounded by
+            max_parallel_questions. Order-preserving: results come back aligned
+            with qlist regardless of completion order."""
+            if len(qlist) <= 1 or max_parallel_questions <= 1:
+                return [_search(q.query) for q in qlist]
+            from concurrent.futures import ThreadPoolExecutor
+            width = min(max_parallel_questions, len(qlist))
+            with ThreadPoolExecutor(max_workers=width) as ex:
+                return list(ex.map(lambda q: _search(q.query), qlist))
+
+        normal_hits = _search_many(normal_qs)
+        for q, hits in zip(normal_qs, normal_hits):
             if hits:
                 pos_tops.append(float(hits[0].get("score", 0.0) or 0.0))
             retrieved, relevant, cov, den = _grade(hits, q, kind, resolve_key, resolve_ref, k)
@@ -471,8 +525,8 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
         # the signal. Lexical Loci / a floored SCC can return nothing -> can pass.
         if empty_qs:
             passes = 0
-            for q in empty_qs:
-                hits = _search(q.query)
+            empty_hits = _search_many(empty_qs)
+            for hits in empty_hits:
                 if not hits:
                     passes += 1
             snap["empty_count"] = len(empty_qs)
@@ -498,8 +552,8 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
             passes = 0
             margins: list[float] = []
             leaked_queries: list[str] = []
-            for q in quiet_qs:
-                hits = _search(q.query)
+            quiet_hits = _search_many(quiet_qs)
+            for q, hits in zip(quiet_qs, quiet_hits):
                 leaked = False
                 for h in hits[:k]:
                     hay = _loci_haystack(h) if kind == "seren_loci" else str(h.get("content", ""))
@@ -546,21 +600,57 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
         return snap
 
     report: dict[str, dict] = {}
+
+    # STORE-LEVEL FAN-OUT. Each entry is an independent container; build the full
+    # job list first (store name, kind, node, eval callable) so the merge order
+    # stays deterministic (loci, then memory, then corpus, each in topology order)
+    # regardless of which job finishes first.
+    jobs: list[tuple] = []
     for n in topology.loci:
-        report[n.name] = eval_store(n.name, url_of[n.name], "seren_loci",
-                                    qs_for(n.name, "loci"), fact_urls_for(n.name, "seren_loci"))
-        report[n.name]["flags"] = n.flags
-        report[n.name]["negative_test"] = n.negative_test
+        jobs.append((n.name, n, "loci",
+                     lambda n=n: eval_store(n.name, url_of[n.name], "seren_loci",
+                                            qs_for(n.name, "loci"), fact_urls_for(n.name, "seren_loci"),
+                                            max_parallel_questions)))
     for n in topology.memory:
-        report[n.name] = eval_store(n.name, url_of[n.name], "seren_memory",
-                                    qs_for(n.name, "memory"), fact_urls_for(n.name, "seren_memory"))
-        report[n.name]["flags"] = n.flags
-        report[n.name]["negative_test"] = n.negative_test
+        jobs.append((n.name, n, "memory",
+                     lambda n=n: eval_store(n.name, url_of[n.name], "seren_memory",
+                                            qs_for(n.name, "memory"), fact_urls_for(n.name, "seren_memory"),
+                                            max_parallel_questions)))
     for c in topology.corpus:
-        report[c.name] = eval_store(c.name, url_of[c.name], "corpus",
-                                    qs_for(c.name, "corpus"), fact_urls_for(c.name, "corpus"))
-        report[c.name]["flags"] = c.flags
-        report[c.name]["is_catchall"] = c.is_catchall
+        jobs.append((c.name, c, "corpus",
+                     lambda c=c: eval_store(c.name, url_of[c.name], "corpus",
+                                            qs_for(c.name, "corpus"), fact_urls_for(c.name, "corpus"),
+                                            max_parallel_questions)))
+
+    def _run_job(job):
+        name, node, kind, fn = job
+        try:
+            snap = fn()
+            error = None
+        except Exception as exc:
+            logger.warning("eval failed for store %r: %s", name, exc)
+            snap = {"kind": {"loci": "seren_loci", "memory": "seren_memory",
+                              "corpus": "corpus"}[kind], "question_count": 0, "k": k}
+            error = str(exc)
+        if error is not None:
+            snap["error"] = error
+        snap["flags"] = node.flags
+        if kind == "corpus":
+            snap["is_catchall"] = node.is_catchall
+        else:
+            snap["negative_test"] = node.negative_test
+        return name, snap
+
+    if len(jobs) <= 1 or max_parallel_stores <= 1:
+        for job in jobs:
+            name, snap = _run_job(job)
+            report[name] = snap
+    else:
+        from concurrent.futures import ThreadPoolExecutor
+        width = min(max_parallel_stores, len(jobs))
+        with ThreadPoolExecutor(max_workers=width) as ex:
+            for name, snap in ex.map(_run_job, jobs):
+                report[name] = snap
 
     result = {"stores": report, "question_count": len(questions),
               "topology": {"loci": [n.name for n in topology.loci],
