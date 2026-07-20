@@ -47,12 +47,6 @@ live Seren port (7420–7424) in executable code. Both fail the build.
 | `mcp/` | optional MCP surface (`pip install seren-probe[mcp]`) |
 | `dockerfiles/` | the three store images the emitter builds from |
 
-## 🗄️ `../_attic/`
-
-Six quarantined modules that could reach - or kill - the operator's real stores.
-Read `_attic/README.md` before resurrecting any of them. `test_layering.py` fails
-if one walks back into the package.
-
 ---
 
 ## The four rules this package learned the hard way

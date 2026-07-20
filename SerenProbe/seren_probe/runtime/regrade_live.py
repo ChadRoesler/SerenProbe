@@ -45,6 +45,7 @@ with a warning rather than silently obeyed. See run_live_regrade.
 from __future__ import annotations
 
 import itertools
+import json
 import logging
 
 from ..core.metrics import compute_metrics_batch, normalize_text
@@ -193,21 +194,63 @@ def _measure(scc_url: str, corpus_qs: list, n_results: int, k: int) -> dict:
     return agg
 
 
+def sets_for_corpus(corpus, base_regrades: list) -> list:
+    """Which RegradeSets this corpus actually sweeps. The four rules:
+
+      base only, corpus absent   -> base            (the common case)
+      no base, corpus has own    -> corpus's own    (opt IN a few, sweep nothing else)
+      neither                    -> []              (nothing to do)
+      base AND corpus's own      -> both, DE-DUPLICATED by set name
+      corpus explicitly []       -> []              (opt OUT of an existing base)
+
+    ABSENT IS NOT EMPTY. A corpus with no `CorpusRegrades` key inherits the base;
+    a corpus with an empty one is saying "not me". Collapsing those two makes it
+    impossible to skip a single corpus once a base exists -- and skipping is the
+    entire point, because corpora run serially and a sweep is minutes-to-hours
+    each. Fourteen corpora swept to get at three is an afternoon spent on nothing.
+
+    DE-DUPLICATION IS BY NAME, and the corpus wins. A corpus naming a set that
+    already exists at the top level is OVERRIDING it, not asking for it twice --
+    same shape as the per-node Seed/Questions overrides everywhere else in the
+    config. Two sets with the same name in one result would also make the output
+    rows ambiguous, since `name` is what the table keys on.
+    """
+    own = getattr(corpus, "regrades", None)
+    if own is None:
+        return list(base_regrades)
+    if not own:                       # explicit [] -> opt out
+        return []
+    own_names = {r.name for r in own}
+    # Corpus sets first: they are the specific intent, and a stable order keeps the
+    # result table comparable between runs.
+    return list(own) + [r for r in base_regrades if r.name not in own_names]
+
+
 def _regrade_one_corpus(corpus, scc_url: str, corpus_qs: list, regrades: list,
                         all_override_keys: list, flag_map: dict, k: int,
-                        sort_by: str) -> dict:
+                        sort_by: str, on_combo=None, on_partial=None) -> dict:
     """One corpus's full regrade: capture its current SCC config, force the
     baseline, sweep every CorpusRegrades set's combos, restore the baseline.
-    Fully self-contained (its own scc_url, its own baseline/restore) so it is
-    SAFE TO RUN CONCURRENTLY with other corpora's calls to this function - the
-    only thing it touches outside its own args is the write_guard allowlist,
-    which is a lock-protected shared set the caller populates ONCE up front.
+    Fully self-contained (its own scc_url, its own baseline/restore).
 
     Returns the same {"corpus", "flavor", "baseline", "sets"} shape the old
-    inline loop body produced. Raises on failure -- callers running this in a
-    pool are responsible for catching per-corpus so one bad SCC doesn't sink
-    the others.
+    inline loop body produced. Raises on failure -- the caller is responsible for
+    catching per-corpus so one bad SCC doesn't sink the others.
+
+    on_combo()  -- fired after EVERY measured combo, including the baseline. One
+                   combo is one /configure plus a full pass over every corpus
+                   question, so it is the only honest unit of progress here.
+    on_partial(rows) -- fired after each SET finishes, with the sets measured so
+                   far. A sweep is minutes-to-hours per corpus and corpora are
+                   serial, so without this the whole thing is a black box that
+                   either returns or doesn't.
     """
+    # Computed UP FRONT rather than at the return, so a partial published
+    # mid-sweep is the same shape as the final result and the viewer needs no
+    # special case for "still running".
+    flavor = ("vector" if any("vector" in flag_map.get(s.name, []) for s in corpus.stores)
+              else "lexical")
+
     info = _get(scc_url, "/stores")
     # Refuse to sweep a knob this SCC can't do - an ignored knob yields
     # identical rows, which reads as a ceiling. Loud beats misleading.
@@ -241,25 +284,49 @@ def _regrade_one_corpus(corpus, scc_url: str, corpus_qs: list, regrades: list,
         # Force the baseline before measuring it, so `current` is the config we
         # SAY it is rather than whatever the container drifted to.
         _post(scc_url, "/configure", baseline_cfg)
+        combo_cache: dict[str, dict] = {}
         base = _measure(scc_url, corpus_qs, cur_n, k)
+        if on_combo:
+            on_combo()
         set_rows = [{"name": "current",
                      "metrics": {m: base.get(m, 0.0) for m in _METRICS},
                      "params": {"k": cur_k, "n_results": cur_n,
                                 **({"hops": cur_hops} if cur_hops is not None else {})},
                      "delta": {m: 0.0 for m in ("ndcg", "docket_coverage", "recall", "mrr")}}]
+        # Publish the baseline immediately. It is the row every delta is measured
+        # against, so it is the single most useful number to see early -- and it is
+        # available before a single knob has been turned.
+        if on_partial:
+            on_partial(list(set_rows))
         for rset in regrades:
             best = None
             combo_rows: list[dict] = []
             for combo in compact_combos(rset.overrides):
-                # Reset-then-override, EVERY combo. Never post just the combo's own
-                # knobs: /configure is cumulative and sets would inherit each other.
-                _post(scc_url, "/configure",
-                      full_config_body(combo, loci_name, baseline_cfg))
-                n_for = combo.get("n_results", cur_n)
-                agg = _measure(scc_url, corpus_qs, n_for, k)
-                row = {"metrics": {m: agg.get(m, 0.0) for m in _METRICS}, "params": combo}
-                row["delta"] = {m: round(row["metrics"][m] - base.get(m, 0.0), 4)
-                                for m in ("ndcg", "docket_coverage", "recall", "mrr")}
+                # MEASURE EACH DISTINCT COMBO ONCE.
+                #
+                # A base set and a corpus set that both sweep loci_weight will overlap
+                # on the values they share, and re-measuring an identical config is a
+                # full pass over every corpus question for a number we already have.
+                # The row is REUSED rather than skipped, so each set still reports its
+                # own complete curve -- "show the curve" is not negotiable, but paying
+                # twice for the same point is.
+                ck = json.dumps(combo, sort_keys=True, default=str)
+                cached = combo_cache.get(ck)
+                if cached is not None:
+                    row = dict(cached)
+                else:
+                    # Reset-then-override, EVERY combo. Never post just the combo's own
+                    # knobs: /configure is cumulative and sets would inherit each other.
+                    _post(scc_url, "/configure",
+                          full_config_body(combo, loci_name, baseline_cfg))
+                    n_for = combo.get("n_results", cur_n)
+                    agg = _measure(scc_url, corpus_qs, n_for, k)
+                    row = {"metrics": {m: agg.get(m, 0.0) for m in _METRICS}, "params": combo}
+                    row["delta"] = {m: round(row["metrics"][m] - base.get(m, 0.0), 4)
+                                    for m in ("ndcg", "docket_coverage", "recall", "mrr")}
+                    combo_cache[ck] = row
+                    if on_combo:
+                        on_combo()
                 combo_rows.append(row)
                 if best is None or row["metrics"].get(sort_by, 0) > best["metrics"].get(sort_by, 0):
                     best = row
@@ -275,19 +342,20 @@ def _regrade_one_corpus(corpus, scc_url: str, corpus_qs: list, regrades: list,
                 # point of a sweep is the CURVE. Show the curve.
                 best["combos"] = combo_rows
                 set_rows.append(best)
+                if on_partial:
+                    on_partial(list(set_rows))
     finally:
         try:
             _post(scc_url, "/configure", baseline_cfg)
         except Exception:
             pass
-    flavor = ("vector" if any("vector" in flag_map.get(s.name, []) for s in corpus.stores)
-              else "lexical")
     return {"corpus": corpus.name, "flavor": flavor, "baseline": "current", "sets": set_rows}
 
 
 def run_live_regrade(topology, url_of: dict, questions, *, k: int = 10,
                      sort_by: str = "docket_coverage",
-                     max_parallel_corpora: int = 8) -> dict:
+                     max_parallel_corpora: int = 8,
+                     report_progress: bool = False) -> dict:
     """Roll every CorpusRegrades set against every (non-catch-all) corpus by
     reconfiguring the LIVE SCC container and re-searching. Returns per-corpus
     best-per-set + EVERY combo it measured + the delta vs the container's CURRENT
@@ -312,24 +380,25 @@ def run_live_regrade(topology, url_of: dict, questions, *, k: int = 10,
     means no relevant, means a uniform zero floor and a sweep with nothing to
     sort. A flat regrade is the symptom of an unfed docket, not of inert knobs.)
 
-    PARALLEL ACROSS CORPORA, SERIAL WITHIN ONE.
-    Each corpus is a separate SCC container with fully independent state (its
-    own baseline_cfg, its own /configure history) -- nothing is shared between
-    corpora, so nothing contends. But a regrade with N sets x M combos each is
-    N*M /configure+/search round-trips PER CORPUS, and a multi-corpus topology
-    used to pay that serially, corpus after corpus. One worker per corpus
-    collapses that to max(corpus_times) instead of sum(corpus_times), same
-    move as seed_from_plan's parallel-across-stores fan-out.
+    SERIAL ACROSS CORPORA, SERIAL WITHIN ONE. This used to fan corpora out in a
+    pool on the reasoning that each is an independent SCC container. It is not:
+    an SCC holds no data and reaches into MEMBER stores that other corpora reach
+    into too. See the module docstring -- a contended sweep does not fail loudly,
+    it grades the contention as a knob result, which is the worst outcome
+    available to a tool whose only job is telling good settings from bad.
 
-    UNLIKE seed_from_plan, a failing corpus does NOT abort the run: seeding a
-    half-seeded store is a data-integrity problem, but a corpus that fails to
-    regrade (SCC down, knob unsupported, etc.) is read-only and doesn't corrupt
-    anything -- so the other corpora still finish and report, and the failed
-    one shows up as an "error" entry instead of taking the whole request down.
+    A failing corpus does NOT abort the run: a corpus that fails to regrade (SCC
+    down, knob unsupported) is read-only and corrupts nothing, so the rest still
+    finish and report and the failed one shows up as an "error" entry.
 
-    max_parallel_corpora bounds the fan, same rationale as seed_from_plan's
-    max_parallel_stores: unbounded fan-out on a big topology would open a pile
-    of simultaneous connections against your own Docker host.
+    max_parallel_corpora is accepted for compatibility and ignored above 1, out
+    loud, via a logged warning.
+
+    report_progress publishes to runtime.progress: an X/Y combo counter per corpus
+    (declared for EVERY corpus before the first knob turns, so the table renders
+    complete and empty rather than growing a row at a time) plus partial result
+    rows as each set lands. False by default so tests and non-UI callers don't pay
+    for a registry nobody is polling.
     """
     corpus_qs = [{"query": q.query, "expected_content": list(q.expect_content)}
                  for q in questions
@@ -341,11 +410,15 @@ def run_live_regrade(topology, url_of: dict, questions, *, k: int = 10,
     allow_targets(url_of.values())
     if not corpus_qs:
         return {"corpora": [], "note": "No corpus questions to regrade."}
-    if not regrades:
-        return {"corpora": [], "note": "No CorpusRegrades sets in the active ProbeConfig."}
+    # NO early-out on an empty top-level `regrades`. That guard predates per-corpus
+    # sets and would kill rule 2 outright -- "no base, a few corpora define their own"
+    # is the whole opt-in workflow, and it arrives here with base_regrades == [].
+    # Whether there is anything to do is decided per corpus by sets_for_corpus, below.
 
     flag_map = {n.name: (n.flags or []) for n in topology.loci}
-    all_override_keys = [ok for rs in topology.corpus_regrades for ok in rs.overrides]
+    # all_override_keys is no longer computed globally: knob-capability must be
+    # checked against the knobs a corpus ACTUALLY sweeps. See the per-corpus
+    # `own_keys` below.
 
     tasks = []
     for corpus in topology.corpus:
@@ -354,7 +427,20 @@ def run_live_regrade(topology, url_of: dict, questions, *, k: int = 10,
         scc_url = url_of.get(corpus.name)
         if not scc_url:
             continue
-        tasks.append((corpus, scc_url))
+        # RESOLVE PER CORPUS, and drop the ones with nothing to sweep BEFORE they
+        # become tasks. A corpus that opted out must not appear in the progress
+        # table at all -- a row sitting at 0/0 forever is indistinguishable from a
+        # hung one, and this whole feature exists so you can tell those apart.
+        sets = sets_for_corpus(corpus, regrades)
+        if not sets:
+            logger.info("regrade: skipping %s (no CorpusRegrades sets apply)", corpus.name)
+            continue
+        tasks.append((corpus, scc_url, sets))
+    if not tasks:
+        return {"corpora": [], "note": (
+            "No corpus has any CorpusRegrades sets that apply -- every corpus either "
+            "opted out with an empty CorpusRegrades or there is no top-level set to "
+            "inherit.")}
 
     corpora_out: list[dict] = []
     # SERIAL, ALWAYS. See the module docstring: corpora overlap on member stores, so
@@ -371,16 +457,78 @@ def run_live_regrade(topology, url_of: dict, questions, *, k: int = 10,
             "regrade: ignoring max_parallel_corpora=%d -- corpora share member "
             "containers, so parallel sweeps contend and grade the contention as a "
             "knob result. Running %d corpora serially.", _requested, len(tasks))
-    for corpus, scc_url in tasks:
+
+    # PRELOAD EVERY ROW BEFORE THE FIRST KNOB TURNS.
+    #
+    # Declaring all totals up front means the table renders COMPLETE and empty --
+    # every corpus at 0/N with a real denominator -- instead of growing a row each
+    # time one finishes. With corpora serialized, a fourteen-corpus sweep otherwise
+    # shows one row for the first several minutes and gives no way to tell "working"
+    # from "hung", which is the exact black box this is here to remove.
+    #
+    # The unit is a COMBO, not a question: one combo is a /configure plus a full
+    # pass over every corpus question, so it is the coarsest unit that actually
+    # advances at a steady rate. +1 for the baseline measurement, which is a real
+    # measured pass and would otherwise make the bar start at 1/N having done nothing.
+    _progress = None
+    if report_progress:
+        from . import progress as _progress
+        for corpus, _u, _sets in tasks:
+            # Per-corpus total, NOT one shared number. Sets differ per corpus now, so
+            # a single figure would be wrong for every corpus that overrides. The
+            # dedup cache can only make a sweep finish EARLY (under its total), never
+            # overrun -- an honest ceiling beats a bar that jumps past 100%.
+            total = 1 + sum(len(compact_combos(rs.overrides)) for rs in _sets)
+            _progress.start(corpus.name, "regrade", total)
+
+    for corpus, scc_url, sets in tasks:
+        def _bump(_name=corpus.name):
+            if _progress:
+                _progress.bump(_name, 1)
+
+        def _partial(rows, _name=corpus.name, _corpus=corpus):
+            # Same shape as the final per-corpus result, so the viewer renders a
+            # half-finished sweep through the same code path as a finished one.
+            # flavor is computed up front inside _regrade_one_corpus for this reason.
+            if _progress:
+                _progress.publish(_name, {
+                    "corpus": _name,
+                    "flavor": ("vector" if any("vector" in flag_map.get(s.name, [])
+                                              for s in _corpus.stores) else "lexical"),
+                    "baseline": "current", "sets": rows, "running": True})
+
         try:
-            corpora_out.append(_regrade_one_corpus(
-                corpus, scc_url, corpus_qs, regrades, all_override_keys,
-                flag_map, k, sort_by))
+            # Knob-capability is checked against the knobs THIS corpus actually
+            # sweeps, not the union across the whole config. A corpus inheriting a
+            # plain rrf_k sweep must not be hard-errored because some OTHER corpus
+            # opted into a hops set its SCC cannot do.
+            own_keys = [ok for rs in sets for ok in rs.overrides]
+            out = _regrade_one_corpus(
+                corpus, scc_url, corpus_qs, sets, own_keys,
+                flag_map, k, sort_by,
+                on_combo=_bump if _progress else None,
+                on_partial=_partial if _progress else None)
+            corpora_out.append(out)
+            if _progress:
+                _progress.publish(corpus.name, out)
         except Exception as exc:  # noqa: BLE001 - one bad SCC must not sink the run
             logger.error("Regrade failed for corpus %s: %s", corpus.name, exc)
-            corpora_out.append({"corpus": corpus.name,
-                                "error": f"{type(exc).__name__}: {exc}"})
+            err = {"corpus": corpus.name, "error": f"{type(exc).__name__}: {exc}"}
+            corpora_out.append(err)
+            # Publish failures too, and immediately. A corpus that died on knob 3 of
+            # 40 should be visible NOW, not after the remaining thirteen corpora
+            # finish -- an unsupported knob is exactly the thing you want to fix
+            # before the rest of the sweep burns an hour on it.
+            if _progress:
+                _progress.publish(corpus.name, err)
+        finally:
+            if _progress:
+                _progress.finish(corpus.name)
 
     return {"corpora": corpora_out, "sort_by": sort_by, "eval_k": k,
-            "set_names": ["current"] + [r.name for r in regrades],
+            # Set names are the UNION across corpora now, not one global list -- with
+            # per-corpus overrides no single corpus necessarily ran all of them. Each
+            # corpus's own `sets` is authoritative for what IT actually swept.
+            "set_names": ["current"] + sorted(
+                {rs.name for _c, _u, _s in tasks for rs in _s}),
             "question_count": len(corpus_qs)}

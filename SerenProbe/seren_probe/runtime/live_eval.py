@@ -776,6 +776,17 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
             snap["is_catchall"] = node.is_catchall
         else:
             snap["negative_test"] = node.negative_test
+        # PUBLISH THE MOMENT THIS COLUMN IS SCORED, rather than making every result
+        # wait on the slowest one. Every store exits through here, so this catches all
+        # of them -- including the ERROR snapshots, which are the ones most worth seeing
+        # early: a container that died in wave 1 should not stay invisible through forty
+        # minutes of corpus fan-out. Loci columns finish in seconds; there is no reason
+        # they should be hostage to All-scc.
+        #
+        # Published AFTER flags/negative_test/is_catchall are attached, so a partial row
+        # has the same shape as the final one and the viewer needs no special case.
+        if _progress:
+            _progress.publish(name, snap)
         return name, snap
 
     # SCHEDULING: MEMBERS FIRST, THEN CORPORA. Two waves, not one pool.

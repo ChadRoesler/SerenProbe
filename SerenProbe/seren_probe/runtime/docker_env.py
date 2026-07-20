@@ -319,6 +319,76 @@ def clear_topology_state() -> None:
         STATE_FILE.unlink(missing_ok=True)
     except OSError:
         pass
+    # Results describe a pod. Tear the pod down and they stop describing anything --
+    # dropped HERE rather than at each call site so "stop" can never forget and leave
+    # a dead fleet's numbers looking current.
+    clear_eval_results()
+
+
+# ── eval RESULTS persistence ───────────────────────────────────────
+# Same problem as topology state, one level up, and it went unnoticed longer because
+# the failure LOOKS like a fact rather than a gap.
+#
+# `seeded` survives a restart; the eval results did not -- they lived only in
+# app.state.eval_results. So after an adopt (or any app restart) /eval/results
+# returned {}, the viewer fell through to renderEvalPlaceholder, and the dashboard
+# said "not yet seeded/evaluated" about a pod that had been fully scored an hour
+# earlier. The app did not know, and said something definite anyway.
+#
+# That is the same class of bug as grading against a missing answer key: "no data"
+# and "a measured zero" are different claims, and a dashboard that renders them
+# identically will send you to re-run an hour of work you already have. It also now
+# bites harder, because the regrade plan tells you a sweep is available while the
+# table above it implies nothing has ever been evaluated.
+#
+# KEYED BY PROJECT NAME on purpose: results belong to the pod that produced them.
+# Adopt a different project and these must NOT surface -- stale numbers attributed
+# to the wrong fleet are worse than no numbers.
+RESULTS_FILE = Path.home() / ".seren-probe" / "eval_results.json"
+
+
+def save_eval_results(project_name: str, results: dict) -> None:
+    """Persist a completed eval's results next to the topology state. Best-effort:
+    never fail a finished eval because a convenience file could not be written --
+    the numbers are already in the response either way."""
+    import json
+    from datetime import datetime
+    try:
+        RESULTS_FILE.parent.mkdir(parents=True, exist_ok=True)
+        RESULTS_FILE.write_text(json.dumps(
+            {"project_name": project_name,
+             "saved_at": datetime.utcnow().isoformat(),
+             "results": results}, indent=2), encoding="utf-8")
+    except (OSError, TypeError, ValueError) as exc:      # noqa: BLE001
+        logger.warning("could not persist eval results: %s", exc)
+
+
+def load_eval_results(project_name: str | None = None) -> dict | None:
+    """The saved envelope {project_name, saved_at, results}, or None.
+
+    Pass project_name to REFUSE results belonging to a different pod. A caller that
+    skips the check is asking to attribute one fleet's numbers to another.
+    """
+    import json
+    try:
+        if not RESULTS_FILE.exists():
+            return None
+        env = json.loads(RESULTS_FILE.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:                 # noqa: BLE001
+        logger.warning("could not read eval results: %s", exc)
+        return None
+    if not isinstance(env, dict) or not isinstance(env.get("results"), dict):
+        return None
+    if project_name is not None and env.get("project_name") != project_name:
+        return None
+    return env
+
+
+def clear_eval_results() -> None:
+    try:
+        RESULTS_FILE.unlink(missing_ok=True)
+    except OSError:
+        pass
 
 
 def adoptable_topology() -> dict | None:
@@ -766,11 +836,38 @@ def write_compose(emitted, work_dir: Path) -> Path:
     # Copy the shipped basic Dockerfiles in beside the compose so the build
     # context (".") is self-contained. image: overrides that skip build don't
     # need them; copying is harmless either way.
+    #
+    # parent.parent, NOT parent. This module lives at seren_probe/runtime/docker_env.py
+    # and the Dockerfiles at seren_probe/dockerfiles/ -- one level UP from here. When
+    # docker_env moved into the runtime layer this path moved with it and started
+    # pointing at seren_probe/runtime/dockerfiles, which does not exist.
+    #
+    # And the `if is_dir()` guard made that SILENT: nothing copied, no error, and the
+    # build quietly reused whatever stale Dockerfiles were left in the temp work_dir
+    # from a spin-up predating the move. Edits to the shipped Dockerfiles simply never
+    # reached the build -- for however long it has been broken -- and the only symptom
+    # was images that didn't have the change in them.
+    #
+    # So the guard is gone too. If the Dockerfiles are missing from an INSTALLED
+    # package that is a packaging bug, and it should say so here rather than hand
+    # BuildKit a context full of last month's files. (image_overrides skip the build
+    # entirely, so a missing-context error only fires when the files are genuinely
+    # needed -- see below.)
     import shutil
-    dockerfiles = Path(__file__).parent / "dockerfiles"
+    dockerfiles = Path(__file__).parent.parent / "dockerfiles"
+    copied = 0
     if dockerfiles.is_dir():
         for df in dockerfiles.glob("*.Dockerfile"):
             shutil.copy2(df, work_dir / df.name)
+            copied += 1
+    if not copied:
+        # Loud, but not fatal: a topology built entirely from image_overrides never
+        # reads these. Compose will fail with a clear "dockerfile not found" if they
+        # were actually required, and this line explains why they are absent.
+        logger.warning(
+            "no Dockerfiles copied into the build context from %s - a build (rather "
+            "than an image: override) will fail. This is a packaging/path bug, not a "
+            "config one.", dockerfiles)
     return compose_path
 
 
@@ -842,10 +939,31 @@ def compose_up(work_dir: Path, project_name: str, build: bool = True) -> None:
 
 
 def compose_down(work_dir, project_name: str) -> None:
-    """Best-effort teardown; never raises (safe in a finally / shutdown)."""
+    """Best-effort teardown; never raises (safe in a finally / shutdown).
+
+    NO -v. That flag removes the compose file's NAMED volumes, and the only named
+    volume in an emitted topology is seren-probe-model-cache -- the shared
+    HuggingFace / sentence-transformers / chroma-ONNX cache every model-loading
+    store mounts.
+
+    With -v, that cache survived exactly one pod lifetime: every teardown deleted it,
+    so every spin-up was a COLD start again, and a cold start means every vector Loci
+    and every Memory races for the same model at once against a per-IP rate limit.
+    That is fine at five stores and fatal at thirty-six -- containers stuck at
+    "Waiting for application startup" until compose declares them unhealthy and tears
+    down every corpus depending on them. The volume existed precisely to stop that and
+    was being destroyed on the one boundary it was meant to cross.
+
+    Store DATA is not at risk here: it lives inside the containers, which `down`
+    removes regardless. The cache holds downloaded MODEL WEIGHTS -- identical bytes
+    for every topology, nothing corpus-specific, nothing that can go stale in a way
+    that affects a score. Keeping it is free; re-fetching it is not.
+
+    To reclaim the space deliberately:  docker volume rm seren-probe-model-cache
+    """
     try:
         _run_docker("compose", "-p", project_name,
-                    "-f", str(Path(work_dir) / "docker-compose.yml"), "down", "-v", timeout=120)
+                    "-f", str(Path(work_dir) / "docker-compose.yml"), "down", timeout=120)
     except Exception as e:
         logger.warning("compose down: %s", e)
 

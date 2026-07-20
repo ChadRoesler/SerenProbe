@@ -16,6 +16,51 @@
 
 /* the shell caps #views at 1100px but doesn't center it; each view holds one card */
 #views { margin-inline: auto; }
+
+/* ── Scrollbars ────────────────────────────────────────────────
+ * The ProbeConfig textarea and the log panes are scrolled constantly, and an
+ * unstyled scrollbar renders as the OS default -- a bright grey slab on a dark
+ * panel, which is the one element on the page that ignores the theme.
+ *
+ * Both syntaxes on purpose: `scrollbar-color` is the standards-track property
+ * (Firefox, and Chromium 121+), `::-webkit-scrollbar` is what every older
+ * Chromium/Safari actually honours. Neither alone covers the browsers this
+ * dashboard gets opened in. A browser that understands both applies the
+ * standard one and ignores the pseudo-elements, so there is no conflict.
+ */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  /* transparent, not a colour: the track then picks up whatever surface it sits
+     on, so this works on the panel, the textarea and the code panes alike. */
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 6px;
+  /* Transparent border + background-clip insets the thumb, so it reads as a slim
+     bar floating in the gutter instead of a block filling it. */
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-dim);
+  background-clip: content-box;
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+/* The resize grabber in the corner of a textarea is drawn by the OS and cannot be
+   themed, only removed. The textarea keeps its rows= height and its scrollbar. */
+textarea {
+  resize: vertical;
+}
 .view.active { animation: view-in 0.18s ease; }
 @keyframes view-in { from { opacity: 0; } to { opacity: 1; } }
 
