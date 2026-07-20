@@ -21,11 +21,20 @@ Two URL spaces (the silent breaker, handled here):
 """
 from __future__ import annotations
 
+import os
 import re
 from dataclasses import dataclass
 from .topology import CompiledTopology, ResolvedNode, ResolvedCorpus
 
 DEFAULT_EMBEDDER = "all-MiniLM-L6-v2"   # what a 'vector' Loci gets unless overridden
+
+# Where loci.Dockerfile extracts the embedder. A vector Loci is handed this PATH rather
+# than the model NAME, because the two resolve completely differently:
+#   "all-MiniLM-L6-v2"                 -> a HuggingFace repo id -> network, every boot
+#   "/opt/seren-models/all-MiniLM-L6-v2" -> a local directory   -> disk, no network
+# sentence-transformers accepts either. Passing the name is what sent 22 containers to
+# a rate-limited Hub on every single start with the weights already on disk.
+BAKED_MODEL_DIR = "/opt/seren-models"
 
 DOCKERFILE = {
     "seren_loci":   "loci.Dockerfile",
@@ -123,6 +132,29 @@ def _build_or_image(kind: str, flags: list[str], image_overrides: dict, name: st
 MODEL_CACHE_VOLUME = "seren-probe-model-cache"
 MODEL_CACHE_MOUNT = "/root/.cache"
 
+# POINT THE LIBRARIES AT THE MOUNT EXPLICITLY, rather than trusting that ~ resolves
+# to /root inside every image.
+#
+# The original bet was "mount /root/.cache and every library finds it, no per-library
+# env plumbing to keep in sync." That only holds while the container runs as root. If
+# an image runs as a non-root user, HOME is /home/<user>, every cache lands there, and
+# the mounted volume is a directory nobody reads -- which looks EXACTLY like a working
+# cache from the outside: the volume exists, it has bytes in it (written by whichever
+# services DO run as root), containers are linked to it, and every boot still
+# re-downloads.
+#
+# These three env vars are read directly by the libraries and do not consult HOME at
+# all, so the cache lands on the mount regardless of who the container runs as:
+#   HF_HOME                    - huggingface_hub root (hub/ lives under it)
+#   SENTENCE_TRANSFORMERS_HOME - sentence-transformers model dir
+#   XDG_CACHE_HOME             - the fallback everything else derives ~/.cache from
+# Explicit beats implicit here; the plumbing this avoids was never the expensive part.
+MODEL_CACHE_ENV = {
+    "HF_HOME": f"{MODEL_CACHE_MOUNT}/huggingface",
+    "SENTENCE_TRANSFORMERS_HOME": f"{MODEL_CACHE_MOUNT}/sentence-transformers",
+    "XDG_CACHE_HOME": MODEL_CACHE_MOUNT,
+}
+
 
 def _healthcheck(port: int, slow_start: bool = False) -> dict:
     """Compose healthcheck for one service.
@@ -155,19 +187,51 @@ def _node_service(n: ResolvedNode, embedder: str, image_overrides: dict,
     env: dict[str, str] = {f"SEREN_{short.upper()}_PORT": str(n.port), "PYTHONUTF8": "1"}
     vector = n.kind == "seren_loci" and "vector" in n.flags
     if vector:
-        env["SEREN_LOCI_EMBEDDING_MODEL"] = embedder   # presence = the vector switch
+        # The PATH, not the name -- see BAKED_MODEL_DIR. The image already contains
+        # these weights; naming the HF repo id would send it to the network to fetch
+        # what it is standing on.
+        env["SEREN_LOCI_EMBEDDING_MODEL"] = f"{BAKED_MODEL_DIR}/{embedder}"
+    # NO cache env or mount for a vector Loci any more: its embedder is BAKED INTO THE
+    # IMAGE at /opt/seren-models (see loci.Dockerfile). The shared volume never worked
+    # for Loci anyway -- a night of boots left 12MB of Xet staging and no hub/ tree,
+    # while Memory's chroma model cached fine beside it at 166MB. Mounting it here would
+    # now be actively harmful: the volume shadows /root/.cache, so a cache miss would
+    # send a container that already HAS the model back to the network for it.
+    if n.kind == "seren_memory":
+        env.update(MODEL_CACHE_ENV)
+    if n.kind == "seren_memory" and os.environ.get("HF_TOKEN"):
+        # THE COLD-CACHE STAMPEDE, mitigated. The shared cache volume below fixes every
+        # boot AFTER the first; it cannot help the first, when every model-loading
+        # container misses at once and races to populate it.
+        #
+        # What turns that race from slow into FATAL is that HuggingFace rate-limits
+        # ANONYMOUS requests PER SOURCE IP -- and all N containers share the host's one
+        # IP. So they throttle each other, and the throttling gets WORSE as the topology
+        # gets wider: fine at 5 stores, fatal at 36. Observed exactly that: every vector
+        # Loci stuck at "Waiting for application startup" behind an unauthenticated-HF
+        # warning until compose gave up and tore down every corpus depending on them.
+        #
+        # Interpolation, NOT the literal value: compose substitutes ${HF_TOKEN} from the
+        # environment at `up` time, so the token never lands in the generated
+        # docker-compose.yml sitting in a temp dir. And the key is omitted entirely when
+        # the host has no token, because an EMPTY HF_TOKEN is worse than none -- it is a
+        # failed authentication attempt rather than an anonymous request.
+        env["HF_TOKEN"] = "${HF_TOKEN}"
     svc = {
         "container_name": n.name,
         "environment": dict(sorted(env.items())),
         "ports": [f"{n.port}:{n.port}"],          # host-published for the eval
-        # a vector node downloads + loads a sentence-transformers model before it
-        # serves anything: it needs the long grace window, or compose kills it mid-download
-        "healthcheck": _healthcheck(n.port, slow_start=vector),
+        # A vector node still LOADS a model before it binds, even with the download
+        # gone -- baking removes the fetch, not the deserialize, and 22 containers
+        # loading at once on a contended box is precisely when that is slowest. The
+        # cost of an over-long start_period is zero; the cost of a short one is a torn
+        # down fleet, because compose kills the store and every corpus depending on it.
+        "healthcheck": _healthcheck(n.port, slow_start=(vector or n.kind == "seren_memory")),
     }
-    # Anything that loads a model shares the cache. A vector Loci pulls the
-    # sentence-transformers embedder; Memory pulls chroma's ONNX MiniLM. A lexical Loci
-    # pulls nothing and gets no mount.
-    if vector or n.kind == "seren_memory":
+    # Only Memory shares the cache now. A vector Loci carries its embedder in the image
+    # (loci.Dockerfile), so it mounts nothing and downloads nothing; a lexical Loci
+    # never needed a model at all.
+    if n.kind == "seren_memory":
         svc["volumes"] = [f"{MODEL_CACHE_VOLUME}:{MODEL_CACHE_MOUNT}"]
     kind_key = "loci" if n.kind == "seren_loci" else "memory"
     svc.update(_build_or_image(n.kind, n.flags, image_overrides, n.name,

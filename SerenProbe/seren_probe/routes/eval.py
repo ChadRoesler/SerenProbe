@@ -17,9 +17,41 @@ router = APIRouter(prefix="/eval", tags=["eval"])
 
 @router.get("/results")
 async def get_eval_results(request: Request):
-    return request.app.state.eval_results or {
-        "stores": {}, "query_count": 0, "date": ""
-    }
+    """The last eval's results - from memory, or rehydrated from disk.
+
+    THE FALLBACK IS THE POINT. Results used to live only in app.state, so a restart
+    or an adopt returned {} and the viewer rendered "not yet seeded/evaluated" about
+    a pod that had been fully scored. The app didn't know, and said something
+    definite anyway -- the same class of mistake as grading against a missing answer
+    key, and it sends you to re-run an hour of work you already have.
+
+    Rehydrating HERE rather than in the adopt route covers every way app.state can
+    end up empty (restart, adopt, a worker recycle) in one place, instead of one fix
+    per entry point and a new gap the next time someone adds another.
+
+    Guarded by project name: results belong to the pod that produced them, and a
+    different fleet's numbers are worse than none.
+    """
+    cached = request.app.state.eval_results
+    if cached:
+        return cached
+    ts = getattr(request.app.state, "topology_state", None)
+    if ts and ts.get("project_name"):
+        try:
+            from ..runtime.docker_env import load_eval_results
+            env = load_eval_results(ts["project_name"])
+        except Exception as exc:      # noqa: BLE001 - a convenience read, never fatal
+            logger.warning("could not rehydrate eval results: %s", exc)
+            env = None
+        if env:
+            # `restored` is not decoration. "Scored in this process" and "scored
+            # earlier, read back off disk" are different confidence levels, and the
+            # viewer says so rather than presenting a rehydrated table as live.
+            results = {**env["results"], "restored": True,
+                       "restored_at": env.get("saved_at", "")}
+            request.app.state.eval_results = results
+            return results
+    return {"stores": {}, "query_count": 0, "date": ""}
 
 
 @router.get("/progress")
@@ -31,9 +63,38 @@ async def get_eval_progress():
     that split is required (the seed/run response IS the finished result; there
     is nothing to poll on that request). Returns instantly regardless of what
     the worker threads are doing, and reads {} once nothing is running.
+
+    SHAPE IS UNCHANGED ON PURPOSE. Early per-store results live at /eval/partials
+    instead of being folded in here as {"stores": ..., "partials": ...}. Wrapping
+    this response would have silently emptied the status column of every caller
+    already reading it -- a new feature is not a reason to break a working
+    contract when a new endpoint costs nothing.
     """
     from ..runtime import progress
     return progress.snapshot()
+
+
+@router.get("/partials")
+async def get_eval_partials():
+    """Snapshots of every store scored SO FAR in the run that is currently going.
+
+    Lets the Eval table fill in column by column instead of staying blank for the
+    length of the run. Loci columns finish in seconds; corpora are serialized and
+    All-scc fans 22 containers, so without this every fast column is hostage to the
+    slowest thing in the topology. Error snapshots publish too -- a container that
+    died in wave 1 should be visible immediately, not after the corpora finish.
+
+    Rows are the same shape as /eval/results rows (flags, negative_test,
+    is_catchall are all attached before publishing), so the viewer can render them
+    through the existing code path with no special case.
+
+    A PEEK, NOT THE RESULT. Anything computed ACROSS stores is absent here by
+    construction -- the docket with/without-edges comparison and the ground_truth
+    notes cannot be computed until every column is in. An empty docket here is
+    correct, not a bug. Read this to watch; read /eval/results to conclude.
+    """
+    from ..runtime import progress
+    return {"partials": progress.partials()}
 
 
 @router.post("/seed")
@@ -252,6 +313,14 @@ async def run_eval(request: Request):
         if ei.warnings:
             results = {**results, "resolve_warnings": ei.warnings}
         request.app.state.eval_results = results
+        # PERSIST, so the next process (or an adopt) knows this pod has been scored.
+        # After the results are in app.state and in the response, so a write failure
+        # costs the convenience and never the run.
+        try:
+            from ..runtime.docker_env import save_eval_results
+            save_eval_results(ts.get("project_name", ""), results)
+        except Exception as exc:     # noqa: BLE001
+            logger.warning("could not persist eval results: %s", exc)
         return {"ok": True, "results": results}
 
     # NO SILENT FALLBACK TO LIVE STORES. This used to drop through to the legacy
@@ -270,6 +339,53 @@ async def run_eval(request: Request):
                 "reach out to whatever happens to be listening on the default ports."))
 
 
+@router.get("/regrade/plan")
+async def get_regrade_plan(request: Request):
+    """What a regrade WOULD sweep, resolved but not run.
+
+    A sweep is minutes-to-hours per corpus and corpora run serially, so "which of my
+    corpora are actually in this, and how many combos each" is worth answering BEFORE
+    spending the afternoon rather than after. With per-corpus CorpusRegrades the answer
+    stopped being readable off the config: sets are inherited, overridden by name, or
+    opted out of, and that resolution happens in code. This calls the SAME resolver the
+    sweep uses (sets_for_corpus), so the plan cannot disagree with what executes.
+
+    Read-only and instant -- touches no container, turns no knob.
+    """
+    topo = getattr(request.app.state, "compiled_topology", None)
+    if not topo:
+        return {"corpora": [], "note": "No topology compiled - set an active ProbeConfig first."}
+    from ..runtime.regrade_live import sets_for_corpus, compact_combos
+
+    base = list(getattr(topo, "corpus_regrades", None) or [])
+    rows, total_combos = [], 0
+    for c in topo.corpus:
+        if getattr(c, "is_catchall", False) or not c.stores:
+            continue
+        own = getattr(c, "regrades", None)
+        own_names = {r.name for r in (own or [])}
+        sets = sets_for_corpus(c, base)
+        if not sets:
+            # Say WHY it is out. "Opted out" and "nothing to inherit" look identical in
+            # a table and mean completely different things -- one is a decision, the
+            # other is a config gap you probably did not intend.
+            rows.append({"corpus": c.name, "skipped": True, "sets": [], "combos": 0,
+                         "reason": ("opted out (empty CorpusRegrades)" if own is not None
+                                    else "no top-level CorpusRegrades to inherit")})
+            continue
+        srows, n_total = [], 1          # +1 for the baseline measurement
+        for rs in sets:
+            n = len(compact_combos(rs.overrides))
+            n_total += n
+            srows.append({"name": rs.name, "combos": n,
+                          "source": "corpus" if rs.name in own_names else "base",
+                          "knobs": {k: list(v) for k, v in rs.overrides.items()}})
+        total_combos += n_total
+        rows.append({"corpus": c.name, "skipped": False, "sets": srows, "combos": n_total})
+    return {"corpora": rows, "total_combos": total_combos,
+            "swept": sum(1 for r in rows if not r["skipped"]), "corpus_count": len(rows)}
+
+
 @router.post("/regrade")
 async def run_regrade(request: Request):
     """Roll the active ProbeConfig's CorpusRegrades sets against the running
@@ -281,9 +397,16 @@ async def run_regrade(request: Request):
     if not (ts and topo):
         raise HTTPException(status_code=400,
                             detail="No topology running - Start a topology first.")
-    if not getattr(topo, "corpus_regrades", None):
-        raise HTTPException(status_code=400,
-                            detail="No CorpusRegrades sets in the active ProbeConfig.")
+    if not getattr(topo, "corpus_regrades", None) and not any(
+            getattr(c, "regrades", None) for c in topo.corpus):
+        # Checks BOTH levels. A config with no top-level CorpusRegrades but per-corpus
+        # sets on a few corpora is the opt-in workflow, and the old top-level-only
+        # guard rejected it at the door.
+        raise HTTPException(
+            status_code=400,
+            detail=("No CorpusRegrades sets anywhere in the active ProbeConfig - add "
+                    "a top-level CorpusRegrades (applies to every corpus) or a "
+                    "per-corpus one (applies to just that corpus)."))
     from ..core.resolve import resolve_eval_inputs
     from ..core.seed_dataset import SeedError
     try:
@@ -302,6 +425,10 @@ async def run_regrade(request: Request):
                             detail="No questions to regrade - set a Questions in the ProbeConfig.")
     from ..runtime.regrade_live import run_live_regrade
     from starlette.concurrency import run_in_threadpool
+    # Same clear_all as /eval/seed and /eval/run: a stale row from a previous,
+    # unrelated operation must never bleed into this one's table.
+    from ..runtime import progress
+    progress.clear_all()
     try:
         # sort_by defaults to docket_coverage, NOT ndcg. Coverage is the SCC's mission
         # metric: it divides matched docket items by the number the question ASKED for,
@@ -328,7 +455,8 @@ async def run_regrade(request: Request):
             run_live_regrade,
             topo, ts["url_of"], ei.questions,
             sort_by=body.get("sort_by", "docket_coverage"),
-            max_parallel_corpora=body.get("max_parallel_corpora", 1))
+            max_parallel_corpora=body.get("max_parallel_corpora", 1),
+            report_progress=True)
     except Exception as exc:
         logger.error("Regrade failed: %s", exc)
         raise HTTPException(status_code=500, detail=str(exc))

@@ -126,6 +126,16 @@ class ResolvedCorpus:
     # its members answer -- which is what splits the score two ways: did fusion PRESERVE
     # what a store already knew (dilution), and did it ADD what no store had (value).
     questions_ref: str | list | None = None
+    # Per-corpus CorpusRegrades. THREE-STATE, and the distinction is the whole feature:
+    #   None  -> INHERIT the top-level CorpusRegrades (the default; most corpora)
+    #   [...] -> this corpus's OWN sets, run IN ADDITION to any top-level ones
+    #   []    -> explicitly OPT OUT; this corpus is not swept at all
+    #
+    # `absent` and `empty` have to mean different things or there is no way to skip a
+    # single corpus once a top-level set exists -- and skipping is the point. A sweep
+    # is minutes-to-hours per corpus and corpora run serially, so "regrade these three,
+    # not all fourteen" is the difference between a coffee and an afternoon.
+    regrades: list | None = None
 
 
 @dataclass
@@ -414,6 +424,33 @@ def compile_topology(probe_config: dict) -> CompiledTopology:
         _corpus_raw.get("CorpusRegrades") if isinstance(_corpus_raw, dict) else None,
         errors, warnings)
 
+    # PER-CORPUS CorpusRegrades, keyed by name and parsed with the SAME parser as the
+    # top-level one -- one validator, one set of error messages, no chance of the two
+    # levels disagreeing about what a valid knob is.
+    #
+    # THREE STATES, and the key's PRESENCE is what distinguishes two of them:
+    #   key absent  -> not in this map at all -> ResolvedCorpus.regrades is None -> INHERIT
+    #   key present -> parsed list (possibly empty) -> OWN sets, or [] to OPT OUT
+    #
+    # Absent and empty have to differ, or there is no way to skip one corpus once a
+    # top-level set exists. A sweep is minutes-to-hours per corpus and corpora run
+    # serially, so "these three, not all fourteen" is the difference between a coffee
+    # and an afternoon. `CorpusRegrades:` with a null value counts as PRESENT (opt out):
+    # writing the key at all is a statement about this corpus.
+    per_corpus_regrades: dict[str, list] = {}
+    if isinstance(_corpus_raw, dict):
+        for _cfg in (_corpus_raw.get("CorpusConfigs") or []):
+            if not isinstance(_cfg, dict) or "CorpusRegrades" not in _cfg:
+                continue
+            _nm = _cfg.get("Name")
+            if not _nm:
+                warnings.append("a CorpusConfigs entry has CorpusRegrades but no Name - "
+                                "per-corpus regrades are matched by name, so this is ignored. "
+                                "Name the corpus, or move the sets to the top level.")
+                continue
+            per_corpus_regrades[str(_nm)] = _parse_regrades(
+                _cfg.get("CorpusRegrades"), errors, warnings)
+
     _, loci_p = _parse_section(pc, "Loci",   "LociCount",   "LociConfigs",   errors, warnings)
     _, mem_p  = _parse_section(pc, "Memory", "MemoryCount", "MemoryConfigs", errors, warnings)
     _, corp_p = _parse_section(pc, "Corpus", "CorpusCount", "CorpusConfigs", errors, warnings)
@@ -489,7 +526,10 @@ def compile_topology(probe_config: dict) -> CompiledTopology:
     referenced: set[str] = set()
     for p in [c for c in corp_p if not c.generated]:
         rc = ResolvedCorpus(name=p.name, port=p.port, flags=p.flags,
-                            questions_ref=p.questions_ref)
+                            questions_ref=p.questions_ref,
+                            # .get() -> None when the key was absent, which is exactly
+                            # the INHERIT signal regrade_live.sets_for_corpus looks for.
+                            regrades=per_corpus_regrades.get(p.name))
         seen: set[str] = set()
         for j, st in enumerate(p.stores or []):
             if not isinstance(st, dict) or "Store" not in st:
@@ -536,6 +576,18 @@ def compile_topology(probe_config: dict) -> CompiledTopology:
                             f"it'll spin up and sit out every fan. Reference it or drop it.")
     if errors:
         raise TopologyError(errors, warnings)
+
+    # ── per-corpus regrades that matched no corpus ──────────────────
+    # A typo'd Name here fails SILENTLY and in the worst direction: the corpus you meant
+    # to scope quietly inherits the top-level sets (or gets skipped entirely), and you
+    # get a full result table answering a question you did not ask. Same family as a
+    # duplicate YAML key -- the config is valid, it just doesn't say what you think.
+    # Name the miss and list what was actually available.
+    _corpus_real = {c.name for c in resolved_corpus}
+    for _nm in sorted(set(per_corpus_regrades) - _corpus_real):
+        warnings.append(
+            f"CorpusRegrades declared under corpus {_nm!r}, which isn't a corpus in this "
+            f"topology - those sets will never run. Declared corpora: {sorted(_corpus_real)}.")
 
     # ── landmine lint: identical (store,weight) sets across corpora ─
     sig_map: dict[frozenset, list[str]] = {}

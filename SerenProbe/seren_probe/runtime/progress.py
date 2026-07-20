@@ -28,6 +28,9 @@ import threading
 _lock = threading.Lock()
 # store_name -> {"phase": "seed"|"eval", "current": int, "total": int, "done": bool}
 _state: dict[str, dict] = {}
+# store_name -> that store's finished metrics snapshot, published as soon as its
+# column is scored rather than at the end of the whole run.
+_partials: dict[str, dict] = {}
 
 
 def clear_all() -> None:
@@ -35,6 +38,30 @@ def clear_all() -> None:
     stale row from a previous, unrelated run can never bleed into a new one."""
     with _lock:
         _state.clear()
+        _partials.clear()
+
+
+def publish(store: str, snapshot: dict) -> None:
+    """Hand over ONE store's finished snapshot the moment it is scored.
+
+    A topology eval is minutes-to-hours, and until now every column's result was
+    held hostage to the slowest one -- typically All-scc, fanning 22 containers,
+    dead last and serial. Loci columns finish in seconds and you could not see a
+    single number until the whole run returned.
+
+    Same registry, same lock, same ephemeral contract as the X/Y counters: this is
+    UI feedback, NOT eval data. The authoritative result set is still the one
+    /eval/run returns and caches in app.state, because only THAT one is complete
+    and internally consistent. Read these to peek; read /eval/results to conclude.
+    """
+    with _lock:
+        _partials[store] = dict(snapshot)
+
+
+def partials() -> dict[str, dict]:
+    """Every store scored SO FAR this run. Empty once nothing is running."""
+    with _lock:
+        return {name: dict(snap) for name, snap in _partials.items()}
 
 
 def start(store: str, phase: str, total: int) -> None:

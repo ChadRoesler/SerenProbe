@@ -1,16 +1,21 @@
 """
-Parallel regrade: fan out ACROSS corpora, stay serial WITHIN one.
+Regrade concurrency: corpora run SERIALLY; stores fan out, corpora do not.
 
-Same contract as test_seed_parallel.py's store fan-out, but for the two regrade
-paths (regrade_live's live-container sweep and regrade.py's capture-replay
-sweep). The one deliberate difference from seeding: a failing corpus must NOT
-take the whole run down -- regrade is read-only, so the other corpora still
-finish and report, and the failed one shows up as an "error" entry instead of
-a raised exception on the main thread/coroutine.
+This file used to assert fan-out ACROSS corpora, on the premise that each SCC is
+an independent container. It is not: an SCC holds no data and reaches into member
+stores that other corpora reach into too, so parallel sweeps contend by
+construction -- and a contended sweep grades the contention as a knob result,
+which is the worst failure available to a tuning tool. See
+test_live_regrade_corpora_run_serially for the full reasoning.
+
+What survives from the original contract: a failing corpus must NOT take the whole
+run down. Regrade is read-only, so the other corpora still finish and report, and
+the failed one shows up as an "error" entry rather than a raised exception.
 """
 from __future__ import annotations
 
 import asyncio
+import logging
 import threading
 import time
 
@@ -123,21 +128,58 @@ def test_live_regrade_parallel_matches_serial_result(patch_transport):
         assert s["sets"] == p["sets"]
 
 
-def test_live_regrade_corpora_run_concurrently(patch_transport):
-    """The whole point: with a per-call delay, N corpora in parallel finish in
-    roughly max(corpus_time), not sum(corpus_time)."""
+def test_live_regrade_corpora_run_serially(patch_transport):
+    """Corpora must NOT fan out, however wide the caller asks for.
+
+    This test used to assert the opposite -- that N corpora finish in roughly
+    max(corpus_time) rather than sum(corpus_time) -- on the premise that each SCC is
+    an independent container. That premise is wrong, and it was wrong in live_eval
+    for the same reason: an SCC holds NO DATA. It fans into member stores that other
+    corpora fan into too (Characters-scc and All-scc share every character's loci and
+    memory; All-scc alone fans 22). Two sweeps in flight are two N-store fans against
+    an overlapping set of containers, and a regrade is worse than an eval because it
+    also POSTs /configure between combos.
+
+    Observed live: under that contention every per-entity SCC read 0.000 while its own
+    members read 0.5-1.0 on identical data. A contended sweep does not fail loudly --
+    it returns degraded packets that grade as a BAD KNOB SETTING, which is the worst
+    outcome available to a tool whose only job is telling good settings from bad.
+
+    There is no safe width, because the sharing is structural rather than incidental:
+    reaching into stores that belong to someone else is the entire job description of
+    a corpus. So the knob is ignored above 1 -- and ignored OUT LOUD, because a config
+    value that silently does nothing is its own bug.
+    """
     topo = _topo(4)
     urls = _urls(topo, 4)
     qs = _questions()
     fake = _FakeScc(delay=0.01)
     patch_transport(fake)
 
-    t0 = time.monotonic()
-    regrade_live.run_live_regrade(topo, urls, qs, max_parallel_corpora=4)
-    elapsed = time.monotonic() - t0
+    res = regrade_live.run_live_regrade(topo, urls, qs, max_parallel_corpora=4)
 
-    assert elapsed < 0.5, f"corpora did not run concurrently ({elapsed:.3f}s)"
-    assert len(fake.threads_seen) > 1, "everything ran on one thread -- no fan-out happened"
+    assert fake.threads_seen == {"MainThread"}, (
+        f"corpora fanned out across {fake.threads_seen} -- they share member stores "
+        f"and must run one at a time")
+    # Serialization must not cost correctness: every corpus still reports, in topology
+    # order, exactly as the old parallel path did.
+    assert [c["corpus"] for c in res["corpora"]] == [c.name for c in topo.corpus]
+
+
+def test_live_regrade_warns_when_width_is_ignored(patch_transport, caplog):
+    """Ignoring the knob silently would be its own bug - it must say so."""
+    topo = _topo(4)
+    urls = _urls(topo, 4)
+    fake = _FakeScc(delay=0.0)
+    patch_transport(fake)
+
+    with caplog.at_level(logging.WARNING):
+        regrade_live.run_live_regrade(topo, urls, _questions(), max_parallel_corpora=4)
+    # getMessage(), not .message -- LogRecord has no `.message` attribute until a
+    # Formatter puts one there, and caplog hands back RAW records. The %-args are
+    # still unmerged at this point, so the substring must be in the format string.
+    assert any("max_parallel_corpora" in r.getMessage() for r in caplog.records), \
+        "width was ignored without telling anyone"
 
 
 def test_live_regrade_one_failing_corpus_does_not_sink_the_others(patch_transport):

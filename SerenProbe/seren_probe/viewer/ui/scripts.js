@@ -204,6 +204,7 @@ async function refreshEval() {
         const ds = await api('/docker/status');
         if (ds && (ds.running || ds.managed) && (ds.loci || ds.memory || ds.corpus)) {
           renderEvalPlaceholder(ds.loci, ds.memory, ds.corpus);
+          refreshRegradePlan();   // stage the sweep even before anything is scored
           return;
         }
       } catch (e) { /* fall through to normal empty rendering below */ }
@@ -211,7 +212,24 @@ async function refreshEval() {
     const info = document.getElementById('eval-info');
     const qc = data.question_count || data.query_count || 0;
     info.textContent = `${qc} questions · k=${data.k || 10}`;
+    // SAY THE STATE, don't imply it. An empty table used to be the only signal, and
+    // it reads as "never evaluated" whether that is true or the app merely lost the
+    // paperwork on restart. Those are different facts and only one of them means re-run.
+    if (data.date) {
+      info.textContent += ' \u00b7 evaluated ' + String(data.date).replace('T', ' ').slice(0, 16);
+    }
+    if (data.restored) info.textContent += ' \u00b7 \u21ba restored';
     let html = '<div class="copy-row"><button class="btn-sm copy-btn" onclick="copyEval(this)">\u{1F4CB} Copy results</button></div>';
+    if (data.restored) {
+      // Scored-in-this-process and read-back-off-disk are different confidence
+      // levels, so the table says which it is instead of presenting a rehydrated
+      // run as live. The actionable half matters more: it tells you NOT to re-run.
+      html += '<div class="note"><span class="label">\u21ba restored:</span> '
+            + 'these numbers were scored in an earlier session and read back from disk'
+            + (data.restored_at ? ' (' + escapeHtml(String(data.restored_at).replace('T', ' ').slice(0, 16)) + ')' : '')
+            + '. <span class="muted">This pod has already been evaluated - go straight to '
+            + '\u2699 Regrades. Re-run \u25b6 Evaluate only if the seed or the questions changed.</span></div>';
+    }
     // GROUND TRUTH. Loud, at the top, above the numbers -- because a number graded
     // against a MISSING answer key is not a low score, it is a non-score, and the two
     // are indistinguishable on a dashboard. orkrail-mem read HR 0.083 for a full day
@@ -287,6 +305,10 @@ async function refreshEval() {
     html += '</table>';
     html += renderDocket(data.docket);
     body.innerHTML = html;
+    // Fills #regrade-body with the PLAN, and no-ops once a sweep has actually run.
+    // Both exits of refreshEval reach it, so the staging table is present whether the
+    // pod is freshly adopted or fully scored.
+    refreshRegradePlan();
   } catch (e) {
     body.innerHTML = `<div class="empty">Error: ${escapeHtml(e.message || e)}</div>`;
   }
@@ -346,14 +368,52 @@ let _progressTimer = null;
 
 function _renderProgressCell(row) {
   if (!row) return '-';
-  const phase = row.phase === 'eval' ? 'eval' : 'seed';
+  const phase = row.phase === 'eval' ? 'eval' : (row.phase === 'regrade' ? 'regrade' : 'seed');
   if (row.done) return `${phase} ${row.current}/${row.total}`;
-  return `${phase} ${row.current}/${row.total}…`;
+  return `${phase} ${row.current}/${row.total}\u2026`;
+}
+
+// Paint ONE store's finished metrics into its existing row, live, as soon as that
+// column is scored -- instead of every result waiting on the slowest column.
+//
+// Reached via the row's `prog-<name>` cell rather than by giving every metric cell
+// its own id: the two renderers (refreshEval + renderEvalPlaceholder) already emit
+// that anchor, so this needs no change to either and cannot drift out of sync with
+// them. Cell order is Store | Status | HR | MRR | P@k | R@k | NDCG | IoU | P-\u03a9 | tail.
+function _paintPartial(name, m) {
+  const cell = document.getElementById('prog-' + name);
+  if (!cell) return;
+  const tr = cell.parentElement;
+  if (!tr || !tr.cells || tr.cells.length < 9) return;
+
+  if (m && m.error) {
+    // Publish failures the moment they happen. A container that died in wave 1
+    // should be visible NOW, not after the corpora finish -- that is most of why
+    // partials exist at all.
+    if (tr.cells[9]) tr.cells[9].textContent = '\u2717 ' + m.error;
+    tr.classList.add('row-error');
+    return;
+  }
+  const a = (m && m.aggregate) || m || {};
+  const f = (x) => (a[x] == null ? '\u2013' : Number(a[x]).toFixed(3));
+  // Same vacuous-NDCG suppression the final table uses: a decoy's relevant set is
+  // empty by design, and a metric that flatters a hole is worse than no metric.
+  const ndcg = (m && m.negative_test) ? '\u2014' : f('ndcg');
+  const vals = [f('hit_rate'), f('mrr'), f('precision'), f('recall'),
+                ndcg, f('iou'), f('prec_omega')];
+  for (let i = 0; i < vals.length; i++) {
+    if (tr.cells[2 + i]) tr.cells[2 + i].textContent = vals[i];
+  }
+  tr.classList.add('row-partial');
+  tr.title = 'live partial - final numbers land when the whole run finishes';
 }
 
 function startProgressPolling() {
   stopProgressPolling();
   _progressTimer = setInterval(async () => {
+    // Two cheap GETs per tick, INDEPENDENTLY guarded. /eval/partials is newer than
+    // /eval/progress, so a viewer talking to an older backend must still get its
+    // status column -- one failing endpoint may not take the other down with it.
     try {
       const snap = await api('/eval/progress');
       for (const [name, row] of Object.entries(snap || {})) {
@@ -361,6 +421,12 @@ function startProgressPolling() {
         if (cell) cell.textContent = _renderProgressCell(row);
       }
     } catch (e) { /* transient - next tick will retry */ }
+    try {
+      const p = await api('/eval/partials');
+      for (const [name, snap] of Object.entries((p && p.partials) || {})) {
+        _paintPartial(name, snap);
+      }
+    } catch (e) { /* endpoint absent or transient - status column still works */ }
   }, 1000);
 }
 
@@ -420,6 +486,57 @@ async function runEval() {
     btn.textContent = orig;
     btn.disabled = false;
   }
+}
+
+// ── Regrade PLAN (staging) ─────────────────────────────────────────
+// What a sweep WOULD do, shown before you run it. #regrade-body used to sit empty
+// until a sweep FINISHED, which meant the only way to find out whether a corpus was
+// even included was to spend the hour and look at what came back. With per-corpus
+// CorpusRegrades that got worse: sets are inherited, overridden by name, or opted out
+// of, so "is Geography-scc in this?" is no longer answerable by reading the YAML.
+//
+// Rendered from /eval/regrade/plan, which runs the SAME resolver the sweep uses, so
+// the staging table cannot disagree with what actually executes.
+function renderRegradePlan(p) {
+  if (!p) return '';
+  if (p.note) return `<div class="note"><span class="label">regrade:</span> ${escapeHtml(p.note)}</div>`;
+  if (!p.corpora || !p.corpora.length) return '';
+  const swept = p.swept || 0;
+  let h = `<div class="note"><span class="label">\u2699 Regrade plan</span> - `
+        + `${escapeHtml(swept + ' of ' + p.corpus_count + ' corpora')}, `
+        + `${escapeHtml(String(p.total_combos || 0))} combos total. `
+        + `<span class="muted">Nothing has run yet - this is what \u2699 Regrades would sweep. `
+        + `Corpora run one at a time (they share member stores), so wall clock is the SUM, not the max.</span></div>`;
+  h += '<table class="store-table"><tr><th>Corpus</th><th>Sets</th><th>Combos</th><th>Knobs</th></tr>';
+  for (const c of p.corpora) {
+    if (c.skipped) {
+      // Kept in the table rather than filtered out: "not swept, and here is why" is
+      // information. Silently omitting it looks the same as forgetting to declare it.
+      h += `<tr class="rg-skipped"><td class="sname muted">${escapeHtml(c.corpus)}</td>`
+         + `<td colspan="3" class="muted">\u2013 skipped: ${escapeHtml(c.reason || '')}</td></tr>`;
+      continue;
+    }
+    const names = c.sets.map(s =>
+      `${escapeHtml(s.name)}<span class="muted">${s.source === 'corpus' ? ' (own)' : ''}</span>`
+    ).join(', ');
+    const knobs = c.sets.map(s =>
+      Object.entries(s.knobs || {}).map(([k, v]) => `${k}=[${v.join(',')}]`).join(' ')
+    ).filter(Boolean).join('  \u00b7  ');
+    h += `<tr><td class="sname">${escapeHtml(c.corpus)}</td><td>${names}</td>`
+       + `<td class="mval">${c.combos}</td><td class="muted">${escapeHtml(knobs)}</td></tr>`;
+  }
+  h += '</table>';
+  return h;
+}
+
+async function refreshRegradePlan() {
+  const host = document.getElementById('regrade-body');
+  // Never clobber a finished sweep with the plan that produced it -- results outrank
+  // intentions. The plan only fills the space while that space is empty.
+  if (!host || currentRegrade) return;
+  try {
+    host.innerHTML = renderRegradePlan(await api('/eval/regrade/plan'));
+  } catch (e) { /* older backend or no topology - leave the space empty */ }
 }
 
 // ── Regrade sweep (CorpusRegrades) ────────────────────────────

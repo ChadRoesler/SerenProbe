@@ -156,7 +156,19 @@ def test_eval_one_failing_question_does_not_sink_the_store():
                                    max_parallel_stores=8, max_parallel_questions=8)
     # L1's column still exists (no store-level error) even though one question failed.
     assert "error" not in rep["stores"]["L1"]
-    assert rep["stores"]["L1"]["question_count"] == 2
+    # question_count is questions SCORED, and a failed search is EXCLUDED rather than
+    # counted as a miss. This assertion used to read == 2, which encoded the old
+    # behaviour: the exception was swallowed, hits came back [], and the question was
+    # graded as a retrieval failure that never actually happened. "The store was asked
+    # and had nothing" and "the store was never successfully asked" are opposite
+    # claims, and averaging the second in as a zero manufactures clean-looking failures
+    # out of infrastructure trouble.
+    #
+    # The gap between asked and scored is reported, never silent -- that is the half
+    # that makes exclusion honest instead of just flattering.
+    assert rep["stores"]["L1"]["question_count"] == 1
+    assert rep["stores"]["L1"]["unscored_normal"] == 1
+    assert rep["stores"]["L1"]["search_error_count"] == 1
 
 
 def test_eval_width_one_takes_the_thread_free_path():
