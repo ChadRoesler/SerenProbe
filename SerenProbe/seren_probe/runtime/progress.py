@@ -41,6 +41,24 @@ def clear_all() -> None:
         _partials.clear()
 
 
+def detail(store: str, **fields) -> None:
+    """Merge sub-unit progress into a store's row (regrade: which set is in flight
+    and how far through its question pass it is).
+
+    A regrade's X/Y counts COMBOS, and one combo is a full pass over every corpus
+    question -- twelve minutes on a wide fan. So the coarse counter sits still for
+    twelve minutes at a time, which is exactly the silence this registry exists to
+    remove: 11/22 tells you where you are, not that anything is happening RIGHT NOW.
+    This carries the inner counter, so the row has both a position and a pulse.
+
+    Merged, not replaced, so a caller can set q_total once and bump q_done after.
+    """
+    with _lock:
+        row = _state.get(store)
+        if row is not None:
+            row.setdefault("detail", {}).update(fields)
+
+
 def publish(store: str, snapshot: dict) -> None:
     """Hand over ONE store's finished snapshot the moment it is scored.
 

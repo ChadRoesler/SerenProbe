@@ -101,7 +101,12 @@ class ResolvedNode:
     seed_ref: str | list | None = None      # per-node Seed (path / inline / list to merge); None => use the kind default
     negative_test: bool = False      # decoy store: seeded ONLY from seed_ref, scoring inverted, kept out of the catch-all
     live_url: str | None = None      # copy data from THIS live store (read-only) into the container instead of a synthetic seed
-    questions_ref: str | list | None = None  # the set this store is expected to ANSWER; None => DefaultQuestions
+    questions_ref: str | list | None = None
+    # The knobs this corpus BOOTS at, from its `Config:` block. Empty => whatever
+    # seren-corpus-callosum defaults to. Written into the mounted corpus yaml at spin-up
+    # AND pushed to a running container on hot-swap, so "what it boots at" and "what it
+    # is running" cannot drift apart without someone saying so.
+    config: dict = field(default_factory=dict)  # the set this store is expected to ANSWER; None => DefaultQuestions
 
 
 @dataclass
@@ -135,6 +140,7 @@ class ResolvedCorpus:
     # single corpus once a top-level set exists -- and skipping is the point. A sweep
     # is minutes-to-hours per corpus and corpora run serially, so "regrade these three,
     # not all fourteen" is the difference between a coffee and an afternoon.
+    config: dict = field(default_factory=dict)  # the knobs this corpus BOOTS at, from its `Config:` block
     regrades: list | None = None
 
 
@@ -359,6 +365,65 @@ def _parse_regrades(raw, errors: list[str], warnings: list[str]) -> list[Regrade
     return sets
 
 
+# How a knob NAME maps onto the field seren-corpus-callosum actually reads. ONE
+# definition, imported by both the compose emitter (boot config) and regrade_live
+# (runtime /configure) -- these two must agree or a corpus boots at one config and
+# gets swept at another, and nothing anywhere would say so.
+FED_FIELD: dict[str, str] = {
+    "rrf_k": "k", "n_results": "n_results", "fetch_multiplier": "fetch_multiplier",
+    "authority_margin": "authority_margin", "min_per_store": "min_per_store",
+    "fusion_mode": "fusion_mode",
+    "hops": "hops", "hop_terms": "hop_terms", "hop_budget": "hop_budget",
+}
+# Knobs that are PER-STORE overrides on the loci member rather than federation-level.
+STORE_FIELD: dict[str, str] = {"loci_weight": "weight", "loci_floor": "floor"}
+
+
+def _parse_corpus_config(raw, cname: str, errors: list[str], warnings: list[str]) -> dict:
+    """Parse a corpus's `Config:` - the knobs it BOOTS at.
+
+    Same knob vocabulary as CorpusRegrades on purpose (REGRADE_KNOBS), because they
+    describe the same dials; the difference is only that a regrade set sweeps LISTS
+    and this declares a single value each. One vocabulary means a knob you swept and
+    liked can be pasted straight in here as its new baseline.
+
+    Why this exists: without it every SCC boots at seren-corpus-callosum's own
+    defaults, so /eval/run scores the UNTUNED config no matter what a regrade proved.
+    The sweep would say n_results=30 is worth +0.21 coverage and the eval would keep
+    measuring 10, with nothing on screen admitting the two disagreed.
+    """
+    if raw is None:
+        return {}
+    if not isinstance(raw, dict):
+        errors.append(f"Corpus {cname!r}: Config must be a mapping of knob -> value "
+                      f"(got {type(raw).__name__}).")
+        return {}
+    out: dict = {}
+    for key, val in raw.items():
+        if key not in REGRADE_KNOBS:
+            warnings.append(f"Corpus {cname!r}: unknown Config knob {key!r} - ignoring "
+                            f"(valid: {sorted(REGRADE_KNOBS)}).")
+            continue
+        if isinstance(val, list):
+            # A LIST here is almost certainly a CorpusRegrades set pasted into Config.
+            # Refuse rather than silently taking [0]: a boot config is one value, and
+            # guessing which one the operator meant is how you grade a config nobody
+            # chose.
+            errors.append(f"Corpus {cname!r}: Config knob {key!r} takes a single value, not a "
+                          f"list (got {val!r}). Lists belong in CorpusRegrades, which SWEEPS "
+                          f"them; Config declares what the corpus BOOTS at.")
+            continue
+        want = REGRADE_KNOBS[key]
+        if want is float and isinstance(val, int) and not isinstance(val, bool):
+            val = float(val)
+        if isinstance(val, bool) or not isinstance(val, want):
+            errors.append(f"Corpus {cname!r}: Config knob {key!r} wants a {want.__name__} "
+                          f"(got {val!r}).")
+            continue
+        out[key] = val
+    return out
+
+
 def compile_topology(probe_config: dict) -> CompiledTopology:
     """Compile + validate a ProbeConfig. Raises TopologyError (all errors at
     once) if the topology can't be trusted; otherwise returns a CompiledTopology
@@ -438,11 +503,21 @@ def compile_topology(probe_config: dict) -> CompiledTopology:
     # and an afternoon. `CorpusRegrades:` with a null value counts as PRESENT (opt out):
     # writing the key at all is a statement about this corpus.
     per_corpus_regrades: dict[str, list] = {}
+    per_corpus_config: dict[str, dict] = {}
     if isinstance(_corpus_raw, dict):
         for _cfg in (_corpus_raw.get("CorpusConfigs") or []):
-            if not isinstance(_cfg, dict) or "CorpusRegrades" not in _cfg:
+            if not isinstance(_cfg, dict):
                 continue
             _nm = _cfg.get("Name")
+            if "Config" in _cfg:
+                if not _nm:
+                    warnings.append("a CorpusConfigs entry has Config but no Name - boot config "
+                                    "is matched by name, so this is ignored.")
+                else:
+                    per_corpus_config[str(_nm)] = _parse_corpus_config(
+                        _cfg.get("Config"), str(_nm), errors, warnings)
+            if "CorpusRegrades" not in _cfg:
+                continue
             if not _nm:
                 warnings.append("a CorpusConfigs entry has CorpusRegrades but no Name - "
                                 "per-corpus regrades are matched by name, so this is ignored. "
@@ -527,6 +602,7 @@ def compile_topology(probe_config: dict) -> CompiledTopology:
     for p in [c for c in corp_p if not c.generated]:
         rc = ResolvedCorpus(name=p.name, port=p.port, flags=p.flags,
                             questions_ref=p.questions_ref,
+                            config=per_corpus_config.get(p.name) or {},
                             # .get() -> None when the key was absent, which is exactly
                             # the INHERIT signal regrade_live.sets_for_corpus looks for.
                             regrades=per_corpus_regrades.get(p.name))
@@ -621,6 +697,30 @@ def compile_topology(probe_config: dict) -> CompiledTopology:
                             questions_ref=questions_ref, versions=versions,
                             default_loci_seed=default_loci_seed,
                             default_memory_seed=default_memory_seed, corpus_regrades=corpus_regrades)
+
+
+def topology_fingerprint(topo: CompiledTopology) -> str:
+    """A short, stable hash of structure_signature() - the identity of the FLEET.
+
+    Persisted artifacts (eval results, regrade captures) describe a specific set of
+    running containers, and they need a key that changes when that set does.
+    project_name does NOT: emit_compose hardcodes "seren-probe-target" for every pod
+    ever started, so keying on it discriminates nothing. Load a different config,
+    rebuild, reseed -- same name, same key, and last week's numbers rehydrate as if
+    they described the new fleet. Nothing errors; the dashboard just quietly answers
+    a question about a pod that no longer exists.
+
+    structure_signature is already the right thing: node names, ports, kinds, flags,
+    corpus wiring and version pins -- "what has to be TRUE of the running
+    containers." This is just that, hashed, so it fits in a JSON field.
+
+    KNOWN GAP, stated rather than papered over: a REBUILT image at the same version
+    pin produces an identical signature. Different code, same hash. Catching that
+    honestly needs the image ID from `docker inspect` recorded at spin-up; until
+    then, a rebuild-in-place is the one change this cannot see.
+    """
+    import hashlib
+    return hashlib.sha256(repr(structure_signature(topo)).encode()).hexdigest()[:16]
 
 
 def load_probe_config(source) -> CompiledTopology:

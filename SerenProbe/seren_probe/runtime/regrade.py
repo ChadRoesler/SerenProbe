@@ -41,14 +41,23 @@ never enter top-k when k == n_results. Edge tuning wants its own capture (captur
 per requested subset in replay); that's tune_edges, filed as the next step.
 
 ══ CONCURRENCY ════════════════════════════════════════════════════════════════
-run_config_regrade fans OUT across corpora (asyncio.gather, bounded by
-max_parallel_corpora) since each corpus captures its own backing stores into
-its own frozen trace and sweeps that trace independently - nothing shared
-except the one RealTransport/httpx.AsyncClient, which is concurrency-safe.
-Combos within ONE corpus's sweep still run strictly serially. A corpus that
-fails to capture/sweep does not abort the others - read-only means a failure
-here can't corrupt anything, so the rest still finish and the failed corpus
-shows up as an "error" entry.
+run_config_regrade captures corpora ONE AT A TIME. It used to fan out via
+asyncio.gather bounded by max_parallel_corpora, on the premise that "each corpus
+captures its own backing stores, so nothing contends." That premise is false:
+corpora OVERLAP on member stores (Characters-scc and All-scc both capture
+Cewellric-loci; All-scc captures all 22). Concurrent captures are concurrent
+/search against the SAME containers.
+
+This path fails WORSE than the live one when it happens. There the contention
+spoils one combo; here the capture is FROZEN and every combo in that corpus's
+sweep is graded against it -- so one contended capture silently poisons an entire
+sweep, and the sweep afterwards looks perfectly clean because it is replaying
+from memory with no network in sight.
+
+Combos within one corpus's sweep are serial and always were. A corpus that fails
+to capture/sweep does not abort the others - read-only means a failure here can't
+corrupt anything, so the rest still finish and the failed corpus shows up as an
+"error" entry.
 
 Usage::
     # capture on the dev rig + sweep, save the trace for later
@@ -343,51 +352,214 @@ class _RegradeQuery:
         self.expected_ids = list(expected_ids)
 
 
+def corpus_question_hash(questions) -> str:
+    """Fingerprint of the corpus-question set a capture answers. A capture is keyed
+    by (query, store) -- change the queries and it simply has no answer for the new
+    ones, and ReplayTransport's misses grade as retrieval failures that never
+    happened. Sorted, so question ORDER never invalidates a capture; only content."""
+    import hashlib
+    qs = sorted(q.query for q in questions
+                if getattr(q, "asks", "") == "corpus" and not getattr(q, "expect_empty", False))
+    return hashlib.sha256(json.dumps(qs).encode()).hexdigest()[:16]
+
+
+async def capture_corpora(topology, url_of: dict, questions, *,
+                          corpus_filter=None, capture_n: int = CAPTURE_N,
+                          report_progress: bool = False) -> dict:
+    """The capture HALF of capture-replay, alone: one read-only /search pass over
+    each eligible corpus's member stores. Returns {corpus_name: capture} for the
+    route to persist. Touches containers exactly once per (store, query); sweeps
+    nothing.
+
+    Eligible = has at least one PURE (non-packet-coupled) set after per-corpus
+    resolution. A corpus whose only sets are hops sweeps gets no capture, because
+    nothing could ever replay against it -- capturing it would be bytes that only
+    ever mislead.
+
+    SERIAL across corpora, same law as everywhere else: corpora overlap on member
+    stores, and a contended capture poisons every sweep replayed from it.
+    """
+    _require_scc()
+    from .regrade_live import sets_for_corpus, is_packet_coupled
+    rqs = [_RegradeQuery(q.query, q.expect_content)
+           for q in questions
+           if getattr(q, "asks", "") == "corpus" and not getattr(q, "expect_empty", False)]
+    if not rqs:
+        return {}
+    base = list(topology.corpus_regrades or [])
+    _progress = None
+    if report_progress:
+        from . import progress as _progress
+    out: dict = {}
+    transport = RealTransport()
+    try:
+        targets = []
+        for corpus in topology.corpus:
+            if corpus.is_catchall or not corpus.stores:
+                continue
+            if corpus_filter and corpus.name not in corpus_filter:
+                continue
+            if not any(not is_packet_coupled(s) for s in sets_for_corpus(corpus, base)):
+                continue
+            base_stores = [StoreConfig(name=st.name, type=st.kind, url=url_of[st.name])
+                           for st in corpus.stores if st.name in url_of]
+            if base_stores:
+                targets.append((corpus, base_stores))
+        if _progress:
+            for corpus, _bs in targets:
+                _progress.start(corpus.name, "capture", 1)
+        for corpus, base_stores in targets:
+            try:
+                out[corpus.name] = await capture_stores(base_stores, rqs, transport, capture_n)
+            finally:
+                if _progress:
+                    _progress.bump(corpus.name, 1)
+                    _progress.finish(corpus.name)
+    finally:
+        await transport.aclose()
+    return out
+
+
 async def _regrade_one_corpus_async(corpus, base_stores: list[StoreConfig], rqs,
                                     transport, capture_n: int, eval_k: int,
                                     sort_by: str, regrades: list, flag_map: dict,
-                                    sem: "asyncio.Semaphore") -> dict:
-    """One corpus's full regrade: ONE read-only capture of its backing stores,
-    then sweep every CorpusRegrades set's grid over the frozen capture. Fully
-    self-contained (its own base_stores, its own capture) so it's SAFE TO RUN
-    CONCURRENTLY with other corpora's calls to this function via asyncio.gather
-    - the shared `transport` is an httpx.AsyncClient, which supports concurrent
-    requests from multiple coroutines. `sem` bounds how many corpora capture at
-    once, same rationale as regrade_live's max_parallel_corpora.
+                                    sem: "asyncio.Semaphore", scc_url: str = "",
+                                    preloaded_capture: dict | None = None) -> dict:
+    """One corpus's full regrade: ONE read-only capture of its backing stores, then
+    sweep every CorpusRegrades set's combos over the frozen capture, in-process.
 
-    Returns the same {"corpus", "flavor", "baseline", "sets"} shape the old
-    inline loop body produced. Raises on failure -- callers running this under
-    gather(return_exceptions=True) are responsible for catching per-corpus so
-    one bad SCC/store doesn't sink the others.
+    PARITY WITH THE LIVE ENGINE IS THE CONTRACT. This used to sweep build_grid(),
+    which keeps the FULL default sweep for every knob a set does not name -- so
+    `weight-sweep`, naming loci_weight with 8 values, expanded to rrf_k(3) x
+    weight(8) x floor(3) x authority(3) x min_per_store(3) x n_results(4) x
+    fetch_mult(2) = 5,184 combos. The live engine runs the SAME set as 8. Two
+    engines answering different questions is worse than one slow engine, and it is
+    invisible -- both produce a full, confident table.
+
+    So this uses compact_combos() -- the product over ONLY the knobs a set names --
+    and pins every unnamed knob to the container's CURRENT config, read from
+    GET /stores exactly as the live path does. Same set, same combo count, same
+    reference point, comparable deltas.
+
+    CAVEAT, named because it cannot be fixed from here: GET /stores exposes k,
+    n_results, per-store weight/floor and the hop knobs -- NOT authority_margin,
+    min_per_store, fusion_mode or fetch_multiplier. The live engine cannot reset
+    those either (its baseline_cfg has no field for them), so both leave them
+    wherever the container sits; here that means SCC's FederationConfig defaults.
+    A set that sweeps one of those is still measured correctly -- every combo sets
+    it explicitly -- but its BASELINE row is defaults-based rather than
+    container-based. Same limitation the live path's "best-effort restore + a note"
+    already documents.
     """
     _METRICS = ("ndcg", "docket_coverage", "docket_density", "recall",
                 "mrr", "hit_rate", "iou", "prec_omega")
+
+    # The container's CURRENT config = the reference every unnamed knob sits at.
+    # Read BEFORE the capture, so a failure here costs nothing but defaults.
+    cur_k, cur_n = 60, 10
+    cur_weight, cur_floor = 1.0, 0.0
+    if scc_url:
+        try:
+            import httpx
+            async with httpx.AsyncClient(timeout=15.0) as c:
+                r = await c.get(f"{scc_url}/stores")
+                info = r.json() if (r.status_code == 200 and r.content) else {}
+            cur_k = info.get("k", cur_k)
+            cur_n = info.get("n_results", cur_n)
+            loci_row = next((s for s in (info.get("stores") or [])
+                             if s.get("type") == "seren_loci"), None)
+            if loci_row:
+                cur_weight = loci_row.get("weight", cur_weight)
+                cur_floor = loci_row.get("floor", cur_floor)
+        except Exception as exc:      # noqa: BLE001 - fall back to documented defaults
+            logger.warning("could not read %s/stores for baseline, using defaults: %s",
+                           scc_url, exc)
+
     async with sem:
-        # ONE read-only capture per corpus, then sweep every set in-process.
-        capture = await capture_stores(base_stores, rqs, transport, capture_n)
-    set_rows: list[dict] = []
+        # ONE read-only capture per corpus -- unless the route handed us a SAVED one,
+        # in which case the containers are not touched at all. The route owns the
+        # staleness check (captured_at vs seeded_at, question-hash match); by the time
+        # a preloaded capture reaches here it has already been judged fresh.
+        if preloaded_capture is not None:
+            capture = preloaded_capture
+        else:
+            capture = await capture_stores(base_stores, rqs, transport, capture_n)
+
+    def _cfg(combo: dict):
+        """Baseline + this combo laid over it -- the replay twin of the live path's
+        full_config_body(). Unnamed knobs take the container's current value (or
+        SCC's default where /stores doesn't expose it), never the previous combo's,
+        so every combo starts from the same place."""
+        stores: list[StoreConfig] = []
+        for sc in base_stores:
+            is_mem = sc.type == "seren_memory"
+            stores.append(StoreConfig(
+                name=sc.name, type=sc.type, url=sc.url,
+                weight=1.0 if is_mem else combo.get("loci_weight", cur_weight),
+                floor=0.0 if is_mem else combo.get("loci_floor", cur_floor)))
+        kwargs: dict = {"stores": stores,
+                        "k": combo.get("rrf_k", cur_k),
+                        "n_results": combo.get("n_results", cur_n),
+                        "edges_enabled": False}
+        # Only pass what the set actually NAMES. Anything omitted falls to
+        # FederationConfig's own default rather than a value invented here.
+        for knob in ("authority_margin", "min_per_store", "fusion_mode",
+                     "fetch_multiplier"):
+            if knob in combo:
+                kwargs[knob] = combo[knob]
+        return FederationConfig(**kwargs)
+
+    # The baseline row: the container's current config, measured. Every delta below
+    # is relative to THIS, matching the live engine's "current" row.
+    base_agg, _ = await regrade_one(capture, _cfg({}), rqs, eval_k)
+    set_rows: list[dict] = [{
+        "name": "current",
+        "metrics": {m: base_agg.get(m, 0.0) for m in _METRICS},
+        "params": {"k": cur_k, "n_results": cur_n},
+        "delta": {m: 0.0 for m in ("ndcg", "docket_coverage", "recall", "mrr")}}]
+
+    from .regrade_live import compact_combos
+    combo_cache: dict[str, dict] = {}
     for rset in regrades:
-        best, _rows = await sweep(capture, base_stores, rqs, eval_k=eval_k,
-                                  sort_by=sort_by, grid=build_grid(rset.overrides))
-        set_rows.append({"name": rset.name,
-                         "metrics": {m: best.get(m, 0.0) for m in _METRICS},
-                         "params": best.get("params", {})})
-    baseline = next((r for r in set_rows if r["name"] == "baseline"),
-                    set_rows[0] if set_rows else None)
-    if baseline:
-        for r in set_rows:
-            r["delta"] = {m: round(r["metrics"][m] - baseline["metrics"][m], 4)
-                          for m in ("ndcg", "docket_coverage", "recall", "mrr")}
+        best = None
+        combo_rows: list[dict] = []
+        for combo in compact_combos(rset.overrides):
+            ck = json.dumps(combo, sort_keys=True, default=str)
+            cached = combo_cache.get(ck)
+            if cached is not None:
+                row = dict(cached)
+            else:
+                agg, _misses = await regrade_one(capture, _cfg(combo), rqs, eval_k)
+                row = {"metrics": {m: agg.get(m, 0.0) for m in _METRICS}, "params": combo}
+                row["delta"] = {m: round(row["metrics"][m] - base_agg.get(m, 0.0), 4)
+                                for m in ("ndcg", "docket_coverage", "recall", "mrr")}
+                combo_cache[ck] = row
+            combo_rows.append(row)
+            if best is None or row["metrics"].get(sort_by, 0) > best["metrics"].get(sort_by, 0):
+                best = row
+        if best:
+            # COPY before attaching combos -- `best` IS one of the dicts in combo_rows,
+            # so assigning the list onto it in place makes the structure
+            # self-referential and blows up json encoding. Same trap as the live path.
+            best = dict(best)
+            best["name"] = rset.name
+            best["combos"] = combo_rows      # the CURVE, not just max()
+            set_rows.append(best)
+
     flavor = ("vector" if any("vector" in flag_map.get(st.name, [])
                               for st in corpus.stores) else "lexical")
     return {"corpus": corpus.name, "flavor": flavor,
-            "baseline": baseline["name"] if baseline else None, "sets": set_rows}
+            "capture_source": "saved" if preloaded_capture is not None else "fresh",
+            "baseline": "current", "sets": set_rows}
 
 
 async def run_config_regrade(topology, url_of: dict, questions, *,
                              capture_n: int = CAPTURE_N, eval_k: int = EVAL_K,
                              sort_by: str = "ndcg",
-                             max_parallel_corpora: int = 8) -> dict:
+                             max_parallel_corpora: int = 8,
+                             report_progress: bool = False,
+                             set_filter=None, corpus_filter=None,
+                             saved_captures: dict | None = None) -> dict:
     """Roll every CorpusRegrades set against every (non-catch-all) corpus in the
     topology. Per corpus: capture its backing stores' candidate pools ONCE
     (read-only /search on the eval containers - never live memory), then sweep
@@ -395,44 +567,77 @@ async def run_config_regrade(topology, url_of: dict, questions, *,
     the delta vs the baseline set. Replays the REAL Federation, so it needs SCC
     importable - raises via _require_scc() otherwise.
 
-    PARALLEL ACROSS CORPORA, SERIAL WITHIN ONE.
-    Each corpus captures its OWN backing stores and sweeps its OWN frozen
-    capture - nothing is shared between corpora, so nothing contends. The
-    shared RealTransport is a single httpx.AsyncClient, which is safe for
-    concurrent requests from multiple coroutines. asyncio.gather fans the
-    per-corpus work out instead of doing it corpus-after-corpus; the same move
-    as regrade_live.run_live_regrade's ThreadPoolExecutor fan-out, just async
-    instead of threaded since this path is already async end-to-end.
+    SERIAL ACROSS CORPORA. Corpora overlap on member stores, so concurrent
+    captures are concurrent /search against the same containers -- see the module
+    CONCURRENCY note. The capture is frozen and every combo is graded against it,
+    so a contended capture poisons a whole sweep invisibly.
 
     A failing corpus does NOT abort the others: this harness is read-only
     (capture is /search-only, never a write), so a corpus that fails to
     capture/sweep doesn't corrupt anything - the rest still finish and report,
     and the failed one shows up as an "error" entry in its slot.
 
-    max_parallel_corpora bounds how many corpora capture concurrently (a
-    semaphore around the capture step only - the in-process sweep is cheap and
-    unbounded), same rationale as regrade_live's cap: unbounded fan-out on a
-    big topology would open a pile of simultaneous connections at once.
+    max_parallel_corpora is accepted for compatibility and ignored above 1, with
+    a warning. A knob that silently does nothing is its own bug.
     """
     _require_scc()
+    from .regrade_live import sets_for_corpus
     rqs = [_RegradeQuery(q.query, q.expect_content)
            for q in questions
            if getattr(q, "asks", "") == "corpus" and not getattr(q, "expect_empty", False)]
-    regrades = list(topology.corpus_regrades or [])
+    base_regrades = list(topology.corpus_regrades or [])
     if not rqs:
         return {"corpora": [], "note": "No corpus questions to regrade."}
-    if not regrades:
-        return {"corpora": [], "note": "No CorpusRegrades sets in the active ProbeConfig."}
+    # NO early-out on an empty top-level list. Per-corpus CorpusRegrades mean a config
+    # can legitimately have no base sets and still have work to do -- the same rule-2
+    # gap that was in run_live_regrade and the route. Resolution is per corpus, below.
 
     flag_map = {n.name: (n.flags or []) for n in topology.loci}
     transport = RealTransport()
-    sem = asyncio.Semaphore(max(1, int(max_parallel_corpora or 1)))
+    # ALWAYS 1. The semaphore wraps the capture step, which is the only part that
+    # touches containers -- and corpora share those containers, so any width above 1
+    # is two N-store fans against an overlapping set. Ignored out loud rather than
+    # silently, so a config value that does nothing says so.
+    _requested = max(1, int(max_parallel_corpora or 1))
+    if _requested > 1:
+        logger.warning(
+            "regrade: ignoring max_parallel_corpora=%d -- corpora share member stores, "
+            "so concurrent captures contend and a contended capture silently poisons "
+            "every combo swept against it. Capturing serially.", _requested)
+    sem = asyncio.Semaphore(1)
     corpora_out: list[dict] = []
+
+    _progress = None
+    if report_progress:
+        from . import progress as _progress
+
+    async def _one(corpus, base_stores, sets, preloaded=None):
+        """Run one corpus and publish it the moment it lands, rather than making every
+        result wait on the whole gather. Failures publish too -- a corpus that dies on
+        its capture should be visible immediately, not after the rest finish."""
+        try:
+            out = await _regrade_one_corpus_async(
+                corpus, base_stores, rqs, transport, capture_n, eval_k,
+                sort_by, sets, flag_map, sem, url_of.get(corpus.name, ""),
+                preloaded_capture=preloaded)
+        except Exception as exc:  # noqa: BLE001 - read-only; one bad corpus must not sink the rest
+            logger.error("Regrade failed for corpus %s: %s", corpus.name, exc)
+            out = {"corpus": corpus.name, "error": f"{type(exc).__name__}: {exc}"}
+        if _progress:
+            _progress.publish(corpus.name, out)
+            _progress.finish(corpus.name)
+        return out
+
     try:
         tasks_meta = []
         coros = []
         for corpus in topology.corpus:
             if corpus.is_catchall or not corpus.stores:
+                continue
+            if corpus_filter and corpus.name not in corpus_filter:
+                # Per-corpus button: sweep JUST this one. Filtered before tasks exist,
+                # same reason as the sets filter -- an unswept corpus must not appear
+                # in the progress table as a 0/N row that never moves.
                 continue
             base_stores = [
                 StoreConfig(name=st.name, type=st.kind, url=url_of[st.name])
@@ -440,29 +645,43 @@ async def run_config_regrade(topology, url_of: dict, questions, *,
             ]
             if not base_stores:
                 continue
-            tasks_meta.append(corpus)
-            coros.append(_regrade_one_corpus_async(
-                corpus, base_stores, rqs, transport, capture_n, eval_k,
-                sort_by, regrades, flag_map, sem))
-        results = await asyncio.gather(*coros, return_exceptions=True)
-        # results is in the SAME order as tasks_meta/coros (gather preserves
-        # input order regardless of completion order), so this merge is
-        # already in original topology order.
-        for corpus, result in zip(tasks_meta, results):
-            if isinstance(result, Exception):
-                # Caught per-corpus, NOT re-raised: the rest of the batch must
-                # still finish and report. This is the deliberate deviation
-                # from a loud re-raise -- see the docstring's PARALLEL ACROSS
-                # CORPORA note.
-                logger.error("Regrade failed for corpus %s: %s", corpus.name, result)
-                corpora_out.append({"corpus": corpus.name,
-                                    "error": f"{type(result).__name__}: {result}"})
-            else:
-                corpora_out.append(result)
+            # Same four rules as the live path, same resolver. The two engines must
+            # agree about what the config MEANS -- a fast path that sweeps a different
+            # set than the slow one is not a fast path, it is a second answer.
+            sets = sets_for_corpus(corpus, base_regrades)
+            if set_filter is not None:
+                # Router split: this engine takes the sets that only RE-FUSE captured
+                # candidates; packet-coupled ones go to the live engine. Filtering after
+                # resolution keeps inheritance/override/opt-out decided in exactly one
+                # place for both engines.
+                sets = [s for s in sets if set_filter(s)]
+            if not sets:
+                logger.info("regrade: skipping %s (no CorpusRegrades sets apply)", corpus.name)
+                continue
+            tasks_meta.append((corpus, sets))
+            coros.append(_one(corpus, base_stores, sets,
+                              (saved_captures or {}).get(corpus.name)))
+        if not coros:
+            return {"corpora": [], "note": (
+                "No corpus has any CorpusRegrades sets that apply -- every corpus "
+                "either opted out with an empty CorpusRegrades or there is no "
+                "top-level set to inherit.")}
+        if _progress:
+            # Declared for EVERY corpus before the first capture, so the table renders
+            # complete and empty rather than growing a row at a time. Unit is the SET
+            # here, not the combo: combos replay in-process in milliseconds, so the
+            # honest unit of visible work is one set's grid sweep.
+            for corpus, sets in tasks_meta:
+                _progress.start(corpus.name, "regrade", 1 + len(sets))
+        corpora_out = list(await asyncio.gather(*coros))
     finally:
         await transport.aclose()
     return {"corpora": corpora_out, "sort_by": sort_by, "eval_k": eval_k,
-            "set_names": [r.name for r in regrades], "question_count": len(rqs)}
+            "engine": "capture-replay",
+            # UNION across corpora: with per-corpus overrides, no single corpus
+            # necessarily ran every set.
+            "set_names": sorted({r.name for _c, s in tasks_meta for r in s}),
+            "question_count": len(rqs)}
 
 
 
