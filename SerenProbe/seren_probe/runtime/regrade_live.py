@@ -180,18 +180,42 @@ def grade_corpus(hits: list, expected_content: list, k: int):
     return retrieved, relevant, coverage, density
 
 
-def _measure(scc_url: str, corpus_qs: list, n_results: int, k: int) -> dict:
-    """Search every corpus question at the container's CURRENT config and grade."""
+def _measure(scc_url: str, corpus_qs: list, n_results: int, k: int, on_q=None) -> dict:
+    """Search every corpus question at the container's CURRENT config and grade.
+
+    on_q(done, total) fires per question. One combo is a full pass over this whole
+    list -- twelve minutes on a wide fan -- so without it the corpus counter sits
+    frozen for the entire combo and "working" is indistinguishable from "hung".
+    """
     results, covs, dens = [], [], []
-    for q in corpus_qs:
+    total = len(corpus_qs)
+    for i, q in enumerate(corpus_qs):
         resp = _post(scc_url, "/search", {"query": q["query"], "n_results": n_results})
         hits = resp.get("hits", []) if isinstance(resp, dict) else []
         retr, rel, cov, den = grade_corpus(hits, q["expected_content"], k)
         results.append((retr, rel)); covs.append(cov); dens.append(den)
+        if on_q:
+            on_q(i + 1, total)
     agg = compute_metrics_batch(results, k=k).aggregate()
     agg["docket_coverage"] = sum(covs) / len(covs) if covs else 0.0
     agg["docket_density"] = sum(dens) / len(dens) if dens else 0.0
     return agg
+
+
+# Knobs that CANNOT be replayed from a frozen /search capture. The /by_topic edge
+# call depends on the regraded packet's own ids and centre topics, so it is coupled to
+# the packet the fusion just produced -- there is no way to answer it from candidates
+# captured before that packet existed. Everything else in the grid only RE-FUSES hits
+# the stores already returned, which is exactly what capture-replay is.
+#
+# This lives here rather than in the route because both engines and the router have to
+# agree on it; three copies of a rule is three chances to disagree.
+PACKET_COUPLED_KNOBS = frozenset({"hops", "hop_terms", "hop_budget"})
+
+
+def is_packet_coupled(rset) -> bool:
+    """True if this set must run against live containers rather than a capture."""
+    return bool(set(getattr(rset, "overrides", {}) or {}) & PACKET_COUPLED_KNOBS)
 
 
 def sets_for_corpus(corpus, base_regrades: list) -> list:
@@ -228,7 +252,7 @@ def sets_for_corpus(corpus, base_regrades: list) -> list:
 
 def _regrade_one_corpus(corpus, scc_url: str, corpus_qs: list, regrades: list,
                         all_override_keys: list, flag_map: dict, k: int,
-                        sort_by: str, on_combo=None, on_partial=None) -> dict:
+                        sort_by: str, on_combo=None, on_partial=None, on_q=None) -> dict:
     """One corpus's full regrade: capture its current SCC config, force the
     baseline, sweep every CorpusRegrades set's combos, restore the baseline.
     Fully self-contained (its own scc_url, its own baseline/restore).
@@ -285,7 +309,10 @@ def _regrade_one_corpus(corpus, scc_url: str, corpus_qs: list, regrades: list,
         # SAY it is rather than whatever the container drifted to.
         _post(scc_url, "/configure", baseline_cfg)
         combo_cache: dict[str, dict] = {}
-        base = _measure(scc_url, corpus_qs, cur_n, k)
+        if on_q:
+            on_q(0, len(corpus_qs), "current")
+        base = _measure(scc_url, corpus_qs, cur_n, k,
+                        on_q=(lambda d, t: on_q(d, t, "current")) if on_q else None)
         if on_combo:
             on_combo()
         set_rows = [{"name": "current",
@@ -320,7 +347,9 @@ def _regrade_one_corpus(corpus, scc_url: str, corpus_qs: list, regrades: list,
                     _post(scc_url, "/configure",
                           full_config_body(combo, loci_name, baseline_cfg))
                     n_for = combo.get("n_results", cur_n)
-                    agg = _measure(scc_url, corpus_qs, n_for, k)
+                    agg = _measure(scc_url, corpus_qs, n_for, k,
+                                   on_q=(lambda d, t, _n=rset.name: on_q(d, t, _n))
+                                   if on_q else None)
                     row = {"metrics": {m: agg.get(m, 0.0) for m in _METRICS}, "params": combo}
                     row["delta"] = {m: round(row["metrics"][m] - base.get(m, 0.0), 4)
                                     for m in ("ndcg", "docket_coverage", "recall", "mrr")}
@@ -355,7 +384,8 @@ def _regrade_one_corpus(corpus, scc_url: str, corpus_qs: list, regrades: list,
 def run_live_regrade(topology, url_of: dict, questions, *, k: int = 10,
                      sort_by: str = "docket_coverage",
                      max_parallel_corpora: int = 8,
-                     report_progress: bool = False) -> dict:
+                     report_progress: bool = False,
+                     set_filter=None, corpus_filter=None) -> dict:
     """Roll every CorpusRegrades set against every (non-catch-all) corpus by
     reconfiguring the LIVE SCC container and re-searching. Returns per-corpus
     best-per-set + EVERY combo it measured + the delta vs the container's CURRENT
@@ -424,6 +454,8 @@ def run_live_regrade(topology, url_of: dict, questions, *, k: int = 10,
     for corpus in topology.corpus:
         if getattr(corpus, "is_catchall", False) or not corpus.stores:
             continue
+        if corpus_filter and corpus.name not in corpus_filter:
+            continue                     # per-corpus button: sweep just this one
         scc_url = url_of.get(corpus.name)
         if not scc_url:
             continue
@@ -432,6 +464,12 @@ def run_live_regrade(topology, url_of: dict, questions, *, k: int = 10,
         # table at all -- a row sitting at 0/0 forever is indistinguishable from a
         # hung one, and this whole feature exists so you can tell those apart.
         sets = sets_for_corpus(corpus, regrades)
+        if set_filter is not None:
+            # The router splits a corpus's sets by engine: packet-coupled ones come
+            # here, the rest replay from a capture in seconds. Filtering AFTER
+            # resolution means inheritance/override/opt-out is decided once, in one
+            # place, and the split is purely about which engine can measure it.
+            sets = [s for s in sets if set_filter(s)]
         if not sets:
             logger.info("regrade: skipping %s (no CorpusRegrades sets apply)", corpus.name)
             continue
@@ -497,6 +535,11 @@ def run_live_regrade(topology, url_of: dict, questions, *, k: int = 10,
                                               for s in _corpus.stores) else "lexical"),
                     "baseline": "current", "sets": rows, "running": True})
 
+        def _qprog(done, total, set_name, _name=corpus.name):
+            # The inner pulse: which set is in flight and how far through its pass.
+            if _progress:
+                _progress.detail(_name, q_done=done, q_total=total, set=set_name)
+
         try:
             # Knob-capability is checked against the knobs THIS corpus actually
             # sweeps, not the union across the whole config. A corpus inheriting a
@@ -507,7 +550,8 @@ def run_live_regrade(topology, url_of: dict, questions, *, k: int = 10,
                 corpus, scc_url, corpus_qs, sets, own_keys,
                 flag_map, k, sort_by,
                 on_combo=_bump if _progress else None,
-                on_partial=_partial if _progress else None)
+                on_partial=_partial if _progress else None,
+                on_q=_qprog if _progress else None)
             corpora_out.append(out)
             if _progress:
                 _progress.publish(corpus.name, out)

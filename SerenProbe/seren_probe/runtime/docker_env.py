@@ -321,8 +321,10 @@ def clear_topology_state() -> None:
         pass
     # Results describe a pod. Tear the pod down and they stop describing anything --
     # dropped HERE rather than at each call site so "stop" can never forget and leave
-    # a dead fleet's numbers looking current.
+    # a dead fleet's numbers looking current. Captures the same, doubly so: a capture
+    # is member-store DATA, and it dies with the containers that held it.
     clear_eval_results()
+    clear_corpus_captures()
 
 
 # ── eval RESULTS persistence ───────────────────────────────────────
@@ -347,20 +349,58 @@ def clear_topology_state() -> None:
 RESULTS_FILE = Path.home() / ".seren-probe" / "eval_results.json"
 
 
-def save_eval_results(project_name: str, results: dict) -> None:
+def save_eval_results(project_name: str, results: dict, fingerprint: str = "",
+                      seeded_at: str = "", question_hash: str = "") -> None:
     """Persist a completed eval's results next to the topology state. Best-effort:
     never fail a finished eval because a convenience file could not be written --
-    the numbers are already in the response either way."""
+    the numbers are already in the response either way.
+
+    THREE FACTS, because results go stale three independent ways and each one has to
+    be checkable on its own:
+      fingerprint   - the FLEET this described (structure_signature hash). project_name
+                      alone is worthless here: it is the same string for every pod
+                      ever started.
+      seeded_at     - the DATA. Scored before the last reseed => scored against
+                      content that no longer exists.
+      question_hash - the QUESTIONS. Edit the question set and the old numbers answer
+                      a set nobody is asking any more.
+    All three must still hold for a restore to mean anything.
+    """
     import json
     from datetime import datetime
     try:
         RESULTS_FILE.parent.mkdir(parents=True, exist_ok=True)
         RESULTS_FILE.write_text(json.dumps(
             {"project_name": project_name,
+             "fingerprint": fingerprint,
+             "seeded_at": seeded_at,
+             "question_hash": question_hash,
              "saved_at": datetime.utcnow().isoformat(),
              "results": results}, indent=2), encoding="utf-8")
     except (OSError, TypeError, ValueError) as exc:      # noqa: BLE001
         logger.warning("could not persist eval results: %s", exc)
+
+
+def eval_results_staleness(env: dict, fingerprint: str = "", seeded_at: str = "",
+                           question_hash: str = "") -> str:
+    """Why this saved envelope can no longer be trusted, or "" if it still can.
+
+    ONE place decides, for the same reason the capture guard has one: a rule that
+    lives in two places is a rule that will eventually disagree with itself, and the
+    two disagreeing copies both look right in review.
+
+    Empty inputs mean "unknown, don't judge on this axis" -- an envelope written by
+    an older build has no fingerprint, and refusing every one of those would throw
+    away good results to enforce a check that did not exist when they were made.
+    """
+    if fingerprint and env.get("fingerprint") and env["fingerprint"] != fingerprint:
+        return ("the topology changed since these were scored - different stores, ports, "
+                "wiring or version pins")
+    if seeded_at and env.get("saved_at") and env["saved_at"] < seeded_at:
+        return "the stores were reseeded after these were scored"
+    if question_hash and env.get("question_hash") and env["question_hash"] != question_hash:
+        return "the question set changed since these were scored"
+    return ""
 
 
 def load_eval_results(project_name: str | None = None) -> dict | None:
@@ -387,6 +427,81 @@ def load_eval_results(project_name: str | None = None) -> dict | None:
 def clear_eval_results() -> None:
     try:
         RESULTS_FILE.unlink(missing_ok=True)
+    except OSError:
+        pass
+
+
+# ── regrade CAPTURE persistence ────────────────────────────────────
+# A capture is a frozen snapshot of what every member store returned for every
+# corpus question -- the thing capture-replay sweeps against. Persisting it turns
+# "capture then sweep" into two separate, honest actions: capture once (the only
+# part that touches containers), then regrade all afternoon from disk.
+#
+# THE DANGER IS STALENESS, and it is the nastiest shape of wrong: a stale capture
+# produces a CONFIDENT, fully-populated result table about data that no longer
+# exists. Nothing errors. So the envelope carries what the guard needs:
+#   - project_name: captures belong to the pod that produced them (same guard as
+#     eval results -- another fleet's candidates are worse than none)
+#   - question_hash: a capture only answers the queries it recorded; changed
+#     questions mean capture misses that grade as retrieval failures
+#   - captured_at PER CORPUS: compared against topology_state's seeded_at --
+#     ISO-8601 UTC strings, so string comparison is chronological comparison
+#
+# Size note: All-scc is ~130 questions x 22 stores x capture_n hits of full
+# response JSON -- tens of MB. Fine on disk, deliberate on write: this file is
+# rewritten whole per capture, not appended.
+CAPTURES_FILE = Path.home() / ".seren-probe" / "corpus_captures.json"
+
+
+def save_corpus_captures(project_name: str, corpora: dict, question_hash: str) -> None:
+    """Merge these corpora's captures into the saved envelope. Same project and
+    same question_hash -> existing corpora survive (capturing just Characters must
+    not discard Geography's still-valid capture). Different project or different
+    question_hash -> the old envelope is REPLACED, because every capture in it is
+    already invalid and keeping it around just gives the staleness guard more ways
+    to be half-right."""
+    import json
+    from datetime import datetime
+    now = datetime.utcnow().isoformat()
+    env = {"project_name": project_name, "question_hash": question_hash, "corpora": {}}
+    try:
+        if CAPTURES_FILE.exists():
+            old = json.loads(CAPTURES_FILE.read_text(encoding="utf-8"))
+            if (isinstance(old, dict) and old.get("project_name") == project_name
+                    and old.get("question_hash") == question_hash):
+                env["corpora"] = old.get("corpora", {})
+    except (OSError, ValueError):
+        pass                                   # unreadable old file: start clean
+    for name, cap in corpora.items():
+        env["corpora"][name] = {"captured_at": now, "capture": cap}
+    try:
+        CAPTURES_FILE.parent.mkdir(parents=True, exist_ok=True)
+        CAPTURES_FILE.write_text(json.dumps(env), encoding="utf-8")
+    except (OSError, TypeError, ValueError) as exc:    # noqa: BLE001
+        logger.warning("could not persist corpus captures: %s", exc)
+
+
+def load_corpus_captures(project_name: str | None = None) -> dict | None:
+    """The saved envelope {project_name, question_hash, corpora}, or None. Pass
+    project_name to refuse another pod's captures."""
+    import json
+    try:
+        if not CAPTURES_FILE.exists():
+            return None
+        env = json.loads(CAPTURES_FILE.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:               # noqa: BLE001
+        logger.warning("could not read corpus captures: %s", exc)
+        return None
+    if not isinstance(env, dict) or not isinstance(env.get("corpora"), dict):
+        return None
+    if project_name is not None and env.get("project_name") != project_name:
+        return None
+    return env
+
+
+def clear_corpus_captures() -> None:
+    try:
+        CAPTURES_FILE.unlink(missing_ok=True)
     except OSError:
         pass
 

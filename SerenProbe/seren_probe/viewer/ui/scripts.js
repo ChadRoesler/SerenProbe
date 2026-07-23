@@ -169,7 +169,15 @@ function regradeMarkdown(data) {
 }
 
 function copyEval(btn) { copyToClipboard(evalMarkdown(currentEval), btn); }
-function copyRegrade(btn) { copyToClipboard(regradeMarkdown(currentRegrade), btn); }
+function copyRegrade(btn) {
+  // EVERY corpus swept this session, not just the last one. currentRegrade holds a
+  // single response, and with per-corpus buttons that is whichever corpus you
+  // happened to run most recently -- so the paste would silently drop the other two.
+  const merged = Object.keys(_rgResults).length
+    ? { ...(currentRegrade || {}), corpora: Object.values(_rgResults) }
+    : currentRegrade;
+  copyToClipboard(regradeMarkdown(merged), btn);
+}
 function copyLint(btn) {
   const el = document.getElementById('probeconfig-result');
   copyToClipboard(el ? el.textContent : '', btn);
@@ -219,6 +227,21 @@ async function refreshEval() {
       info.textContent += ' \u00b7 evaluated ' + String(data.date).replace('T', ' ').slice(0, 16);
     }
     if (data.restored) info.textContent += ' \u00b7 \u21ba restored';
+    // A DISCARD is not an empty state. "Nothing has been evaluated" and "an evaluation
+    // existed and was thrown away because it no longer describes this pod" are
+    // different facts, and rendering the second as the first is the same disease as
+    // scoring a failed search as a miss: the operator re-runs an hour of work without
+    // ever learning why the old numbers vanished.
+    if (data.discarded) {
+      const host0 = document.getElementById('eval-body');
+      if (host0) {
+        host0.innerHTML = `<div class="note err"><span class="label">\u2717 previous results discarded:</span> `
+          + `${escapeHtml(data.discarded)}. <span class="muted">They described a different pod, so they `
+          + `were dropped rather than shown with a caveat. Run \u25b6 Evaluate to score this one.</span></div>`;
+      }
+      info.textContent = 'no results for this topology';
+      return;
+    }
     let html = '<div class="copy-row"><button class="btn-sm copy-btn" onclick="copyEval(this)">\u{1F4CB} Copy results</button></div>';
     if (data.restored) {
       // Scored-in-this-process and read-back-off-disk are different confidence
@@ -228,7 +251,8 @@ async function refreshEval() {
             + 'these numbers were scored in an earlier session and read back from disk'
             + (data.restored_at ? ' (' + escapeHtml(String(data.restored_at).replace('T', ' ').slice(0, 16)) + ')' : '')
             + '. <span class="muted">This pod has already been evaluated - go straight to '
-            + '\u2699 Regrades. Re-run \u25b6 Evaluate only if the seed or the questions changed.</span></div>';
+            + '\u2699 Regrades. Re-run \u25b6 Evaluate only if the seed or the questions changed.</span> '
+            + '<button class="btn-sm" onclick="clearEvalResults()">\u2715 Clear</button></div>';
     }
     // GROUND TRUTH. Loud, at the top, above the numbers -- because a number graded
     // against a MISSING answer key is not a low score, it is a non-score, and the two
@@ -366,9 +390,24 @@ function renderDocket(d) {
 // moment the caller's await resolves, success or failure.
 let _progressTimer = null;
 
+async function clearEvalResults() {
+  // The automatic checks catch what they can SEE (topology, reseed, question set).
+  // They cannot see a rebuilt image at the same version pin, or edited seed CONTENT
+  // behind an unchanged path -- so the operator gets a direct way to say "these are
+  // junk" without tearing down a pod to clear a JSON file.
+  try {
+    await api('/eval/results', { method: 'DELETE' });
+  } catch (e) { /* already gone is a fine outcome for a delete */ }
+  await refreshEval();
+}
+
 function _renderProgressCell(row) {
   if (!row) return '-';
-  const phase = row.phase === 'eval' ? 'eval' : (row.phase === 'regrade' ? 'regrade' : 'seed');
+  // Pass the phase through as-is. This used to whitelist eval/regrade and map
+  // everything else to 'seed', which silently mislabelled every phase added later
+  // -- 'capture' rendered as 'seed', which on this dashboard is an alarming thing
+  // to claim about a read-only operation.
+  const phase = row.phase || 'seed';
   if (row.done) return `${phase} ${row.current}/${row.total}`;
   return `${phase} ${row.current}/${row.total}\u2026`;
 }
@@ -383,6 +422,11 @@ function _renderProgressCell(row) {
 function _paintPartial(name, m) {
   const cell = document.getElementById('prog-' + name);
   if (!cell) return;
+  // REGRADE/CAPTURE partials are corpus-shaped ({corpus, sets|error}) and belong to
+  // the regrade panel, NOT this table. Without this guard, polling during a regrade
+  // fed those shapes to the eval painter, every metric read null, and the corpus
+  // rows' REAL eval numbers got overwritten with dashes mid-sweep.
+  if (m && m.corpus) return;
   const tr = cell.parentElement;
   if (!tr || !tr.cells || tr.cells.length < 9) return;
 
@@ -408,6 +452,12 @@ function _paintPartial(name, m) {
   tr.title = 'live partial - final numbers land when the whole run finishes';
 }
 
+// Latest /eval/progress rows, kept module-level so the REGRADE panel can render a
+// Status column from the same registry the eval table's Status column polls. The
+// partials carry results; progress carries position. Neither alone answers "is this
+// moving", which is the entire question during a multi-hour sweep.
+let _lastProgress = {};
+
 function startProgressPolling() {
   stopProgressPolling();
   _progressTimer = setInterval(async () => {
@@ -416,15 +466,24 @@ function startProgressPolling() {
     // status column -- one failing endpoint may not take the other down with it.
     try {
       const snap = await api('/eval/progress');
+      _lastProgress = snap || {};
       for (const [name, row] of Object.entries(snap || {})) {
         const cell = document.getElementById(`prog-${name}`);
         if (cell) cell.textContent = _renderProgressCell(row);
+        // Regrade sections carry their own Status cells (per set), repainted here
+        // rather than only when a partial lands -- a combo takes minutes, so waiting
+        // for the next partial to show movement defeats the point.
+        _paintRegradeStatus(name, row);
       }
     } catch (e) { /* transient - next tick will retry */ }
     try {
       const p = await api('/eval/partials');
       for (const [name, snap] of Object.entries((p && p.partials) || {})) {
-        _paintPartial(name, snap);
+        // Corpus-shaped snapshots belong to the regrade panel's sections; eval-shaped
+        // ones to the eval table. Routed here so each painter stays single-purpose --
+        // _paintPartial's own m.corpus guard remains as the backstop.
+        if (snap && snap.corpus) _paintRegradePartial(name, snap);
+        else _paintPartial(name, snap);
       }
     } catch (e) { /* endpoint absent or transient - status column still works */ }
   }, 1000);
@@ -497,45 +556,139 @@ async function runEval() {
 //
 // Rendered from /eval/regrade/plan, which runs the SAME resolver the sweep uses, so
 // the staging table cannot disagree with what actually executes.
-function renderRegradePlan(p) {
+// A plan corpus -> the SAME snapshot shape a finished corpus has, so the staging
+// view renders through _rgCorpusSection exactly like the results do. This is the
+// whole trick behind "no jump": the plan is not a different table, it is the results
+// table with nothing in it yet. Metrics are absent (f3 renders '-'), Status reads
+// pending, and every row that will exist already exists -- baseline, each set, each
+// combo -- so clicking the button FILLS the table instead of replacing it.
+//
+// A layout that changes shape the moment work starts makes the operator re-find
+// everything at exactly the moment they most want to watch one number.
+// Results kept PER CORPUS, not as one blob. A single-corpus regrade used to replace
+// the entire panel with that corpus's result and set currentRegrade -- which then
+// tripped refreshRegradePlan's "results outrank intentions" guard, so the other
+// corpora's sections and their buttons never came back until a reload. You could
+// regrade one corpus, once, and then had no way to reach the others. The per-corpus
+// buttons defeated themselves.
+//
+// Keyed by name instead, the panel is a MERGE: every corpus renders, showing results
+// if it has them and its ready-state if it does not. Sweeping one updates one section
+// and leaves the rest exactly as they were.
+let _rgResults = {};
+
+// Capture chip + per-corpus buttons. Extracted so a RESULTS section gets the
+// identical header a PLAN section does -- otherwise a corpus would lose its own
+// buttons the moment it finished, which is the same bug in miniature.
+function _rgHeaderExtra(name, capMap) {
+  const ce = (capMap || {})[name];
+  let capCell;
+  if (!ce) capCell = '<span class="muted">no capture</span>';
+  else if (ce.stale) capCell = `<span class="cap-stale" title="${escapeHtml(ce.reason || '')}">\u26a0 STALE capture</span>`;
+  else capCell = `<span class="cap-fresh" title="captured ${escapeHtml(ce.captured_at || '')}">\u2713 captured ${escapeHtml(String(ce.captured_at || '').replace('T', ' ').slice(5, 16))}</span>`;
+  // Names embedded in onclick are safe: corpus names are slug-safe ({name}-scc, no
+  // quotes), and escapeHtml covers the rest of the attribute.
+  return `${capCell}<span class="rg-actions">`
+    + `<button class="btn-xsm" title="capture just this corpus" onclick="runCapture('${escapeHtml(name)}')">\u{1F4F8}</button>`
+    + ` <button class="btn-xsm" title="regrade just this corpus" onclick="runRegrade('${escapeHtml(name)}')">\u2699</button></span>`;
+}
+
+function _rgPlanCorpus(c, capMap, running) {
+  return {
+    corpus: c.corpus,
+    flavor: c.flavor || (running ? 'running' : 'ready'),
+    baseline: 'current', running: !!running,
+    headerExtra: _rgHeaderExtra(c.corpus, capMap),
+    // The baseline row FIRST: `current` is a real measured pass, not a header, and
+    // omitting it makes the table jump a row when the first result lands.
+    sets: [{ name: 'current', metrics: {}, params: {}, delta: {} }].concat(
+      (c.sets || []).map(s => ({
+        name: s.name + (s.source === 'corpus' ? ' (own)' : ''),
+        metrics: {}, delta: {},
+        // The knob RANGES stand in for "best knobs" until a winner exists -- the
+        // column then swaps ranges for the winning combo, in place.
+        params: Object.fromEntries(Object.entries(s.knobs || {})
+          .map(([k, v]) => [k, '[' + v.join(',') + ']'])),
+        // combo_params comes from the backend's compact_combos. Rebuilding that
+        // product in JS would be a second implementation of the rule, and it would
+        // rot the first time a knob's semantics changed.
+        combos: (s.combo_params || []).map(pp => ({ params: pp, metrics: {}, delta: {} })),
+      }))),
+  };
+}
+
+// Last capture status seen by the plan, so the skeleton can show the same chips
+// without a second round-trip at the exact moment a sweep is starting.
+let _lastCapMap = {};
+
+function renderRegradePlan(p, cap) {
   if (!p) return '';
   if (p.note) return `<div class="note"><span class="label">regrade:</span> ${escapeHtml(p.note)}</div>`;
   if (!p.corpora || !p.corpora.length) return '';
+  const capMap = (cap && cap.corpora) || {};
   const swept = p.swept || 0;
-  let h = `<div class="note"><span class="label">\u2699 Regrade plan</span> - `
+  // The Copy button lives HERE now. It used to be emitted by renderRegrade(), which
+  // the merged panel no longer calls -- so results sat on screen with no way to paste
+  // them, which is most of what they are for.
+  let h = Object.keys(_rgResults).length
+    ? '<div class="copy-row"><button class="btn-sm copy-btn" onclick="copyRegrade(this)">\u{1F4CB} Copy sweep</button></div>'
+    : '';
+  h += `<div class="note"><span class="label">\u2699 Regrade plan</span> - `
         + `${escapeHtml(swept + ' of ' + p.corpus_count + ' corpora')}, `
         + `${escapeHtml(String(p.total_combos || 0))} combos total. `
-        + `<span class="muted">Nothing has run yet - this is what \u2699 Regrades would sweep. `
-        + `Corpora run one at a time (they share member stores), so wall clock is the SUM, not the max.</span></div>`;
-  h += '<table class="store-table"><tr><th>Corpus</th><th>Sets</th><th>Combos</th><th>Knobs</th></tr>';
+        + `<button class="btn-sm" onclick="runCapture()">\u{1F4F8} Capture all</button> `
+        + `<span class="muted">Capture freezes each corpus's member-store candidates to disk; `
+        + `\u2699 then replays pure-fusion sets from that file without touching a container. `
+        + `Hops sets always run live. Per-row buttons scope either to one corpus.</span></div>`;
+  // ONE RENDERER for plan and results. Everything below just decides WHICH corpora
+  // to hand to _rgCorpusSection; the table itself is identical in both views.
+  _lastCapMap = capMap;
+  const skipped = [];
   for (const c of p.corpora) {
-    if (c.skipped) {
-      // Kept in the table rather than filtered out: "not swept, and here is why" is
-      // information. Silently omitting it looks the same as forgetting to declare it.
-      h += `<tr class="rg-skipped"><td class="sname muted">${escapeHtml(c.corpus)}</td>`
-         + `<td colspan="3" class="muted">\u2013 skipped: ${escapeHtml(c.reason || '')}</td></tr>`;
-      continue;
-    }
-    const names = c.sets.map(s =>
-      `${escapeHtml(s.name)}<span class="muted">${s.source === 'corpus' ? ' (own)' : ''}</span>`
-    ).join(', ');
-    const knobs = c.sets.map(s =>
-      Object.entries(s.knobs || {}).map(([k, v]) => `${k}=[${v.join(',')}]`).join(' ')
-    ).filter(Boolean).join('  \u00b7  ');
-    h += `<tr><td class="sname">${escapeHtml(c.corpus)}</td><td>${names}</td>`
-       + `<td class="mval">${c.combos}</td><td class="muted">${escapeHtml(knobs)}</td></tr>`;
+    if (c.skipped) { skipped.push(c); continue; }
+    // MERGE: a swept corpus shows its results, an unswept one its ready-state. Both
+    // keep their buttons, so any corpus can be re-swept at any time regardless of
+    // what else has already run.
+    const done = _rgResults[c.corpus];
+    h += _rgCorpusSection(done
+      ? { ...done, headerExtra: _rgHeaderExtra(c.corpus, capMap) }
+      : _rgPlanCorpus(c, capMap, false));
   }
-  h += '</table>';
+  // Skipped corpora COLLAPSED, grouped by reason. Eleven identical "no top-level
+  // CorpusRegrades to inherit" rows is eleven copies of one fact, and they buried
+  // the three corpora that actually run. Still shown -- "not swept, and why" is
+  // information, and silently omitting a corpus looks the same as forgetting to
+  // declare it -- just not eleven times.
+  if (skipped.length) {
+    const byReason = {};
+    for (const c of skipped) {
+      const r = c.reason || 'skipped';
+      if (!byReason[r]) byReason[r] = [];
+      byReason[r].push(c.corpus);
+    }
+    for (const [reason, names] of Object.entries(byReason)) {
+      h += `<div class="note rg-skipped"><span class="label">\u2013 ${names.length} skipped:</span> `
+         + `${escapeHtml(reason)} <span class="muted">- ${escapeHtml(names.join(', '))}</span></div>`;
+    }
+  }
   return h;
 }
 
-async function refreshRegradePlan() {
+async function refreshRegradePlan(force) {
   const host = document.getElementById('regrade-body');
-  // Never clobber a finished sweep with the plan that produced it -- results outrank
-  // intentions. The plan only fills the space while that space is empty.
-  if (!host || currentRegrade) return;
+  // NO "results outrank intentions" guard any more. It existed because the plan
+  // would have clobbered a finished sweep -- which cannot happen now that results
+  // live in _rgResults and get merged in on every render. Its only remaining effect
+  // was to freeze the whole panel after the first single-corpus sweep.
+  if (!host) return;
   try {
-    host.innerHTML = renderRegradePlan(await api('/eval/regrade/plan'));
+    // Plan + capture status together: the staging table's whole job is answering
+    // "what would run, and would it run from a trustworthy capture" in one look.
+    const [plan, cap] = await Promise.all([
+      api('/eval/regrade/plan'),
+      api('/eval/capture/status').catch(() => null),
+    ]);
+    host.innerHTML = renderRegradePlan(plan, cap);
   } catch (e) { /* older backend or no topology - leave the space empty */ }
 }
 
@@ -551,17 +704,67 @@ function renderRegrade(data) {
   const dcls = (v) => (v == null ? '' : (v > 0.0005 ? 'delta-pos' : (v < -0.0005 ? 'delta-neg' : '')));
   let h = `<div class="note"><span class="label">Regrade sweep</span> - winning config per set (bold) with EVERY combo it measured beneath it, Δ vs baseline. ${escapeHtml((data.question_count || 0) + ' corpus questions · sort: ' + (data.sort_by || 'docket_coverage'))}`
         + ` <span class="muted">Read <b>coverage</b>, not ndcg: on a corpus store the ground truth is derived from the hits, and ndcg scores an empty result as a perfect 1.000 - a combo that finds nothing looks flawless.</span></div>`;
-  for (const c of data.corpora) {
-    h += `<div class="regrade-corpus"><b class="rg-name">${escapeHtml(c.corpus)}</b> <span class="muted">(${escapeHtml(c.flavor)}) · baseline: ${escapeHtml(c.baseline || '-')}</span></div>`;
-    h += '<table class="store-table regrade-table"><tr><th>Set</th><th>nDCG</th><th>Coverage</th><th>Recall</th><th>MRR</th><th>Δ</th><th>best knobs</th></tr>';
+  for (const c of data.corpora) h += _rgCorpusSection(c);
+  return '<div class="copy-row"><button class="btn-sm copy-btn" onclick="copyRegrade(this)">\u{1F4CB} Copy sweep</button></div>' + h;
+}
+
+// ONE corpus's regrade section, wrapped in an id'd div so the live partial painter
+// can replace EXACTLY this section as the sweep progresses, without touching its
+// siblings. Partial and final snapshots render through this same function, so a
+// half-done sweep looks like a finished one that just has fewer rows yet.
+function _rgCorpusSection(c) {
+  const f3 = (v) => (v == null ? '-' : Number(v).toFixed(3));
+  const sg = (v) => (v == null ? '' : (v > 0.0005 ? '+' : '') + Number(v).toFixed(3));
+  const dcls = (v) => (v == null ? '' : (v > 0.0005 ? 'delta-pos' : (v < -0.0005 ? 'delta-neg' : '')));
+  let h = ``;
+  if (c.error) {
+    // Failures paint into their own section the moment they publish -- a corpus that
+    // died on knob 3 is visible NOW, while the rest keep sweeping around it.
+    h += `<div class="regrade-corpus"><b class="rg-name">${escapeHtml(c.corpus)}</b></div>`
+       + `<div class="note err"><span class="label">\u2717 failed:</span> ${escapeHtml(c.error)}</div>`;
+    return h + '</div>';
+  }
+  if (c.running) {
+    h += `<div class="note"><span class="label">running\u2026</span> <span class="muted">sets fill in as they finish; combo progress is in the eval table's Status column.</span></div>`;
+  }
+  {
+    h += `<div class="regrade-corpus"><b class="rg-name">${escapeHtml(c.corpus)}</b> <span class="muted">(${escapeHtml(c.flavor)}) · baseline: ${escapeHtml(c.baseline || '-')}</span>`
+       // Roll-up (X/Y REGRADES) INSIDE the header div, repainted by the poll so it
+       // ticks without re-rendering the section under the operator's scroll position.
+       + `<span class="rg-rollup" id="rgp-${escapeHtml(c.corpus)}"></span>`
+       // Capture chip + per-corpus buttons, supplied by the PLAN renderer. Results
+       // sections pass nothing, so one shell serves both views unchanged.
+       + `${c.headerExtra || ''}</div>`;
+    h += '<table class="store-table regrade-table"><tr><th>Set</th><th>Status</th><th>nDCG</th><th>Coverage</th><th>Recall</th><th>MRR</th><th>Δ</th><th>best knobs</th></tr>';
     for (const s of c.sets) {
       const m = s.metrics || {}, d = s.delta || {}, isBase = s.name === c.baseline;
+      // A set with no metrics has not been measured yet (a skeleton row). Its Status
+      // cell is where the per-QUESTION counter lands while that set is in flight; a
+      // measured one reads done. data-set is how the poll finds the right cell.
+      const measured = (m && m.ndcg != null);
+      // WHICH ENGINE MEASURED IT, not just "done". A pure-fusion set replayed from a
+      // frozen capture and a hops set driven against live containers are different
+      // kinds of evidence -- capture rows are bit-reproducible, live rows carry the
+      // ~0.02 run-to-run noise floor of real vector search. Reading a 0.01 delta as
+      // signal is fine on one and wrong on the other, so the table says which.
+      const eng = s.engine === 'capture-replay' ? 'capture'
+                : s.engine === 'live' ? 'live' : 'done';
+      const stTip = measured
+        ? (s.engine === 'capture-replay'
+            ? 'replayed from a frozen capture - deterministic, repeats exactly'
+            : s.engine === 'live'
+              ? 'measured against live containers - carries a ~0.02 noise floor'
+              : 'measured')
+        : 'not measured yet';
+      const stCell = `<td class="mval rg-st" data-set="${escapeHtml(s.name)}" title="${escapeHtml(stTip)}">`
+                   + (measured ? eng : '<span class="muted">pending</span>') + '</td>';
       const dparts = [];
       for (const [k, lbl] of [['docket_coverage', 'cov'], ['ndcg', 'ndcg']])
         if (d[k] != null && Math.abs(d[k]) > 0.0005) dparts.push(`<span class="${dcls(d[k])}">${lbl} ${sg(d[k])}</span>`);
       const dcell = isBase ? '<span class="muted">baseline</span>' : (dparts.join(' ') || '<span class="muted">-</span>');
       const p = s.params || {}, knobs = Object.keys(p).length ? Object.entries(p).map(([k, v]) => `${k}=${v}`).join(' ') : '-';
       h += `<tr class="${isBase ? 'rg-base' : 'rg-win'}"><td class="k">${escapeHtml(s.name)}</td>`
+         + stCell
          + `<td class="mval">${f3(m.ndcg)}</td><td class="mval">${f3(m.docket_coverage)}</td>`
          + `<td class="mval">${f3(m.recall)}</td><td class="mval">${f3(m.mrr)}</td>`
          + `<td>${dcell}</td><td class="rg-knobs">${escapeHtml(knobs)}</td></tr>`;
@@ -577,17 +780,99 @@ function renderRegrade(data) {
         for (const [k, lbl] of [['docket_coverage', 'cov'], ['ndcg', 'ndcg']])
           if (cd[k] != null && Math.abs(cd[k]) > 0.0005) cparts.push(`<span class="${dcls(cd[k])}">${lbl} ${sg(cd[k])}</span>`);
         h += `<tr class="rg-combo"><td class="k rg-knobs">↳ ${escapeHtml(ck)}</td>`
-           + `<td class="mval">${f3(cm.ndcg)}</td><td class="mval">${f3(cm.docket_coverage)}</td>`
+           + `<td></td><td class="mval">${f3(cm.ndcg)}</td><td class="mval">${f3(cm.docket_coverage)}</td>`
            + `<td class="mval">${f3(cm.recall)}</td><td class="mval">${f3(cm.mrr)}</td>`
            + `<td>${cparts.join(' ') || '<span class="muted">-</span>'}</td><td></td></tr>`;
       }
     }
     h += '</table>';
   }
-  return '<div class="copy-row"><button class="btn-sm copy-btn" onclick="copyRegrade(this)">\u{1F4CB} Copy sweep</button></div>' + h;
+  return h;
 }
 
-async function runRegrade() {
+// The sweep's SKELETON: every in-scope corpus section rendered empty, from the same
+// plan the sweep resolves -- so the table exists at 0% and fills section by section,
+// the exact flow Seed and Eval already have. A synthetic corpus snapshot (set names,
+// dash metrics, running:true) goes through _rgCorpusSection, so the skeleton is the
+// SAME markup as the finished thing, just with nothing in it yet.
+async function _renderRegradeSkeleton(corpus) {
+  const host = document.getElementById('regrade-body');
+  if (!host) return;
+  try {
+    const plan = await api('/eval/regrade/plan');
+    if (!plan || !plan.corpora || !plan.corpora.length) return;
+    let h = '<div class="note"><span class="label">\u2699 Regrade sweep</span> '
+          + '<span class="muted">running - sections fill in as each corpus lands; '
+          + 'combo progress is in the eval table\'s Status column.</span></div>';
+    let any = false;
+    for (const c of plan.corpora) {
+      if (c.skipped) continue;
+      any = true;
+      // EVERY corpus, not just the target. Filtering to the swept one wiped the
+      // others off the panel for the duration of the run -- and if it was a
+      // single-corpus sweep, they never came back. The target shows running; the
+      // rest keep whatever they already had.
+      const isTarget = !corpus || c.corpus === corpus;
+      const done = _rgResults[c.corpus];
+      h += _rgCorpusSection((done && !isTarget)
+        ? { ...done, headerExtra: _rgHeaderExtra(c.corpus, _lastCapMap) }
+        : _rgPlanCorpus(c, _lastCapMap, isTarget));
+    }
+    if (any) host.innerHTML = h;
+  } catch (e) { /* older backend / no plan: the plain spinner already showing stands */ }
+}
+
+// Replace ONE corpus's section in place as its partial lands. outerHTML swap keeps
+// the id (the new section carries the same one), so successive partials for the same
+// corpus keep finding their slot. Siblings are never re-rendered -- a finished
+// section does not flicker because its neighbour is still sweeping.
+function _paintRegradePartial(name, m) {
+  const sec = document.getElementById('rg-sec-' + name);
+  if (!sec || !m || !m.corpus) return;
+  sec.outerHTML = _rgCorpusSection(m);
+}
+
+// Paint the two live counters into ONE corpus's regrade section, from the progress
+// registry rather than from partials. Two granularities, because they answer
+// different questions:
+//   roll-up  X/Y REGRADES  -- where in the sweep this corpus is
+//   per-set  X/Y QUESTIONS -- whether anything is happening RIGHT NOW
+// The coarse counter only moves once per combo, which on a wide fan is once every
+// twelve minutes; a table that sits still that long is indistinguishable from a hung
+// one, which is the whole reason this exists.
+//
+// Cell-level updates, never a section re-render: repainting the section every second
+// would fight the operator's scroll and wipe any expanded state.
+function _paintRegradeStatus(name, row) {
+  if (!row || row.phase !== 'regrade') return;
+  const roll = document.getElementById('rgp-' + name);
+  if (roll) {
+    roll.textContent = row.done
+      ? ` \u00b7 ${row.current}/${row.total} regrades done`
+      : ` \u00b7 regrade ${row.current}/${row.total}\u2026`;
+  }
+  const sec = document.getElementById('rg-sec-' + name);
+  if (!sec) return;
+  const d = row.detail || {};
+  for (const cell of sec.querySelectorAll('td.rg-st')) {
+    const setName = cell.getAttribute('data-set');
+    if (d.set && setName === d.set && !row.done) {
+      // The in-flight set carries the question counter. Everything else keeps
+      // whatever the renderer gave it (done / pending).
+      cell.textContent = `q ${d.q_done || 0}/${d.q_total || 0}`;
+      cell.classList.add('rg-st-live');
+    } else {
+      cell.classList.remove('rg-st-live');
+    }
+  }
+}
+
+async function runRegrade(corpus) {
+  // WIRED TWO WAYS: the toolbar's addEventListener('click', runRegrade) and the
+  // per-row onclick="runRegrade('Characters-scc')". A click handler's first argument
+  // is a PointerEvent, and without this guard that event object would go straight
+  // into JSON.stringify as {corpus: PointerEvent} -- a 400 on every toolbar click.
+  if (typeof corpus !== 'string') corpus = null;
   const btn = document.getElementById('run-regrade');
   if (!btn) return;
   const orig = btn.textContent;
@@ -595,17 +880,48 @@ async function runRegrade() {
   btn.disabled = true;
   const host = document.getElementById('regrade-body');
   if (host) host.innerHTML = '<div class="loading">capturing + sweeping…</div>';
+  // SKELETON FIRST, spinner as fallback: the loading div above is replaced by the
+  // full empty table the moment the plan answers, and each section fills as its
+  // corpus lands. Same preload-then-fill flow Seed and Eval already have.
+  await _renderRegradeSkeleton(corpus);
+  // Regrade publishes per-corpus progress (phase 'regrade') into the registry the
+  // eval table's Status column polls -- corpora exist as rows there, so the combo
+  // counter is visible while the sweep runs. The partials painter ignores
+  // corpus-shaped snapshots by design (see _paintPartial).
+  startProgressPolling();
   try {
     // raw fetch (not api()) so we can read the detail body on a 501/400 -
     // the SCC-not-installed hint, the no-CorpusRegrades message, etc.
     const headers = { 'Content-Type': 'application/json' };
     const tok = (typeof getToken === 'function') ? getToken() : '';
     if (tok) headers['Authorization'] = 'Bearer ' + tok;
-    const resp = await fetch('/eval/regrade', { method: 'POST', headers, body: '{}' });
+    const resp = await fetch('/eval/regrade', {
+      method: 'POST', headers,
+      body: JSON.stringify(corpus ? { corpus } : {}),
+    });
     const data = await resp.json().catch(() => ({}));
     if (resp.ok && data.ok) {
-      currentRegrade = data.results;
-      if (host) host.innerHTML = renderRegrade(data.results);
+      currentRegrade = data.results;      // what \u{1F4CB} Copy sweep serialises
+      // MERGE per corpus rather than replacing the panel, so a single-corpus sweep
+      // updates its own section and leaves every other corpus (and its buttons)
+      // exactly where they were.
+      for (const c of (data.results.corpora || [])) {
+        if (c && c.corpus) _rgResults[c.corpus] = c;
+      }
+      let html = '';
+      // THE HOLLER. A saved capture that was refused (reseed after capture, changed
+      // questions) is called out above the results, with the reason and the fact
+      // that a fresh capture was taken instead -- the sweep is still trustworthy,
+      // the operator just learns their capture FILE is not.
+      const stale = data.results && data.results.stale_captures;
+      if (stale && Object.keys(stale).length) {
+        const parts = Object.entries(stale).map(([n, r]) => `${escapeHtml(n)} (${escapeHtml(r)})`);
+        html += `<div class="note err"><span class="label">\u26a0 stale capture:</span> `
+              + `${parts.join(' \u00b7 ')} - excluded; those corpora captured FRESH for this sweep. `
+              + `<span class="muted">\u{1F4F8} Capture again to refresh the file.</span></div>`;
+      }
+      await refreshRegradePlan(true);
+      if (host && html) host.innerHTML = html + host.innerHTML;
     } else {
       const detail = (data && data.detail != null) ? data.detail : data;
       const msg = (typeof detail === 'string') ? detail
@@ -616,12 +932,45 @@ async function runRegrade() {
   } catch (e) {
     if (host) host.innerHTML = `<div class="empty">${escapeHtml(e.message || e)}</div>`;
   } finally {
+    stopProgressPolling();
     btn.textContent = orig;
     btn.disabled = false;
   }
 }
 
-// ── Docker config management ───────────────────────────────────────
+async function runCapture(corpus) {
+  // Same PointerEvent guard as runRegrade -- 'Capture all' is a bare onclick today,
+  // but the moment anyone wires it as a listener the event object arrives here.
+  if (typeof corpus !== 'string') corpus = null;
+  const host = document.getElementById('regrade-body');
+  if (host) host.innerHTML = `<div class="loading">capturing ${corpus ? escapeHtml(corpus) : 'all eligible corpora'} <span class="muted">(read-only /search pass; the sweep comes later)</span></div>`;
+  startProgressPolling();
+  try {
+    const data = await api('/eval/capture', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(corpus ? { corpus } : {}),
+    });
+    if (data && data.ok) {
+      // Force the plan (and its Capture column) to re-render with the new file.
+      // currentRegrade may hold an old sweep, but a capture invalidates the
+      // "results outrank intentions" hold: the operator just changed the intentions.
+      currentRegrade = null;
+      await refreshRegradePlan();
+      if (data.note && host && !(data.captured || []).length) {
+        host.innerHTML = `<div class="note"><span class="label">capture:</span> ${escapeHtml(data.note)}</div>` + host.innerHTML;
+      }
+    } else if (host) {
+      host.innerHTML = `<div class="empty">capture failed: ${escapeHtml((data && data.error) || 'unknown')}</div>`;
+    }
+  } catch (e) {
+    if (host) host.innerHTML = `<div class="empty">capture error: ${escapeHtml(e.message || e)}</div>`;
+  } finally {
+    stopProgressPolling();
+  }
+}
+
+// -- Docker config management -------------------------------------
 async function refreshDockerConfig() {
   const body = document.getElementById('docker-config-body');
   const summary = document.getElementById('docker-config-summary');
@@ -895,6 +1244,17 @@ async function uploadProbeConfig() {
     });
     const data = await resp.json().catch(() => ({}));
     if (resp.ok && data.ok) {
+      // TELL THE EVAL TAB. The hot-swap replaces the running topology's regrade sets
+      // server-side, but #regrade-body lives in the OTHER tab and nothing here ever
+      // touched it -- so the banner announced "hot-swapped, hit Regrades to roll them"
+      // directly above a plan table still listing the sets it had just replaced. A UI
+      // that contradicts its own success message is worse than a stale table: it
+      // teaches the operator not to believe either one.
+      //
+      // force=true because the plan's normal guard ("results outrank intentions")
+      // pins an old sweep's results -- and a config upload is exactly the moment the
+      // intentions became the newer fact.
+      if (typeof refreshRegradePlan === 'function') refreshRegradePlan(true);
       const s = data.summary || {};
       const counts = `${(s.loci || []).length} loci · ${(s.memory || []).length} memory · ${(s.corpus || []).length} corpus`;
       let msg = `✓ active - ${counts}`;

@@ -1,21 +1,23 @@
 /* ── Tinted orange accent overrides ────────────────────────────────── */
 :root {
-  --accent-2:  #91d3a7;  /* lighter orange */
-  --accent-dim:#50ad6f;  /* deeper burnt orange */
-  --slate:     #a8a08a;  /* warm slate */
-  --ok:        #86efac;
-  --err:       #fca5a5;
-  --warn:      #fcd34d;
-  /* alias the names this leaf's CSS uses onto the shell's real tokens
+    --accent-2: #91d3a7; /* lighter orange */
+    --accent-dim: #50ad6f; /* deeper burnt orange */
+    --slate: #a8a08a; /* warm slate */
+    --ok: #86efac;
+    --err: #fca5a5;
+    --warn: #fcd34d;
+    /* alias the names this leaf's CSS uses onto the shell's real tokens
      (the shell ships --border / --text-dim / --bg, not the -soft/-mute set) */
-  --border-soft: var(--border);
-  --text-soft:   var(--text-dim);
-  --text-mute:   var(--text-dim);
-  --bg-soft:     var(--bg);
+    --border-soft: var(--border);
+    --text-soft: var(--text-dim);
+    --text-mute: var(--text-dim);
+    --bg-soft: var(--bg);
 }
 
 /* the shell caps #views at 1100px but doesn't center it; each view holds one card */
-#views { margin-inline: auto; }
+#views {
+    margin-inline: auto;
+}
 
 /* ── Scrollbars ────────────────────────────────────────────────
  * The ProbeConfig textarea and the log panes are scrolled constantly, and an
@@ -29,555 +31,1038 @@
  * standard one and ignores the pseudo-elements, so there is no conflict.
  */
 * {
-  scrollbar-width: thin;
-  scrollbar-color: var(--border) transparent;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
 }
+
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+    width: 10px;
+    height: 10px;
 }
+
 ::-webkit-scrollbar-track {
-  /* transparent, not a colour: the track then picks up whatever surface it sits
+    /* transparent, not a colour: the track then picks up whatever surface it sits
      on, so this works on the panel, the textarea and the code panes alike. */
-  background: transparent;
+    background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 6px;
-  /* Transparent border + background-clip insets the thumb, so it reads as a slim
+    background: var(--border);
+    border-radius: 6px;
+    /* Transparent border + background-clip insets the thumb, so it reads as a slim
      bar floating in the gutter instead of a block filling it. */
-  border: 2px solid transparent;
-  background-clip: content-box;
+    border: 2px solid transparent;
+    background-clip: content-box;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-dim);
-  background-clip: content-box;
-}
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--accent-dim);
+        background-clip: content-box;
+    }
+
 ::-webkit-scrollbar-corner {
-  background: transparent;
+    background: transparent;
 }
 /* The resize grabber in the corner of a textarea is drawn by the OS and cannot be
    themed, only removed. The textarea keeps its rows= height and its scrollbar. */
 textarea {
-  resize: vertical;
+    resize: vertical;
 }
-.view.active { animation: view-in 0.18s ease; }
-@keyframes view-in { from { opacity: 0; } to { opacity: 1; } }
+
+.view.active {
+    animation: view-in 0.18s ease;
+}
+
+@keyframes view-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
 
 /* ── Status pill (header) ─────────────────────────────────────────── */
 .status-pill {
-  display: inline-block;
-  font-size: 0.72em;
-  padding: 2px 10px;
-  border-radius: 10px;
-  font-family: var(--mono);
-  border: 1px solid;
-  margin-left: 8px;
+    display: inline-block;
+    font-size: 0.72em;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-family: var(--mono);
+    border: 1px solid;
+    margin-left: 8px;
 }
-.status-pill.ok {
-  color: var(--ok);
-  border-color: var(--ok);
-  background: rgba(134,239,172,0.06);
-}
-.status-pill.err {
-  color: var(--err);
-  border-color: var(--err);
-  background: rgba(252,165,165,0.06);
-}
+
+    .status-pill.ok {
+        color: var(--ok);
+        border-color: var(--ok);
+        background: rgba(134,239,172,0.06);
+    }
+
+    .status-pill.err {
+        color: var(--err);
+        border-color: var(--err);
+        background: rgba(252,165,165,0.06);
+    }
 
 /* ── Panel cards ──────────────────────────────────────────────────── */
 .panel {
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius);
-  margin-bottom: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    margin-bottom: 14px;
 }
-.panel .panel-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--border-soft);
-  background: var(--surface-2);
-  border-radius: var(--radius) var(--radius) 0 0;
-}
-.panel .panel-header .info {
-  color: var(--text-soft);
-  font-family: var(--mono);
-  font-size: 0.82em;
-  flex: 1;
-}
-.panel .panel-header .ctrls {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
-.panel .panel-header .ctrls button {
-  background: transparent;
-  border: 1px solid var(--border-soft);
-  color: var(--text-soft);
-  padding: 3px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.82em;
-  font-family: var(--mono);
-  transition: border-color 0.15s, color 0.15s;
-}
-.panel .panel-header .ctrls button:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-.panel .panel-header .ctrls button.btn {
-  background: var(--accent);
-  color: #0e0f13;
-  border-color: var(--accent);
-  font-weight: 600;
-}
-.panel .panel-header .ctrls button.btn:hover {
-  background: var(--accent-2);
-  border-color: var(--accent-2);
-}
-.panel .note {
-  padding: 8px 14px;
-  font-size: 0.82em;
-  color: var(--text-mute);
-  border-bottom: 1px solid var(--border-soft);
-  background: rgba(245,158,59,0.04);
-}
-.panel .note .label {
-  color: var(--accent);
-  font-weight: 600;
-  font-family: var(--mono);
-}
-.panel .note a.tab-link {
-  color: var(--accent-2);
-  text-decoration: underline;
-  cursor: pointer;
-}
-.panel .note a.tab-link:hover {
-  color: var(--accent);
-}
-.panel .panel-body {
-  padding: 14px;
-}
-.panel .panel-body .loading {
-  color: var(--text-mute);
-  padding: 20px 0;
-  text-align: center;
-}
+
+    .panel .panel-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--border-soft);
+        background: var(--surface-2);
+        border-radius: var(--radius) var(--radius) 0 0;
+    }
+
+        .panel .panel-header .info {
+            color: var(--text-soft);
+            font-family: var(--mono);
+            font-size: 0.82em;
+            flex: 1;
+        }
+
+        .panel .panel-header .ctrls {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+            .panel .panel-header .ctrls button {
+                background: transparent;
+                border: 1px solid var(--border-soft);
+                color: var(--text-soft);
+                padding: 3px 10px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 0.82em;
+                font-family: var(--mono);
+                transition: border-color 0.15s, color 0.15s;
+            }
+
+                .panel .panel-header .ctrls button:hover {
+                    border-color: var(--accent);
+                    color: var(--accent);
+                }
+
+                .panel .panel-header .ctrls button.btn {
+                    background: var(--accent);
+                    color: #0e0f13;
+                    border-color: var(--accent);
+                    font-weight: 600;
+                }
+
+                    .panel .panel-header .ctrls button.btn:hover {
+                        background: var(--accent-2);
+                        border-color: var(--accent-2);
+                    }
+
+    .panel .note {
+        padding: 8px 14px;
+        font-size: 0.82em;
+        color: var(--text-mute);
+        border-bottom: 1px solid var(--border-soft);
+        background: rgba(245,158,59,0.04);
+    }
+
+        .panel .note .label {
+            color: var(--accent);
+            font-weight: 600;
+            font-family: var(--mono);
+        }
+
+        .panel .note a.tab-link {
+            color: var(--accent-2);
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+            .panel .note a.tab-link:hover {
+                color: var(--accent);
+            }
+
+    .panel .panel-body {
+        padding: 14px;
+    }
+
+        .panel .panel-body .loading {
+            color: var(--text-mute);
+            padding: 20px 0;
+            text-align: center;
+        }
 
 /* ── Metric cards ─────────────────────────────────────────────────── */
 .metric-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 10px;
-  margin-bottom: 14px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
 }
+
 .metric-card {
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius);
-  padding: 10px 12px;
-  text-align: center;
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    text-align: center;
 }
-.metric-card .metric-name {
-  font-size: 0.72em;
-  color: var(--text-mute);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 4px;
-}
-.metric-card .metric-value {
-  font-family: var(--mono);
-  font-size: 1.4em;
-  font-weight: 700;
-  color: var(--text);
-}
-.metric-card .metric-value.good { color: var(--ok); }
-.metric-card .metric-value.mid  { color: var(--warn); }
-.metric-card .metric-value.bad  { color: var(--err); }
+
+    .metric-card .metric-name {
+        font-size: 0.72em;
+        color: var(--text-mute);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+    }
+
+    .metric-card .metric-value {
+        font-family: var(--mono);
+        font-size: 1.4em;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+        .metric-card .metric-value.good {
+            color: var(--ok);
+        }
+
+        .metric-card .metric-value.mid {
+            color: var(--warn);
+        }
+
+        .metric-card .metric-value.bad {
+            color: var(--err);
+        }
 
 /* ── Store result table ────────────────────────────────────────────── */
 .store-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.85em;
-  margin-bottom: 14px;
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85em;
 }
-.store-table th, .store-table td {
-  text-align: left;
-  padding: 6px 10px;
-  border-bottom: 1px solid var(--border-soft);
-}
-.store-table th {
-  color: var(--text-soft);
-  font-weight: 600;
-  font-size: 0.74em;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  background: var(--surface-2);
-  border-bottom: 2px solid var(--accent-dim);
-  padding-top: 8px;
-  padding-bottom: 8px;
-}
-/* pull the first/last columns off the panel edge a touch (tables were flush) */
-.store-table th:first-child, .store-table td:first-child { padding-left: 16px; }
-.store-table th:last-child,  .store-table td:last-child  { padding-right: 16px; }
-.store-table td.sname {
-  font-family: var(--mono);
-  font-weight: 600;
-  color: var(--accent);
-}
-.store-table td.mval {
-  font-family: var(--mono);
-  color: var(--text);
-}
-.store-table td.mval.good { color: var(--ok); }
-.store-table td.mval.mid  { color: var(--warn); }
-.store-table td.mval.bad  { color: var(--err); }
+
+    .store-table th, .store-table td {
+        text-align: left;
+        padding: 6px 10px;
+        border-bottom: 1px solid var(--border-soft);
+    }
+
+    .store-table th {
+        color: var(--text-soft);
+        font-weight: 600;
+        font-size: 0.74em;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        background: var(--surface-2);
+        border-bottom: 2px solid var(--accent-dim);
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+        /* pull the first/last columns off the panel edge a touch (tables were flush) */
+        .store-table th:first-child, .store-table td:first-child {
+            padding-left: 16px;
+        }
+
+        .store-table th:last-child, .store-table td:last-child {
+            padding-right: 16px;
+        }
+
+    .store-table td.sname {
+        font-family: var(--mono);
+        font-weight: 600;
+        color: var(--accent);
+    }
+
+    .store-table td.mval {
+        font-family: var(--mono);
+        color: var(--text);
+    }
+
+        .store-table td.mval.good {
+            color: var(--ok);
+        }
+
+        .store-table td.mval.mid {
+            color: var(--warn);
+        }
+
+        .store-table td.mval.bad {
+            color: var(--err);
+        }
 
 /* ── Knob table (locomo results) ──────────────────────────────────── */
 .knob-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.82em;
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82em;
 }
-.knob-table th, .knob-table td {
-  text-align: left;
-  padding: 5px 8px;
-  border-bottom: 1px solid var(--border-soft);
-}
-.knob-table th {
-  color: var(--text-mute);
-  font-weight: 500;
-  font-size: 0.72em;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-.knob-table td.kname { font-family: var(--mono); color: var(--text-soft); }
-.knob-table td.kval  { font-family: var(--mono); color: var(--accent); }
-.knob-table tr.best {
-  background: rgba(245,158,59,0.08);
-  border-left: 3px solid var(--accent);
-}
-.knob-table tr.best td { font-weight: 600; }
+
+    .knob-table th, .knob-table td {
+        text-align: left;
+        padding: 5px 8px;
+        border-bottom: 1px solid var(--border-soft);
+    }
+
+    .knob-table th {
+        color: var(--text-mute);
+        font-weight: 500;
+        font-size: 0.72em;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .knob-table td.kname {
+        font-family: var(--mono);
+        color: var(--text-soft);
+    }
+
+    .knob-table td.kval {
+        font-family: var(--mono);
+        color: var(--accent);
+    }
+
+    .knob-table tr.best {
+        background: rgba(245,158,59,0.08);
+        border-left: 3px solid var(--accent);
+    }
+
+        .knob-table tr.best td {
+            font-weight: 600;
+        }
 
 /* ── Config display ───────────────────────────────────────────────── */
 .config-section {
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius);
-  margin-bottom: 10px;
-  padding: 12px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    margin-bottom: 10px;
+    padding: 12px 14px;
 }
-.config-section h4 {
-  margin: 0 0 8px 0;
-  font-family: var(--mono);
-  font-weight: 600;
-  color: var(--text);
-}
-.kv-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.88em;
-}
-.kv-table th {
-  padding: 4px 10px;
-  font-family: var(--mono);
-  font-weight: 600;
-  border-bottom: 1px solid var(--border-soft);
-}
-.kv-table td {
-  padding: 4px 10px;
-  border-bottom: 1px solid var(--border-soft);
-}
-.kv-table td.k { font-family: var(--mono); color: var(--text-soft); width: 30%; }
-.kv-table td.v { font-family: var(--mono); color: var(--accent); }
 
-.empty { color: var(--text-mute); font-style: italic; padding: 20px 0; text-align: center; }
-.loading { color: var(--text-mute); padding: 20px 0; text-align: center; }
+    .config-section h4 {
+        margin: 0 0 8px 0;
+        font-family: var(--mono);
+        font-weight: 600;
+        color: var(--text);
+    }
+
+.kv-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88em;
+}
+
+    .kv-table th {
+        padding: 4px 10px;
+        font-family: var(--mono);
+        font-weight: 600;
+        border-bottom: 1px solid var(--border-soft);
+    }
+
+    .kv-table td {
+        padding: 4px 10px;
+        border-bottom: 1px solid var(--border-soft);
+    }
+
+        .kv-table td.k {
+            font-family: var(--mono);
+            color: var(--text-soft);
+            width: 30%;
+        }
+
+        .kv-table td.v {
+            font-family: var(--mono);
+            color: var(--accent);
+        }
+
+.empty {
+    color: var(--text-mute);
+    font-style: italic;
+    padding: 20px 0;
+    text-align: center;
+}
+
+.loading {
+    color: var(--text-mute);
+    padding: 20px 0;
+    text-align: center;
+}
 
 /* ── Docker config management ─────────────────────────────────────── */
 .docker-config-section {
-  padding: 8px 14px;
-  border-bottom: 1px solid var(--border-soft);
-  background: rgba(245,158,59,0.02);
-}
-.docker-config-section details {
-  font-size: 0.88em;
-}
-.docker-config-section details summary {
-  cursor: pointer;
-  color: var(--text);
-  padding: 4px 0;
-}
-.docker-config-section details summary b {
-  color: var(--accent);
-}
-.docker-config-body {
-  margin-top: 8px;
-}
-.config-picker {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-  flex-wrap: wrap;
-}
-.config-picker label {
-  font-size: 0.82em;
-  color: var(--text-soft);
-}
-.config-picker select {
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
-  color: var(--text);
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-family: var(--mono);
-  font-size: 0.82em;
-}
-.config-picker .config-active-badge {
-  font-size: 0.72em;
-  color: var(--text-mute);
-  font-family: var(--mono);
-}
-.config-picker .btn-sm {
-  background: transparent;
-  border: 1px solid var(--border-soft);
-  color: var(--text-soft);
-  padding: 3px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.78em;
-  font-family: var(--mono);
-  transition: border-color 0.15s, color 0.15s;
-}
-.config-picker .btn-sm:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-.config-validation {
-  margin-bottom: 8px;
-  font-size: 0.82em;
-}
-.config-validation .error-list {
-  margin: 4px 0 0 16px;
-  padding: 0;
-  color: var(--err);
-  font-size: 0.88em;
-}
-.config-validation .error-list li {
-  margin: 2px 0;
-}
-.config-upload {
-  font-size: 0.82em;
-}
-.config-upload details summary {
-  cursor: pointer;
-  color: var(--accent-2);
-  padding: 4px 0;
-}
-.upload-form {
-  padding: 8px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.upload-form label {
-  font-size: 0.82em;
-  color: var(--text-soft);
-}
-.upload-form input, .upload-form textarea {
-  width: 100%;
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
-  color: var(--text);
-  padding: 6px 8px;
-  border-radius: 6px;
-  font-family: var(--mono);
-  font-size: 0.82em;
-  margin-top: 2px;
-}
-.upload-form textarea {
-  resize: vertical;
-}
-.upload-form .btn {
-  align-self: flex-start;
-  background: var(--accent);
-  color: #0e0f13;
-  border-color: var(--accent);
-  font-weight: 600;
-  padding: 6px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.82em;
-  font-family: var(--mono);
-  transition: background 0.15s;
-}
-.upload-form .btn:hover {
-  background: var(--accent-2);
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border-soft);
+    background: rgba(245,158,59,0.02);
 }
 
-.adopt-note { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.adopt-note .btn { margin-left: auto; }
+    .docker-config-section details {
+        font-size: 0.88em;
+    }
+
+        .docker-config-section details summary {
+            cursor: pointer;
+            color: var(--text);
+            padding: 4px 0;
+        }
+
+            .docker-config-section details summary b {
+                color: var(--accent);
+            }
+
+.docker-config-body {
+    margin-top: 8px;
+}
+
+.config-picker {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+    .config-picker label {
+        font-size: 0.82em;
+        color: var(--text-soft);
+    }
+
+    .config-picker select {
+        background: var(--surface);
+        border: 1px solid var(--border-soft);
+        color: var(--text);
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-family: var(--mono);
+        font-size: 0.82em;
+    }
+
+    .config-picker .config-active-badge {
+        font-size: 0.72em;
+        color: var(--text-mute);
+        font-family: var(--mono);
+    }
+
+    .config-picker .btn-sm {
+        background: transparent;
+        border: 1px solid var(--border-soft);
+        color: var(--text-soft);
+        padding: 3px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.78em;
+        font-family: var(--mono);
+        transition: border-color 0.15s, color 0.15s;
+    }
+
+        .config-picker .btn-sm:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+    .config-picker .btn-xsm {
+        background: transparent;
+        border: 1px solid var(--border-soft);
+        color: var(--text-soft);
+        padding: 3px 3px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.78em;
+        font-family: var(--mono);
+        transition: border-color 0.15s, color 0.15s;
+    }
+
+        .config-picker .btn-xsm:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+.config-validation {
+    margin-bottom: 8px;
+    font-size: 0.82em;
+}
+
+    .config-validation .error-list {
+        margin: 4px 0 0 16px;
+        padding: 0;
+        color: var(--err);
+        font-size: 0.88em;
+    }
+
+        .config-validation .error-list li {
+            margin: 2px 0;
+        }
+
+.config-upload {
+    font-size: 0.82em;
+}
+
+    .config-upload details summary {
+        cursor: pointer;
+        color: var(--accent-2);
+        padding: 4px 0;
+    }
+
+.upload-form {
+    padding: 8px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+    .upload-form label {
+        font-size: 0.82em;
+        color: var(--text-soft);
+    }
+
+    .upload-form input, .upload-form textarea {
+        width: 100%;
+        background: var(--surface);
+        border: 1px solid var(--border-soft);
+        color: var(--text);
+        padding: 6px 8px;
+        border-radius: 6px;
+        font-family: var(--mono);
+        font-size: 0.82em;
+        margin-top: 2px;
+    }
+
+    .upload-form textarea {
+        resize: vertical;
+    }
+
+    .upload-form .btn {
+        align-self: flex-start;
+        background: var(--accent);
+        color: #0e0f13;
+        border-color: var(--accent);
+        font-weight: 600;
+        padding: 6px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.82em;
+        font-family: var(--mono);
+        transition: background 0.15s;
+    }
+
+        .upload-form .btn:hover {
+            background: var(--accent-2);
+        }
+
+.adopt-note {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+    .adopt-note .btn {
+        margin-left: auto;
+    }
 
 /* Adopt banner: lives OUTSIDE the tab views (see body.html), so it CANNOT lean on
    the `.panel .note` rules -- those are descendant-scoped to a panel. Style it
    standalone or it renders naked. :empty keeps it from reserving space when there
    is nothing to adopt. */
-#adopt-host { margin-bottom: 14px; }
-#adopt-host:empty { display: none; }
-#adopt-host .note {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  padding: 10px 14px;
-  font-size: 0.85em;
-  color: var(--text-mute);
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
-  border-left: 3px solid var(--accent);
-  border-radius: var(--radius);
+#adopt-host {
+    margin-bottom: 14px;
 }
-#adopt-host .note .label { color: var(--accent); font-weight: 600; font-family: var(--mono); }
-#adopt-host .note .muted { color: var(--text-mute); }
-#adopt-host .note .btn {
-  margin-left: auto;
-  background: var(--accent);
-  color: #0e0f13;
-  border: 1px solid var(--accent);
-  font-weight: 600;
-  padding: 5px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.9em;
-  font-family: var(--mono);
-  transition: background 0.15s, border-color 0.15s;
-}
-#adopt-host .note .btn:hover { background: var(--accent-2); border-color: var(--accent-2); }
-#adopt-host .note .btn:disabled { opacity: 0.55; cursor: default; }
-#adopt-host .note.ok  { color: var(--ok);  border-left-color: var(--ok); }
-#adopt-host .note.err { color: var(--err); border-left-color: var(--err); }
+
+    #adopt-host:empty {
+        display: none;
+    }
+
+    #adopt-host .note {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        padding: 10px 14px;
+        font-size: 0.85em;
+        color: var(--text-mute);
+        background: var(--surface);
+        border: 1px solid var(--border-soft);
+        border-left: 3px solid var(--accent);
+        border-radius: var(--radius);
+    }
+
+        #adopt-host .note .label {
+            color: var(--accent);
+            font-weight: 600;
+            font-family: var(--mono);
+        }
+
+        #adopt-host .note .muted {
+            color: var(--text-mute);
+        }
+
+        #adopt-host .note .btn {
+            margin-left: auto;
+            background: var(--accent);
+            color: #0e0f13;
+            border: 1px solid var(--accent);
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-family: var(--mono);
+            transition: background 0.15s, border-color 0.15s;
+        }
+
+            #adopt-host .note .btn:hover {
+                background: var(--accent-2);
+                border-color: var(--accent-2);
+            }
+
+            #adopt-host .note .btn:disabled {
+                opacity: 0.55;
+                cursor: default;
+            }
+
+        #adopt-host .note.ok {
+            color: var(--ok);
+            border-left-color: var(--ok);
+        }
+
+        #adopt-host .note.err {
+            color: var(--err);
+            border-left-color: var(--err);
+        }
 
 /* Regrade sweep rows. The winner is emphasised; every combo it measured is listed
    beneath it, dimmed but PRESENT. Hiding the losing rows is what made the sweep
    unfalsifiable -- "hops=1 won" is not a result, it's a max(). Show the curve. */
-.regrade-table tr.rg-win td { font-weight: 600; }
-.regrade-table tr.rg-win td.k { color: var(--accent); }
-.regrade-table tr.rg-combo td {
-  font-weight: 400;
-  color: var(--text-mute);
-  font-size: 0.92em;
-  padding-top: 3px;
-  padding-bottom: 3px;
-  border-top: none;
+.regrade-table tr.rg-win td {
+    font-weight: 600;
 }
-.regrade-table tr.rg-combo td.k { padding-left: 18px; opacity: 0.85; }
-.regrade-table tr.rg-combo:hover td { color: var(--text); }
+
+    .regrade-table tr.rg-win td.k {
+        color: var(--accent);
+    }
+
+.regrade-table tr.rg-combo td {
+    font-weight: 400;
+    color: var(--text-mute);
+    font-size: 0.92em;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    border-top: none;
+}
+
+    .regrade-table tr.rg-combo td.k {
+        padding-left: 18px;
+        opacity: 0.85;
+    }
+
+.regrade-table tr.rg-combo:hover td {
+    color: var(--text);
+}
 
 .config-save-result {
-  font-size: 0.82em; margin-top: 4px; font-family: var(--mono);
-  white-space: pre-wrap;   /* the lint report is multi-line - keep its newlines */
-  line-height: 1.45; max-height: 340px; overflow-y: auto;
+    font-size: 0.82em;
+    margin-top: 4px;
+    font-family: var(--mono);
+    white-space: pre-wrap; /* the lint report is multi-line - keep its newlines */
+    line-height: 1.45;
+    max-height: 340px;
+    overflow-y: auto;
 }
-.config-save-result.ok  { color: var(--ok); }
-.config-save-result.err { color: var(--err); }
 
-.ctrls-row { display: flex; gap: 8px; align-items: center; margin-top: 6px; }
+    .config-save-result.ok {
+        color: var(--ok);
+    }
 
-.topo-summary { margin: 8px 0; }
-.topo-source { font-size: 0.85em; color: var(--text-dim); margin: 6px 0; }
-.topo-nodes { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
-.node-chip { font-family: var(--mono); font-size: 0.75em; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border); }
-.node-chip.loci   { color: #8ec7ff; border-color: #2f5a7a; }
-.node-chip.memory { color: #ff9e9e; border-color: #7a3f3f; }
-.node-chip.corpus { color: var(--accent); border-color: var(--accent); }
-.warn-list { margin: 6px 0 0; padding-left: 18px; font-size: 0.82em; color: #d0a94e; }
+    .config-save-result.err {
+        color: var(--err);
+    }
+
+.ctrls-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 6px;
+}
+
+.topo-summary {
+    margin: 8px 0;
+}
+
+.topo-source {
+    font-size: 0.85em;
+    color: var(--text-dim);
+    margin: 6px 0;
+}
+
+.topo-nodes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+}
+
+.node-chip {
+    font-family: var(--mono);
+    font-size: 0.75em;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+}
+
+    .node-chip.loci {
+        color: #8ec7ff;
+        border-color: #2f5a7a;
+    }
+
+    .node-chip.memory {
+        color: #ff9e9e;
+        border-color: #7a3f3f;
+    }
+
+    .node-chip.corpus {
+        color: var(--accent);
+        border-color: var(--accent);
+    }
+
+.warn-list {
+    margin: 6px 0 0;
+    padding-left: 18px;
+    font-size: 0.82em;
+    color: #d0a94e;
+}
 
 /* ── SCC docket comparison (with vs without edges) ───────────── */
 .docket-section {
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius);
-  margin: 4px 0 14px;
-  padding: 12px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    margin: 4px 0 14px;
+    padding: 12px 14px;
 }
-.docket-section h4 {
-  margin: 0 0 4px 0;
-  font-family: var(--mono);
-  font-weight: 600;
-  color: var(--accent);
-}
+
+    .docket-section h4 {
+        margin: 0 0 4px 0;
+        font-family: var(--mono);
+        font-weight: 600;
+        color: var(--accent);
+    }
+
 .docket-meta {
-  font-size: 0.8em;
-  color: var(--text-mute);
-  margin-bottom: 8px;
+    font-size: 0.8em;
+    color: var(--text-mute);
+    margin-bottom: 8px;
 }
-.docket-meta .label { color: var(--accent); font-weight: 600; font-family: var(--mono); }
+
+    .docket-meta .label {
+        color: var(--accent);
+        font-weight: 600;
+        font-family: var(--mono);
+    }
+
 .docket-delta {
-  font-family: var(--mono);
-  font-size: 0.85em;
-  padding: 6px 10px;
-  margin-top: 8px;
-  margin-left: 10px;
-  margin-right: 10px;
-  border-radius: 6px;
-  border: 1px solid var(--border-soft);
-  background: var(--surface-2);
+    font-family: var(--mono);
+    font-size: 0.85em;
+    padding: 6px 10px;
+    margin-top: 8px;
+    margin-left: 10px;
+    margin-right: 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border-soft);
+    background: var(--surface-2);
 }
-.docket-delta .dl-label { color: var(--text-soft); font-weight: 600; }
-.docket-delta.delta-pos { border-color: var(--ok); }
-.docket-delta.delta-neg { border-color: var(--err); }
+
+    .docket-delta .dl-label {
+        color: var(--text-soft);
+        font-weight: 600;
+    }
+
+    .docket-delta.delta-pos {
+        border-color: var(--ok);
+    }
+
+    .docket-delta.delta-neg {
+        border-color: var(--err);
+    }
+
 .docket-verdict {
-  font-family: var(--mono);
-  font-size: 0.82em;
-  padding: 3px 10px 0;
-  color: var(--text-soft);
+    font-family: var(--mono);
+    font-size: 0.82em;
+    padding: 3px 10px 0;
+    color: var(--text-soft);
 }
-.docket-verdict.delta-pos { color: var(--ok); }
-.docket-verdict.delta-neg { color: var(--err); }
+
+    .docket-verdict.delta-pos {
+        color: var(--ok);
+    }
+
+    .docket-verdict.delta-neg {
+        color: var(--err);
+    }
 
 /* ── negative-test (decoy) store flags ────────────────────── */
 .neg-badge {
-  font-family: var(--mono);
-  font-size: 0.72em;
-  color: var(--accent);
-  border: 1px solid var(--border-soft);
-  border-radius: 4px;
-  padding: 0 5px;
-  margin-left: 4px;
+    font-family: var(--mono);
+    font-size: 0.72em;
+    color: var(--accent);
+    border: 1px solid var(--border-soft);
+    border-radius: 4px;
+    padding: 0 5px;
+    margin-left: 4px;
 }
-.neg-flag { font-family: var(--mono); font-size: 0.82em; font-weight: 600; }
-.neg-flag.quiet { color: var(--ok); }
-.neg-flag.leaked { color: var(--err); }
-tr.neg-quiet td:first-child { border-left: 2px solid var(--ok); }
-tr.neg-leaked td:first-child { border-left: 2px solid var(--err); }
-.catch-tag { font-family: var(--mono); font-size: 0.78em; color: var(--text-mute); }
+
+.neg-flag {
+    font-family: var(--mono);
+    font-size: 0.82em;
+    font-weight: 600;
+}
+
+    .neg-flag.quiet {
+        color: var(--ok);
+    }
+
+    .neg-flag.leaked {
+        color: var(--err);
+    }
+
+tr.neg-quiet td:first-child {
+    border-left: 2px solid var(--ok);
+}
+
+tr.neg-leaked td:first-child {
+    border-left: 2px solid var(--err);
+}
+
+.catch-tag {
+    font-family: var(--mono);
+    font-size: 0.78em;
+    color: var(--text-mute);
+}
 
 /* ── store-endpoints expander: reuses the .docker-config-section look ── */
-.docker-config-section .muted { color: var(--text-mute); font-size: 0.85em; font-family: var(--mono); }
+.docker-config-section .muted {
+    color: var(--text-mute);
+    font-size: 0.85em;
+    font-family: var(--mono);
+}
 
 /* kill the trailing separator on the LAST config section: nothing sits below it,
    so its border-bottom would float as a straight line against the panel's
    rounded bottom corner. The border BETWEEN sections is kept. */
-.config-body .docker-config-section:last-child { border-bottom: none; }
+.config-body .docker-config-section:last-child {
+    border-bottom: none;
+}
 
 /* ── expect_empty (no-answer) pass flag ────────────────── */
-.empty-flag { font-family: var(--mono); font-size: 0.8em; font-weight: 600; }
-.empty-flag.empty-ok { color: var(--ok); }
-.empty-flag.empty-leak { color: var(--err); }
+.empty-flag {
+    font-family: var(--mono);
+    font-size: 0.8em;
+    font-weight: 600;
+}
+
+    .empty-flag.empty-ok {
+        color: var(--ok);
+    }
+
+    .empty-flag.empty-leak {
+        color: var(--err);
+    }
 
 /* regrade sweep (CorpusRegrades best-per-set) */
-.regrade-corpus { margin: 12px 0 4px; font-family: var(--mono); font-size: 0.85em; }
-.regrade-corpus .rg-name { margin: 12px 12px 12px 12px; color: var(--accent); }
-.regrade-corpus .muted { color: var(--text-mute); font-weight: 400; }
-.regrade-table tr.rg-base { background: rgba(245,158,59,0.06); }
-.regrade-table tr.rg-base td.k { font-weight: 600; }
-.regrade-table td.rg-knobs { font-family: var(--mono); font-size: 0.72em; color: var(--text-mute); }
-.regrade-table .delta-pos { color: var(--ok); font-weight: 600; }
-.regrade-table .delta-neg { color: var(--err); font-weight: 600; }
+.regrade-corpus {
+    margin: 4px 4px 4px 4px;
+    font-family: var(--mono);
+    font-size: 0.85em;
+    padding: 10px;
+}
+
+    .regrade-corpus .rg-name {
+        margin: 12px 12px 12px 12px;
+        color: var(--accent);
+    }
+
+    .regrade-corpus .muted {
+        color: var(--text-mute);
+        font-weight: 400;
+    }
+
+.regrade-table tr.rg-base {
+    background: rgba(245,158,59,0.06);
+}
+
+    .regrade-table tr.rg-base td.k {
+        font-weight: 600;
+    }
+
+.regrade-table td.rg-knobs {
+    font-family: var(--mono);
+    font-size: 0.72em;
+    color: var(--text-mute);
+}
+
+.regrade-table .delta-pos {
+    color: var(--ok);
+    font-weight: 600;
+}
+
+.regrade-table .delta-neg {
+    color: var(--err);
+    font-weight: 600;
+}
+
+/* ---- regrade: sections, live counters, capture state ------------------
+   The plan view and the results view render through the same section shell on
+   purpose: "what will run" and "what ran" should not need two mental layouts. */
+.rg-section {
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    background: var(--surface);
+    margin: 10px 0;
+    padding: 2px 10px 8px;
+    position: relative; /* the anchor .rg-actions pins itself to - see below */
+}
+
+.regrade-corpus {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    box-sizing: border-box;
+    /* FIXED BAND, not content-sized. The height used to come from whatever happened to
+     be in the row -- the .rg-name margins, the buttons being taller than the text,
+     and flex-wrap dropping the chip to a second line on a long corpus name -- so
+     every card's title sat at a slightly different height and the sections read as
+     ragged. A fixed min-height plus symmetric padding makes the band a constant, so
+     the only thing that differs between cards is the text in it. */
+    min-height: 42px;
+    padding: 10px;
+    /* nowrap: wrapping is what made a long name silently double the band's height.
+     The name truncates instead - the corpus is already identified by position and
+     by the buttons next to it. */
+    flex-wrap: nowrap;
+}
+
+    .regrade-corpus .rg-name {
+        margin: 0; /* was 8px/4px/8px/2px - an uneven, invisible shim */
+        white-space: nowrap;
+    }
+    /* The meta text is the only part allowed to shrink, so the capture chip and the
+   buttons keep their size and their position no matter how long the name runs. */
+    .regrade-corpus > .muted {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+/* NO ANCESTOR IN THE SELECTOR. These were written as `.rg-section .regrade-corpus`
+   on the assumption that the header always sits inside a .rg-section wrapper -- and
+   computed styles said display:block, i.e. the rule never matched, while the base
+   .regrade-corpus rule right above did. A selector that depends on an ancestor is a
+   selector that fails silently when the markup is assembled by a different caller,
+   and CSS has no error for "matched nothing". Target the element itself; it only
+   ever means one thing. (This is also why the absolute-positioned version
+   disappeared rather than misaligning: it pinned to whatever positioned ancestor
+   actually exists, which is not the card.) */
+.rg-actions {
+    margin-left: auto;
+    padding-left: 16px;
+    display: inline-flex;
+    gap: 4px;
+}
+
+.rg-rollup {
+    flex: 1 1 auto;
+}
+/* The capture chip sits between the meta text and the buttons - breathing room on
+   both sides rather than relying on the flex gap alone. */
+.regrade-corpus .cap-fresh,
+.regrade-corpus .cap-stale {
+    margin-left: 8px;
+}
+
+/* Corpus roll-up: X/Y REGRADES. Deliberately quieter than the per-set counter --
+   this one answers "where am I", which matters less minute-to-minute than
+   "is it moving". */
+.rg-rollup {
+    font-family: var(--mono);
+    font-size: 0.78em;
+    color: var(--text-soft);
+    margin-left: 2px;
+}
+
+/* The in-flight set's question counter. This is the PULSE -- the only thing on
+   screen that changes during the twelve minutes one combo takes -- so it gets the
+   accent colour and a soft blink. Everything else here stays still on purpose. */
+.regrade-table td.rg-st {
+    font-family: var(--mono);
+    font-size: 0.78em;
+    color: var(--text-mute);
+}
+
+    .regrade-table td.rg-st.rg-st-live {
+        color: var(--accent);
+        font-weight: 600;
+        animation: rg-pulse 1.6s ease-in-out infinite;
+    }
+
+@keyframes rg-pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.55;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    /* The blink is a nicety; the number is the information. Never animate for
+     someone who asked the OS not to. */
+    .regrade-table td.rg-st.rg-st-live {
+        animation: none;
+    }
+}
+
+/* Capture state. Fresh is deliberately UNDERSTATED and stale is loud: a fresh
+   capture is the normal case and needs no attention, while a stale one silently
+   changes what the sweep does (excluded, re-captured) and must be noticed. */
+.cap-fresh {
+    font-family: var(--mono);
+    font-size: 0.78em;
+    color: var(--ok);
+    cursor: help;
+}
+
+.cap-stale {
+    font-family: var(--mono);
+    font-size: 0.78em;
+    font-weight: 600;
+    color: #d0a94e;
+    cursor: help;
+    border: 1px solid rgba(208,169,78,0.45);
+    border-radius: 4px;
+    padding: 0 5px;
+}
+
+/* Skipped corpora, collapsed to one line per reason. Muted because they are
+   context, not the subject -- but PRESENT, because a corpus that vanishes from
+   the plan is indistinguishable from one you forgot to declare. */
+.note.rg-skipped {
+    font-size: 0.8em;
+    opacity: 0.75;
+    padding: 4px 10px;
+}
+
+    .note.rg-skipped .label {
+        color: var(--text-soft);
+    }
 
 /* ---- quiet_in (non-leakage) flag -------------------------------------
    NOT the same test as the empty flag next door, and they are deliberately
@@ -586,14 +1071,34 @@ tr.neg-leaked td:first-child { border-left: 2px solid var(--err); }
      quiet-flag  the store returned rows, and NONE of them carried an answer
                  it was never supposed to have
    A vector store can never pass the first and can always be asked the second. */
-.quiet-flag { font-family: var(--mono); font-size: 0.8em; font-weight: 600; cursor: help; }
-.quiet-flag.quiet-ok { color: var(--ok); }
-.quiet-flag.quiet-leak { color: var(--err); }
+.quiet-flag {
+    font-family: var(--mono);
+    font-size: 0.8em;
+    font-weight: 600;
+    cursor: help;
+}
+
+    .quiet-flag.quiet-ok {
+        color: var(--ok);
+    }
+
+    .quiet-flag.quiet-leak {
+        color: var(--err);
+    }
 
 /* ---- copy-to-clipboard ------------------------------------------------ */
-.copy-row { display: flex; justify-content: flex-end; margin: 0 0 8px; }
-.copy-btn { font-family: var(--mono); font-size: 0.78em; }
-.copy-btn.copied {
-  color: var(--ok);
-  border-color: var(--ok);
+.copy-row {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0 0 8px;
 }
+
+.copy-btn {
+    font-family: var(--mono);
+    font-size: 0.78em;
+}
+
+    .copy-btn.copied {
+        color: var(--ok);
+        border-color: var(--ok);
+    }

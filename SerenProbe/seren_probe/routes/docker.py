@@ -467,9 +467,98 @@ async def upload_probeconfig(request: Request):
             running.questions_ref = topo.questions_ref
             running.default_loci_seed = topo.default_loci_seed
             running.default_memory_seed = topo.default_memory_seed
+            # PER-CORPUS AND PER-NODE FIELDS TOO. The line above swaps only the
+            # TOP-LEVEL CorpusRegrades -- but per-corpus sets live on each
+            # ResolvedCorpus.regrades, and per-node Seed/Questions on the node
+            # objects, and none of those were touched. So a config that scopes its
+            # regrades per corpus (the recommended layout for the big fans) hot-swapped
+            # "successfully" while replacing nothing the operator changed: the sweep
+            # kept running the sets baked in at pod start, which reads exactly like
+            # "regrades are baked into the container." structure_signature EXCLUDES
+            # these fields precisely so they can swap -- excluding them from the
+            # signature and then not swapping them was the worst of both.
+            _own = 0
+            _new_c = {c.name: c for c in topo.corpus}
+            for _rc in running.corpus:
+                _src = _new_c.get(_rc.name)
+                if _src is None:
+                    continue
+                _rc.regrades = _src.regrades
+                _rc.questions_ref = _src.questions_ref
+                # Config too. Adding the field without adding it HERE made `Config:`
+                # a silent no-op on a running pod: the banner said "hot-swapped" and
+                # the corpus kept booting knobs. Caught by a regrade whose `current`
+                # row read n_results=10 against a Config that declared 30 -- the
+                # sweep was measuring a config nobody had chosen.
+                _rc.config = getattr(_src, "config", {}) or {}
+                if _src.regrades:
+                    _own += 1
+            _new_n = {n.name: n for n in list(topo.loci) + list(topo.memory)}
+            for _rn in list(running.loci) + list(running.memory):
+                _src = _new_n.get(_rn.name)
+                if _src is None:
+                    continue
+                # Non-structural per-node fields, generically: anything the signature
+                # ignores must ride the swap, or it silently stays at boot-time values.
+                for _f in ("seed", "questions_ref"):
+                    if hasattr(_src, _f) and hasattr(_rn, _f):
+                        setattr(_rn, _f, getattr(_src, _f))
             combos = sum(1 for _ in topo.corpus_regrades)
-            hot = (f"hot-swapped into the RUNNING topology - {combos} regrade set(s), "
-                   f"no restart, no reseed. Hit Regrades to roll them.")
+            # PUSH Config TO THE RUNNING CONTAINERS. The mounted corpus yaml is read
+            # at container START, so an in-memory swap alone changes nothing a
+            # container can see -- the knobs would only take effect after a Stop/Start,
+            # which costs a full reseed. /configure is the same endpoint the live
+            # regrade engine drives, so this is not a new mechanism, just the one that
+            # already exists pointed at the boot config.
+            _cfg_applied = 0
+            _cfg_failed: list[str] = []
+            # url_of lives on the app's topology_state (the same map the eval and
+            # regrade routes read). `state` was a name borrowed from another function
+            # and does not exist here -- and because the lookup sat OUTSIDE the try
+            # below, the NameError escaped the per-corpus guard entirely and 500'd the
+            # whole upload. A guard that the failing line sits outside of is not a
+            # guard.
+            _ts = getattr(request.app.state, "topology_state", None) or {}
+            _urls = _ts.get("url_of") or {}
+            for _rc in running.corpus:
+                _knobs = getattr(_rc, "config", None) or {}
+                if not _knobs:
+                    continue
+                _url = _urls.get(_rc.name)
+                if not _url:
+                    _cfg_failed.append(f"{_rc.name} (no host URL - pod not running?)")
+                    continue
+                try:
+                    from ..core.topology import FED_FIELD, STORE_FIELD
+                    import httpx
+                    body: dict = {}
+                    for _k, _v in _knobs.items():
+                        if _k in FED_FIELD:
+                            body[FED_FIELD[_k]] = _v
+                    # Per-store knobs ride in the stores list, matching what the
+                    # emitted yaml would have written for a fresh boot.
+                    _sw = {STORE_FIELD[k]: v for k, v in _knobs.items() if k in STORE_FIELD}
+                    if _sw:
+                        body["stores"] = [
+                            {"name": s.name, **({} if s.kind != "seren_loci" else _sw)}
+                            for s in _rc.stores]
+                    r = httpx.post(f"{_url}/configure", json=body, timeout=15.0)
+                    if r.status_code < 300:
+                        _cfg_applied += 1
+                    else:
+                        _cfg_failed.append(f"{_rc.name} (HTTP {r.status_code})")
+                except Exception as exc:      # noqa: BLE001 - report, never fail the swap
+                    _cfg_failed.append(f"{_rc.name} ({type(exc).__name__})")
+            _cfg_note = ""
+            if _cfg_applied:
+                _cfg_note = f", Config pushed to {_cfg_applied} corpus(es)"
+            if _cfg_failed:
+                # LOUD. A Config that silently failed to apply is the exact bug this
+                # block exists to fix, and swallowing the failure would recreate it.
+                _cfg_note += f" -- Config FAILED on {', '.join(_cfg_failed)}"
+            hot = (f"hot-swapped into the RUNNING topology - {combos} top-level regrade "
+                   f"set(s) + per-corpus sets on {_own} corpus(es){_cfg_note}, no restart, "
+                   f"no reseed. Hit Regrades to roll them.")
         else:
             hot = ("structure CHANGED (nodes/ports/flags/wiring/versions) - the running "
                    "pod no longer matches this config. Stop and Start to rebuild.")
