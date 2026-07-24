@@ -30,6 +30,10 @@ KIND = {"loci": "seren_loci", "memory": "seren_memory"}
 # sync); the values THERE are the defaults a set inherits for any knob it omits.
 REGRADE_KNOBS: dict[str, type] = {
     "rrf_k": int, "loci_weight": float, "loci_floor": float,
+    # mem_* mirror loci_* for the OTHER store kind: a corpus can floor/weight its
+    # memory members independently of its loci members (loci answer facts, memory
+    # answers episodes - they don't want the same floor).
+    "mem_weight": float, "mem_floor": float,
     "authority_margin": float, "min_per_store": int, "fusion_mode": str,
     "n_results": int, "fetch_multiplier": int,
     "hops": int,          # retrieval rounds. 1 = today's single pass; 2 = one hop.
@@ -114,6 +118,11 @@ class ResolvedStore:
     name: str
     kind: str
     weight: float
+    # Per-store fusion floor, RESOLVED through the ladder (per-store Floor: ->
+    # per-corpus Config kind-shorthand -> Corpus.DefaultConfig -> None). None means
+    # "unspecified": the emitter omits it so the SCC uses its own installed default,
+    # rather than the old hardcoded floor: 0.0 that silently clobbered it.
+    floor: float | None = None
     via_catchall: bool = False
 
 
@@ -198,17 +207,34 @@ class _Pending:
     negative_test: bool = False
     live_url: str | None = None
     questions_ref: str | list | None = None
+    node_config: dict | None = None   # Loci/Memory per-node Config (partial service yaml)
+
+
+def _deep_merge(base: dict, over: dict) -> dict:
+    """Recursively merge `over` onto `base` (over wins on leaves). Used for Loci/Memory
+    node config, which is a PARTIAL of the service's own nested yaml schema
+    (server/storage/lifetimes/consolidator/...), so section DefaultConfig <- per-node
+    Config must merge nested subtrees, not clobber them. (Corpus config is flat knobs on
+    a validated path; this opaque deep-merge is only for the service-schema configs.)"""
+    out = dict(base)
+    for k, v in over.items():
+        if isinstance(v, dict) and isinstance(out.get(k), dict):
+            out[k] = _deep_merge(out[k], v)
+        else:
+            out[k] = v
+    return out
 
 
 def _parse_section(pc: dict, section: str, count_key: str, cfg_key: str,
-                   errors: list[str], warnings: list[str]) -> tuple[int | None, list[_Pending]]:
+                   errors: list[str], warnings: list[str]
+                   ) -> tuple[int | None, list[_Pending], dict]:
     raw = pc.get(section)
     if raw is None:
         errors.append(f"{section}: section is required (needs {count_key}, optional {cfg_key}).")
-        return None, []
+        return None, [], {}
     if not isinstance(raw, dict):
         errors.append(f"{section}: must be a mapping with {count_key}/{cfg_key}, got {type(raw).__name__}.")
-        return None, []
+        return None, [], {}
 
     count = raw.get(count_key)
     if not isinstance(count, int) or isinstance(count, bool) or count < 1:
@@ -224,6 +250,17 @@ def _parse_section(pc: dict, section: str, count_key: str, cfg_key: str,
 
     short = section.lower()
     is_corpus = section == "Corpus"
+    # Section-level DefaultConfig for Loci/Memory: a PARTIAL of the service's own yaml,
+    # inherited by every node in the section unless its own Config overrides it (mirrors
+    # DefaultLociSeed / DefaultQuestions). Corpus's DefaultConfig is flat knobs, parsed
+    # separately in compile_topology, so it's skipped here.
+    section_default_config: dict = {}
+    if not is_corpus:
+        dc = raw.get("DefaultConfig")
+        if dc is not None and not isinstance(dc, dict):
+            errors.append(f"{section}: DefaultConfig must be a mapping (got {type(dc).__name__}).")
+        elif isinstance(dc, dict):
+            section_default_config = dc
     pend: list[_Pending] = []
     for i, entry in enumerate(cfgs):
         if not isinstance(entry, dict):
@@ -258,6 +295,7 @@ def _parse_section(pc: dict, section: str, count_key: str, cfg_key: str,
         seed_ref = None
         negative_test = False
         live_url: str | None = None
+        node_config: dict | None = None   # Loci/Memory per-node Config (partial service yaml)
         # Questions are PER-NODE now: a node declares the set it is expected to ANSWER.
         # Allowed on a corpus too, and that is the interesting one -- a corpus's own
         # Questions are the CROSS-STORE ones, the questions no single fanned store can
@@ -286,11 +324,18 @@ def _parse_section(pc: dict, section: str, count_key: str, cfg_key: str,
                 errors.append(f"{section}: node {name!r} sets BOTH Seed and LiveStoreUrl - pick one. "
                               f"LiveStoreUrl copies real data from a live store (read-only); "
                               f"Seed uses synthetic data.")
+            # Per-node Config: a PARTIAL of the service yaml, laid over DefaultConfig.
+            nc = entry.get("Config")
+            if nc is not None and not isinstance(nc, dict):
+                errors.append(f"{section}: node {name!r} Config must be a mapping "
+                              f"(got {type(nc).__name__}).")
+            elif isinstance(nc, dict):
+                node_config = nc
 
         pend.append(_Pending(name=name, port=port, flags=flags, generated=False,
                              stores=entry.get("Stores") if is_corpus else None, idx=i,
                              seed_ref=seed_ref, negative_test=negative_test, live_url=live_url,
-                             questions_ref=questions_ref))
+                             questions_ref=questions_ref, node_config=node_config))
 
     # Pass 1: bounds  Count-1 <= len <= Count
     if count is not None:
@@ -305,7 +350,7 @@ def _parse_section(pc: dict, section: str, count_key: str, cfg_key: str,
             for _ in range(count - n):   # 0 or 1 auto-generated remainder
                 pend.append(_Pending(name=None, port=None, flags=[], generated=True,
                                      stores=None, idx=len(pend)))
-    return count, pend
+    return count, pend, section_default_config
 
 
 def _parse_regrades(raw, errors: list[str], warnings: list[str]) -> list[RegradeSet]:
@@ -375,8 +420,38 @@ FED_FIELD: dict[str, str] = {
     "fusion_mode": "fusion_mode",
     "hops": "hops", "hop_terms": "hop_terms", "hop_budget": "hop_budget",
 }
-# Knobs that are PER-STORE overrides on the loci member rather than federation-level.
-STORE_FIELD: dict[str, str] = {"loci_weight": "weight", "loci_floor": "floor"}
+# Knobs that are PER-STORE overrides on a member rather than federation-level.
+STORE_FIELD: dict[str, str] = {"loci_weight": "weight", "loci_floor": "floor",
+                               "mem_weight": "weight", "mem_floor": "floor"}
+# Which store KIND each store-knob targets: loci_* land on loci members, mem_* on
+# memory members. So loci_floor floors every loci store in a corpus and leaves the
+# memory stores alone (and vice-versa) - the resolver + emitter + sweep all key off
+# this so one definition drives boot AND runtime.
+STORE_KNOB_KIND: dict[str, str] = {"loci_weight": "seren_loci", "loci_floor": "seren_loci",
+                                   "mem_weight": "seren_memory", "mem_floor": "seren_memory"}
+
+
+def _resolve_store_value(st: dict, per_store_key: str, shorthand_knob: str,
+                         merged_cfg: dict, default, cname: str, sname: str,
+                         errors: list[str]):
+    """One per-store fusion value, resolved through the ladder:
+    per-store ``Weight:``/``Floor:`` on the Stores entry  ->  the corpus's merged
+    config kind-shorthand (loci_weight / mem_floor / ...)  ->  ``default``.
+
+    ``default`` is 1.0 for weight and None for floor - None means "unspecified", which
+    the emitter omits so the container keeps its own installed default rather than the
+    old hardcoded floor: 0.0. This is the ONE place the ladder lives; the emitter and
+    the live sweep both resolve stores through it so boot and runtime never disagree."""
+    raw = st.get(per_store_key)
+    if raw is not None:
+        if isinstance(raw, bool) or not isinstance(raw, (int, float)):
+            errors.append(f"Corpus {cname!r}: store {sname!r} {per_store_key} must be a "
+                          f"number (got {raw!r}).")
+        else:
+            return float(raw)
+    if shorthand_knob in merged_cfg:
+        return float(merged_cfg[shorthand_knob])
+    return default
 
 
 def _parse_corpus_config(raw, cname: str, errors: list[str], warnings: list[str]) -> dict:
@@ -504,6 +579,14 @@ def compile_topology(probe_config: dict) -> CompiledTopology:
     # writing the key at all is a statement about this corpus.
     per_corpus_regrades: dict[str, list] = {}
     per_corpus_config: dict[str, dict] = {}
+    # Corpus-level DefaultConfig: the federation knobs + kind-shorthands every corpus
+    # inherits unless its own Config overrides them (mirrors DefaultQuestions /
+    # DefaultLociSeed). Parsed with the SAME validator as a per-corpus Config, so the
+    # vocabulary can never drift between the two levels.
+    corpus_default_config: dict = {}
+    if isinstance(_corpus_raw, dict) and "DefaultConfig" in _corpus_raw:
+        corpus_default_config = _parse_corpus_config(
+            _corpus_raw.get("DefaultConfig"), "Corpus.DefaultConfig", errors, warnings)
     if isinstance(_corpus_raw, dict):
         for _cfg in (_corpus_raw.get("CorpusConfigs") or []):
             if not isinstance(_cfg, dict):
@@ -526,9 +609,9 @@ def compile_topology(probe_config: dict) -> CompiledTopology:
             per_corpus_regrades[str(_nm)] = _parse_regrades(
                 _cfg.get("CorpusRegrades"), errors, warnings)
 
-    _, loci_p = _parse_section(pc, "Loci",   "LociCount",   "LociConfigs",   errors, warnings)
-    _, mem_p  = _parse_section(pc, "Memory", "MemoryCount", "MemoryConfigs", errors, warnings)
-    _, corp_p = _parse_section(pc, "Corpus", "CorpusCount", "CorpusConfigs", errors, warnings)
+    _, loci_p, loci_default_cfg = _parse_section(pc, "Loci",   "LociCount",   "LociConfigs",   errors, warnings)
+    _, mem_p,  mem_default_cfg  = _parse_section(pc, "Memory", "MemoryCount", "MemoryConfigs", errors, warnings)
+    _, corp_p, _               = _parse_section(pc, "Corpus", "CorpusCount", "CorpusConfigs", errors, warnings)
 
     if errors:   # structural shape is fatal - can't sanely allocate on a broken topology
         raise TopologyError(errors, warnings)
@@ -588,10 +671,15 @@ def compile_topology(probe_config: dict) -> CompiledTopology:
     if errors:
         raise TopologyError(errors, warnings)
 
+    # config = section DefaultConfig with this node's own Config laid over it (deep-merged,
+    # since it's a partial of the service's nested yaml). Empty => no yaml mounted => the
+    # container boots on its installed defaults.
     loci = [ResolvedNode(p.name, KIND["loci"], p.port, p.flags, p.generated, p.seed_ref,
-                         p.negative_test, p.live_url, p.questions_ref) for p in loci_p]
+                         p.negative_test, p.live_url, p.questions_ref,
+                         config=_deep_merge(loci_default_cfg, p.node_config or {})) for p in loci_p]
     memory = [ResolvedNode(p.name, KIND["memory"], p.port, p.flags, p.generated, p.seed_ref,
-                           p.negative_test, p.live_url, p.questions_ref) for p in mem_p]
+                           p.negative_test, p.live_url, p.questions_ref,
+                           config=_deep_merge(mem_default_cfg, p.node_config or {})) for p in mem_p]
     name_kind = {n.name: n.kind for n in loci + memory}
     corpus_names = {p.name for p in corp_p}
     negative_names = {n.name for n in loci + memory if n.negative_test}
@@ -600,11 +688,15 @@ def compile_topology(probe_config: dict) -> CompiledTopology:
     resolved_corpus: list[ResolvedCorpus] = []
     referenced: set[str] = set()
     for p in [c for c in corp_p if not c.generated]:
+        # Effective boot config = Corpus.DefaultConfig with this corpus's own Config laid
+        # over it. Drives BOTH the federation knobs and the per-store kind-shorthand
+        # (loci_floor / mem_weight / ...) resolution below.
+        merged_cfg = {**corpus_default_config, **(per_corpus_config.get(p.name) or {})}
         rc = ResolvedCorpus(name=p.name, port=p.port, flags=p.flags,
                             questions_ref=p.questions_ref,
-                            config=per_corpus_config.get(p.name) or {},
-                            # .get() -> None when the key was absent, which is exactly
-                            # the INHERIT signal regrade_live.sets_for_corpus looks for.
+                            config=merged_cfg,
+                            # regrades .get() -> None when the key was absent, which is
+                            # exactly the INHERIT signal regrade_live.sets_for_corpus wants.
                             regrades=per_corpus_regrades.get(p.name))
         seen: set[str] = set()
         for j, st in enumerate(p.stores or []):
@@ -613,13 +705,10 @@ def compile_topology(probe_config: dict) -> CompiledTopology:
                     errors.append(f"Corpus {p.name!r}: Stores[{j}] has a 'Seed' but no 'Store' - corpora "
                                   f"fan already-seeded stores, they don't seed. Put Seed on the store's own node.")
                 else:
-                    errors.append(f"Corpus {p.name!r}: Stores[{j}] needs a 'Store' name (and optional Weight).")
+                    errors.append(f"Corpus {p.name!r}: Stores[{j}] needs a 'Store' name "
+                                  f"(and optional Weight / Floor).")
                 continue
             sname = st["Store"]
-            weight = st.get("Weight", 1.0)
-            if not isinstance(weight, (int, float)) or isinstance(weight, bool):
-                errors.append(f"Corpus {p.name!r}: store {sname!r} Weight must be a number (got {weight!r}).")
-                weight = 1.0
             if sname in corpus_names:
                 errors.append(f"Corpus {p.name!r} references {sname!r}, but that's a Corpus - "
                               f"corpora fan Loci/Memory stores, not other corpora.")
@@ -631,9 +720,17 @@ def compile_topology(probe_config: dict) -> CompiledTopology:
             if sname in seen:
                 warnings.append(f"Corpus {p.name!r} references store {sname!r} more than once - de-duping.")
                 continue
+            # Resolve weight/floor through the ladder now the store's KIND is known:
+            # per-store Weight:/Floor: -> corpus kind-shorthand -> default (1.0 / None=omit).
+            kind = name_kind[sname]
+            prefix = "loci_" if kind == KIND["loci"] else "mem_"
+            weight = _resolve_store_value(st, "Weight", prefix + "weight", merged_cfg,
+                                          1.0, p.name, sname, errors)
+            floor = _resolve_store_value(st, "Floor", prefix + "floor", merged_cfg,
+                                         None, p.name, sname, errors)
             seen.add(sname)
             referenced.add(sname)
-            rc.stores.append(ResolvedStore(sname, name_kind[sname], float(weight)))
+            rc.stores.append(ResolvedStore(sname, kind, float(weight), floor=floor))
         resolved_corpus.append(rc)
 
     auto_corpora = [c for c in corp_p if c.generated]

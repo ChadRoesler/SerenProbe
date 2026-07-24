@@ -126,6 +126,66 @@ Validation is **compassion-first**, same as the compiler: an item with the wrong
 
 ---
 
+## Per-node configuration (defaults + overrides)
+
+The same **default-then-override** pattern as seeds and questions applies to *config* — the knobs each store boots at. Nothing is required; anything you don't set falls through to the service's own installed default. The probe only writes what you specify.
+
+Each section (`Loci`, `Memory`, `Corpus`) may carry a `DefaultConfig`, and each node may carry its own `Config`. The precedence, lowest to highest, is:
+
+```
+service installed default   ←   section DefaultConfig   ←   per-node Config
+```
+
+For **Loci** and **Memory**, `DefaultConfig` and a node's `Config` are a *partial of that service's own yaml* (nested — `storage`, `lifetimes`, `consolidator`, …), **deep-merged** and mounted into the container as its config file. Set only the keys you care about; the rest default.
+
+```yaml
+Memory:
+  MemoryCount: 3
+  DefaultConfig:                       # every Memory node inherits this
+    consolidator: { enabled: false }
+  MemoryConfigs:
+    - Name: fast-mem
+      Config:                          # overrides DefaultConfig for THIS node (deep-merged)
+        lifetimes: { short_term_seconds: 3600 }
+    - Name: plain-mem                  # no Config → just DefaultConfig
+Loci:
+  LociCount: 1
+  # no DefaultConfig → every Loci boots on its installed defaults
+  LociConfigs:
+    - Name: only-loci
+```
+
+For **Corpus**, the config is the *fusion* layer, which adds a second axis — per-store `weight`/`floor` — so it uses flat knobs plus a per-kind shorthand rather than nested yaml (the probe builds the federation store list for you, container DNS and all). A corpus store's `floor`/`weight` resolves:
+
+```
+per-store  Floor:/Weight:  (on the Stores entry)
+   ←  per-kind shorthand  loci_floor / loci_weight / mem_floor / mem_weight  (in Config)
+   ←  Corpus.DefaultConfig shorthand
+   ←  the SCC's installed default
+```
+
+`loci_floor` floors *every* loci member of the corpus (and leaves memory alone); `mem_floor` does the same for memory. A per-store `Floor:` on a `Stores` entry is the escape hatch that beats the shorthand for that one store. Federation-level knobs — `authority_margin`, `n_results`, `rrf_k`, `fusion_mode`, `min_per_store`, `hops` — live in `Config`/`DefaultConfig` and go straight onto the federation block.
+
+```yaml
+Corpus:
+  CorpusCount: 1
+  DefaultConfig:                       # every corpus inherits these
+    authority_margin: 0.035
+    loci_floor: 0.5                    # all loci members, unless overridden
+  CorpusConfigs:
+    - Name: big-scc
+      Config:
+        loci_floor: 0.6                # this corpus floors its loci at 0.6
+      Stores:
+        - Store: sharp-loci
+          Floor: 0.7                   # …except this one, pinned to 0.7
+        - Store: some-mem              # no mem_floor set → SCC's own default
+```
+
+The boot config the container mounts **and** the live `/configure` a regrade sweep pushes are resolved through the *same* ladder, so what you sweep and what you boot can't disagree — a value you swept and liked pastes straight into `Config` as the new baseline.
+
+---
+
 ## What the numbers mean
 
 Every store gets the standard retrieval battery, computed at top-*k*:

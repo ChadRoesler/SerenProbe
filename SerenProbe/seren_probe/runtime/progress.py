@@ -101,11 +101,24 @@ def bump(store: str, delta: int = 1) -> None:
 def finish(store: str) -> None:
     """Mark a store done regardless of how it got there (success OR failure).
     A store that raises must still stop reporting X/Y<total forever -- a
-    permanently-stuck row is worse than an honest 'this one errored out'."""
+    permanently-stuck row is worse than an honest 'this one errored out'.
+
+    Reconcile current -> total too, not just the done flag. `done` is the source of
+    truth, but a viewer that renders the X/Y RATIO (not the flag) would still show a
+    bar frozen a notch short whenever bump accounting drifted below total for any
+    reason -- e.g. a long-tier memory whose /short write returned no id, so its
+    promote/delete units never bumped, leaving the bar stuck reading 'still seeding
+    the last memory' long after it finished. Snapping current to total makes
+    'finished' and 'full bar' the same thing, which is exactly what this function
+    always meant by 'stop reporting X/Y<total forever'. Progress is ephemeral UI
+    feedback, never correctness (see module header), so a failed store showing a
+    full-but-done bar is fine -- its real outcome rides the re-raised error and the
+    results table, not this counter."""
     with _lock:
         row = _state.get(store)
         if row is not None:
             row["done"] = True
+            row["current"] = row["total"]
 
 
 def snapshot() -> dict[str, dict]:

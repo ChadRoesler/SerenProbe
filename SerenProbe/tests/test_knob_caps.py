@@ -48,10 +48,11 @@ def test_hops_actually_reaches_the_scc_configure_body():
     silently DROPPED by configure_payload, the body goes out empty, every combo
     scores the same - and the flatline reads as a real ceiling. hops must map."""
     from seren_probe.runtime.regrade_live import configure_payload, compact_combos
-    body = configure_payload({"hops": 2}, loci_name="l")
+    store_kinds = {"l": "seren_loci"}
+    body = configure_payload({"hops": 2}, store_kinds)
     assert body == {"hops": 2}, "hops must survive into the /configure body"
 
     # and a hops sweep must produce distinct bodies, not empty ones
-    bodies = [configure_payload(c, "l") for c in compact_combos({"hops": [1, 2]})]
+    bodies = [configure_payload(c, store_kinds) for c in compact_combos({"hops": [1, 2]})]
     assert bodies == [{"hops": 1}, {"hops": 2}]
     assert all(b for b in bodies), "an empty body means the knob never reached the SCC"
