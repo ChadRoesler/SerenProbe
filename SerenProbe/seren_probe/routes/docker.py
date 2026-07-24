@@ -208,6 +208,12 @@ async def docker_status(request: Request):
         # old payload omitted 'running' entirely, so the viewer read it as stopped.)
         running = (ps["running"] > 0) if (ps["ok"] and ps["total"]) else True
         return {"managed": True, "mode": "topology", "running": running, "exists": True,
+                # Surface the persistent seeded flag - the SAME top-level key /eval/run
+                # sets (eval.py) and /adoptable already reports. Without it, /status told
+                # the viewer nothing about seeding, so a page refresh - which has only
+                # /status to read, the progress registry being ephemeral - couldn't tell
+                # an already-seeded fleet from a fresh one and re-prompted to seed.
+                "seeded": bool(ts.get("seeded")),
                 "project_name": ts["project_name"], "stores": ts["url_of"],
                 "loci": ts["loci"], "memory": ts["memory"], "corpus": ts["corpus"],
                 "services": ps["services"], "running_count": ps["running"],
@@ -520,6 +526,15 @@ async def upload_probeconfig(request: Request):
             # guard.
             _ts = getattr(request.app.state, "topology_state", None) or {}
             _urls = _ts.get("url_of") or {}
+            # Arm the write_guard with the running topology's own URLs before pushing:
+            # /configure is a mutating write, so it goes through the interlock like every
+            # other write - and the containers we're configuring are exactly the ones this
+            # topology owns. allow_targets clears+sets, so this scopes the unlock to this
+            # pod. (write_guard is armed per-operation by eval/regrade; the hot-swap is its
+            # own operation, so it arms its own.)
+            from ..runtime.write_guard import allow_targets
+            from ..runtime.regrade_live import push_config
+            allow_targets(_urls.values())
             for _rc in running.corpus:
                 _knobs = getattr(_rc, "config", None) or {}
                 if not _knobs:
@@ -529,24 +544,13 @@ async def upload_probeconfig(request: Request):
                     _cfg_failed.append(f"{_rc.name} (no host URL - pod not running?)")
                     continue
                 try:
-                    from ..core.topology import FED_FIELD, STORE_FIELD
-                    import httpx
-                    body: dict = {}
-                    for _k, _v in _knobs.items():
-                        if _k in FED_FIELD:
-                            body[FED_FIELD[_k]] = _v
-                    # Per-store knobs ride in the stores list, matching what the
-                    # emitted yaml would have written for a fresh boot.
-                    _sw = {STORE_FIELD[k]: v for k, v in _knobs.items() if k in STORE_FIELD}
-                    if _sw:
-                        body["stores"] = [
-                            {"name": s.name, **({} if s.kind != "seren_loci" else _sw)}
-                            for s in _rc.stores]
-                    r = httpx.post(f"{_url}/configure", json=body, timeout=15.0)
-                    if r.status_code < 300:
-                        _cfg_applied += 1
-                    else:
-                        _cfg_failed.append(f"{_rc.name} (HTTP {r.status_code})")
+                    # Delegate to the live layer: it resolves per-store knobs by KIND
+                    # (loci_* -> every loci member, mem_* -> every memory member) exactly as
+                    # the emitter and the sweep do, so hot-swap == boot == sweep. Keeping the
+                    # POST there is also why routes/docker.py no longer imports httpx.
+                    store_kinds = {s.name: s.kind for s in _rc.stores}
+                    push_config(_url, _knobs, store_kinds)
+                    _cfg_applied += 1
                 except Exception as exc:      # noqa: BLE001 - report, never fail the swap
                     _cfg_failed.append(f"{_rc.name} ({type(exc).__name__})")
             _cfg_note = ""

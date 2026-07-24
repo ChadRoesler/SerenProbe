@@ -605,17 +605,18 @@ def _seed_one_store(name: str, items: list, url: str, kind: str, post, delete, o
                 sid = (resp or {}).get("id", "")
                 if sid:
                     post(url, f"/short/{sid}/promote", {})
-                    if on_progress:
-                        on_progress(1)
                     if delete is not None:
                         delete(url, f"/short/{sid}")
-                    # The delete is skipped when no `delete` callable is passed (some
-                    # callers seed without one). The item was still COUNTED as 3 units
-                    # in the total, so we still bump the 3rd unit here -- otherwise a
-                    # deliberately delete-less caller would leave every long item
-                    # permanently at 2/3 and the bar would never reach 100%.
-                    if on_progress:
-                        on_progress(1)
+                # A long item is COUNTED as 3 units (write + promote + delete); bump the
+                # remaining 2 UNCONDITIONALLY. Gating these on `sid` was the stall: a
+                # /short write that returned no id skipped the whole block, so the item
+                # bumped 1 of its 3 counted units and the store's bar sat 2 short of
+                # total forever -- reading as 'still seeding the last memory' long after
+                # it finished, and making a reload look like the store was never seeded.
+                # We honor the 3-unit weight here regardless of whether sid came back or
+                # whether a delete callable was passed (delete-less callers still count 3).
+                if on_progress:
+                    on_progress(2)
         minted = (resp or {}).get("id", "")
         if it.ref and minted:
             p.refs.append((it.ref, minted))

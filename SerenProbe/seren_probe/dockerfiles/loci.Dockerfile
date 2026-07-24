@@ -66,21 +66,34 @@ RUN python -c "import importlib.metadata as m; print('seren-loci', m.version('se
 # urllib + tarfile rather than curl/wget: python:3.12-slim ships neither, and adding
 # them is a layer and an apt cache for something the interpreter already does.
 ARG EMBEDDER="all-MiniLM-L6-v2"
-ARG EMBEDDER_URL="https://github.com/ChadRoesler/SerenLoci/releases/download/v1.3.1/all-MiniLM-L6-v2.tar.gz"
+# WHICH release the model tarball comes from. EMPTY (the default) means "match the
+# seren-loci that pip just installed": the release workflow's pack-vector-model job
+# attaches all-MiniLM-L6-v2.tar.gz to EVERY vX.Y.Z tag, so the per-version asset is
+# guaranteed to exist - and build-time then resolves the embedder the SAME way
+# seren_loci.store does at runtime (_load_embedder_from_release derives
+# v{installed_version}). This kills the old hardcoded v1.3.1 URL that silently drifted
+# behind the package every release. Override only to pin a different model release (e.g.
+# if a code release ever ships without its model asset).
+ARG EMBEDDER_VERSION=""
 ENV SEREN_MODEL_DIR=/opt/seren-models \
     HF_HUB_OFFLINE=1
 RUN echo "EXTRAS=[$EXTRAS]" && case "$EXTRAS" in \
-      *vector*) python -c "\
-import urllib.request, tarfile, io, os, shutil; \
+      *vector*) EMBEDDER="${EMBEDDER}" EMBEDDER_VERSION="${EMBEDDER_VERSION}" python -c "\
+import importlib.metadata as md, os, urllib.request, tarfile, io, shutil; \
+name=os.environ['EMBEDDER']; \
+ver=(os.environ.get('EMBEDDER_VERSION') or md.version('seren-loci')).lstrip('v'); \
+parts=ver.split('.'); \
+assert len(parts)==3 and all(p.isdigit() for p in parts), 'seren-loci version '+ver+' is not a released X.Y.Z tag (dev build?); pass --build-arg EMBEDDER_VERSION=X.Y.Z to pin the model release'; \
+url='https://github.com/ChadRoesler/SerenLoci/releases/download/v'+ver+'/'+name+'.tar.gz'; \
 os.makedirs('/opt/seren-models', exist_ok=True); \
-print('fetching ${EMBEDDER_URL}'); \
-blob=urllib.request.urlopen('${EMBEDDER_URL}', timeout=300).read(); \
+print('fetching', url); \
+blob=urllib.request.urlopen(url, timeout=300).read(); \
 print('got', len(blob), 'bytes'); \
 tarfile.open(fileobj=io.BytesIO(blob)).extractall('/opt/seren-models'); \
-d=os.path.join('/opt/seren-models', '${EMBEDDER}'); \
+d=os.path.join('/opt/seren-models', name); \
 [shutil.rmtree(os.path.join(d, x), ignore_errors=True) for x in ('onnx', 'openvino')]; \
 [os.remove(os.path.join(d, x)) for x in ('pytorch_model.bin', 'rust_model.ot', 'tf_model.h5', 'train_script.py') if os.path.exists(os.path.join(d, x))]; \
-print('baked embedder ${EMBEDDER} ->', sorted(os.listdir(d)))" ;; \
+print('baked embedder', name, 'from v'+ver, '->', sorted(os.listdir(d)))" ;; \
       *) echo 'lexical build - no embedder baked' ;; \
     esac
 

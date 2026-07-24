@@ -67,8 +67,14 @@ _FED_KNOB = {"rrf_k": "k", "n_results": "n_results", "fetch_multiplier": "fetch_
              # sends an empty body, and every combo scores identically - the exact
              # "inert knob that reads as a ceiling" this harness exists to prevent.
              "hops": "hops", "hop_terms": "hop_terms", "hop_budget": "hop_budget"}
-_STORE_KNOB = {"loci_weight": "weight", "loci_floor": "floor"}
-_READBACK = {"rrf_k", "n_results", "loci_weight", "loci_floor",
+_STORE_KNOB = {"loci_weight": "weight", "loci_floor": "floor",
+               "mem_weight": "weight", "mem_floor": "floor"}
+# Which store KIND each store-knob targets, so loci_* land on EVERY loci member and
+# mem_* on EVERY memory member (not just the first). Mirrors topology.STORE_KNOB_KIND -
+# the emitter and this sweep must resolve stores the same way or boot != runtime.
+_STORE_KNOB_KIND = {"loci_weight": "seren_loci", "loci_floor": "seren_loci",
+                    "mem_weight": "seren_memory", "mem_floor": "seren_memory"}
+_READBACK = {"rrf_k", "n_results", "loci_weight", "loci_floor", "mem_weight", "mem_floor",
              "hops", "hop_terms", "hop_budget"}   # GET /stores exposes these
 
 
@@ -100,31 +106,40 @@ def compact_combos(overrides: dict) -> list[dict]:
     return [dict(zip(keys, vals)) for vals in itertools.product(*(overrides[k] for k in keys))]
 
 
-def configure_payload(combo: dict, loci_name: str | None) -> dict:
+def configure_payload(combo: dict, store_kinds: dict[str, str]) -> dict:
     """Map one combo of our knobs onto an SCC /configure body.
 
-    NOTE: this returns ONLY the combo's own knobs. Do not POST it directly in a
-    sweep -- /configure is CUMULATIVE, so a set that names only `n_results` would
-    inherit whatever the previous set's last combo left behind. Use
-    full_config_body(), which lays the combo over the captured baseline. This
-    function is kept as the pure knob->field mapping (and is what the grid tests
-    exercise).
+    `store_kinds` is {store_name: kind}. A store-knob (loci_floor / mem_weight / ...)
+    is applied to EVERY store of its kind, not just the first - flooring one loci store
+    out of eleven was the bug this replaces. Federation knobs go top-level.
+
+    NOTE: this returns ONLY the combo's own knobs. Do not POST it directly in a sweep --
+    /configure is CUMULATIVE, so a set that names only `n_results` would inherit whatever
+    the previous set's last combo left behind. Use full_config_body(), which lays the
+    combo over the captured baseline. Kept as the pure knob->field mapping (and is what
+    the grid tests exercise).
     """
     body: dict = {}
-    store_ov: dict = {}
+    per_kind_ov: dict[str, dict] = {}          # store kind -> {field: value}
     for knob, val in combo.items():
         if knob in _FED_KNOB:
             body[_FED_KNOB[knob]] = val
         elif knob in _STORE_KNOB:
-            store_ov[_STORE_KNOB[knob]] = val
-    if store_ov and loci_name:
-        body["stores"] = [{"name": loci_name, **store_ov}]
+            per_kind_ov.setdefault(_STORE_KNOB_KIND[knob], {})[_STORE_KNOB[knob]] = val
+    if per_kind_ov:
+        stores = [{"name": name, **per_kind_ov[kind]}
+                  for name, kind in store_kinds.items() if kind in per_kind_ov]
+        if stores:
+            body["stores"] = stores
     return body
 
 
-def full_config_body(combo: dict, loci_name: str | None, baseline: dict) -> dict:
+def full_config_body(combo: dict, store_kinds: dict[str, str], baseline: dict) -> dict:
     """The body to POST for ONE combo: the captured BASELINE config, with this
     combo's knobs laid over it. ALWAYS non-empty, so every combo is a full reset.
+
+    `store_kinds` is {store_name: kind}; a store-knob is laid over EVERY store of its
+    kind in the baseline (all loci for loci_*, all memory for mem_*).
 
     This exists because /configure is CUMULATIVE and a set only names the knobs it
     sweeps -- so set N silently inherited set N-1's LAST combo. Observed live, and it
@@ -143,19 +158,31 @@ def full_config_body(combo: dict, loci_name: str | None, baseline: dict) -> dict
     """
     body: dict = {k: v for k, v in baseline.items() if k != "stores"}
     stores = [dict(s) for s in baseline.get("stores", [])]
-    store_ov: dict = {}
+    per_kind_ov: dict[str, dict] = {}
     for knob, val in combo.items():
         if knob in _FED_KNOB:
             body[_FED_KNOB[knob]] = val
         elif knob in _STORE_KNOB:
-            store_ov[_STORE_KNOB[knob]] = val
-    if store_ov and loci_name:
+            per_kind_ov.setdefault(_STORE_KNOB_KIND[knob], {})[_STORE_KNOB[knob]] = val
+    if per_kind_ov:
         for s in stores:
-            if s.get("name") == loci_name:
-                s.update(store_ov)
+            ov = per_kind_ov.get(store_kinds.get(s.get("name")))
+            if ov:
+                s.update(ov)
     if stores:
         body["stores"] = stores
     return body
+
+
+def push_config(url: str, config: dict, store_kinds: dict[str, str]) -> None:
+    """Push a corpus's resolved Config to a RUNNING SCC via /configure, resolving
+    per-store knobs BY KIND exactly as the emitter and the sweep do (loci_* -> every
+    loci member, mem_* -> every memory member) - so a hot-swap can't disagree with what
+    a fresh boot would write. Routes through _post -> write_guard, so the CALLER must
+    have armed the allowlist (allow_targets) with the running topology first. Raises on
+    a non-2xx; the caller reports per-corpus. This is the config-upload hot-swap's door
+    into the live layer, so routes/docker.py never imports httpx itself."""
+    _post(url, "/configure", configure_payload(config, store_kinds))
 
 
 def grade_corpus(hits: list, expected_content: list, k: int):
@@ -289,8 +316,9 @@ def _regrade_one_corpus(corpus, scc_url: str, corpus_qs: list, regrades: list,
     cur_hop_terms = info.get("hop_terms")
     cur_hop_budget = info.get("hop_budget")
     rows = info.get("stores", []) or []
-    loci_row = next((s for s in rows if s.get("type") == "seren_loci"), None)
-    loci_name = loci_row.get("name") if loci_row else None
+    # name -> kind for EVERY member, so a store-knob lands on all stores of its kind
+    # (all loci for loci_*, all memory for mem_*), not just the first loci store.
+    store_kinds = {s["name"]: s.get("type") for s in rows if s.get("name")}
     captured = [{"name": s.get("name"), "weight": s.get("weight", 1.0),
                  "floor": s.get("floor", 0.0)} for s in rows if s.get("name")]
     # The one config every combo is reset to, and the one we restore at the end.
@@ -345,7 +373,7 @@ def _regrade_one_corpus(corpus, scc_url: str, corpus_qs: list, regrades: list,
                     # Reset-then-override, EVERY combo. Never post just the combo's own
                     # knobs: /configure is cumulative and sets would inherit each other.
                     _post(scc_url, "/configure",
-                          full_config_body(combo, loci_name, baseline_cfg))
+                          full_config_body(combo, store_kinds, baseline_cfg))
                     n_for = combo.get("n_results", cur_n)
                     agg = _measure(scc_url, corpus_qs, n_for, k,
                                    on_q=(lambda d, t, _n=rset.name: on_q(d, t, _n))

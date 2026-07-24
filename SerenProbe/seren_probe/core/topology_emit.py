@@ -24,7 +24,7 @@ from __future__ import annotations
 import os
 import re
 from dataclasses import dataclass
-from .topology import CompiledTopology, ResolvedNode, ResolvedCorpus
+from .topology import CompiledTopology, ResolvedNode, ResolvedCorpus, FED_FIELD
 
 DEFAULT_EMBEDDER = "all-MiniLM-L6-v2"   # what a 'vector' Loci gets unless overridden
 
@@ -182,7 +182,8 @@ def _healthcheck(port: int, slow_start: bool = False) -> dict:
 
 
 def _node_service(n: ResolvedNode, embedder: str, image_overrides: dict,
-                  versions: dict | None = None, claimed: set | None = None) -> tuple[str, dict]:
+                  versions: dict | None = None, claimed: set | None = None
+                  ) -> tuple[str, dict, tuple[str, dict] | None]:
     short = "loci" if n.kind == "seren_loci" else "memory"
     env: dict[str, str] = {f"SEREN_{short.upper()}_PORT": str(n.port), "PYTHONUTF8": "1"}
     vector = n.kind == "seren_loci" and "vector" in n.flags
@@ -217,6 +218,16 @@ def _node_service(n: ResolvedNode, embedder: str, image_overrides: dict,
         # the host has no token, because an EMPTY HF_TOKEN is worse than none -- it is a
         # failed authentication attempt rather than an anonymous request.
         env["HF_TOKEN"] = "${HF_TOKEN}"
+    # Per-node config (DefaultConfig <- node Config, deep-merged in topology): mount it as
+    # the service's own yaml and point SEREN_<KIND>_CONFIG at it - the SAME mount+env the
+    # corpus uses, so config delivery is uniform across every node kind (no config hiding
+    # in env). Empty config => nothing mounted => the container boots on its installed
+    # defaults. Infrastructure (port) stays in env, which OVERRIDES the yaml, so the
+    # fleet's port always wins over any stray user server.port.
+    config_file: tuple[str, dict] | None = None
+    if n.config:
+        env[f"SEREN_{short.upper()}_CONFIG"] = f"/etc/seren/seren-{short}.yaml"
+        config_file = (f"{n.name}.{short}.yaml", n.config)
     svc = {
         "container_name": n.name,
         "environment": dict(sorted(env.items())),
@@ -231,25 +242,42 @@ def _node_service(n: ResolvedNode, embedder: str, image_overrides: dict,
     # Only Memory shares the cache now. A vector Loci carries its embedder in the image
     # (loci.Dockerfile), so it mounts nothing and downloads nothing; a lexical Loci
     # never needed a model at all.
+    volumes: list[str] = []
     if n.kind == "seren_memory":
-        svc["volumes"] = [f"{MODEL_CACHE_VOLUME}:{MODEL_CACHE_MOUNT}"]
+        volumes.append(f"{MODEL_CACHE_VOLUME}:{MODEL_CACHE_MOUNT}")
+    if config_file:
+        volumes.append(f"./{config_file[0]}:/etc/seren/seren-{short}.yaml:ro")
+    if volumes:
+        svc["volumes"] = volumes
     kind_key = "loci" if n.kind == "seren_loci" else "memory"
     svc.update(_build_or_image(n.kind, n.flags, image_overrides, n.name,
                                (versions or {}).get(kind_key, ""), claimed))
-    return n.name, svc
+    return n.name, svc, config_file
 
 
 def _corpus_yaml(c: ResolvedCorpus, port_of: dict[str, int]) -> dict:
-    return {
-        "server": {"host": "0.0.0.0", "port": c.port},
-        "federation": {
-            "stores": [
-                {"name": s.name, "type": s.kind, "url": _svc_dns(s.name, port_of[s.name]),
-                 "weight": s.weight, "floor": 0.0}
-                for s in c.stores
-            ]
-        },
-    }
+    """The mounted seren-corpus-callosum.yaml for one corpus.
+
+    Federation knobs come from the corpus's RESOLVED config (Corpus.DefaultConfig with
+    the per-corpus Config laid over it), and per-store weight/floor from the ladder
+    (see topology._resolve_store_value). CRITICAL: we emit a knob ONLY when it was set,
+    so anything unspecified falls through to the SCC's own installed default. The old
+    hardcoded `floor: 0.0` here is the bug that silently clobbered every store's floor
+    and made a baked Config a no-op - never reintroduce a default value on this path.
+    FED_FIELD is the same knob->field map the live sweep uses, so boot == runtime."""
+    federation: dict = {}
+    for knob, val in (c.config or {}).items():
+        if knob in FED_FIELD:
+            federation[FED_FIELD[knob]] = val
+    stores = []
+    for s in c.stores:
+        entry: dict = {"name": s.name, "type": s.kind,
+                       "url": _svc_dns(s.name, port_of[s.name]), "weight": s.weight}
+        if s.floor is not None:          # None == unspecified -> omit -> SCC's own default
+            entry["floor"] = s.floor
+        stores.append(entry)
+    federation["stores"] = stores
+    return {"server": {"host": "0.0.0.0", "port": c.port}, "federation": federation}
 
 
 def _corpus_service(c: ResolvedCorpus, image_overrides: dict,
@@ -281,10 +309,15 @@ def emit_compose(topo: CompiledTopology, image_overrides: dict | None = None) ->
     # purpose: it is one set of images for the whole topology, not one per kind.
     claimed: set = set()
     services: dict[str, dict] = {}
-    for n in topo.loci + topo.memory:
-        name, svc = _node_service(n, DEFAULT_EMBEDDER, image_overrides, versions, claimed)
-        services[name] = svc
+    # corpus_files collects EVERY mounted config yaml (corpus + per-node), keyed by
+    # filename; write_compose drops them beside the compose. The name is historical - it
+    # is really "config files to write," now that loci/memory nodes mount one too.
     corpus_files: dict[str, dict] = {}
+    for n in topo.loci + topo.memory:
+        name, svc, cfg_file = _node_service(n, DEFAULT_EMBEDDER, image_overrides, versions, claimed)
+        services[name] = svc
+        if cfg_file:
+            corpus_files[cfg_file[0]] = cfg_file[1]
     for c in topo.corpus:
         name, svc = _corpus_service(c, image_overrides, versions, claimed)
         services[name] = svc
