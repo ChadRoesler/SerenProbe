@@ -467,6 +467,16 @@ async def run_eval(request: Request):
                 "reach out to whatever happens to be listening on the default ports."))
 
 
+@router.get("/regrade/results")
+async def get_regrade_results(request: Request):
+    """The last sweep's results from THIS process, so a browser reload can re-populate
+    the Copy-sweep button and the per-corpus result tables without re-running the
+    sweep. Unlike /eval/results this is NOT persisted to disk -- a server restart
+    legitimately clears it (the containers it described may be gone), but a page
+    refresh should not lose a sweep that's still sitting in memory."""
+    return getattr(request.app.state, "regrade_results", None) or {}
+
+
 @router.get("/regrade/plan")
 async def get_regrade_plan(request: Request):
     """What a regrade WOULD sweep, resolved but not run.
@@ -844,6 +854,12 @@ async def run_regrade(request: Request):
                        "live": coupled if (run_live and mode == "auto") else
                                (pure + coupled if run_live else [])},
             "set_names": sorted({rs.name for rs in _all_sets}),
+            # The header/markdown read this; without it they printed "0 corpus questions"
+            # on a sweep that clearly ran. Same filter the engines use to build `rqs`
+            # (asks==corpus, non-empty), so the count matches what was actually swept.
+            "question_count": sum(
+                1 for q in ei.questions
+                if getattr(q, "asks", "") == "corpus" and not getattr(q, "expect_empty", False)),
         }
         if one_corpus:
             results["corpus"] = one_corpus
