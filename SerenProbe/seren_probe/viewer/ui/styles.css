@@ -1090,7 +1090,16 @@ tr.neg-leaked td:first-child {
 .copy-row {
     display: flex;
     justify-content: flex-end;
+    gap: 8px;
     margin: 0 0 8px;
+    padding-right: 6px;   /* keep the rightmost button off the panel edge */
+}
+
+/* thin rule under the regrade-plan note, before the corpus tables */
+.panel-hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: 8px 0 12px;
 }
 
 .copy-btn {
@@ -1172,7 +1181,13 @@ tr.neg-leaked td:first-child {
     width: 28px;
     height: 28px;
     flex: 0 0 auto;
+    /* flex-center the glyph so the ✕ sits dead-centre regardless of font metrics */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
     line-height: 1;
+    font-size: 0.95em;
 }
     .qd-x:hover { color: var(--err); border-color: var(--err); }
 

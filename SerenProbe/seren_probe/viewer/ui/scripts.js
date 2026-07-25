@@ -242,7 +242,13 @@ async function refreshEval() {
       info.textContent = 'no results for this topology';
       return;
     }
-    let html = '<div class="copy-row"><button class="btn-sm copy-btn" onclick="copyEval(this)">\u{1F4CB} Copy results</button></div>';
+    // Clear rides the SAME row as Copy results (left of it), and only when there's a
+    // restored run to clear. copy-row is right-aligned, so Copy results stays at the edge.
+    const clearBtn = data.restored
+        ? '<button class="btn-sm copy-btn" onclick="clearEvalResults()">\u2715 Clear results</button>'
+      : '';
+    let html = '<div class="copy-row">' + clearBtn
+             + '<button class="btn-sm copy-btn" onclick="copyEval(this)">\u{1F4CB} Copy results</button></div>';
     if (data.restored) {
       // Scored-in-this-process and read-back-off-disk are different confidence
       // levels, so the table says which it is instead of presenting a rehydrated
@@ -251,8 +257,7 @@ async function refreshEval() {
             + 'these numbers were scored in an earlier session and read back from disk'
             + (data.restored_at ? ' (' + escapeHtml(String(data.restored_at).replace('T', ' ').slice(0, 16)) + ')' : '')
             + '. <span class="muted">This pod has already been evaluated - go straight to '
-            + '\u2699 Regrades. Re-run \u25b6 Evaluate only if the seed or the questions changed.</span> '
-            + '<button class="btn-sm" onclick="clearEvalResults()">\u2715 Clear</button></div>';
+            + '\u2699 Regrades. Re-run \u25b6 Evaluate only if the seed or the questions changed.</span></div>';
     }
     // GROUND TRUTH. Loud, at the top, above the numbers -- because a number graded
     // against a MISSING answer key is not a low score, it is a non-score, and the two
@@ -896,16 +901,20 @@ function renderRegradePlan(p, cap) {
   // The Copy button lives HERE now. It used to be emitted by renderRegrade(), which
   // the merged panel no longer calls -- so results sat on screen with no way to paste
   // them, which is most of what they are for.
-  let h = Object.keys(_rgResults).length
-    ? '<div class="copy-row"><button class="btn-sm copy-btn" onclick="copyRegrade(this)">\u{1F4CB} Copy sweep</button></div>'
-    : '';
+  // Capture all + Copy sweep share ONE right-aligned row. Capture all always shows
+  // (it's how you prime a sweep); Copy sweep only once there are results to copy.
+  const hasResults = Object.keys(_rgResults).length;
+  let h = '<div class="copy-row">'
+        + '<button class="btn-sm copy-btn" onclick="runCapture()">\u{1F4F8} Capture all</button>'
+        + (hasResults ? '<button class="btn-sm copy-btn" onclick="copyRegrade(this)">\u{1F4CB} Copy sweep</button>' : '')
+        + '</div>';
   h += `<div class="note"><span class="label">\u2699 Regrade plan</span> - `
         + `${escapeHtml(swept + ' of ' + p.corpus_count + ' corpora')}, `
         + `${escapeHtml(String(p.total_combos || 0))} combos total. `
-        + `<button class="btn-sm" onclick="runCapture()">\u{1F4F8} Capture all</button> `
         + `<span class="muted">Capture freezes each corpus's member-store candidates to disk; `
         + `\u2699 then replays pure-fusion sets from that file without touching a container. `
         + `Hops sets always run live. Per-row buttons scope either to one corpus.</span></div>`;
+  h += '<hr class="panel-hr">';
   // ONE RENDERER for plan and results. Everything below just decides WHICH corpora
   // to hand to _rgCorpusSection; the table itself is identical in both views.
   _lastCapMap = capMap;
@@ -950,10 +959,19 @@ async function refreshRegradePlan(force) {
   try {
     // Plan + capture status together: the staging table's whole job is answering
     // "what would run, and would it run from a trustworthy capture" in one look.
-    const [plan, cap] = await Promise.all([
+    const [plan, cap, rg] = await Promise.all([
       api('/eval/regrade/plan'),
       api('/eval/capture/status').catch(() => null),
+      api('/eval/regrade/results').catch(() => null),
     ]);
+    // Rehydrate a still-in-memory sweep after a page reload: _rgResults resets to {}
+    // on load, which is what hid the Copy-sweep button and the result tables. Only
+    // seed it when it's empty, so an in-session sweep already in progress is never
+    // clobbered by a stale read.
+    if (rg && rg.corpora && rg.corpora.length && !Object.keys(_rgResults).length) {
+      currentRegrade = rg;                                  // what Copy sweep serialises
+      for (const c of rg.corpora) if (c && c.corpus) _rgResults[c.corpus] = c;
+    }
     host.innerHTML = renderRegradePlan(plan, cap);
   } catch (e) { /* older backend or no topology - leave the space empty */ }
 }
