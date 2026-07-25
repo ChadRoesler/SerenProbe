@@ -19,6 +19,7 @@
       <div class="ctrls">
         <button class="btn" id="seed-stores" title="Seed the running stores from the ProbeConfig - no scoring">🌱 Seed</button>
         <button class="btn" id="run-eval" title="Evaluate the stores - seeds a fresh pod once automatically, then scores">▶ Evaluate</button>
+        <label class="chk" style="display:inline-flex;align-items:center;gap:4px;font-size:0.85em;opacity:0.8;cursor:pointer;user-select:none;" title="After a successful eval, freeze member-store hits so a regrade replays instantly - no live re-query. Skipped automatically when capture-replay isn't available (host-side seren-corpus-callosum) or nothing is eligible."><input type="checkbox" id="auto-capture" checked style="cursor:pointer;"> auto-capture</label>
         <button class="btn" id="run-regrade" title="Sweep the ProbeConfig's CorpusRegrades sets against the corpora">⚙ Regrades</button>
         <button data-refresh="eval">↻</button>
       </div>
@@ -86,3 +87,26 @@
     </div>
   </div>
 </section>
+
+<!-- Store drill-down modal. Deliberately OUTSIDE every .view (same reasoning as
+     #adopt-host above): a .view is display:none when its tab is inactive, and the
+     modal must be able to open over ANY tab. Rendered into by openStoreDetail() and
+     nothing else. `hidden` until a store name is clicked. -->
+<div id="qd-modal" class="qd-modal" hidden>
+  <div class="qd-backdrop" data-qd-close></div>
+  <div class="qd-panel" role="dialog" aria-modal="true" aria-labelledby="qd-title">
+    <div class="qd-head">
+      <div class="qd-titles">
+        <span class="qd-title" id="qd-title">Store</span>
+        <span class="qd-sub" id="qd-sub"></span>
+      </div>
+      <button class="qd-x" id="qd-close" title="Close (Esc)" data-qd-close>✕</button>
+    </div>
+    <div class="qd-filters" id="qd-filters"></div>
+    <div class="qd-list" id="qd-list"><div class="loading">loading…</div></div>
+    <div class="qd-foot">
+      <div class="qd-stats" id="qd-stats"></div>
+      <button class="btn" id="qd-copy" title="Copy every question + its returned docket as markdown">⧉ Copy Data</button>
+    </div>
+  </div>
+</div>

@@ -1102,3 +1102,226 @@ tr.neg-leaked td:first-child {
         color: var(--ok);
         border-color: var(--ok);
     }
+
+/* ── Store drill-down modal ──────────────────────────────────────────
+ * Click a store name in the Eval table -> per-question detail: where the
+ * expected answer ranked, and the full docket that came back. The accordion
+ * is auto-collapsed and sorted worst-first so the failures are the first
+ * thing you see, not something you excavate by opening 130 rows. */
+.sname-link {
+    cursor: pointer;
+    border-bottom: 1px dotted var(--border);
+}
+    .sname-link:hover {
+        color: var(--accent-2);
+        border-bottom-color: var(--accent-2);
+    }
+
+.qd-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.qd-modal[hidden] { display: none; }
+
+.qd-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(2px);
+}
+
+.qd-panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: min(920px, 94vw);
+    max-height: 88vh;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+.qd-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+}
+.qd-titles { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.qd-title {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 1.05em;
+    color: var(--accent);
+}
+.qd-sub { font-size: 0.82em; color: var(--text-dim); }
+.qd-x {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 6px;
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    flex: 0 0 auto;
+    line-height: 1;
+}
+    .qd-x:hover { color: var(--err); border-color: var(--err); }
+
+.qd-filters {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+}
+.qd-fbtn {
+    font-size: 0.8em;
+    font-family: var(--mono);
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 999px;
+    padding: 2px 10px;
+    cursor: pointer;
+}
+    .qd-fbtn:hover { color: var(--text); }
+    .qd-fbtn.active {
+        color: var(--bg);
+        background: var(--accent-dim);
+        border-color: var(--accent-dim);
+    }
+.qd-search {
+    margin-left: auto;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 0.82em;
+    min-width: 160px;
+}
+
+.qd-list {
+    overflow-y: auto;
+    padding: 8px 12px 4px;
+}
+
+.qd-q {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    background: var(--bg-soft);
+}
+.qd-qhead {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    cursor: pointer;
+    user-select: none;
+}
+    .qd-qhead:hover { background: rgba(255, 255, 255, 0.03); }
+.qd-caret {
+    flex: 0 0 auto;
+    color: var(--text-dim);
+    font-size: 0.8em;
+    width: 10px;
+    transition: transform 0.12s ease;
+}
+.qd-q.open .qd-caret { transform: rotate(90deg); }
+.qd-flag {
+    flex: 0 0 auto;
+    font-family: var(--mono);
+    font-size: 0.74em;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+    .qd-flag.hit  { color: var(--ok);  border: 1px solid var(--ok); }
+    .qd-flag.near { color: var(--warn); border: 1px solid var(--warn); }
+    .qd-flag.miss { color: var(--err); border: 1px solid var(--err); }
+    .qd-flag.nogt { color: var(--text-dim); border: 1px dashed var(--border); }
+.qd-qtext {
+    flex: 1 1 auto;
+    min-width: 0;
+    color: var(--text);
+    font-size: 0.9em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.qd-q.open .qd-qtext { white-space: normal; }
+
+.qd-body {
+    display: none;
+    padding: 4px 10px 10px;
+    border-top: 1px solid var(--border);
+}
+.qd-q.open .qd-body { display: block; }
+.qd-body-note {
+    font-size: 0.78em;
+    color: var(--text-dim);
+    margin: 6px 2px 8px;
+}
+
+.qd-hit {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    gap: 8px;
+    align-items: baseline;
+    padding: 5px 6px;
+    border-radius: 6px;
+    font-size: 0.84em;
+}
+    .qd-hit + .qd-hit { border-top: 1px dashed var(--border); }
+    .qd-hit.is-expected {
+        background: rgba(134, 239, 172, 0.09);
+        box-shadow: inset 2px 0 0 var(--ok);
+    }
+.qd-rank {
+    font-family: var(--mono);
+    color: var(--text-dim);
+    font-size: 0.82em;
+    white-space: nowrap;
+}
+.qd-hit.is-expected .qd-rank { color: var(--ok); font-weight: 700; }
+.qd-score {
+    font-family: var(--mono);
+    color: var(--accent-2);
+    white-space: nowrap;
+}
+.qd-htext { color: var(--text); min-width: 0; word-break: break-word; }
+.qd-origin {
+    font-family: var(--mono);
+    font-size: 0.82em;
+    color: var(--slate);
+    margin-left: 4px;
+}
+.qd-empty-docket { font-size: 0.82em; color: var(--text-dim); padding: 4px 6px; }
+
+.qd-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 16px;
+    border-top: 1px solid var(--border);
+}
+.qd-stats {
+    font-family: var(--mono);
+    font-size: 0.8em;
+    color: var(--text-dim);
+}
+    .qd-stats b { color: var(--text); }

@@ -457,7 +457,8 @@ async def _regrade_one_corpus_async(corpus, base_stores: list[StoreConfig], rqs,
     # The container's CURRENT config = the reference every unnamed knob sits at.
     # Read BEFORE the capture, so a failure here costs nothing but defaults.
     cur_k, cur_n = 60, 10
-    cur_weight, cur_floor = 1.0, 0.0
+    cur_weight, cur_floor = 1.0, 0.0            # loci store current (from /stores)
+    cur_mem_weight, cur_mem_floor = 1.0, 0.0    # memory store current (from /stores)
     if scc_url:
         try:
             import httpx
@@ -466,14 +467,36 @@ async def _regrade_one_corpus_async(corpus, base_stores: list[StoreConfig], rqs,
                 info = r.json() if (r.status_code == 200 and r.content) else {}
             cur_k = info.get("k", cur_k)
             cur_n = info.get("n_results", cur_n)
-            loci_row = next((s for s in (info.get("stores") or [])
-                             if s.get("type") == "seren_loci"), None)
-            if loci_row:
-                cur_weight = loci_row.get("weight", cur_weight)
-                cur_floor = loci_row.get("floor", cur_floor)
+            for s in (info.get("stores") or []):
+                if s.get("type") == "seren_loci":
+                    cur_weight = s.get("weight", cur_weight)
+                    cur_floor = s.get("floor", cur_floor)
+                elif s.get("type") == "seren_memory":
+                    cur_mem_weight = s.get("weight", cur_mem_weight)
+                    cur_mem_floor = s.get("floor", cur_mem_floor)
         except Exception as exc:      # noqa: BLE001 - fall back to documented defaults
             logger.warning("could not read %s/stores for baseline, using defaults: %s",
                            scc_url, exc)
+
+    # DEPLOYED CONFIG IS AUTHORITATIVE for the four knobs GET /stores cannot read
+    # back (authority_margin, fusion_mode, min_per_store, fetch_multiplier). The probe
+    # EMITTED this corpus's Config, so it -- not FederationConfig's constructor
+    # defaults -- is what the 'current' baseline and every unnamed-knob combo should
+    # sit at. Without this the baseline measured a config you never shipped: observed
+    # live as an rrf baseline while the deployment ran fusion_mode=percentile, which
+    # made every percentile delta wrong AND made fusion_mode=rrf rows tie the baseline
+    # (because the baseline WAS secretly rrf). Readback knobs (k/n_results/weight/floor)
+    # still prefer the live /stores value; deployed fills in only where /stores is blind.
+    deployed = dict(getattr(corpus, "config", {}) or {})
+    ref_k = deployed.get("rrf_k", cur_k)
+    ref_n = deployed.get("n_results", cur_n)
+    ref_loci_w = deployed.get("loci_weight", cur_weight)
+    ref_loci_f = deployed.get("loci_floor", cur_floor)
+    ref_mem_w = deployed.get("mem_weight", cur_mem_weight)
+    ref_mem_f = deployed.get("mem_floor", cur_mem_floor)
+    ref_extra = {kb: deployed[kb] for kb in
+                 ("authority_margin", "min_per_store", "fusion_mode", "fetch_multiplier")
+                 if kb in deployed}
 
     async with sem:
         # ONE read-only capture per corpus -- unless the route handed us a SAVED one,
@@ -487,26 +510,40 @@ async def _regrade_one_corpus_async(corpus, base_stores: list[StoreConfig], rqs,
 
     def _cfg(combo: dict):
         """Baseline + this combo laid over it -- the replay twin of the live path's
-        full_config_body(). Unnamed knobs take the container's current value (or
-        SCC's default where /stores doesn't expose it), never the previous combo's,
-        so every combo starts from the same place."""
+        full_config_body(). Unnamed knobs take the DEPLOYED value (ref_*, sourced from
+        the corpus's emitted Config, falling back to the live /stores read), never the
+        previous combo's, so every combo starts from the same place -- and that place
+        is what you shipped.
+
+        Store knobs land BY KIND, symmetric with the live path: loci_weight/loci_floor
+        on every loci member, mem_weight/mem_floor on every memory member. (The old
+        version pinned memory to weight=1.0/floor=0.0 unconditionally, which silently
+        dropped every mem_floor/mem_weight a set swept -- so a mem_floor sweep replayed
+        as identical rows while the live engine, which DOES apply it, disagreed.)"""
         stores: list[StoreConfig] = []
         for sc in base_stores:
             is_mem = sc.type == "seren_memory"
-            stores.append(StoreConfig(
-                name=sc.name, type=sc.type, url=sc.url,
-                weight=1.0 if is_mem else combo.get("loci_weight", cur_weight),
-                floor=0.0 if is_mem else combo.get("loci_floor", cur_floor)))
+            if is_mem:
+                w = combo.get("mem_weight", ref_mem_w)
+                f = combo.get("mem_floor", ref_mem_f)
+            else:
+                w = combo.get("loci_weight", ref_loci_w)
+                f = combo.get("loci_floor", ref_loci_f)
+            stores.append(StoreConfig(name=sc.name, type=sc.type, url=sc.url,
+                                      weight=w, floor=f))
         kwargs: dict = {"stores": stores,
-                        "k": combo.get("rrf_k", cur_k),
-                        "n_results": combo.get("n_results", cur_n),
+                        "k": combo.get("rrf_k", ref_k),
+                        "n_results": combo.get("n_results", ref_n),
                         "edges_enabled": False}
-        # Only pass what the set actually NAMES. Anything omitted falls to
-        # FederationConfig's own default rather than a value invented here.
+        # Combo-named wins; else the DEPLOYED value (ref_extra); else omitted so
+        # FederationConfig supplies its own default. This is what makes the baseline
+        # and every unnamed-knob combo reflect the running deployment.
         for knob in ("authority_margin", "min_per_store", "fusion_mode",
                      "fetch_multiplier"):
             if knob in combo:
                 kwargs[knob] = combo[knob]
+            elif knob in ref_extra:
+                kwargs[knob] = ref_extra[knob]
         return FederationConfig(**kwargs)
 
     # The baseline row: the container's current config, measured. Every delta below
@@ -515,7 +552,9 @@ async def _regrade_one_corpus_async(corpus, base_stores: list[StoreConfig], rqs,
     set_rows: list[dict] = [{
         "name": "current",
         "metrics": {m: base_agg.get(m, 0.0) for m in _METRICS},
-        "params": {"k": cur_k, "n_results": cur_n},
+        # Show the DEPLOYED knobs, not just k/n_results -- the old label printed only
+        # those two, which is why a defaults-based baseline "looked like" the config.
+        "params": {"k": ref_k, "n_results": ref_n, **ref_extra},
         "delta": {m: 0.0 for m in ("ndcg", "docket_coverage", "recall", "mrr")}}]
 
     from .regrade_live import compact_combos

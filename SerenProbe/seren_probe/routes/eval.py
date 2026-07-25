@@ -15,6 +15,23 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/eval", tags=["eval"])
 
 
+def _lean(results: dict) -> dict:
+    """Drop each store's per-question `q_detail` for the wire. It rides on the
+    snapshot so it persists and rehydrates as ONE object with the run it belongs
+    to -- but a 22-store report's detail is megabytes, and /eval/results is polled.
+    The full object stays in app.state; the drill-down is fetched à la carte from
+    /eval/detail. Non-destructive: builds a shallow copy, never mutates the cache."""
+    if not isinstance(results, dict) or not isinstance(results.get("stores"), dict):
+        return results
+    stores = {}
+    for name, snap in results["stores"].items():
+        if isinstance(snap, dict) and "q_detail" in snap:
+            stores[name] = {k: v for k, v in snap.items() if k != "q_detail"}
+        else:
+            stores[name] = snap
+    return {**results, "stores": stores}
+
+
 @router.get("/results")
 async def get_eval_results(request: Request):
     """The last eval's results - from memory, or rehydrated from disk.
@@ -34,7 +51,7 @@ async def get_eval_results(request: Request):
     """
     cached = request.app.state.eval_results
     if cached:
-        return cached
+        return _lean(cached)
     ts = getattr(request.app.state, "topology_state", None)
     topo = getattr(request.app.state, "compiled_topology", None)
     if ts and ts.get("project_name"):
@@ -76,8 +93,8 @@ async def get_eval_results(request: Request):
             # viewer says so rather than presenting a rehydrated table as live.
             results = {**env["results"], "restored": True,
                        "restored_at": env.get("saved_at", "")}
-            request.app.state.eval_results = results
-            return results
+            request.app.state.eval_results = results     # app.state keeps the FULL object
+            return _lean(results)                        # the wire gets the lean one
     return {"stores": {}, "query_count": 0, "date": ""}
 
 
@@ -137,7 +154,58 @@ async def get_eval_partials():
     correct, not a bug. Read this to watch; read /eval/results to conclude.
     """
     from ..runtime import progress
-    return {"partials": progress.partials()}
+    parts = progress.partials()
+    # Same reasoning as /eval/results: strip per-question detail off the poll. Partials
+    # are hit on an interval while a run is live -- shipping every column's full docket
+    # on each tick is exactly the payload /eval/detail exists to avoid.
+    lean = {name: ({k: v for k, v in snap.items() if k != "q_detail"}
+                   if isinstance(snap, dict) else snap)
+            for name, snap in (parts or {}).items()}
+    return {"partials": lean}
+
+
+@router.get("/detail/{store}")
+async def get_eval_detail(store: str, request: Request):
+    """Per-question drill-down for ONE store from the last eval: the query, where
+    the expected answer ranked, and the full top-k docket that came back. Powers the
+    viewer's store-detail modal, which is how you turn a score of 0.6 into "these
+    are the six-in-ten that missed, and here's what outranked the right answer."
+
+    Served separately from /eval/results ON PURPOSE -- the detail for a 22-store
+    report is megabytes and /results is polled. Reads the FULL object out of
+    app.state (or triggers the same disk rehydrate /results uses), so a restart or
+    an adopt still opens the modal instead of lying that the pod was never scored.
+    """
+    results = request.app.state.eval_results
+    if not (results and results.get("stores")):
+        # Populate app.state via the same rehydrate path /results owns; we only want
+        # the side effect (it returns the LEAN copy, which is not what we need here).
+        await get_eval_results(request)
+        results = request.app.state.eval_results
+    stores = (results or {}).get("stores") or {}
+    snap = stores.get(store)
+    if snap is None:
+        raise HTTPException(
+            status_code=404,
+            detail=(f"no eval results for store {store!r} - run an eval first, or the "
+                    f"store name is stale (declared: {sorted(stores)[:20]})."))
+    detail = snap.get("q_detail")
+    if detail is None:
+        # Scored by an older build, before per-question capture existed. Honest 409
+        # instead of an empty modal that reads as "this store answered nothing".
+        raise HTTPException(
+            status_code=409,
+            detail=(f"store {store!r} was scored before per-question detail was "
+                    f"captured - re-run the eval to populate the drill-down."))
+    return {
+        "store": store,
+        "kind": snap.get("kind"),
+        "aggregate": snap.get("aggregate", {}),
+        "question_count": snap.get("question_count"),
+        "k": snap.get("k"),
+        "error": snap.get("error"),
+        "questions": detail,
+    }
 
 
 @router.post("/seed")
@@ -378,7 +446,10 @@ async def run_eval(request: Request):
                               question_hash=_rg.corpus_question_hash(ei.questions))
         except Exception as exc:     # noqa: BLE001
             logger.warning("could not persist eval results: %s", exc)
-        return {"ok": True, "results": results}
+        # app.state + disk hold the FULL results (with q_detail); the response is lean,
+        # so the eval-complete payload isn't fat with every column's docket. The viewer
+        # renders the table from this and fetches drill-down from /eval/detail on click.
+        return {"ok": True, "results": _lean(results)}
 
     # NO SILENT FALLBACK TO LIVE STORES. This used to drop through to the legacy
     # hardcoded-five-store path, which reads its URLs from app.state.store_config --
