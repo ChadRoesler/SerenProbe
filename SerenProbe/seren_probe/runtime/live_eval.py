@@ -199,6 +199,75 @@ def _grade(hits, q, kind, resolve_key, resolve_ref, k):
     return retrieved, relevant, coverage, density
 
 
+# ── Per-question detail capture (powers the viewer's store drill-down modal) ──
+# The metrics collapse each question to a number and throw the evidence away. That
+# number tells you a store scores 0.6; it can't tell you WHICH six-in-ten questions
+# missed or WHAT ranked above the right answer -- which is exactly what you need to
+# fix a bad question or decide a floor. So we keep a compact record per question:
+# the query, where the expected answer landed, and the top-k docket that came back.
+# Kept on the snapshot under `q_detail`; the routes strip it off the /results wire
+# (a 22-store report's detail is megabytes) and serve it à la carte from /eval/detail.
+_DETAIL_TEXT_CAP = 320            # generous enough to recognise a hit, short enough
+                                  # that 130 questions x k rows stays a sane payload
+_DETAIL_ORIGIN_KEYS = ("store", "source", "origin", "member", "store_name",
+                       "from_store", "provenance")
+
+
+def _hit_text(h: dict, kind: str) -> str:
+    return _loci_haystack(h) if kind == "seren_loci" else str(h.get("content", "") or "")
+
+
+def _hit_origin(h: dict) -> str:
+    """Which member store a corpus docket row came from, if the SCC surfaced it.
+    Degrades to '' silently -- provenance is a nice-to-have, never a contract, and a
+    store that doesn't tag its hits shouldn't blank the whole modal."""
+    for key in _DETAIL_ORIGIN_KEYS:
+        v = h.get(key)
+        if v:
+            return str(v)
+    return ""
+
+
+def _clip(text: str, cap: int = _DETAIL_TEXT_CAP) -> str:
+    text = " ".join(str(text or "").split())      # collapse whitespace for one-line display
+    return text if len(text) <= cap else text[:cap - 1].rstrip() + "…"
+
+
+def _question_detail(q, hits, retrieved, relevant, kind, coverage, k):
+    """One drill-down record: the query, the rank the expected answer landed at
+    (1-based over the FULL retrieved list, so it agrees with HR/MRR@k when <=k and
+    reads as 'found but past the cutoff' when >k), and the top-k docket with each
+    row flagged if it's ground truth. `has_gt` False means nothing resolved as a
+    correct answer for this question -- a miss here is unscorable, not a failure,
+    and the modal says so instead of painting it red."""
+    rank = None
+    for i, (hid, _s) in enumerate(retrieved, start=1):
+        if hid in relevant:
+            rank = i
+            break
+    rows = []
+    for h in hits[:k]:
+        hid = h.get("id")
+        rows.append({
+            "id": hid,
+            "score": round(float(h.get("score", 0.0) or 0.0), 4),
+            "text": _clip(_hit_text(h, kind)),
+            "expected": hid in relevant,
+            "origin": _hit_origin(h),
+        })
+    return {
+        "query": getattr(q, "query", ""),
+        "rank": rank,
+        "hit": rank is not None,
+        "within_k": rank is not None and rank <= k,
+        "has_gt": bool(relevant),
+        "n_relevant": len(relevant),
+        "n_hits": len(hits),
+        "coverage": round(coverage, 4) if kind == "corpus" else None,
+        "hits": rows,
+    }
+
+
 def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
                             seed_result=None, questions_by_store=None,
                             k: int = 10, post=post, delete=_delete, get_params=_get_params,
@@ -577,23 +646,33 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
 
         normal_hits = _search_many(normal_qs)
         scored_qs = 0
+        q_detail: list[dict] = []
         for q, hits in zip(normal_qs, normal_hits):
             # EXCLUDED, not zeroed. A question whose search never completed was never
             # actually asked, so it carries no evidence either way -- averaging it in as
             # a miss reports a retrieval failure that did not happen.
             if hits is None:
+                # Recorded (not scored) so the drill-down shows it as "not asked"
+                # rather than vanishing -- an invisible exclusion is how a mostly-failed
+                # column looks like a mostly-missed one.
+                q_detail.append({"query": getattr(q, "query", ""), "unscored": True,
+                                 "reason": "search did not complete"})
                 continue
             scored_qs += 1
             if hits:
                 pos_tops.append(float(hits[0].get("score", 0.0) or 0.0))
             retrieved, relevant, cov, den = _grade(hits, q, kind, resolve_key, resolve_ref, k)
             results.append((retrieved, relevant)); coverages.append(cov); densities.append(den)
+            q_detail.append(_question_detail(q, hits, retrieved, relevant, kind, cov, k))
         m = compute_metrics_batch(results, k=k)
         if kind == "corpus":
             m.docket_coverages = coverages
             m.docket_densities = densities
         snap = m.snapshot()
         snap["kind"] = kind; snap["question_count"] = scored_qs; snap["k"] = k
+        # Per-question drill-down (normal questions only -- the HR/MRR story). Stripped
+        # off the /results wire by the routes; served on demand from /eval/detail.
+        snap["q_detail"] = q_detail
         # question_count is now questions SCORED, so it no longer silently equals
         # questions ASKED. The gap is the error count, reported right beside it -- a
         # column that scored 3 of 28 should say so on the same line as its metrics.

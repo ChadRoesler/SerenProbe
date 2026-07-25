@@ -36,6 +36,11 @@ REGRADE_KNOBS: dict[str, type] = {
     "mem_weight": float, "mem_floor": float,
     "authority_margin": float, "min_per_store": int, "fusion_mode": str,
     "n_results": int, "fetch_multiplier": int,
+    # Per-store fan timeout. The SCC drops a store that doesn't answer within this and
+    # returns a 200 with a sparse docket - so a wide cold fan (All-scc: 22 vector stores
+    # at ~6s cold) silently loses members at the default 5s and scores ~0. Tunable here
+    # so a big fan can be given the budget a small one doesn't need.
+    "per_store_timeout_s": float,
     "hops": int,          # retrieval rounds. 1 = today's single pass; 2 = one hop.
     # The hop's STEERING knobs. These were mapped in regrade_live._FED_KNOB and listed
     # in its _READBACK, and the SCC advertises both -- but they were missing HERE, so
@@ -417,7 +422,7 @@ def _parse_regrades(raw, errors: list[str], warnings: list[str]) -> list[Regrade
 FED_FIELD: dict[str, str] = {
     "rrf_k": "k", "n_results": "n_results", "fetch_multiplier": "fetch_multiplier",
     "authority_margin": "authority_margin", "min_per_store": "min_per_store",
-    "fusion_mode": "fusion_mode",
+    "fusion_mode": "fusion_mode", "per_store_timeout_s": "per_store_timeout_s",
     "hops": "hops", "hop_terms": "hop_terms", "hop_budget": "hop_budget",
 }
 # Knobs that are PER-STORE overrides on a member rather than federation-level.

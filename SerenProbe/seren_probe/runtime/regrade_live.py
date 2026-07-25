@@ -62,7 +62,7 @@ _METRICS = ("ndcg", "docket_coverage", "docket_density", "recall",
 # exact; a custom set using them gets a best-effort restore + a note.)
 _FED_KNOB = {"rrf_k": "k", "n_results": "n_results", "fetch_multiplier": "fetch_multiplier",
              "authority_margin": "authority_margin", "min_per_store": "min_per_store",
-             "fusion_mode": "fusion_mode",
+             "fusion_mode": "fusion_mode", "per_store_timeout_s": "per_store_timeout_s",
              # Multi-hop. MUST be mapped here or configure_payload silently DROPS it,
              # sends an empty body, and every combo scores identically - the exact
              # "inert knob that reads as a ceiling" this harness exists to prevent.
@@ -332,6 +332,20 @@ def _regrade_one_corpus(corpus, scc_url: str, corpus_qs: list, regrades: list,
         baseline_cfg["hop_budget"] = cur_hop_budget
     if captured:
         baseline_cfg["stores"] = captured
+    # DEPLOYED CONFIG for the knobs /configure accepts but GET /stores can't read back
+    # (authority_margin, fusion_mode, min_per_store, fetch_multiplier). Fold them into
+    # baseline_cfg from this corpus's EMITTED Config so (a) the 'current' row measures
+    # what you shipped instead of FederationConfig defaults, and (b) every combo RESETS
+    # them -- full_config_body starts from baseline_cfg, and a knob absent from it leaks
+    # across combos exactly like the weight-leak documented in full_config_body. Readback
+    # knobs (k/n_results/weight/floor) still come from the live /stores read above; this
+    # only fills the four /stores is blind to.
+    deployed = dict(getattr(corpus, "config", {}) or {})
+    _hidden_params: dict = {}
+    for _knob in ("authority_margin", "fusion_mode", "min_per_store", "fetch_multiplier"):
+        if _knob in deployed:
+            baseline_cfg[_FED_KNOB[_knob]] = deployed[_knob]
+            _hidden_params[_knob] = deployed[_knob]
     try:
         # Force the baseline before measuring it, so `current` is the config we
         # SAY it is rather than whatever the container drifted to.
@@ -346,7 +360,8 @@ def _regrade_one_corpus(corpus, scc_url: str, corpus_qs: list, regrades: list,
         set_rows = [{"name": "current",
                      "metrics": {m: base.get(m, 0.0) for m in _METRICS},
                      "params": {"k": cur_k, "n_results": cur_n,
-                                **({"hops": cur_hops} if cur_hops is not None else {})},
+                                **({"hops": cur_hops} if cur_hops is not None else {}),
+                                **_hidden_params},
                      "delta": {m: 0.0 for m in ("ndcg", "docket_coverage", "recall", "mrr")}}]
         # Publish the baseline immediately. It is the row every delta is measured
         # against, so it is the single most useful number to see early -- and it is

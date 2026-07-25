@@ -211,7 +211,7 @@ async function refreshEval() {
       try {
         const ds = await api('/docker/status');
         if (ds && (ds.running || ds.managed) && (ds.loci || ds.memory || ds.corpus)) {
-          renderEvalPlaceholder(ds.loci, ds.memory, ds.corpus);
+          renderEvalPlaceholder(ds.loci, ds.memory, ds.corpus, ds.seeded);
           refreshRegradePlan();   // stage the sweep even before anything is scored
           return;
         }
@@ -321,7 +321,7 @@ async function refreshEval() {
       const ndcgCell = m.negative_test
         ? '<span class="muted" title="vacuous: NDCG is 1.0 when the relevant set is empty, and a decoy has no relevant docs by design">\u2014</span>'
         : f('ndcg');
-      html += `<tr class="${rowcls}"><td class="sname">${escapeHtml(name)}${badge}</td>`
+      html += `<tr class="${rowcls}"><td class="sname"><span class="sname-link" data-store="${escapeHtml(name)}" title="click for per-question detail: rank, docket, misses">${escapeHtml(name)}</span>${badge}</td>`
             + `<td class="mval prog-cell" id="prog-${escapeHtml(name)}">done</td>`
             + `<td class="mval">${f('hit_rate')}</td><td class="mval">${f('mrr')}</td><td class="mval">${f('precision')}</td><td class="mval">${f('recall')}</td>`
             + `<td class="mval">${ndcgCell}</td><td class="mval">${f('iou')}</td><td class="mval">${f('prec_omega')}</td><td>${tail}</td></tr>`;
@@ -379,6 +379,226 @@ function renderDocket(d) {
   }
   if (d.note) h += `<div class="docket-meta">note: ${escapeHtml(d.note)}</div>`;
   return h;
+}
+
+// ── Store drill-down modal ──────────────────────────────────────────
+// Click a store name -> GET /eval/detail/<store> -> per-question accordion.
+// The whole point is to turn "this store scores 0.6" into "THESE questions
+// missed, and HERE is what outranked the right answer" -- so the list opens
+// sorted worst-first and every docket row flags the ground-truth hit. Detail
+// is fetched here, not carried in /eval/results, because a 22-store report's
+// worth of dockets is megabytes and that table is polled.
+let _qd = { store: null, kind: '', agg: {}, k: 10, qcount: 0, error: null,
+            questions: [], filter: 'all', search: '' };
+
+// Severity for worst-first ordering. Lower = shown higher. A real miss is the
+// thing you came to see; a rank-1 hit is the thing you can skip; "no ground
+// truth" is informational, not failure, so it sinks BELOW the passes.
+function _qdSeverity(q) {
+  if (q.unscored) return 0;                 // never asked (search failed) - loudest
+  if (!q.has_gt)  return 5;                  // unscorable - not a miss, park it low
+  if (!q.hit)     return 1;                  // real miss
+  if (!q.within_k) return 2;                 // found, but past the k cutoff
+  if (q.rank > 1) return 3;                   // found in-k but not rank 1
+  return 4;                                   // rank 1
+}
+
+function _qdFlag(q) {
+  if (q.unscored) return { cls: 'nogt',  label: '⚠ not asked' };
+  if (!q.has_gt)  return { cls: 'nogt',  label: '– no truth' };
+  if (!q.hit)     return { cls: 'miss',  label: '✗ miss' };
+  if (q.rank === 1) return { cls: 'hit', label: '✓ #1' };
+  if (q.within_k) return { cls: 'near',  label: '#' + q.rank };
+  return { cls: 'miss', label: '✗ #' + q.rank + ' (>k)' };
+}
+
+function _qdMatchesFilter(q) {
+  const f = _qd.filter;
+  if (f === 'miss') return q.unscored || (q.has_gt && (!q.hit || !q.within_k));
+  if (f === 'hit')  return !q.unscored && q.has_gt && q.hit && q.within_k;
+  if (f === 'nogt') return !q.unscored && !q.has_gt;
+  return true;                                // 'all'
+}
+
+function renderQdList() {
+  const list = document.getElementById('qd-list');
+  if (!list) return;
+  const term = (_qd.search || '').trim().toLowerCase();
+  const rows = _qd.questions
+    .map((q, i) => ({ q, i }))
+    .filter(({ q }) => _qdMatchesFilter(q))
+    .filter(({ q }) => !term || (q.query || '').toLowerCase().includes(term)
+                    || (q.hits || []).some(h => (h.text || '').toLowerCase().includes(term)));
+  // worst-first, then bigger rank (deeper miss) first within a tier
+  rows.sort((a, b) => _qdSeverity(a.q) - _qdSeverity(b.q)
+                   || ((b.q.rank || 999) - (a.q.rank || 999)));
+  if (!rows.length) {
+    list.innerHTML = '<div class="qd-empty-docket">no questions match this filter.</div>';
+    return;
+  }
+  let h = '';
+  for (const { q, i } of rows) {
+    const flag = _qdFlag(q);
+    let body;
+    if (q.unscored) {
+      body = `<div class="qd-body-note">${escapeHtml(q.reason || 'this question was not scored')}.</div>`;
+    } else {
+      const note = [];
+      if (q.has_gt) note.push(`${q.n_relevant} ground-truth doc${q.n_relevant === 1 ? '' : 's'}`);
+      else note.push('no resolvable ground truth for this question - a "miss" here is unscorable, not a failure');
+      if (q.coverage != null) note.push(`docket coverage ${q.coverage.toFixed(3)}`);
+      note.push(`${q.n_hits} hit${q.n_hits === 1 ? '' : 's'} returned`);
+      let docket = '';
+      if (!q.hits || !q.hits.length) {
+        docket = '<div class="qd-empty-docket">store returned nothing.</div>';
+      } else {
+        q.hits.forEach((hit, hi) => {
+          const exp = hit.expected ? ' is-expected' : '';
+          const origin = hit.origin ? `<span class="qd-origin">${escapeHtml(hit.origin)}</span>` : '';
+          const mark = hit.expected ? '✓ ' : '';
+          docket += `<div class="qd-hit${exp}">`
+                  + `<span class="qd-rank">${mark}#${hi + 1}</span>`
+                  + `<span class="qd-score">${Number(hit.score).toFixed(4)}</span>`
+                  + `<span class="qd-htext">${escapeHtml(hit.text || '')}${origin}</span>`
+                  + `</div>`;
+        });
+      }
+      body = `<div class="qd-body-note">${escapeHtml(note.join(' · '))}</div>${docket}`;
+    }
+    h += `<div class="qd-q" data-qi="${i}">`
+       + `<div class="qd-qhead">`
+       + `<span class="qd-caret">▶</span>`
+       + `<span class="qd-flag ${flag.cls}">${flag.label}</span>`
+       + `<span class="qd-qtext">${escapeHtml(q.query || '(no query text)')}</span>`
+       + `</div>`
+       + `<div class="qd-body">${body}</div>`
+       + `</div>`;
+  }
+  list.innerHTML = h;
+}
+
+function _qdStats() {
+  const el = document.getElementById('qd-stats');
+  if (!el) return;
+  const a = _qd.agg || {};
+  const scored = _qd.questions.filter(q => !q.unscored);
+  const miss = scored.filter(q => q.has_gt && (!q.hit || !q.within_k)).length;
+  const nogt = scored.filter(q => !q.has_gt).length;
+  const parts = [];
+  if (a.hit_rate != null) parts.push(`HR <b>${a.hit_rate.toFixed(3)}</b>`);
+  if (a.mrr != null) parts.push(`MRR <b>${a.mrr.toFixed(3)}</b>`);
+  if (a.docket_coverage != null) parts.push(`cov <b>${a.docket_coverage.toFixed(3)}</b>`);
+  parts.push(`<b>${miss}</b> miss / ${scored.length}`);
+  if (nogt) parts.push(`${nogt} no-truth`);
+  if (_qd.questions.length !== scored.length) parts.push(`${_qd.questions.length - scored.length} not asked`);
+  el.innerHTML = parts.join(' · ');
+}
+
+function _qdRenderFilters() {
+  const el = document.getElementById('qd-filters');
+  if (!el) return;
+  const opts = [['all', 'All'], ['miss', 'Misses'], ['hit', 'Hits'], ['nogt', 'No-truth']];
+  let h = '';
+  for (const [key, label] of opts) {
+    h += `<button class="qd-fbtn ${_qd.filter === key ? 'active' : ''}" data-qdfilter="${key}">${label}</button>`;
+  }
+  h += `<input class="qd-search" id="qd-search" type="text" placeholder="filter text…" value="${escapeHtml(_qd.search)}">`;
+  el.innerHTML = h;
+}
+
+async function openStoreDetail(store) {
+  const modal = document.getElementById('qd-modal');
+  if (!modal) return;
+  _qd = { store, kind: '', agg: {}, k: 10, qcount: 0, error: null,
+          questions: [], filter: 'all', search: '' };
+  document.getElementById('qd-title').textContent = store;
+  document.getElementById('qd-sub').textContent = 'loading…';
+  document.getElementById('qd-filters').innerHTML = '';
+  document.getElementById('qd-list').innerHTML = '<div class="loading">loading…</div>';
+  document.getElementById('qd-stats').innerHTML = '';
+  modal.hidden = false;
+  try {
+    // authFetch (not api): api() throws on non-2xx and eats the body, and a 409
+    // "scored before detail existed" / 404 "stale store name" IS the message we
+    // want to show, not a generic failure.
+    const resp = await authFetch(`/eval/detail/${encodeURIComponent(store)}`);
+    const data = await resp.json().catch(() => ({}));
+    if (!resp.ok) {
+      let msg = (data && (data.detail || data.error)) || `HTTP ${resp.status}`;
+      if (typeof msg !== 'string') msg = JSON.stringify(msg);
+      // "Not Found" is Starlette's DEFAULT 404 for an unmatched route -- i.e. the
+      // /eval/detail endpoint isn't mounted, which means the probe is still running
+      // the build from before this feature. Our own 404 carries a real message, so a
+      // bare "Not Found" can only mean stale process. Say THAT, not the framework's word.
+      if (resp.status === 404 && /^not found$/i.test(msg.trim())) {
+        msg = 'This build of the probe doesn’t have the /eval/detail endpoint yet — '
+            + 'restart the probe process (new routes don’t hot-reload), then re-run the eval.';
+      }
+      document.getElementById('qd-sub').textContent = '';
+      document.getElementById('qd-list').innerHTML =
+        `<div class="qd-empty-docket">${escapeHtml(msg)}</div>`;
+      return;
+    }
+    _qd.kind = data.kind || '';
+    _qd.agg = data.aggregate || {};
+    _qd.k = data.k != null ? data.k : 10;
+    _qd.qcount = data.question_count != null ? data.question_count : (data.questions || []).length;
+    _qd.error = data.error || null;
+    _qd.questions = data.questions || [];
+    const sub = [_qd.kind, `${_qd.qcount} scored`, `k=${_qd.k}`].filter(Boolean).join(' · ');
+    document.getElementById('qd-sub').textContent = _qd.error ? `${sub} · errored: ${_qd.error}` : sub;
+    _qdRenderFilters();
+    renderQdList();
+    _qdStats();
+  } catch (e) {
+    document.getElementById('qd-list').innerHTML =
+      `<div class="qd-empty-docket">Error: ${escapeHtml(e.message || String(e))}</div>`;
+  }
+}
+
+function closeQd() {
+  const modal = document.getElementById('qd-modal');
+  if (modal) modal.hidden = true;
+}
+
+function qdCopyMarkdown(btn) {
+  if (!_qd.store) { copyToClipboard('', btn); return; }
+  const a = _qd.agg || {};
+  const head = [`## ${_qd.store} — per-question detail`];
+  const meta = [];
+  if (a.hit_rate != null) meta.push(`HR ${a.hit_rate.toFixed(3)}`);
+  if (a.mrr != null) meta.push(`MRR ${a.mrr.toFixed(3)}`);
+  if (a.docket_coverage != null) meta.push(`cov ${a.docket_coverage.toFixed(3)}`);
+  meta.push(`${_qd.qcount} scored`, `k=${_qd.k}`);
+  head.push(meta.join(' · '), '');
+  const out = [head.join('\n')];
+  // Same worst-first order the modal shows, honouring the active filter so "copy"
+  // copies what you're looking at, not a different set than the screen.
+  const term = (_qd.search || '').trim().toLowerCase();
+  const rows = _qd.questions
+    .filter(q => _qdMatchesFilter(q))
+    .filter(q => !term || (q.query || '').toLowerCase().includes(term)
+              || (q.hits || []).some(h => (h.text || '').toLowerCase().includes(term)));
+  rows.sort((x, y) => _qdSeverity(x) - _qdSeverity(y) || ((y.rank || 999) - (x.rank || 999)));
+  for (const q of rows) {
+    const flag = _qdFlag(q);
+    out.push(`### ${flag.label} — ${q.query || '(no query)'}`);
+    if (q.unscored) { out.push(`_${q.reason || 'not scored'}_`, ''); continue; }
+    const bits = [];
+    bits.push(q.has_gt ? `expected: ${q.hit ? 'rank ' + q.rank : 'MISS'} (${q.n_relevant} truth)`
+                       : 'no resolvable ground truth');
+    if (q.coverage != null) bits.push(`coverage ${q.coverage.toFixed(3)}`);
+    out.push(bits.join(' · '));
+    if (q.hits && q.hits.length) {
+      out.push(mdTable(['#', 'score', 'store', '✓', 'text'],
+        q.hits.map((h, i) => [i + 1, Number(h.score).toFixed(4), h.origin || '',
+                              h.expected ? '✓' : '', h.text || ''])));
+    } else {
+      out.push('_store returned nothing_');
+    }
+    out.push('');
+  }
+  copyToClipboard(out.join('\n'), btn);
 }
 
 // ── Live progress polling ──────────────────────────────────────────
@@ -458,35 +678,39 @@ function _paintPartial(name, m) {
 // moving", which is the entire question during a multi-hour sweep.
 let _lastProgress = {};
 
+// ONE poll tick: paint the latest /eval/progress rows and /eval/partials. Extracted from
+// the interval so finalizeProgress() can run exactly one MORE tick after the op resolves.
+async function _progressTick() {
+  // Two cheap GETs per tick, INDEPENDENTLY guarded. /eval/partials is newer than
+  // /eval/progress, so a viewer talking to an older backend must still get its
+  // status column -- one failing endpoint may not take the other down with it.
+  try {
+    const snap = await api('/eval/progress');
+    _lastProgress = snap || {};
+    for (const [name, row] of Object.entries(snap || {})) {
+      const cell = document.getElementById(`prog-${name}`);
+      if (cell) cell.textContent = _renderProgressCell(row);
+      // Regrade sections carry their own Status cells (per set), repainted here
+      // rather than only when a partial lands -- a combo takes minutes, so waiting
+      // for the next partial to show movement defeats the point.
+      _paintRegradeStatus(name, row);
+    }
+  } catch (e) { /* transient - next tick will retry */ }
+  try {
+    const p = await api('/eval/partials');
+    for (const [name, snap] of Object.entries((p && p.partials) || {})) {
+      // Corpus-shaped snapshots belong to the regrade panel's sections; eval-shaped
+      // ones to the eval table. Routed here so each painter stays single-purpose --
+      // _paintPartial's own m.corpus guard remains as the backstop.
+      if (snap && snap.corpus) _paintRegradePartial(name, snap);
+      else _paintPartial(name, snap);
+    }
+  } catch (e) { /* endpoint absent or transient - status column still works */ }
+}
+
 function startProgressPolling() {
   stopProgressPolling();
-  _progressTimer = setInterval(async () => {
-    // Two cheap GETs per tick, INDEPENDENTLY guarded. /eval/partials is newer than
-    // /eval/progress, so a viewer talking to an older backend must still get its
-    // status column -- one failing endpoint may not take the other down with it.
-    try {
-      const snap = await api('/eval/progress');
-      _lastProgress = snap || {};
-      for (const [name, row] of Object.entries(snap || {})) {
-        const cell = document.getElementById(`prog-${name}`);
-        if (cell) cell.textContent = _renderProgressCell(row);
-        // Regrade sections carry their own Status cells (per set), repainted here
-        // rather than only when a partial lands -- a combo takes minutes, so waiting
-        // for the next partial to show movement defeats the point.
-        _paintRegradeStatus(name, row);
-      }
-    } catch (e) { /* transient - next tick will retry */ }
-    try {
-      const p = await api('/eval/partials');
-      for (const [name, snap] of Object.entries((p && p.partials) || {})) {
-        // Corpus-shaped snapshots belong to the regrade panel's sections; eval-shaped
-        // ones to the eval table. Routed here so each painter stays single-purpose --
-        // _paintPartial's own m.corpus guard remains as the backstop.
-        if (snap && snap.corpus) _paintRegradePartial(name, snap);
-        else _paintPartial(name, snap);
-      }
-    } catch (e) { /* endpoint absent or transient - status column still works */ }
-  }, 1000);
+  _progressTimer = setInterval(_progressTick, 1000);
 }
 
 function stopProgressPolling() {
@@ -494,6 +718,17 @@ function stopProgressPolling() {
     clearInterval(_progressTimer);
     _progressTimer = null;
   }
+}
+
+// One last poll AFTER the blocking op resolves, THEN stop. The backend snaps a store's
+// row to current==total, done=true INSIDE the seed/eval request (just before it returns),
+// but the interval clears the instant the caller's await resolves -- so without this final
+// tick the display freezes on the last mid-op poll (a long-tier memory bar stuck 2 short)
+// and never repaints the terminal 'done' state the backend already published. Call this in
+// an operation's finally INSTEAD of stopProgressPolling().
+async function finalizeProgress() {
+  stopProgressPolling();
+  try { await _progressTick(); } catch (e) { /* terminal paint is best-effort */ }
 }
 
 async function runSeedOnly() {
@@ -512,10 +747,24 @@ async function runSeedOnly() {
   } catch (e) {
     alert('Seed error: ' + (e.message || e));
   } finally {
-    stopProgressPolling();
+    await finalizeProgress();   // one last poll so the bar shows done, not stuck mid-seed
     btn.textContent = orig;
     btn.disabled = false;
   }
+}
+
+// Reset the CURRENT eval table's cells in place for a re-run: metrics back to '-', the
+// Status (prog) cells to 'queued'. Only touches textContent, so the prog-<name> cells the
+// poller targets keep their identity - the whole reason this doesn't re-render the table.
+function _resetEvalRowsForRun() {
+  const body = document.getElementById('eval-body');
+  if (body) {
+    body.querySelectorAll('td.mval').forEach((td) => {
+      td.textContent = td.classList.contains('prog-cell') ? 'queued…' : '–';
+    });
+  }
+  const info = document.getElementById('eval-info');
+  if (info) info.textContent = 're-evaluating…';
 }
 
 async function runEval() {
@@ -523,6 +772,17 @@ async function runEval() {
   const orig = btn.textContent;
   btn.textContent = 'running…';
   btn.disabled = true;
+  // Reset the visible rows IN PLACE so a re-eval obviously re-runs -- blank the metrics,
+  // mark Status 'queued'. Do NOT re-render the table: a full innerHTML replace here
+  // (renderEvalPlaceholder) swapped out the very prog-<name> cells the poller paints into
+  // and killed live updates. Touching only textContent keeps every DOM reference intact.
+  _resetEvalRowsForRun();
+  // Snapshot the auto-capture choice up front (default on). On a clean eval we then
+  // freeze member-store hits so the NEXT regrade replays instantly instead of re-querying
+  // live -- the "never forget to hit capture" fix. runCapture itself no-ops gracefully
+  // when capture-replay isn't available or nothing's eligible, so this is always safe.
+  const wantCapture = !!(document.getElementById('auto-capture') || {}).checked;
+  let evalOk = false;
   startProgressPolling();
   try {
     // NO seed:false here. Evaluate is split from the explicit 🌱 Seed button, but
@@ -534,6 +794,7 @@ async function runEval() {
     // stays useful for "seed now, evaluate later" and for reseeding via reseed:true.
     const data = await api('/eval/run', { method: 'POST' });
     if (data && data.ok) {
+      evalOk = true;
       await refreshEval();
     } else {
       alert('Eval failed: ' + (data && data.error || 'unknown'));
@@ -541,9 +802,14 @@ async function runEval() {
   } catch (e) {
     alert('Eval error: ' + (e.message || e));
   } finally {
-    stopProgressPolling();
+    await finalizeProgress();   // one last poll so the bar shows done, not stuck mid-run
     btn.textContent = orig;
     btn.disabled = false;
+  }
+  // AFTER the eval fully settles (polling stopped, button restored): auto-capture, so its
+  // own progress polling doesn't fight the eval's. Only on a clean eval, only if opted in.
+  if (evalOk && wantCapture) {
+    try { await runCapture(null); } catch (e) { /* non-fatal - the eval numbers still stand */ }
   }
 }
 
@@ -1080,7 +1346,7 @@ async function refreshDocker() {
 // not like the fleet just came up. Render every known store immediately with "-" in
 // every column so the operator sees the shape of the topology right away; refreshEval()
 // overwrites this with real numbers the moment /eval/seed or /eval/run actually finishes.
-function renderEvalPlaceholder(loci, memory, corpus) {
+function renderEvalPlaceholder(loci, memory, corpus, seeded) {
   const body = document.getElementById('eval-body');
   if (!body) return;
   const names = [...(loci || []), ...(memory || []), ...(corpus || [])];
@@ -1095,7 +1361,14 @@ function renderEvalPlaceholder(loci, memory, corpus) {
   html += '</table>';
   body.innerHTML = html;
   const info = document.getElementById('eval-info');
-  if (info) info.textContent = `${names.length} stores · not yet seeded/evaluated`;
+  // Say the TRUE state. This used to hardcode "not yet seeded/evaluated", so a reload of
+  // an already-seeded pod lied about it and prompted a needless reseed. `seeded` comes
+  // from /docker/status now (a persistent flag that survives an app restart).
+  if (info) {
+    info.textContent = seeded
+      ? `${names.length} stores · already seeded, not yet evaluated — ▶ Evaluate to score`
+      : `${names.length} stores · not yet seeded/evaluated`;
+  }
 }
 
 async function dockerStart() {
@@ -1107,7 +1380,7 @@ async function dockerStart() {
     const data = await api('/docker/start', { method: 'POST' });
     if (data && data.ok) {
       await refreshDocker();
-      renderEvalPlaceholder(data.loci, data.memory, data.corpus);
+      renderEvalPlaceholder(data.loci, data.memory, data.corpus, data.seeded);
     } else {
       alert('Docker start failed: ' + (data && data.error || 'unknown'));
     }
@@ -1399,6 +1672,30 @@ document.addEventListener('DOMContentLoaded', function() {
   const dockerRunEvalBtn = document.getElementById('docker-run-eval');
   if (dockerRunEvalBtn) dockerRunEvalBtn.addEventListener('click', dockerRunEval);
 
+  // ── Store drill-down modal wiring (all delegated: the rows it targets are
+  // rendered dynamically, so one document-level listener beats re-binding on
+  // every refresh) ──
+  document.addEventListener('click', function(e) {
+    const link = e.target.closest('.sname-link');
+    if (link && link.dataset.store) { openStoreDetail(link.dataset.store); return; }
+    if (e.target.closest('[data-qd-close]')) { closeQd(); return; }
+    const fbtn = e.target.closest('[data-qdfilter]');
+    if (fbtn) { _qd.filter = fbtn.dataset.qdfilter; _qdRenderFilters(); renderQdList(); return; }
+    const qhead = e.target.closest('.qd-qhead');
+    if (qhead) { qhead.parentElement.classList.toggle('open'); return; }
+    const copyBtn = e.target.closest('#qd-copy');
+    if (copyBtn) { qdCopyMarkdown(copyBtn); return; }
+  });
+  document.addEventListener('input', function(e) {
+    if (e.target && e.target.id === 'qd-search') { _qd.search = e.target.value; renderQdList(); }
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      const modal = document.getElementById('qd-modal');
+      if (modal && !modal.hidden) closeQd();
+    }
+  });
+
   // Wire tab clicks (both .tab buttons and .tab-link cross-nav anchors)
   document.querySelectorAll('.tab, .tab-link').forEach(el => {
     el.addEventListener('click', function(e) {
@@ -1492,7 +1789,7 @@ async function offerAdoption() {
         // The Docker view may already have rendered "nothing running"; force both
         // panels to re-read now that app.state actually has the fleet attached.
         if (typeof refreshDocker === 'function') refreshDocker();
-        if (typeof renderEvalPlaceholder === 'function') renderEvalPlaceholder(d.loci, d.memory, d.corpus);
+        if (typeof renderEvalPlaceholder === 'function') renderEvalPlaceholder(d.loci, d.memory, d.corpus, d.seeded);
         if (typeof refreshEval === 'function') refreshEval();
       } else {
         bar.className = 'note adopt-note err';
