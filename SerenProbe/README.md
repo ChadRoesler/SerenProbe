@@ -31,7 +31,7 @@ pip install seren-probe
 seren-probe                       # boots the operator dashboard on :7430
 ```
 
-Open **http://127.0.0.1:7430/viewer**, or drive it headless via `POST /eval/run`. Configure the store URLs in `serenprobe.yaml` (or via `SEREN_PROBE_*` env vars) — see [Configuration](#configuration).
+Open **http://127.0.0.1:7430/viewer**, or drive it headless via `POST /eval/run`. Configure the store URLs in `seren-probe.yaml` (or via `SEREN_PROBE_*` env vars) — see [Configuration](#configuration).
 
 ### 2. The self-contained Docker harness
 

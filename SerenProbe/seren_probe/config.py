@@ -75,10 +75,41 @@ class StoreUrlsConfig:
 
 
 @dataclass
+class UpdatesConfig:
+    """\"Is there a newer seren-probe\" checking. Cosmetic, opt-outable.
+
+    Needs seren-meninges[updates]. Without it the check reports
+    status="unavailable" rather than silently reading as "you're current" -
+    see seren_meninges/updates.py for why that distinction is load-bearing.
+    """
+    enabled: bool = True
+    check_interval_hours: float = 6.0
+    index_url: str = "https://pypi.org/pypi/{distribution}/json"
+    allow_prerelease: bool = False
+
+    @classmethod
+    def from_dict(cls, d: Optional[dict[str, Any]]) -> "UpdatesConfig":
+        d = d or {}
+        default = cls()
+        raw = d.get("check_interval_hours")
+        try:
+            hours = float(raw) if raw is not None else default.check_interval_hours
+        except (TypeError, ValueError):
+            hours = default.check_interval_hours
+        return cls(
+            enabled=bool(d.get("enabled", True)),
+            check_interval_hours=hours if hours > 0 else default.check_interval_hours,
+            index_url=str(d.get("index_url", "") or default.index_url),
+            allow_prerelease=bool(d.get("allow_prerelease", False)),
+        )
+
+
+@dataclass
 class SerenProbeConfig:
     """The whole service: server + tls + store URLs."""
     server: ServerConfig = field(default_factory=lambda: ServerConfig(port=7430))
     tls: TlsConfig = field(default_factory=TlsConfig)
+    updates: UpdatesConfig = field(default_factory=UpdatesConfig)
     stores: StoreUrlsConfig = field(default_factory=StoreUrlsConfig)
 
 
@@ -121,14 +152,23 @@ def load_config(path: Optional[str] = None) -> SerenProbeConfig:
     cfg_path = Path(os.path.expanduser(candidate))
     if cfg_path.is_file():
         try:
-            with open(cfg_path) as f:
+            # encoding= IS NOT OPTIONAL. Without it Python uses the LOCALE
+            # codec - cp1252 on Windows - and the yaml sample opens with a
+            # `# ═══` banner (U+2550 -> E2 95 90), so byte 0x90 raises
+            # UnicodeDecodeError at position 4. The except below then swallows
+            # it and hands back {}, meaning a Windows operator's ENTIRE config
+            # is silently ignored while they stare at the values they just
+            # set. Leniency is right for a MALFORMED file; it must not be what
+            # hides a file we simply failed to read.
+            with open(cfg_path, encoding="utf-8") as f:
                 data = yaml.safe_load(f) or {}
         except Exception:  # noqa: BLE001 - unreadable degrades to defaults
             data = {}
 
     server = ServerConfig.from_dict(data.get("server"), default_port=7430)
     tls = TlsConfig.from_dict(data.get("tls"))
+    updates = UpdatesConfig.from_dict(data.get("updates"))
     stores = StoreUrlsConfig.from_dict(data.get("stores"))
 
-    cfg = SerenProbeConfig(server=server, tls=tls, stores=stores)
+    cfg = SerenProbeConfig(server=server, tls=tls, stores=stores, updates=updates)
     return _apply_env_overrides(cfg)

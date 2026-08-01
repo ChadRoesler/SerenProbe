@@ -38,7 +38,7 @@
     <Content Include="docker-compose.yml" />
     <Content Include="Dockerfile" />
     <Content Include="pyproject.toml" />
-    <Content Include="serenprobe.service.sample" />
+    <Content Include="seren-probe.service.sample" />
     <Content Include="serenprobe.yaml.sample" />
     <Content Include="seren_probe\dockerfiles\corpus.Dockerfile" />
     <Content Include="seren_probe\dockerfiles\loci.Dockerfile" />

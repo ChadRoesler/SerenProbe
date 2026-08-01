@@ -6,7 +6,7 @@ The FastAPI application for the SerenProbe RAG evaluation suite. Wires the
 operator dashboard with endpoints for running evaluations and live configuration.
 
 ENDPOINTS:
-    GET  /                     - service info + version
+    GET  /                     - service info + version  + update status
     GET  /health               - liveness
     GET  /viewer               - the SerenProbe operator dashboard
     GET  /eval/results         - latest full eval results
@@ -42,14 +42,14 @@ from .routes import config as config_routes
 from .routes import docker as docker_routes
 
 from seren_meninges import get_version
+from seren_meninges.updates import updates_payload
 from seren_meninges.auth import bearer_auth_middleware
 from seren_meninges.viewer import render_from_dir
 from seren_sinew.request_log import RequestLoggingMiddleware
 
 from . import __version__ as _fallback_version
 APP_VERSION = get_version("seren-probe", fallback=_fallback_version)
-
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 
 def create_app(config: SerenProbeConfig | None = None) -> FastAPI:
@@ -80,8 +80,8 @@ def create_app(config: SerenProbeConfig | None = None) -> FastAPI:
         app.state._mcp_state_ref = _mcp_state_ref
         _mcp_state_ref["eval_results"] = app.state.eval_results
 
-        print(f"[seren-probe] viewer ready on {cfg.server.host}:{cfg.server.port}")
-        print(f"[seren-probe] stores: memory={cfg.stores.memory_url} "
+        log.info(f"[seren-probe] viewer ready on {cfg.server.host}:{cfg.server.port}")
+        log.info(f"[seren-probe] stores: memory={cfg.stores.memory_url} "
               f"loci-nv={cfg.stores.loci_nv_url} loci-v={cfg.stores.loci_v_url} "
               f"scc-nv={cfg.stores.scc_nv_url} scc-v={cfg.stores.scc_v_url}")
 
@@ -91,17 +91,17 @@ def create_app(config: SerenProbeConfig | None = None) -> FastAPI:
             mcp_server = mount_mcp_routes(app)
         except ImportError as exc:
             mcp_server = None
-            print(f"[seren-probe] MCP surface not available; HTTP-only mode ({exc})")
+            log.warning(f"[seren-probe] MCP surface not available; HTTP-only mode ({exc})")
         except Exception as exc:  # noqa: BLE001
             mcp_server = None
-            print(f"[seren-probe] MCP mount failed: {exc!r} - continuing without MCP")
+            log.warning(f"[seren-probe] MCP mount failed: {exc!r} - continuing without MCP")
 
         # Enter the MCP session manager's task group if mounted.
         async with AsyncExitStack() as _mcp_stack:
             session_manager = getattr(mcp_server, "session_manager", None)
             if session_manager is not None:
                 await _mcp_stack.enter_async_context(session_manager.run())
-                print("[seren-probe] MCP session manager running")
+                log.info("[seren-probe] MCP session manager running")
             yield
 
         # -- Shutdown: tear down any running Docker container --
@@ -111,7 +111,7 @@ def create_app(config: SerenProbeConfig | None = None) -> FastAPI:
                 from .runtime.docker_env import stop_container as _stop
                 _stop(docker_state)
             except Exception as e:
-                logger.warning("Docker teardown on shutdown: %s", e)
+                log.warning("Docker teardown on shutdown: %s", e)
 
         print("[seren-probe] shut down")
 
@@ -132,15 +132,48 @@ def create_app(config: SerenProbeConfig | None = None) -> FastAPI:
         env_prefix="SEREN_PROBE",
     )
 
+    # ── Update checker ───────────────────────────────────────
+    # "is there a newer seren-workbench". Cosmetic: it polls on a TTL,
+    # never in the request path, and every failure mode is a status string
+    # rather than an exception.
+    #
+    # The try/except guards the IMPORT, because a Meninges older than 2.0.0
+    # has no updates module. The gate is DELIBERATELY VISIBLE - state stays
+    # None and GET / reports status="unavailable" with a reason. A silent
+    # fallback would render as "you're up to date", which is the exact
+    # failure shape that let mcp 2.0.0 quietly delete this service's /mcp
+    # endpoint without anything going red.
+    try:
+        from seren_meninges.updates import UpdateChecker
+        app.state.updates = UpdateChecker(
+            "seren-probe",
+            enabled=cfg.updates.enabled,
+            index_url=cfg.updates.index_url,
+            ttl_seconds=cfg.updates.check_interval_hours * 3600.0,
+            allow_prerelease=cfg.updates.allow_prerelease,
+            fallback_version=APP_VERSION,
+        )
+    # Catch EVERYTHING, not just ImportError. This whole feature is cosmetic -
+    # seren_meninges/version.py states the contract: a version read must never
+    # crash startup. A too-narrow catch here already bit us: cfg.updates was
+    # missing, the AttributeError sailed past `except ImportError`, and five
+    # services failed to boot on a feature that only draws a badge.
+    except Exception as exc:
+        app.state.updates = None
+        log.warning("update checking unavailable (%s)", exc)
+
     viewer_dir = Path(__file__).resolve().parent / "viewer" / "ui"
 
     # -- Info routes --
     @app.get("/")
-    async def root():
+    async def root(request: Request):
         return {
             "service": "SerenProbe",
             "version": APP_VERSION,
             "stores": 5,
+            "updates": await updates_payload(
+                getattr(request.app.state, "updates", None),
+                distribution="seren-probe", installed=APP_VERSION),
         }
 
     @app.get("/health")
