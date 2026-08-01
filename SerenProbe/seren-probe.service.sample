@@ -22,7 +22,7 @@ User=__TARGET_USER__
 WorkingDirectory=/home/__TARGET_USER__/seren-probe
 
 # Use the venv's python. Adjust the venv path to wherever you installed.
-ExecStart=/home/__TARGET_USER__/seren-venvs/probe/bin/python -m serenprobe --config /home/__TARGET_USER__/seren-probe/serenprobe.yaml
+ExecStart=/home/__TARGET_USER__/seren-venvs/probe/bin/python -m serenprobe --config /home/__TARGET_USER__/seren-probe/seren-probe.yaml
 
 # Force UTF-8 stdio regardless of locale.
 Environment=PYTHONUTF8=1
