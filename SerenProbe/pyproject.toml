@@ -20,7 +20,7 @@ dependencies = [
     "httpx>=0.27.0",
     # The shared Seren core: token resolution, config/version helpers, the auth
     # middleware, the viewer baseplate.
-    "seren-meninges>=2.0.0,<3",
+    "seren-meninges>=2.1.0,<3",
     # Shared request logging.
     "seren-sinew>=1.0.0,<2",
 ]
@@ -56,10 +56,10 @@ dev = [
 # Meninges extra rather than httpx/packaging directly - the check lives in
 # seren_meninges.updates and only one repo should own that dep set.
 #
-# The floor matches the core dep above: updates.py landed in Meninges 2.0.0.
+# The floor matches the core dep above: updates.py landed in 2.0.0 and updates_payload in 2.1.0.
 # Resolve anything older and the lifespan import fails, leaving you with
 # status="unavailable" forever and no obvious reason why.
-updates = ["seren-meninges[updates]>=2.0.0,<3"]
+updates = ["seren-meninges[updates]>=2.1.0,<3"]
 
 [project.scripts]
 seren-probe = "seren_probe.__main__:main"
