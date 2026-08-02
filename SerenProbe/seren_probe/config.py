@@ -140,6 +140,11 @@ def _apply_env_overrides(cfg: SerenProbeConfig) -> SerenProbeConfig:
         cfg.stores.scc_v_url = v
     if v := env.get("SEREN_PROBE_CAPTURE_PATH"):
         cfg.stores.capture_path = v
+    # Update checking is cosmetic, so it gets a deploy-time off switch that
+    # needs no config file - handy for a systemd unit or a locked-down box
+    # that must not make outbound calls.
+    if (v := os.getenv("SEREN_PROBE_UPDATES_ENABLED")) is not None:
+        cfg.updates.enabled = v.strip().lower() in ("1", "true", "yes", "on")
     return cfg
 
 
