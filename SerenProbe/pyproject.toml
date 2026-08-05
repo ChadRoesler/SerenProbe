@@ -45,7 +45,7 @@ mcp = [
     #
     # Lift the cap in the same commit that ports server.py to the MCPServer
     # API - across the whole family at once, since they're copies.
-    "mcp>=1.0.0,<2",
+    "mcp>=1.0.0,<3",
 ]
 dev = [
     "pytest>=8.0",
