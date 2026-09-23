@@ -216,3 +216,17 @@ def test_the_template_compiles_and_its_example_refs_resolve(monkeypatch):
     decoy = [n for n in topo.loci if n.name == "decoy"]
     assert decoy and decoy[0].name in ei.seed_by_store, "the decoy store has no seed"
     assert not any("could not" in w.lower() or "missing" in w.lower() for w in ei.warnings), ei.warnings
+
+
+def test_the_tool_impl_imports_without_the_mcp_extra(tmp_path):
+    """CI installs the package without [mcp]. The impl class has no use for the
+    SDK - only register_tools does - so importing it must not require one. It
+    did, for a type annotation, and collection of this very file died in CI."""
+    import subprocess, sys
+    (tmp_path / "mcp.py").write_text('raise ImportError("mcp is not installed (simulated CI)")\n',
+                                     encoding="utf-8")
+    env = {**__import__("os").environ, "PYTHONPATH": str(tmp_path)}
+    r = subprocess.run([sys.executable, "-c",
+                        "from seren_probe.mcp.tools import ProbeToolImpl; print('ok')"],
+                       capture_output=True, text=True, env=env, cwd=str(PKG))
+    assert r.returncode == 0 and "ok" in r.stdout, r.stderr
