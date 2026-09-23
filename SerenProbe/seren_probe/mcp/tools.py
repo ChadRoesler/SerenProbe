@@ -22,14 +22,15 @@ construction rather than by a second copy of the code.
 from __future__ import annotations
 
 import logging
-from typing import Any
-
-from mcp.server.fastmcp import FastMCP
+from typing import TYPE_CHECKING, Any
 
 from ..runtime.eval_run import (
     EvalFailed, EvalInputError, NoTopologyRunning, configured_store_count, lean,
     run_topology_eval,
 )
+
+if TYPE_CHECKING:   # the SDK is the [mcp] extra; the impl itself never needs it
+    from mcp.server.fastmcp import FastMCP
 
 logger = logging.getLogger(__name__)
 
@@ -101,7 +102,7 @@ class ProbeToolImpl:
         }
 
 
-def register_tools(mcp: FastMCP, impl: ProbeToolImpl) -> None:
+def register_tools(mcp: "FastMCP", impl: ProbeToolImpl) -> None:
     """Wire every method of a ProbeToolImpl onto a FastMCP instance."""
     mcp.tool(name="run_evaluation")(impl.run_evaluation)
     mcp.tool(name="get_eval_results")(impl.get_eval_results)
