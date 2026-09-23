@@ -9,6 +9,7 @@ import argparse
 import sys
 
 import uvicorn
+from seren_meninges.exposure import enforce_server
 
 from .app import create_app
 from .config import load_config
@@ -51,12 +52,11 @@ def main() -> None:
     args = parser.parse_args()
 
     cfg = load_config(args.config)
+    # FIRST: an open bind with no token is refused here, at zero cost, with the
+    # three ways out printed.
+    enforce_server(cfg.server, service="seren-probe", env_prefix="SEREN_PROBE")
     _maybe_inject_truststore(cfg)
     app = create_app(cfg)
-
-    print(f"[seren-probe] listening on {cfg.server.host}:{cfg.server.port}")
-    print(f"[seren-probe] auth: "
-          f"{'enabled' if cfg.server.bearer_token else 'DISABLED (no token)'}")
 
     uvicorn.run(app, host=cfg.server.host, port=cfg.server.port, log_level="info")
 
