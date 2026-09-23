@@ -1430,26 +1430,6 @@ async function dockerStop() {
   }
 }
 
-async function dockerRunEval() {
-  const btn = document.getElementById('docker-run-eval');
-  const orig = btn.textContent;
-  btn.textContent = 'running…';
-  btn.disabled = true;
-  try {
-    const data = await api('/docker/run-eval', { method: 'POST' });
-    if (data && data.ok) {
-      alert('Eval complete! Results loaded. Switch to the Eval tab to view.');
-      await refreshDocker();
-    } else {
-      alert('Docker run-eval failed: ' + (data && data.error || 'unknown'));
-    }
-  } catch (e) {
-    alert('Docker error: ' + (e.message || e));
-  } finally {
-    btn.textContent = orig;
-    btn.disabled = false;
-  }
-}
 
 // ── Init ────────────────────────────────────────────────────────────
 async function refreshConfig() {
@@ -1687,8 +1667,6 @@ document.addEventListener('DOMContentLoaded', function() {
   if (dockerStartBtn) dockerStartBtn.addEventListener('click', dockerStart);
   const dockerStopBtn = document.getElementById('docker-stop');
   if (dockerStopBtn) dockerStopBtn.addEventListener('click', dockerStop);
-  const dockerRunEvalBtn = document.getElementById('docker-run-eval');
-  if (dockerRunEvalBtn) dockerRunEvalBtn.addEventListener('click', dockerRunEval);
 
   // ── Store drill-down modal wiring (all delegated: the rows it targets are
   // rendered dynamically, so one document-level listener beats re-binding on

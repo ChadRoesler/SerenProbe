@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════════════
-#  serenprobe.yaml - config for SerenProbe (RAG Evaluation Viewer)
+#  seren-probe.yaml - config for SerenProbe (RAG Evaluation Viewer)
 # ═══════════════════════════════════════════════════════════════════════
 #
 #  Copy to seren-probe.yaml, edit, and run:
@@ -22,17 +22,27 @@ server:
   #   A host beyond loopback with no token REFUSES TO START and prints the
   #   three ways out. Set this true (or <PREFIX>_ALLOW_OPEN_LAN=1) to run open on
   #   purpose - a trusted LAN, a lab - and it will say so on every boot.
-  port: 7430             # family convention: memory 7420, loci-vector 7421,
-                          # loci-nv 7422, scc-nv 7423, scc-vector 7424, probe 7430
+  port: 7430             # family map: lodestar 6361, memory 7420, margin 7421,
+                          # loci 7422, callosum 7423, workbench 7425, probe 7430,
+                          # observatory 7777. There is ONE Loci per box; "vector"
+                          # is a flag on it, not a second port.
+  # Pointer, not secret: prefer bearer_token_env / bearer_token_keyring.
   bearer_token: ""
 
 stores:
-  # URLs for the live services the eval suite talks to.
-  memory_url: http://127.0.0.1:7420
-  loci_nv_url: http://127.0.0.1:7422    # Loci without vector (nano floor)
-  loci_v_url: http://127.0.0.1:7421     # Loci with vector (associative)
-  scc_nv_url: http://127.0.0.1:7423     # CorpusCallosum without vector (fans memory + loci-nv)
-  scc_v_url: http://127.0.0.1:7424      # CorpusCallosum with vector (fans memory + loci-v)
+  # DELIBERATELY EMPTY. These are the addresses of the operator's LIVE brain,
+  # and nothing in the evaluation path reads them: SerenProbe only scores
+  # containers it spun up itself (POST /docker/start), and write_guard refuses
+  # a write anywhere else. They survive as an operator-settable display on
+  # /eval/config and nothing more. This sample used to hand you all five
+  # filled in - and put loci_v on 7421, which is SerenMargin's port. An
+  # address you have to TYPE is a decision; one that arrives as a default is
+  # an accident waiting for a tired Tuesday.
+  # memory_url: ""
+  # loci_nv_url: ""
+  # loci_v_url: ""
+  # scc_nv_url: ""
+  # scc_v_url: ""
   # Path for locomo sweep captures.
   capture_path: /tmp/scc_capture2.json
 

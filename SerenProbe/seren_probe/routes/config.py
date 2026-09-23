@@ -9,6 +9,7 @@ from fastapi import APIRouter, Request
 
 from .._version import __version__ as _fallback_version
 from seren_meninges import get_version
+from ..runtime.eval_run import configured_store_count
 
 APP_VERSION = get_version("seren-probe", fallback=_fallback_version)
 
@@ -20,7 +21,7 @@ async def get_config(request: Request):
     scfg = request.app.state.store_config
     return {
         "version": APP_VERSION,
-        "stores": 5,
+        "stores": configured_store_count(scfg),
         **scfg,
     }
 

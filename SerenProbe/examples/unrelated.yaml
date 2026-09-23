@@ -1,0 +1,22 @@
+# ═══════════════════════════════════════════════════════════════════════
+#  unrelated.yaml - a DECOY seed for a negative-test store.
+# ═══════════════════════════════════════════════════════════════════════
+#
+#  Mark a Loci `NegativeTest: true` and point its Seed here. It is seeded
+#  with ONLY this - never the meridian corpus - so the eval can prove the
+#  store STAYS QUIET on questions it should not be able to answer. A hit
+#  from this store on a meridian question is a leak, and the Eval tab says
+#  so instead of showing a bare zero.
+#
+#  Nothing here overlaps meridian's vocabulary on purpose: same seed shape
+#  ({project?, key, value, why?}), different world.
+# ═══════════════════════════════════════════════════════════════════════
+
+- { project: orchard, key: orchard/rootstock,     value: "M9 dwarfing",
+    why: "keeps the trees pickable from the ground; no ladders after the fall" }
+- { project: orchard, key: orchard/first_frost,   value: "around 12 October",
+    why: "cider pressing has to finish before it; late apples go to the pigs" }
+- { project: orchard, key: orchard/press_capacity, value: "40 litres per run",
+    why: "the rack-and-cloth press was sized for one family, not a cooperative" }
+- { project: orchard, key: orchard/bee_hives,     value: "3",
+    why: "two was not enough for the far rows to set fruit in 2024" }

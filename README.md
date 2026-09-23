@@ -31,7 +31,7 @@ pip install seren-probe
 seren-probe                       # boots the operator dashboard on :7430
 ```
 
-Open **http://127.0.0.1:7430/viewer**, or drive it headless via `POST /eval/run`. Configure the store URLs in `serenprobe.yaml` (or via `SEREN_PROBE_*` env vars) - see [Configuration](#configuration).
+Open **http://127.0.0.1:7430/viewer**, or drive it headless via `POST /eval/run`. Configure the bind and token in `seren-probe.yaml` (or via `SEREN_PROBE_*` env vars) - see [Configuration](#configuration).
 
 ### 2. The self-contained Docker harness
 
@@ -43,7 +43,7 @@ ProbeConfig.yml  →  compile  →  emit compose  →  docker up  →  seed  →
 
 The compiler is **correct-by-construction**: it wires inter-container traffic with container-DNS URLs (never `localhost`), publishes host ports only for the eval harness, and - critically - wires each SCC to *its own* Loci. Pointing `scc-nv` and `scc-v` at the same Loci instance is the one silent failure that quietly poisons a whole comparison, so the topology compiler refuses to let you do it by accident and *tells you* when your config drifts toward it.
 
-Kick it off from the dashboard (Docker tab) or `POST /docker/run-eval`.
+Kick it off from the dashboard (**▶ Start** on the Docker tab, then **Evaluate** on the Eval tab) or headless: `POST /docker/start`, then `POST /eval/run`.
 
 ---
 
@@ -53,21 +53,21 @@ Kick it off from the dashboard (Docker tab) or `POST /docker/run-eval`.
 
 ```yaml
 ProbeConfig:
-  StartingPort: 7420
+  StartingPort: 7520
   Loci:
     LociCount: 2
     LociConfigs:
-      - { Name: loci-v,  Port: 7421, Flags: [vector] }   # hybrid
-      - { Name: loci-nv, Port: 7422 }                     # FTS5-only (nano floor)
+      - { Name: loci-v,  Port: 7521, Flags: [vector] }   # hybrid
+      - { Name: loci-nv, Port: 7522 }                     # FTS5-only (nano floor)
   Memory:
     MemoryCount: 1
     MemoryConfigs:
-      - { Name: mem, Port: 7420 }
+      - { Name: mem, Port: 7520 }
   Corpus:
     CorpusCount: 2
     CorpusConfigs:
-      - { Name: scc-v,  Port: 7424, Stores: [{ Store: loci-v },  { Store: mem }] }
-      - { Name: scc-nv, Port: 7423, Stores: [{ Store: loci-nv }, { Store: mem }] }
+      - { Name: scc-v,  Port: 7524, Stores: [{ Store: loci-v },  { Store: mem }] }
+      - { Name: scc-nv, Port: 7523, Stores: [{ Store: loci-nv }, { Store: mem }] }
 ```
 
 What it does for you:
@@ -107,11 +107,11 @@ SCC additionally reports **docket_coverage** (fraction of expected facts found *
 It's **read-only** (only ever `POST /search`, never seeds or mutates), refuses to run without explicit dev-store URLs, and can sweep a saved trace fully offline with nothing live attached. Capture once on the dev rig, then tune all day on a plane.
 
 ```bash
-# capture on the dev rig + sweep, save the trace
+# capture from the harness pod (or a dev rig - never your live stack), save the trace
 python -m seren_probe.regrade \
-    --memory-url http://127.0.0.1:7420 \
-    --loci-nv-url http://127.0.0.1:7422 \
-    --loci-v-url  http://127.0.0.1:7421 \
+    --memory-url http://127.0.0.1:7520 \
+    --loci-nv-url http://127.0.0.1:7522 \
+    --loci-v-url  http://127.0.0.1:7521 \
     --save-capture /tmp/scc_capture.json
 
 # later, re-sweep the frozen trace, nothing live attached
@@ -122,18 +122,17 @@ python -m seren_probe.regrade --load-capture /tmp/scc_capture.json
 
 ## Configuration
 
-Resolution order, later wins: **built-in defaults → `serenprobe.yaml` → `SEREN_PROBE_*` env vars.** A missing config file is fine - defaults plus env is a valid zero-config run.
+Resolution order, later wins: **built-in defaults → `seren-probe.yaml` → `SEREN_PROBE_*` env vars.** A missing config file is fine - defaults plus env is a valid zero-config run.
 
-Copy `serenprobe.yaml.sample` to `serenprobe.yaml` and edit, or set env vars (`SEREN_PROBE_PORT`, `SEREN_PROBE_MEMORY_URL`, `SEREN_PROBE_BEARER_TOKEN`, …). The default store layout follows the Seren family port convention:
+Copy `seren-probe.yaml.sample` to `seren-probe.yaml` and edit, or set env vars (`SEREN_PROBE_PORT`, `SEREN_PROBE_BEARER_TOKEN`, …). The `stores:` block is empty on purpose: SerenProbe scores the containers it starts, never your live stack, and the harness publishes them in its own band so the two can never be confused:
 
-| Service | Port |
+| | Port |
 |---|---|
-| SerenMemory | 7420 |
-| SerenLoci (vector) | 7421 |
-| SerenLoci (no-vector) | 7422 |
-| SCC (no-vector) | 7423 |
-| SCC (vector) | 7424 |
 | **SerenProbe dashboard** | **7430** |
+| Harness containers (from your ProbeConfig; the template starts at) | 7520+ |
+| Your live stack, for reference: Lodestar 6361, Memory 7420, Margin 7421, Loci 7422, Callosum 7423, Workbench 7425, Observatory 7777 | never targeted |
+
+One Loci per box: "vector" is a flag on it, not a second service. The `loci-v` / `loci-nv` pairs you see in a ProbeConfig are two harness *containers* of the same store, stood up side by side so the flag can be measured.
 
 ---
 

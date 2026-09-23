@@ -1,8 +1,13 @@
 """
-Docker routes - /docker/start, /docker/stop, /docker/status, /docker/run-eval,
-/docker/config, /docker/validate.
+Docker routes - /docker/start, /docker/stop, /docker/status, /docker/config,
+/docker/validate.
 
 Manages the Docker test environment lifecycle and deployment configuration.
+
+There is no /docker/run-eval any more. It called launch_and_eval(), the retired
+fixed-five-store one-shot, which raised on every call - so the route was a
+guaranteed 500 that both READMEs and the dashboard's "Run Eval" button pointed
+at. The one-shot is two calls now: POST /docker/start, then POST /eval/run.
 """
 from __future__ import annotations
 
@@ -226,18 +231,6 @@ async def docker_status(request: Request):
         status["managed"] = True
         return status
     return {"managed": False, "running": False, "exists": False}
-
-
-@router.post("/run-eval")
-async def docker_run_eval(request: Request):
-    try:
-        from ..runtime.docker_env import launch_and_eval
-        results = await run_in_threadpool(launch_and_eval)
-        request.app.state.eval_results = results.get("eval", results)
-        return {"ok": True, "results": results}
-    except Exception as exc:
-        logger.error("Docker run-eval failed: %s", exc)
-        raise HTTPException(status_code=500, detail=str(exc))
 
 
 # ── Config management ─────────────────────────────────────────────────

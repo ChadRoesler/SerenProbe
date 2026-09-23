@@ -31,7 +31,7 @@ pip install seren-probe
 seren-probe                       # boots the operator dashboard on :7430
 ```
 
-Open **http://127.0.0.1:7430/viewer**, or drive it headless via `POST /eval/run`. Configure the store URLs in `seren-probe.yaml` (or via `SEREN_PROBE_*` env vars) — see [Configuration](#configuration).
+Open **http://127.0.0.1:7430/viewer**, or drive it headless via `POST /eval/run`. Configure the bind and token in `seren-probe.yaml` (or via `SEREN_PROBE_*` env vars) — see [Configuration](#configuration).
 
 ### 2. The self-contained Docker harness
 
@@ -43,7 +43,7 @@ ProbeConfig.yml  →  compile  →  emit compose  →  docker up  →  seed  →
 
 The compiler is **correct-by-construction**: it wires inter-container traffic with container-DNS URLs (never `localhost`), publishes host ports only for the eval harness, and — critically — wires each SCC to *its own* Loci. Pointing `scc-nv` and `scc-v` at the same Loci instance is the one silent failure that quietly poisons a whole comparison, so the topology compiler refuses to let you do it by accident and *tells you* when your config drifts toward it.
 
-Kick it off from the dashboard (Docker tab) or `POST /docker/run-eval`.
+Kick it off from the dashboard (**▶ Start** on the Docker tab, then **Evaluate** on the Eval tab) or headless: `POST /docker/start`, then `POST /eval/run`.
 
 ---
 
@@ -53,21 +53,21 @@ Kick it off from the dashboard (Docker tab) or `POST /docker/run-eval`.
 
 ```yaml
 ProbeConfig:
-  StartingPort: 7420
+  StartingPort: 7520
   Loci:
     LociCount: 2
     LociConfigs:
-      - { Name: loci-v,  Port: 7421, Flags: [vector] }   # hybrid
-      - { Name: loci-nv, Port: 7422 }                     # FTS5-only (nano floor)
+      - { Name: loci-v,  Port: 7521, Flags: [vector] }   # hybrid
+      - { Name: loci-nv, Port: 7522 }                     # FTS5-only (nano floor)
   Memory:
     MemoryCount: 1
     MemoryConfigs:
-      - { Name: mem, Port: 7420 }
+      - { Name: mem, Port: 7520 }
   Corpus:
     CorpusCount: 2
     CorpusConfigs:
-      - { Name: scc-v,  Port: 7424, Stores: [{ Store: loci-v },  { Store: mem }] }
-      - { Name: scc-nv, Port: 7423, Stores: [{ Store: loci-nv }, { Store: mem }] }
+      - { Name: scc-v,  Port: 7524, Stores: [{ Store: loci-v },  { Store: mem }] }
+      - { Name: scc-nv, Port: 7523, Stores: [{ Store: loci-nv }, { Store: mem }] }
 ```
 
 What it does for you:
@@ -93,17 +93,17 @@ A **seed file** is a flat list of items (the store→data mapping lives in the c
 - { tier: short, ref: auth-incident, content: "auth threw 401s after a clock-skew bug", topic: auth }
 ```
 
-Wire them into the ProbeConfig — a **shared** `Questions` (scored across every store, which is what keeps the comparison honest), per-kind default seeds, and optional per-node `Seed` overrides:
+Wire them into the ProbeConfig — a `DefaultQuestions` set (scored across every store unless a node names its own `Questions:`, which is how a multi-brain dataset points the right questions at the right brain), per-kind default seeds, and optional per-node `Seed` overrides:
 
 ```yaml
 ProbeConfig:
-  Questions:          examples/meridian.questions.yaml
+  DefaultQuestions:   examples/meridian.questions.yaml
   DefaultLociSeed:    examples/meridian.loci.yaml      # every Loci without its own Seed
   DefaultMemorySeed:  examples/meridian.memory.yaml    # every Memory without its own Seed
   Loci:
     LociConfigs:
-      - { Name: loci-v, Port: 7421, Flags: [vector] }
-      - { Name: decoy,  Port: 7429, NegativeTest: true, Seed: examples/unrelated.yaml }
+      - { Name: loci-v, Port: 7521, Flags: [vector] }
+      - { Name: decoy,  Port: 7529, NegativeTest: true, Seed: examples/unrelated.yaml }
   # ... Memory / Corpus ...
 ```
 
@@ -120,7 +120,7 @@ The **corpus** questions are where docket coverage earns its keep: give each *se
 
 **Negative (decoy) stores.** Mark a store `NegativeTest: true` and give it an unrelated `Seed`, and it's seeded with *only* that decoy — never the defaults — so you can prove a store *stays quiet* on questions it shouldn't answer. It's kept out of the catch-all, and the Eval tab reads it as ✓ *stayed quiet* / ✗ *leaked* instead of a bare zero.
 
-A complete, validated example ships in [`examples/`](examples/): `meridian.loci.yaml` + `meridian.memory.yaml` + `meridian.questions.yaml` — a small interlocking fictional stack with three multi-fact briefing questions. Point the ProbeConfig's `Default*Seed` / `Questions` at them (or inline the content for a fully self-contained upload), then just `POST /eval/run` with an empty body.
+A complete, validated example ships in [`examples/`](examples/): `meridian.loci.yaml` + `meridian.memory.yaml` + `meridian.questions.yaml` — a small interlocking fictional stack with three multi-fact briefing questions — plus `unrelated.yaml`, an off-topic seed for a decoy store. The test suite loads them, so they cannot quietly stop being true. Point the ProbeConfig's `Default*Seed` / `DefaultQuestions` at them (or inline the content for a fully self-contained upload), then just `POST /eval/run` with an empty body.
 
 Validation is **compassion-first**, same as the compiler: an item with the wrong shape, a question with no way to score it, a negative store with no decoy — each fails loud and kind, all at once, naming the fix.
 
@@ -229,11 +229,11 @@ SCC Docket — with vs without edges     30 questions · k=10
 It's **read-only** (only ever `POST /search`, never seeds or mutates), refuses to run without explicit dev-store URLs, and can sweep a saved trace fully offline with nothing live attached. Capture once on the dev rig, then tune all day on a plane.
 
 ```bash
-# capture on the dev rig + sweep, save the trace
+# capture from the harness pod (or a dev rig - never your live stack), save the trace
 python -m seren_probe.regrade \
-    --memory-url http://127.0.0.1:7420 \
-    --loci-nv-url http://127.0.0.1:7422 \
-    --loci-v-url  http://127.0.0.1:7421 \
+    --memory-url http://127.0.0.1:7520 \
+    --loci-nv-url http://127.0.0.1:7522 \
+    --loci-v-url  http://127.0.0.1:7521 \
     --save-capture /tmp/scc_capture.json
 
 # later, re-sweep the frozen trace, nothing live attached
@@ -246,16 +246,15 @@ python -m seren_probe.regrade --load-capture /tmp/scc_capture.json
 
 Resolution order, later wins: **built-in defaults → `seren-probe.yaml` → `SEREN_PROBE_*` env vars.** A missing config file is fine — defaults plus env is a valid zero-config run.
 
-Copy `serenprobe.yaml.sample` to `seren-probe.yaml` and edit, or set env vars (`SEREN_PROBE_PORT`, `SEREN_PROBE_MEMORY_URL`, `SEREN_PROBE_BEARER_TOKEN`, …). The default store layout follows the Seren family port convention:
+Copy `seren-probe.yaml.sample` to `seren-probe.yaml` and edit, or set env vars (`SEREN_PROBE_PORT`, `SEREN_PROBE_BEARER_TOKEN`, …). The `stores:` block is empty on purpose: SerenProbe scores the containers it starts, never your live stack, and the harness publishes them in its own band so the two can never be confused:
 
-| Service | Port |
+| | Port |
 |---|---|
-| SerenMemory | 7420 |
-| SerenLoci (vector) | 7421 |
-| SerenLoci (no-vector) | 7422 |
-| SCC (no-vector) | 7423 |
-| SCC (vector) | 7424 |
 | **SerenProbe dashboard** | **7430** |
+| Harness containers (from your ProbeConfig; the template starts at) | 7520+ |
+| Your live stack, for reference: Lodestar 6361, Memory 7420, Margin 7421, Loci 7422, Callosum 7423, Workbench 7425, Observatory 7777 | never targeted |
+
+One Loci per box: "vector" is a flag on it, not a second service. The `loci-v` / `loci-nv` pairs you see in a ProbeConfig are two harness *containers* of the same store, stood up side by side so the flag can be measured.
 
 ---
 
@@ -291,19 +290,25 @@ CI runs the full matrix on every push and publishes to PyPI (tokenless Trusted P
 
 ```
 seren_probe/
-  topology.py        # ProbeConfig → validated CompiledTopology (the compiler)
-  topology_emit.py   # CompiledTopology → docker compose + per-corpus wiring
-  seed_dataset.py    # flat seed items + questions, ref→id capture, honest ground truth
-  resolve.py         # ProbeConfig refs → per-store seed plan + shared questions
-  live_eval.py       # topology-driven + legacy live-store evaluation
-  metrics.py         # the retrieval + docket scoring math
-  docket.py          # pairs the SCC columns → the with/without-edges delta
-  regrade.py         # capture-once / replay-many SCC fusion sweep
-  runner.py          # in-process per-store evaluation runner
-  app.py             # FastAPI dashboard: /eval, /docker, /viewer, /mcp
-  viewer/            # the operator dashboard UI
-tests/               # transport-injected, no live stack required
-examples/            # a ready-to-upload seed dataset + question set
+  core/                # the PURE layer: nothing here can reach a store
+    topology.py        #   ProbeConfig → validated CompiledTopology (the compiler)
+    topology_emit.py   #   CompiledTopology → docker compose + per-corpus wiring
+    seed_dataset.py    #   flat seed items + questions, ref→id capture, honest ground truth
+    resolve.py         #   ProbeConfig refs → per-store seed plan + questions
+    metrics.py         #   the retrieval + docket scoring math
+    docket.py          #   pairs the SCC columns → the with/without-edges delta
+  runtime/             # the LIVE layer: the only modules allowed to speak httpx
+    live_eval.py       #   topology-driven evaluation
+    eval_run.py        #   the one "run the eval" both the route and the MCP tool call
+    regrade.py         #   capture-once / replay-many SCC fusion sweep
+    docker_env.py      #   compile → emit → compose up → health-gate, adopt, teardown
+    write_guard.py     #   refuses any write that isn't to a container SerenProbe started
+  routes/              # /eval, /docker, /eval/config
+  mcp/                 # the MCP surface (run_evaluation, get_eval_results, get_store_config)
+  app.py               # FastAPI dashboard wiring
+  viewer/              # the operator dashboard UI
+tests/                 # transport-injected, no live stack required
+examples/              # meridian.{loci,memory,questions}.yaml + unrelated.yaml (a decoy seed)
 ```
 
 ---

@@ -7,7 +7,6 @@ Manages the Docker lifecycle for Seren live-store test environments.
 Provides:
   - ``DockerEnv`` context manager: build → start → wait-healthy → yield
     → stop → remove.  The caller runs evals inside the context.
-  - ``launch_and_eval()``: one-shot "spin up, run full eval, tear down".
   - ``container_status()``: lightweight health check without managing
     the container's lifetime (useful when the container is started
     externally).
@@ -860,49 +859,6 @@ class DockerEnv:
         if self.state is not None:
             stop_container(self.state, remove=True)
             self.state = None
-
-
-# ── One-shot convenience ──────────────────────────────────────────────
-
-def launch_and_eval(
-    *,
-    image: str = DEFAULT_IMAGE,
-    container_name: str = DEFAULT_CONTAINER_NAME,
-    memory_port: int = DEFAULT_MEMORY_PORT,
-    loci_v_port: int = DEFAULT_LOCI_V_PORT,
-    loci_nv_port: int = DEFAULT_LOCI_NV_PORT,
-    scc_nv_port: int = DEFAULT_SCC_NV_PORT,
-    scc_v_port: int = DEFAULT_SCC_V_PORT,
-    build_dir: Optional[str] = None,
-    health_timeout: float = HEALTH_CHECK_TIMEOUT,
-    run_locomo: bool = False,
-    run_longmem: bool = False,
-    seed_first: bool = False,
-) -> dict:
-    """RETIRED. The fixed-five-store one-shot path.
-
-    It called `live_eval.run_live_evaluation()` and `dataset.seed_synthetic_dataset()`,
-    both of which are gone -- so this was already an ImportError waiting to be called,
-    and it would have surfaced as a cryptic ModuleNotFoundError from inside a Docker
-    route rather than as a fact about the design.
-
-    Superseded by the topology path: compile a ProbeConfig -> spin_up_topology() ->
-    run_topology_evaluation(). That path assigns every port from the config, wires the
-    corpora correct-by-construction, and only ever addresses containers SerenProbe
-    spun up itself.
-
-    Kept as a symbol (it is exported from __init__ and referenced by a Docker route)
-    so nothing breaks at IMPORT time -- but it fails LOUDLY and says why if called. A
-    dead function that dies with a clear sentence is worth more than one that dies
-    with a stack trace about a module you have never heard of.
-    """
-    raise RuntimeError(
-        "launch_and_eval() is retired. It drove the fixed-5-store single-image path, "
-        "which published its containers onto the operator's REAL store ports "
-        "(-p 7420:7420 and friends) and seeded them from the synthetic corpus. Use the "
-        "topology path instead: POST /docker/start with a ProbeConfig, then POST "
-        "/eval/run. It assigns every port from the config and only ever writes to "
-        "containers it created.")
 
 
 # ── Topology-driven lifecycle (compile → emit → compose up → health-gate) ──

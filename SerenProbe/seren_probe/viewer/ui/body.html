@@ -43,16 +43,15 @@
       <div class="ctrls">
         <button class="btn" id="docker-start" title="Build and start a Docker test environment">▶ Start</button>
         <button class="btn" id="docker-stop" title="Stop and remove the Docker environment">■ Stop</button>
-        <button class="btn" id="docker-run-eval" title="One-shot: start, eval, tear down">⚡ Run Eval</button>
         <button data-refresh="docker">↻</button>
       </div>
     </div>
     <div class="note">
       <span class="label">live store environment:</span>
-      Launches a Docker container with SerenMemory, SerenLoci, and SerenCorpusCallosum
-      pre-configured to talk to each other.  After startup, eval endpoints
-      automatically point at the container.  Use <b>▶ Start</b> to keep it running
-      for multiple evals, or <b>⚡ Run Eval</b> for a one-shot.
+      Stands up the topology your ProbeConfig declares - SerenMemory, SerenLoci
+      and SerenCorpusCallosum containers wired to each other - and health-gates
+      every store.  <b>▶ Start</b> here, then score it from the <b>Eval</b> tab;
+      <b>■ Stop</b> tears the pod down.
     </div>
     <!-- Docker config management -->
     <div class="docker-config-section">

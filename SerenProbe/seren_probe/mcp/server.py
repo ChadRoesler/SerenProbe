@@ -28,10 +28,11 @@ def mount_mcp_routes(app: FastAPI) -> object:
     Called from seren_probe.app at startup IF the [mcp] extras are installed
     (the import gate in app.py catches ImportError when ``mcp`` isn't available).
 
-    Reads app.state.store_config and app.state._mcp_state_ref to wire tools to
-    live state. Returns the FastMCP instance; the caller MUST enter
-    ``mcp.session_manager.run()`` for the app's lifetime (the streamable-HTTP
-    transport's task group lives there) - see app.py's lifespan.
+    Hands the tools the app's state object itself, so they read the same
+    topology_state / compiled_topology / eval_results the routes do. Returns the
+    FastMCP instance; the caller MUST enter ``mcp.session_manager.run()`` for
+    the app's lifetime (the streamable-HTTP transport's task group lives there)
+    - see app.py's lifespan.
     """
     # Imported here, not at module top, so an import failure of ``mcp`` bubbles
     # up to app.py's try/except (HTTP-only fallback) rather than crashing load.
@@ -43,16 +44,14 @@ def mount_mcp_routes(app: FastAPI) -> object:
     if not mount_path.startswith("/"):
         mount_path = "/" + mount_path
 
-    store_config = getattr(app.state, "store_config", None)
-    state_ref = getattr(app.state, "_mcp_state_ref", None)
-    if store_config is None or state_ref is None:
+    if getattr(app.state, "store_config", None) is None:
         raise RuntimeError(
-            "mount_mcp_routes called before app.state.store_config/_mcp_state_ref "
-            "were set. Mount inside the lifespan handler."
+            "mount_mcp_routes called before app.state.store_config was set. "
+            "Mount inside the lifespan handler."
         )
 
     mcp = FastMCP("seren-probe")
-    impl = ProbeToolImpl(store_config=store_config, state_ref=state_ref)
+    impl = ProbeToolImpl(app.state)
     register_tools(mcp, impl)
 
     # -- Bug 1: the double-/mcp footgun --
