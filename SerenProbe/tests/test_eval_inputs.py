@@ -5,7 +5,7 @@ from seren_probe.core.topology import compile_topology
 from seren_probe.core.resolve import resolve_eval_inputs
 from seren_probe.core.seed_dataset import SeedError
 
-EX = Path(__file__).parent / "fixtures"
+EX = Path(__file__).parent.parent / "examples"
 
 
 def _config_driven_topo():

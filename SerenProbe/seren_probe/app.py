@@ -56,9 +56,6 @@ def create_app(config: SerenProbeConfig | None = None) -> FastAPI:
     cfg = config or load_config()
     bearer = cfg.server.resolve_bearer()
 
-    # Shared mutable state that MCP tools also read/write.
-    _mcp_state_ref: dict = {}
-
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         # -- Startup --
@@ -75,11 +72,6 @@ def create_app(config: SerenProbeConfig | None = None) -> FastAPI:
             "scc_v_url": cfg.stores.scc_v_url,
             "capture_path": cfg.stores.capture_path,
         }
-        # MCP state ref - a dict the MCP tools mutate, same references as the
-        # route handlers read. Both see the same values.
-        app.state._mcp_state_ref = _mcp_state_ref
-        _mcp_state_ref["eval_results"] = app.state.eval_results
-
         log.info(f"[seren-probe] viewer ready on {cfg.server.host}:{cfg.server.port}")
         log.info(f"[seren-probe] stores: memory={cfg.stores.memory_url} "
               f"loci-nv={cfg.stores.loci_nv_url} loci-v={cfg.stores.loci_v_url} "
@@ -167,10 +159,16 @@ def create_app(config: SerenProbeConfig | None = None) -> FastAPI:
     # -- Info routes --
     @app.get("/")
     async def root(request: Request):
+        from .runtime.eval_run import configured_store_count
+        ts = getattr(request.app.state, "topology_state", None) or {}
         return {
             "service": "SerenProbe",
             "version": APP_VERSION,
-            "stores": 5,
+            # Live-store URLs the operator typed (normally none) and whether a
+            # pod SerenProbe started is up. This was a literal 5 for a long
+            # time, a leftover from the fixed-five design.
+            "stores": configured_store_count(getattr(request.app.state, "store_config", None)),
+            "topology_running": bool(ts and getattr(request.app.state, "compiled_topology", None)),
             "updates": await updates_payload(
                 getattr(request.app.state, "updates", None),
                 distribution="seren-probe", installed=APP_VERSION),

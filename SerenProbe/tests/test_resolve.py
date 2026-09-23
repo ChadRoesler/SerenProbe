@@ -4,7 +4,7 @@ from seren_probe.core.topology import compile_topology
 from seren_probe.core.resolve import resolve_plan
 from seren_probe.core.seed_dataset import LociItem, MemoryItem, Question
 
-EXAMPLES = Path(__file__).parent / "fixtures"
+EXAMPLES = Path(__file__).parent.parent / "examples"
 
 
 def _fake_loader(mapping):

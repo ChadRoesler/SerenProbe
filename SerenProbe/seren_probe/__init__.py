@@ -32,17 +32,8 @@ except Exception:  # noqa: BLE001 - source checkout without a build
 # evaluation goes through live_eval.run_topology_evaluation, which only ever addresses
 # containers SerenProbe spun up itself.
 
-__all__ = [
-    "__version__",
-    "EvalMetrics",
-    "SerenProbeConfig",
-    "load_config",
-    "DockerEnv",
-    "DockerEnvState",
-    "launch_and_eval",
-    "build_image",
-    "start_container",
-    "wait_for_healthy",
-    "stop_container",
-    "container_status",
-]
+# Only what this module actually defines. The old list named a dozen symbols
+# from config / docker_env that were never imported here, so
+# `from seren_probe import *` raised AttributeError - and one of them was the
+# retired launch_and_eval. Import from the submodules.
+__all__ = ["__version__"]

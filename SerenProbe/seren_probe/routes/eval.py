@@ -15,21 +15,11 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/eval", tags=["eval"])
 
 
-def _lean(results: dict) -> dict:
-    """Drop each store's per-question `q_detail` for the wire. It rides on the
-    snapshot so it persists and rehydrates as ONE object with the run it belongs
-    to -- but a 22-store report's detail is megabytes, and /eval/results is polled.
-    The full object stays in app.state; the drill-down is fetched à la carte from
-    /eval/detail. Non-destructive: builds a shallow copy, never mutates the cache."""
-    if not isinstance(results, dict) or not isinstance(results.get("stores"), dict):
-        return results
-    stores = {}
-    for name, snap in results["stores"].items():
-        if isinstance(snap, dict) and "q_detail" in snap:
-            stores[name] = {k: v for k, v in snap.items() if k != "q_detail"}
-        else:
-            stores[name] = snap
-    return {**results, "stores": stores}
+# The one implementation of "run the eval" lives in runtime.eval_run; the MCP
+# tool calls the same function. `_lean` keeps its old name for the callers here.
+from ..runtime.eval_run import (   # noqa: E402
+    EvalFailed, EvalInputError, NoTopologyRunning, lean as _lean, run_topology_eval,
+)
 
 
 @router.get("/results")
@@ -308,163 +298,31 @@ async def seed_eval(request: Request):
 
 @router.post("/run")
 async def run_eval(request: Request):
-    # Topology path: eval the N stores that docker_start spun up, scoring the
-    # uploaded questions (optionally seeding an uploaded dataset first).
-    ts = getattr(request.app.state, "topology_state", None)
-    topo = getattr(request.app.state, "compiled_topology", None)
-    if ts and topo:
-        from ..runtime.live_eval import run_topology_evaluation
-        from ..core.resolve import resolve_eval_inputs
-        from ..core.seed_dataset import SeedError
-        try:
-            body = await request.json()
-        except Exception:
-            body = {}
-        if not isinstance(body, dict):
-            body = {}
-        # Config-first: seeds + questions come from the compiled ProbeConfig
-        # (DefaultLociSeed / DefaultMemorySeed / per-node Seed / Questions); the
-        # body can still override questions or supply a legacy pools seed.
-        from ..runtime import progress
-        progress.clear_all()
-        try:
-            ei = resolve_eval_inputs(topo, body)
-        except SeedError as e:
-            raise HTTPException(status_code=400, detail={
-                "stage": "validate", "errors": e.errors, "warnings": e.warnings})
-        if not ei.questions:
-            raise HTTPException(
-                status_code=400,
-                detail=("No questions to score against - set DefaultQuestions in the "
-                        "ProbeConfig (or a per-node Questions), or pass body.questions."))
-        # SEED GUARD. seed_from_plan is ADDITIVE - it does NOT clear the stores
-        # first - so seeding an already-seeded pod silently gives you a SECOND copy
-        # of the whole corpus, and every metric quietly lies. A fresh spin-up is
-        # empty (seeded=False) and the first eval seeds it; after that we score what
-        # is already there. An ADOPTED pod is already full. Pass reseed:true only if
-        # you actually want another copy stacked on top.
-        ts_seeded = bool(ts.get("seeded"))
-        force_reseed = bool(body.get("reseed"))
-        do_seed = ei.seed and (not ts_seeded or force_reseed)
-        # RECORD THE SEED BEFORE THE EVAL, NOT AFTER.
-        #
-        # Seeding runs FIRST, inside run_topology_evaluation, and is finished long
-        # before scoring starts. Recording it afterwards makes a completed side
-        # effect conditional on a later, unrelated step succeeding -- so any eval
-        # failure (a /fact timeout on the last corpus, an operator ctrl-C, a store
-        # falling over on question 900) leaves a FULLY SEEDED pod flagged unseeded.
-        # Adopt then carries seeded=False in good faith and the next run seeds a
-        # second copy on top. seed_from_plan is additive; nothing errors; every
-        # metric quietly lies. Observed live: a 54-minute run died at All-scc and
-        # the following eval duplicated short-term and facts across all 22 stores.
-        #
-        # THE TRADEOFF, NAMED. Marking early means a failure DURING seeding leaves
-        # a partially-seeded pod flagged as seeded, and the next eval scores low
-        # instead of topping it up. That is the better failure: low scores are LOUD
-        # and the fix (reseed:true on a partial pod) is one flag, whereas silent
-        # duplication corrupts every number without a single warning. Loud and wrong
-        # beats quiet and wrong.
-        if do_seed:
-            from datetime import datetime
-            ts["seeded"] = True
-            ts["seeded_at"] = datetime.utcnow().isoformat()   # the staleness reference
-            try:
-                from ..runtime.docker_env import save_topology_state, load_topology_state
-                saved = load_topology_state() or {}
-                save_topology_state({**saved, **ts})
-            except Exception as exc:     # noqa: BLE001
-                # Do NOT swallow this silently -- an unpersisted flag is exactly how
-                # the duplicate-corpus bug reaches the next run.
-                logger.warning("could not persist seeded flag before eval: %s", exc)
-        try:
-            # run_in_threadpool: seeding is thousands of BLOCKING httpx round-trips and
-            # takes HOURS on a big corpus. Called directly from this async route it
-            # seizes uvicorn's only worker for the entire seed -- the whole app, viewer
-            # included, is frozen until it finishes. Exactly the bug we fixed in the
-            # Docker routes (blocking subprocess.run in an async def), with a different
-            # victim. /eval/regrade already got this right; /eval/run never did.
-            #
-            # It also gives seed_from_plan a plain worker thread to spawn its own
-            # per-store pool from, instead of fighting the event loop for it.
-            from starlette.concurrency import run_in_threadpool
-            results = await run_in_threadpool(
-                run_topology_evaluation,
-                topo, ts["url_of"], ei.questions,
-                seed_by_store=ei.seed_by_store, seed=do_seed,
-                questions_by_store=ei.questions_by_store,
-                # LOCI+MEMORY PARALLEL, CORPORA SERIAL, QUESTIONS SERIAL.
-                # Independent containers fan out for real concurrency. Corpus
-                # columns then run one at a time regardless of this width --
-                # an SCC fans into member containers that other columns share,
-                # so parallel corpora contend instead of adding throughput. A
-                # single store's own /search calls stay one-at-a-time so the
-                # wall clock reads as "N stores at once" rather than a spray of
-                # overlapping searches against the SAME store no one asked for.
-                # Also forwarded to seed_from_plan, so throttling here throttles
-                # the seed too.
-                max_parallel_stores=body.get("max_parallel_stores", 8),
-                max_parallel_questions=body.get("max_parallel_questions", 1),
-                report_progress=True)
-        except Exception as exc:
-            logger.error("Topology eval failed: %s", exc)
-            raise HTTPException(status_code=500, detail=str(exc))
-        if do_seed:
-            ts["seeded"] = True          # idempotent re-confirm; the authoritative write
-                                         # happened BEFORE the eval, see the note above
-            try:
-                # ..runtime.docker_env, NOT ..docker_env -- docker_env moved into the
-                # runtime layer. The stale path raised ImportError, and the bare except
-                # below ATE IT: the seeded flag was set in memory and never written to
-                # disk, so a restart read seeded=False and the next eval RESEEDED an
-                # already-full pod, stacking a second copy of the corpus. The guard
-                # twenty lines up exists to prevent exactly that, and a swallowed
-                # ImportError quietly walked around it.
-                from ..runtime.docker_env import save_topology_state, load_topology_state
-                saved = load_topology_state() or {}
-                save_topology_state({**saved, **ts})
-            except Exception as exc:     # noqa: BLE001
-                # Still non-fatal -- but it SAYS SO now. A silent pass here is how a
-                # persistence bug hides for a week.
-                logger.warning("could not persist topology state (seeded flag): %s", exc)
-        if ts_seeded and not force_reseed:
-            results = {**results, "seed_skipped": (
-                "stores were already seeded - scored as-is. seed_from_plan is additive, so "
-                "reseeding would stack a second copy of the corpus. Pass reseed:true to force it.")}
-        if ei.warnings:
-            results = {**results, "resolve_warnings": ei.warnings}
-        request.app.state.eval_results = results
-        # PERSIST, so the next process (or an adopt) knows this pod has been scored.
-        # After the results are in app.state and in the response, so a write failure
-        # costs the convenience and never the run.
-        try:
-            from ..runtime.docker_env import save_eval_results
-            from ..core.topology import topology_fingerprint
-            from ..runtime import regrade as _rg
-            save_eval_results(ts.get("project_name", ""), results,
-                              fingerprint=topology_fingerprint(topo),
-                              seeded_at=ts.get("seeded_at", ""),
-                              question_hash=_rg.corpus_question_hash(ei.questions))
-        except Exception as exc:     # noqa: BLE001
-            logger.warning("could not persist eval results: %s", exc)
-        # app.state + disk hold the FULL results (with q_detail); the response is lean,
-        # so the eval-complete payload isn't fat with every column's docket. The viewer
-        # renders the table from this and fetches drill-down from /eval/detail on click.
-        return {"ok": True, "results": _lean(results)}
+    """Score the topology docker_start spun up. The body may carry `reseed`,
+    `max_parallel_stores`, `max_parallel_questions`, `questions`, `seed: false`.
 
-    # NO SILENT FALLBACK TO LIVE STORES. This used to drop through to the legacy
-    # hardcoded-five-store path, which reads its URLs from app.state.store_config --
-    # defaults memory=7420, loci=7421/7422, scc=7423/7424. Those are the OPERATOR'S
-    # REAL STORES. And run_live_evaluation SEEDS them if it finds them empty. So
-    # "hit Run Eval with no topology up" was one click from writing a synthetic
-    # corpus into a live SerenMemory, and the only thing preventing it was that the
-    # real store happened to be non-empty. That is not a safety mechanism, that is
-    # luck. (The write_guard now refuses it at the transport too -- belt AND braces,
-    # because this one already went off once.)
-    raise HTTPException(
-        status_code=400,
-        detail=("No topology is running - Start a topology first (Docker tab). "
-                "SerenProbe only evaluates stores it spun up itself; it will not "
-                "reach out to whatever happens to be listening on the default ports."))
+    Everything that matters - the topology-only rule, the seed guard, the
+    persist-before-eval ordering - is in runtime.eval_run.run_topology_eval,
+    shared with the MCP tool. This route only translates its exceptions into
+    the status codes it always returned: 400 for "nothing to score", 500 for
+    "the evaluator raised".
+    """
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    try:
+        results = await run_topology_eval(request.app.state, body)
+    except NoTopologyRunning as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except EvalInputError as exc:
+        raise HTTPException(status_code=400, detail=exc.detail)
+    except EvalFailed as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+    # app.state + disk hold the FULL results (with q_detail); the response is lean,
+    # so the eval-complete payload isn't fat with every column's docket. The viewer
+    # renders the table from this and fetches drill-down from /eval/detail on click.
+    return {"ok": True, "results": _lean(results)}
 
 
 @router.get("/regrade/results")

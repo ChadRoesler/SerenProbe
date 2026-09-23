@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from seren_probe.core.seed_dataset import load_seed_items, LociItem, MemoryItem, SeedError
 
-EXAMPLES = Path(__file__).parent / "fixtures"
+EXAMPLES = Path(__file__).parent.parent / "examples"
 
 
 def test_flat_loci_list():
