@@ -105,12 +105,36 @@ class UpdatesConfig:
 
 
 @dataclass
+class StorageConfig:
+    """Where SerenProbe keeps its own on-disk state: topology state (so a restart
+    can adopt a running pod), eval results, corpus captures, and saved docker
+    deployment configs (<state_dir>/docker_configs).
+
+    EMPTY MEANS "NOT CONFIGURED", not "the current directory": the historical
+    ~/.seren-probe applies, exactly as before this key existed. Kept as the raw
+    string the operator wrote; runtime/docker_env.py expands ~ and resolves it
+    per call, so nothing is frozen at import.
+
+    Configurable since 2026-09-25, for per-install roots
+    (~/seren/<install>/stores/probe): two clusters on one host sharing one
+    topology_state.json would each adopt the other's pod.
+    """
+    state_dir: str = ""
+
+    @classmethod
+    def from_dict(cls, d: Optional[dict[str, Any]]) -> "StorageConfig":
+        d = d or {}
+        return cls(state_dir=str(d.get("state_dir") or "").strip())
+
+
+@dataclass
 class SerenProbeConfig:
-    """The whole service: server + tls + store URLs."""
+    """The whole service: server + tls + store URLs + where state lives."""
     server: ServerConfig = field(default_factory=lambda: ServerConfig(port=7430))
     tls: TlsConfig = field(default_factory=TlsConfig)
     updates: UpdatesConfig = field(default_factory=UpdatesConfig)
     stores: StoreUrlsConfig = field(default_factory=StoreUrlsConfig)
+    storage: StorageConfig = field(default_factory=StorageConfig)
 
 
 def _apply_env_overrides(cfg: SerenProbeConfig) -> SerenProbeConfig:
@@ -140,6 +164,11 @@ def _apply_env_overrides(cfg: SerenProbeConfig) -> SerenProbeConfig:
         cfg.stores.scc_v_url = v
     if v := env.get("SEREN_PROBE_CAPTURE_PATH"):
         cfg.stores.capture_path = v
+    # docker_env also reads this one directly at resolve time, so it wins even
+    # for code that never went through load_config. Mirrored here so cfg tells
+    # the truth about where state actually lands.
+    if v := env.get("SEREN_PROBE_STATE_DIR", "").strip():
+        cfg.storage.state_dir = v
     # Update checking is cosmetic, so it gets a deploy-time off switch that
     # needs no config file - handy for a systemd unit or a locked-down box
     # that must not make outbound calls.
@@ -174,6 +203,8 @@ def load_config(path: Optional[str] = None) -> SerenProbeConfig:
     tls = TlsConfig.from_dict(data.get("tls"))
     updates = UpdatesConfig.from_dict(data.get("updates"))
     stores = StoreUrlsConfig.from_dict(data.get("stores"))
+    storage = StorageConfig.from_dict(data.get("storage"))
 
-    cfg = SerenProbeConfig(server=server, tls=tls, stores=stores, updates=updates)
+    cfg = SerenProbeConfig(server=server, tls=tls, stores=stores, updates=updates,
+                           storage=storage)
     return _apply_env_overrides(cfg)

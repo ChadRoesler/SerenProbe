@@ -30,6 +30,7 @@ Environment=PYTHONUTF8=1
 # Config can also come from env - uncomment + set as needed:
 # Environment=SEREN_PROBE_PORT=7430
 # Environment=SEREN_PROBE_BEARER_TOKEN=
+# Environment=SEREN_PROBE_STATE_DIR=/home/__TARGET_USER__/seren/<install>/stores/probe
 
 Restart=on-failure
 RestartSec=5

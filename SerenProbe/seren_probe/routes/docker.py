@@ -365,8 +365,8 @@ async def docker_validate(request: Request):
 @router.get("/config/{name}")
 async def docker_config_get(name: str):
     """Retrieve the full config files for a named deployment config."""
-    from ..runtime.docker_env import CONFIG_DIR
-    config_dir = CONFIG_DIR / name
+    from ..runtime.docker_env import docker_config_dir
+    config_dir = docker_config_dir() / name
     if not config_dir.is_dir():
         raise HTTPException(status_code=404, detail=f"Config '{name}' not found")
 

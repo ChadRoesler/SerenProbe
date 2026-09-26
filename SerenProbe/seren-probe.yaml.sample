@@ -12,7 +12,7 @@
 #     SEREN_PROBE_PORT, SEREN_PROBE_HOST, SEREN_PROBE_BEARER_TOKEN,
 #     SEREN_PROBE_MEMORY_URL, SEREN_PROBE_LOCI_NV_URL, SEREN_PROBE_LOCI_V_URL,
 #     SEREN_PROBE_SCC_NV_URL, SEREN_PROBE_SCC_V_URL, SEREN_PROBE_CAPTURE_PATH,
-#     SEREN_PROBE_TRUST_SYSTEM_STORE
+#     SEREN_PROBE_TRUST_SYSTEM_STORE, SEREN_PROBE_STATE_DIR
 #
 # ═══════════════════════════════════════════════════════════════════════
 
@@ -45,6 +45,26 @@ stores:
   # scc_v_url: ""
   # Path for locomo sweep captures.
   capture_path: /tmp/scc_capture2.json
+
+# -- Where SerenProbe keeps its own state ------------------------------------
+# One directory holds everything Probe writes about itself:
+#   topology_state.json   - the running pod's identity, so a restart ADOPTS it
+#                           instead of rebuilding and reseeding
+#   eval_results.json     - the last eval's scores, so they survive a restart
+#   corpus_captures.json  - frozen store responses the regrade sweep replays
+#   docker_configs/       - saved Dockerfile / compose deployment configs
+#
+# Default ~/.seren-probe. Set it per install when one host runs more than one
+# cluster (e.g. ~/seren/<install>/stores/probe) - two Probes sharing one state
+# dir will each adopt the other's pod. ~ is expanded; absolute paths are used
+# as-is. SEREN_PROBE_STATE_DIR beats this value.
+#
+# docker_configs precedence: SERENPROBE_DOCKER_CONFIG_DIR (old override) wins;
+# then <state_dir>/docker_configs when state_dir is set; with state_dir UNSET,
+# an existing ~/.serenprobe/docker_configs (the old location) is still used so
+# configs saved there are not stranded.
+# storage:
+#   state_dir: ~/.seren-probe
 
 # -- Corporate / intercepting-proxy support (opt-in) ------------------------
 # If you're on a corporate network that does TLS interception (Zscaler,

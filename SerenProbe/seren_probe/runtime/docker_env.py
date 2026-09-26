@@ -32,19 +32,105 @@ import yaml
 
 logger = logging.getLogger(__name__)
 
+# ── Where SerenProbe keeps its state ──────────────────────────────────
+# Topology state, eval results, corpus captures and saved docker configs all live
+# under ONE state dir. It used to be Path.home() / ".seren-probe", frozen into
+# module constants at import time -- which is fine for one Probe per box and wrong
+# the moment a box runs two clusters (2026-09-25: every Seren service is moving to
+# per-install roots, ~/seren/<install>/stores/<service>). Two Probes sharing one
+# topology_state.json means each one "adopts" the other's pod on restart, and
+# captures from one fleet get staleness-checked against the other's seed times.
+#
+# So the paths are RESOLVED PER CALL, never frozen at import: config and env are
+# applied at startup (create_app -> configure_state_dir), after this module may
+# already have been imported, and a path captured at import would quietly ignore
+# them.
+#
+# Precedence for the state dir (first set wins):
+#   1. SEREN_PROBE_STATE_DIR env var
+#   2. storage.state_dir from seren-probe.yaml (via configure_state_dir)
+#   3. ~/.seren-probe  -- the historical default; a bare install is unchanged
+_DEFAULT_STATE_DIR = "~/.seren-probe"
+STATE_DIR_ENV = "SEREN_PROBE_STATE_DIR"
+
+# The docker configs dir predates the state dir and was spelled differently
+# (".serenprobe", no hyphen). SERENPROBE_DOCKER_CONFIG_DIR is its old explicit
+# override and still wins outright.
+DOCKER_CONFIG_DIR_ENV = "SERENPROBE_DOCKER_CONFIG_DIR"
+_LEGACY_DOCKER_CONFIG_DIR = "~/.serenprobe/docker_configs"
+
+_configured_state_dir: str = ""
+
+
+def configure_state_dir(value: Optional[str]) -> None:
+    """Set the state dir from config (storage.state_dir). Empty/None = not
+    configured, which means the env var or the historical default decides."""
+    global _configured_state_dir
+    _configured_state_dir = (value or "").strip()
+
+
+def _explicit_state_dir() -> str:
+    """The state dir someone actually CHOSE (env, then config), or "" if nobody did.
+    The distinction matters for the legacy docker-configs fallback below."""
+    return os.environ.get(STATE_DIR_ENV, "").strip() or _configured_state_dir
+
+
+def state_dir() -> Path:
+    """Where Probe keeps topology state, eval results and corpus captures.
+    ~ is expanded; an absolute path is used as-is."""
+    return Path(os.path.expanduser(_explicit_state_dir() or _DEFAULT_STATE_DIR))
+
+
+def docker_config_dir() -> Path:
+    """Where saved docker deployment configs live.
+
+    Precedence:
+      1. SERENPROBE_DOCKER_CONFIG_DIR -- the old explicit override, unchanged
+      2. <state_dir>/docker_configs, if the state dir was configured (env or yaml)
+      3. ~/.serenprobe/docker_configs, if it EXISTS -- don't strand configs an
+         operator already saved there before the state dir existed
+      4. <state_dir>/docker_configs (i.e. ~/.seren-probe/docker_configs)
+
+    A configured state dir beats the legacy dir on purpose: per-install isolation
+    is the whole reason to configure one, and silently reaching back into a shared
+    home-dir location would undo it.
+
+    Not created here. The old import-time mkdir planted ~/.serenprobe on every box
+    that merely imported the package; save_config() creates what it writes, and
+    every reader already tolerates a missing dir.
+    """
+    if v := os.environ.get(DOCKER_CONFIG_DIR_ENV):
+        return Path(os.path.expanduser(v))
+    if explicit := _explicit_state_dir():
+        return Path(os.path.expanduser(explicit)) / "docker_configs"
+    legacy = Path(os.path.expanduser(_LEGACY_DOCKER_CONFIG_DIR))
+    if legacy.is_dir():
+        return legacy
+    return state_dir() / "docker_configs"
+
+
+def state_file() -> Path:
+    return state_dir() / "topology_state.json"
+
+
+def results_file() -> Path:
+    return state_dir() / "eval_results.json"
+
+
+def captures_file() -> Path:
+    return state_dir() / "corpus_captures.json"
+
+
 # ── Config management ─────────────────────────────────────────────────
-# Docker configs are stored as subdirectories under this path, each
+# Docker configs are stored as subdirectories under docker_config_dir(), each
 # containing a Dockerfile and optional docker-compose.yml / metadata.
-CONFIG_DIR = Path(os.environ.get("SERENPROBE_DOCKER_CONFIG_DIR",
-                                 str(Path.home() / ".serenprobe" / "docker_configs")))
-CONFIG_DIR.mkdir(parents=True, exist_ok=True)
 
 @dataclass
 class DockerDeployConfig:
     """A named Docker deployment configuration.
 
-    Each config lives in its own subdirectory under CONFIG_DIR:
-        <CONFIG_DIR>/<name>/
+    Each config lives in its own subdirectory under docker_config_dir():
+        <docker_config_dir()>/<name>/
             Dockerfile          - required
             docker-compose.yml  - optional (overrides Dockerfile if present)
             metadata.json       - optional {description, tags, created_at}
@@ -59,11 +145,12 @@ class DockerDeployConfig:
 
 
 def _discover_configs() -> list[DockerDeployConfig]:
-    """Scan CONFIG_DIR for available deployment configs."""
+    """Scan docker_config_dir() for available deployment configs."""
     configs: list[DockerDeployConfig] = []
-    if not CONFIG_DIR.is_dir():
+    root = docker_config_dir()
+    if not root.is_dir():
         return configs
-    for entry in sorted(CONFIG_DIR.iterdir()):
+    for entry in sorted(root.iterdir()):
         if not entry.is_dir():
             continue
         df = entry / "Dockerfile"
@@ -195,9 +282,9 @@ def save_config(name: str, dockerfile_content: str,
                  tags: list[str] | None = None) -> DockerDeployConfig:
     """Save a new Docker deployment config.
 
-    Creates a subdirectory under CONFIG_DIR and writes the files.
+    Creates a subdirectory under docker_config_dir() and writes the files.
     """
-    config_dir = CONFIG_DIR / name
+    config_dir = docker_config_dir() / name
     config_dir.mkdir(parents=True, exist_ok=True)
 
     # Write Dockerfile
@@ -238,7 +325,7 @@ def save_config(name: str, dockerfile_content: str,
 
 def get_config_path(name: str) -> Path | None:
     """Return the path to a saved config, or None if not found."""
-    d = CONFIG_DIR / name
+    d = docker_config_dir() / name
     if not d.is_dir():
         return None
     df = d / "Dockerfile"
@@ -289,25 +376,27 @@ HEALTH_CHECK_TIMEOUT = 300.0
 # app.state - so restarting SerenProbe orphaned a perfectly good fleet and the
 # operator had to rebuild + reseed (an hour, on a big corpus) for nothing.
 # Persist the pod's identity so a restarted app can ADOPT what's already up.
-STATE_FILE = Path.home() / ".seren-probe" / "topology_state.json"
+# Lives at state_file() -- <state_dir>/topology_state.json.
 
 
 def save_topology_state(state: dict) -> None:
     """Write the running pod's identity to disk. Best-effort: never break a
     working spin-up just because we couldn't write a convenience file."""
     import json
+    path = state_file()
     try:
-        STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
-        STATE_FILE.write_text(json.dumps(state, indent=2), encoding="utf-8")
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(state, indent=2), encoding="utf-8")
     except OSError as exc:                                   # noqa: BLE001
         logger.warning("could not persist topology state: %s", exc)
 
 
 def load_topology_state() -> dict | None:
     import json
+    path = state_file()
     try:
-        if STATE_FILE.exists():
-            return json.loads(STATE_FILE.read_text(encoding="utf-8"))
+        if path.exists():
+            return json.loads(path.read_text(encoding="utf-8"))
     except (OSError, ValueError) as exc:                     # noqa: BLE001
         logger.warning("could not read topology state: %s", exc)
     return None
@@ -315,7 +404,7 @@ def load_topology_state() -> dict | None:
 
 def clear_topology_state() -> None:
     try:
-        STATE_FILE.unlink(missing_ok=True)
+        state_file().unlink(missing_ok=True)
     except OSError:
         pass
     # Results describe a pod. Tear the pod down and they stop describing anything --
@@ -345,7 +434,7 @@ def clear_topology_state() -> None:
 # KEYED BY PROJECT NAME on purpose: results belong to the pod that produced them.
 # Adopt a different project and these must NOT surface -- stale numbers attributed
 # to the wrong fleet are worse than no numbers.
-RESULTS_FILE = Path.home() / ".seren-probe" / "eval_results.json"
+# Lives at results_file() -- <state_dir>/eval_results.json.
 
 
 def save_eval_results(project_name: str, results: dict, fingerprint: str = "",
@@ -367,9 +456,10 @@ def save_eval_results(project_name: str, results: dict, fingerprint: str = "",
     """
     import json
     from datetime import datetime
+    path = results_file()
     try:
-        RESULTS_FILE.parent.mkdir(parents=True, exist_ok=True)
-        RESULTS_FILE.write_text(json.dumps(
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(
             {"project_name": project_name,
              "fingerprint": fingerprint,
              "seeded_at": seeded_at,
@@ -409,10 +499,11 @@ def load_eval_results(project_name: str | None = None) -> dict | None:
     skips the check is asking to attribute one fleet's numbers to another.
     """
     import json
+    path = results_file()
     try:
-        if not RESULTS_FILE.exists():
+        if not path.exists():
             return None
-        env = json.loads(RESULTS_FILE.read_text(encoding="utf-8"))
+        env = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, ValueError) as exc:                 # noqa: BLE001
         logger.warning("could not read eval results: %s", exc)
         return None
@@ -425,7 +516,7 @@ def load_eval_results(project_name: str | None = None) -> dict | None:
 
 def clear_eval_results() -> None:
     try:
-        RESULTS_FILE.unlink(missing_ok=True)
+        results_file().unlink(missing_ok=True)
     except OSError:
         pass
 
@@ -449,7 +540,7 @@ def clear_eval_results() -> None:
 # Size note: All-scc is ~130 questions x 22 stores x capture_n hits of full
 # response JSON -- tens of MB. Fine on disk, deliberate on write: this file is
 # rewritten whole per capture, not appended.
-CAPTURES_FILE = Path.home() / ".seren-probe" / "corpus_captures.json"
+# Lives at captures_file() -- <state_dir>/corpus_captures.json.
 
 
 def save_corpus_captures(project_name: str, corpora: dict, question_hash: str) -> None:
@@ -463,9 +554,10 @@ def save_corpus_captures(project_name: str, corpora: dict, question_hash: str) -
     from datetime import datetime
     now = datetime.utcnow().isoformat()
     env = {"project_name": project_name, "question_hash": question_hash, "corpora": {}}
+    path = captures_file()
     try:
-        if CAPTURES_FILE.exists():
-            old = json.loads(CAPTURES_FILE.read_text(encoding="utf-8"))
+        if path.exists():
+            old = json.loads(path.read_text(encoding="utf-8"))
             if (isinstance(old, dict) and old.get("project_name") == project_name
                     and old.get("question_hash") == question_hash):
                 env["corpora"] = old.get("corpora", {})
@@ -474,8 +566,8 @@ def save_corpus_captures(project_name: str, corpora: dict, question_hash: str) -
     for name, cap in corpora.items():
         env["corpora"][name] = {"captured_at": now, "capture": cap}
     try:
-        CAPTURES_FILE.parent.mkdir(parents=True, exist_ok=True)
-        CAPTURES_FILE.write_text(json.dumps(env), encoding="utf-8")
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(env), encoding="utf-8")
     except (OSError, TypeError, ValueError) as exc:    # noqa: BLE001
         logger.warning("could not persist corpus captures: %s", exc)
 
@@ -484,10 +576,11 @@ def load_corpus_captures(project_name: str | None = None) -> dict | None:
     """The saved envelope {project_name, question_hash, corpora}, or None. Pass
     project_name to refuse another pod's captures."""
     import json
+    path = captures_file()
     try:
-        if not CAPTURES_FILE.exists():
+        if not path.exists():
             return None
-        env = json.loads(CAPTURES_FILE.read_text(encoding="utf-8"))
+        env = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, ValueError) as exc:               # noqa: BLE001
         logger.warning("could not read corpus captures: %s", exc)
         return None
@@ -500,7 +593,7 @@ def load_corpus_captures(project_name: str | None = None) -> dict | None:
 
 def clear_corpus_captures() -> None:
     try:
-        CAPTURES_FILE.unlink(missing_ok=True)
+        captures_file().unlink(missing_ok=True)
     except OSError:
         pass
 
