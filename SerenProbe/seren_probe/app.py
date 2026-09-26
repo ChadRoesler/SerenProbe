@@ -55,6 +55,13 @@ log = logging.getLogger(__name__)
 def create_app(config: SerenProbeConfig | None = None) -> FastAPI:
     cfg = config or load_config()
     bearer = cfg.server.resolve_bearer()
+    # Point the state files (topology state, eval results, corpus captures, docker
+    # configs) at storage.state_dir BEFORE anything can read them - the adopt
+    # check on the first /docker/status must look in this install's dir, not
+    # another cluster's. Set on every create_app so an empty value resets to the
+    # default instead of inheriting a previous app's dir.
+    from .runtime.docker_env import configure_state_dir, state_dir
+    configure_state_dir(cfg.storage.state_dir)
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
@@ -76,6 +83,7 @@ def create_app(config: SerenProbeConfig | None = None) -> FastAPI:
         log.info(f"[seren-probe] stores: memory={cfg.stores.memory_url} "
               f"loci-nv={cfg.stores.loci_nv_url} loci-v={cfg.stores.loci_v_url} "
               f"scc-nv={cfg.stores.scc_nv_url} scc-v={cfg.stores.scc_v_url}")
+        log.info(f"[seren-probe] state dir: {state_dir()}")
 
         # -- Optional MCP server --
         try:

@@ -134,6 +134,10 @@ Copy `seren-probe.yaml.sample` to `seren-probe.yaml` and edit, or set env vars (
 
 One Loci per box: "vector" is a flag on it, not a second service. The `loci-v` / `loci-nv` pairs you see in a ProbeConfig are two harness *containers* of the same store, stood up side by side so the flag can be measured.
 
+**Where Probe keeps its state.** Topology state (so a restarted Probe adopts a running pod instead of rebuilding it), the last eval's results, regrade corpus captures, and saved docker deployment configs all live under one state dir: `~/.seren-probe` by default. When one host runs more than one cluster, give each install its own with `storage.state_dir` in `seren-probe.yaml` (e.g. `~/seren/<install>/stores/probe`) or `SEREN_PROBE_STATE_DIR`, which beats the yaml. Two Probes sharing a state dir will each adopt the other's pod. `~` is expanded; absolute paths are used as-is.
+
+Docker configs land in `<state_dir>/docker_configs`, with two exceptions: `SERENPROBE_DOCKER_CONFIG_DIR` still overrides outright, and with no state dir configured an existing `~/.serenprobe/docker_configs` (the old location) keeps being used, so configs already saved there are not stranded.
+
 ---
 
 ## Install
