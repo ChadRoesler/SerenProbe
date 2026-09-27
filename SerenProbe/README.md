@@ -319,4 +319,4 @@ examples/              # meridian.{loci,memory,questions}.yaml + unrelated.yaml 
 
 ## License
 
-GPL-3.0-or-later. Part of the [Seren](https://github.com/ChadRoesler) project — a fully self-hosted, local-first AI companion stack built to run gracefully on cheap hardware. The floor is a $250 Jetson, not a data center. Take it, probe your own stores, and show us what you find.
+AGPL-3.0-or-later. Part of the [Seren](https://github.com/ChadRoesler) project — a fully self-hosted, local-first AI companion stack built to run gracefully on cheap hardware. The floor is a $250 Jetson, not a data center. Take it, probe your own stores, and show us what you find.
