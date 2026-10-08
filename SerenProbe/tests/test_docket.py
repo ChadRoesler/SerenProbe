@@ -28,7 +28,7 @@ CFG = {"ProbeConfig": {
 
 
 def _report_from_pasted():
-    """the user's actual pasted run: no-vector BEAT vector on docket coverage."""
+    """An actual pasted run: no-vector BEAT vector on docket coverage."""
     return {"k": 10, "question_count": 30, "corpus_size": 600, "stores": {
         "loci-v": _loci_snap(), "loci-nv": _loci_snap(), "mem": _loci_snap(),
         "scc-v":  _corpus_snap(0.5331, 0.6967, 0.9250),
