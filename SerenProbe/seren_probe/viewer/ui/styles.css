@@ -14,10 +14,8 @@
     --bg-soft: var(--bg);
 }
 
-/* the shell caps #views at 1100px but doesn't center it; each view holds one card */
-#views {
-    margin-inline: auto;
-}
+/* Left-aligned like every other Seren viewer: the shell caps #views at 1100px
+   and leaves it at the left edge, and the family keeps one shape. */
 
 /* ── Scrollbars ────────────────────────────────────────────────
  * The ProbeConfig textarea and the log panes are scrolled constantly, and an
