@@ -2,7 +2,16 @@
 seren_probe.topology_emit - CompiledTopology -> docker-compose.yml.
 
 Every Seren service reads config from mounted yaml + SEREN_*_* env; NONE takes a
-port CLI flag. All three default host=0.0.0.0, so host-published ports reach them.
+port CLI flag.
+
+Where they listen (19 Oct 2026). Since Meninges 2.3.0 every store defaults to
+127.0.0.1, and since 2.4.0 its exposure check refuses to start on any other address
+with no token. Inside a container, loopback is out of reach of the published port:
+the in-container healthcheck passed while Probe's own health gate got "server
+disconnected", and the harness had not booted a store since the flip. So every
+service is told to listen on 0.0.0.0 and to allow it (<PREFIX>_ALLOW_OPEN_LAN, the
+exposure check's own switch), and every port is published on the host's 127.0.0.1
+only: an open bind reachable from this box and the compose network, never the LAN.
 
   Loci   : env SEREN_LOCI_PORT; 'vector' flag == SEREN_LOCI_EMBEDDING_MODEL
            (presence IS the switch) AND the [vector] build extra; 'mcp' -> [mcp].
@@ -41,6 +50,19 @@ DOCKERFILE = {
     "seren_memory": "memory.Dockerfile",
     "corpus":       "corpus.Dockerfile",
 }
+
+
+# Where a container listens, and where the host publishes it (see the module docstring).
+IN_CONTAINER_HOST = "0.0.0.0"
+PUBLISH_ON = "127.0.0.1"
+
+
+def _published(port: int) -> list[str]:
+    return [f"{PUBLISH_ON}:{port}:{port}"]
+
+
+def _listen_env(prefix: str) -> dict[str, str]:
+    return {f"{prefix}_HOST": IN_CONTAINER_HOST, f"{prefix}_ALLOW_OPEN_LAN": "1"}
 
 
 def _svc_dns(name: str, port: int) -> str:
@@ -185,7 +207,8 @@ def _node_service(n: ResolvedNode, embedder: str, image_overrides: dict,
                   versions: dict | None = None, claimed: set | None = None
                   ) -> tuple[str, dict, tuple[str, dict] | None]:
     short = "loci" if n.kind == "seren_loci" else "memory"
-    env: dict[str, str] = {f"SEREN_{short.upper()}_PORT": str(n.port), "PYTHONUTF8": "1"}
+    env: dict[str, str] = {f"SEREN_{short.upper()}_PORT": str(n.port), "PYTHONUTF8": "1",
+                           **_listen_env(f"SEREN_{short.upper()}")}
     vector = n.kind == "seren_loci" and "vector" in n.flags
     if vector:
         # The PATH, not the name -- see BAKED_MODEL_DIR. The image already contains
@@ -231,7 +254,7 @@ def _node_service(n: ResolvedNode, embedder: str, image_overrides: dict,
     svc = {
         "container_name": n.name,
         "environment": dict(sorted(env.items())),
-        "ports": [f"{n.port}:{n.port}"],          # host-published for the eval
+        "ports": _published(n.port),              # host-published for the eval, on loopback
         # A vector node still LOADS a model before it binds, even with the download
         # gone -- baking removes the fetch, not the deserialize, and 22 containers
         # loading at once on a contended box is precisely when that is slowest. The
@@ -277,16 +300,17 @@ def _corpus_yaml(c: ResolvedCorpus, port_of: dict[str, int]) -> dict:
             entry["floor"] = s.floor
         stores.append(entry)
     federation["stores"] = stores
-    return {"server": {"host": "0.0.0.0", "port": c.port}, "federation": federation}
+    return {"server": {"host": IN_CONTAINER_HOST, "port": c.port}, "federation": federation}
 
 
 def _corpus_service(c: ResolvedCorpus, image_overrides: dict,
                     versions: dict | None = None, claimed: set | None = None) -> tuple[str, dict]:
     svc = {
         "container_name": c.name,
-        "environment": {"PYTHONUTF8": "1", "SEREN_SCC_CONFIG": "/etc/seren/seren-corpus-callosum.yaml"},
+        "environment": {"PYTHONUTF8": "1", "SEREN_SCC_CONFIG": "/etc/seren/seren-corpus-callosum.yaml",
+                        **_listen_env("SEREN_SCC")},
         "volumes": [f"./{c.name}.corpus.yaml:/etc/seren/seren-corpus-callosum.yaml:ro"],
-        "ports": [f"{c.port}:{c.port}"],
+        "ports": _published(c.port),
         "depends_on": {s.name: {"condition": "service_healthy"} for s in c.stores},
         "healthcheck": _healthcheck(c.port),
     }

@@ -69,7 +69,41 @@ def test_host_ports_published_for_eval():
     # that binds 7421 either collides with a live SerenLoci or, worse, quietly
     # becomes the thing something else connects to.
     e = emit_compose(load_probe_config(PROBECONFIG))
-    assert e.compose["services"]["loci-vector-projectX"]["ports"] == ["7441:7441"]
+    assert e.compose["services"]["loci-vector-projectX"]["ports"] == ["127.0.0.1:7441:7441"]
+
+
+def test_every_store_listens_open_in_its_container_and_is_published_on_loopback():
+    """Since Meninges 2.3.0 a store listens on 127.0.0.1 unless told otherwise, which
+    inside a container nothing outside can reach, and since 2.4.0 an open bind with no
+    token refuses to start. The harness had not booted a store since (19 Oct 2026)."""
+    e = emit_compose(load_probe_config(PROBECONFIG))
+    seen = set()
+    for name, svc in e.compose["services"].items():
+        env = svc["environment"]
+        prefix = next((p for p in ("SEREN_LOCI", "SEREN_MEMORY", "SEREN_SCC") if f"{p}_ALLOW_OPEN_LAN" in env), None)
+        assert prefix, (name, env)
+        assert env[f"{prefix}_HOST"] == "0.0.0.0" and env[f"{prefix}_ALLOW_OPEN_LAN"] == "1", (name, env)
+        assert all(p.startswith("127.0.0.1:") for p in svc["ports"]), (name, svc["ports"])
+        seen.add(prefix)
+    assert seen == {"SEREN_LOCI", "SEREN_MEMORY", "SEREN_SCC"}, seen    # every kind is in the shipped topology
+    for doc in e.corpus_files.values():
+        assert doc["server"]["host"] == "0.0.0.0"
+
+
+def test_the_exposure_check_lets_an_emitted_store_start(monkeypatch):
+    """The other side of the contract: Meninges' own verdict on what the emitter sets."""
+    import pytest
+    exposure = pytest.importorskip("seren_meninges.exposure")
+    e = emit_compose(load_probe_config(PROBECONFIG))
+    for name, svc in e.compose["services"].items():
+        env = svc["environment"]
+        prefix = next(p for p in ("SEREN_LOCI", "SEREN_MEMORY", "SEREN_SCC") if f"{p}_ALLOW_OPEN_LAN" in env)
+        monkeypatch.setenv(f"{prefix}_ALLOW_OPEN_LAN", env[f"{prefix}_ALLOW_OPEN_LAN"])
+        verdict = exposure.check_exposure(env[f"{prefix}_HOST"], 7441, service=name, env_prefix=prefix)
+        assert not verdict.refused, (name, verdict)
+        monkeypatch.delenv(f"{prefix}_ALLOW_OPEN_LAN")
+        assert exposure.check_exposure(env[f"{prefix}_HOST"], 7441, service=name, env_prefix=prefix).refused, \
+            "without the switch the same bind is refused, so the switch is what lets it start"
 
 
 def test_corpus_depends_on_stores_healthy():
