@@ -1458,13 +1458,12 @@ async function refreshConfig() {
     html += `<textarea id="probeconfig-yaml" rows="14" spellcheck="false">${escapeHtml(pcYaml)}</textarea>`;
     html += '<input type="file" id="probeconfig-file" accept=".yml,.yaml,.txt" style="display:none" onchange="loadProbeConfigFile(this)"/>';
     html += '<div class="ctrls-row">';
-    // Validate lives in the panel header only (the second one under the
-    // editor went on 20 Oct 2026: one primary action, one place).
-    html += `<button class="btn-sm" onclick="document.getElementById('probeconfig-file').click()">📁 Load file…</button>`;
-    html += '<button class="btn-sm" onclick="refreshConfig()">\u21bb Reload active</button>';
+    // Under the editor there is one button. Validate, Load file and Reload
+    // live in the panel header and nowhere else (Chad, 20 Oct 2026: "remove
+    // all of the lower buttons but the copy validation button").
     // The lint can run to thousands of lines on a multi-tenant topology. Reading that
     // through a scrollbox and then SCREENSHOTTING it is not a workflow.
-    html += '<button class="btn-sm copy-btn" onclick="copyLint(this)">\u{1F4CB} Copy validation</button>';
+    html += '<button class="btn-sm copy-btn" onclick="copyLint(this)">Copy validation</button>';
     html += '</div>';
     html += '<div class="config-save-result" id="probeconfig-result"></div>';
     html += '</div></div></details></div>';
