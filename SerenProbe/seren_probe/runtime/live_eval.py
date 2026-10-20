@@ -78,6 +78,11 @@ logger = logging.getLogger(__name__)
 # search short of the finish. This is the READ ceiling for a single retrieval, not a
 # budget for the whole eval -- generous on purpose, override with SEREN_PROBE_SEARCH_TIMEOUT.
 _SEARCH_TIMEOUT = float(os.environ.get("SEREN_PROBE_SEARCH_TIMEOUT", "120"))
+# A draft submit or review lands up to _SEED_DRAFT_OPS long-term operations in one
+# call, each one embedded and attached by Memory: the heaviest write Probe makes. On
+# the nuc (CPU only) a 48-operation review ran past the 30 s every other write gets,
+# and both Vellmarch slices died in seeding with a bare "timed out" (20 Oct 2026).
+_DRAFT_TIMEOUT = float(os.environ.get("SEREN_PROBE_DRAFT_TIMEOUT", "300"))
 
 
 # ── Transport ─────────────────────────────────────────────────────────────
@@ -91,8 +96,14 @@ def post(url: str, path: str, body: dict) -> dict:
     from .write_guard import assert_write_allowed
     assert_write_allowed(url, path, "POST")
     # /search is a fan-out read on a corpus and can take minutes on a cold cross-store
-    # SCC; a write is quick. Give the slow read its own budget, keep writes tight.
-    timeout = _SEARCH_TIMEOUT if path.rstrip("/").endswith("/search") or path == "/search" else 30.0
+    # SCC; a draft submit or review is the one slow write; every other write is quick.
+    # Give the slow ones their own budgets, keep the rest tight.
+    if path.rstrip("/").endswith("/search") or path == "/search":
+        timeout = _SEARCH_TIMEOUT
+    elif path.startswith("/drafts"):
+        timeout = _DRAFT_TIMEOUT
+    else:
+        timeout = 30.0
     resp = httpx.post(f"{url}{path}", json=body, timeout=timeout)
     resp.raise_for_status()
     return resp.json() if resp.content else {}

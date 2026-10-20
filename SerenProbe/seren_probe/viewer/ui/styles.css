@@ -81,7 +81,12 @@ textarea {
     }
 }
 
-/* ── Status pill (header) ─────────────────────────────────────────── */
+/* ── Header pill ──────────────────────────────────────────────────── */
+/* The shell's .head-pill is the look; this adds the "config is invalid /
+   cannot reach the Probe" colour, which the family spells with --err. */
+.head-pill.bad { color: var(--err); border-color: var(--err); }
+
+/* ── Status pill (in a panel: the topology summary) ───────────────── */
 .status-pill {
     display: inline-block;
     font-size: 0.72em;
@@ -89,7 +94,6 @@ textarea {
     border-radius: 10px;
     font-family: var(--mono);
     border: 1px solid;
-    margin-left: 8px;
 }
 
     .status-pill.ok {
@@ -135,15 +139,26 @@ textarea {
             align-items: center;
         }
 
+            /* One size for every control in a panel header, the Workbench's
+               (4px 11px, radius 7, .82em mono), with a fixed 30px height so a
+               bold filled .btn, an emoji and a plain ⟳ all sit on one line
+               (Chad, 20 Oct 2026: "✓ Validate & Set Active is not sized right
+               with the other buttons, the load file and the other one are odd
+               sizes"). */
             .panel .panel-header .ctrls button {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                height: 30px;
+                line-height: 1;
                 background: transparent;
                 border: 1px solid var(--border-soft);
                 color: var(--text-soft);
-                padding: 3px 10px;
-                border-radius: 6px;
+                padding: 0 11px;
+                border-radius: 7px;
                 cursor: pointer;
-                font-size: 0.82em;
-                font-family: var(--mono);
+                font-size: 0.85em;
+                font-family: var(--font);      /* the page face, not mono (Chad, 20 Oct 2026: "make the font standard") */
                 transition: border-color 0.15s, color 0.15s;
             }
 
@@ -1338,3 +1353,31 @@ tr.neg-leaked td:first-child {
     color: var(--text-dim);
 }
     .qd-stats b { color: var(--text); }
+
+/* ── One control, everywhere in a panel ─────────────────────────────── */
+/* Every action button in a panel body (.btn, .btn-sm, .copy-btn) is the
+   same control as the ones in the panel header: one height (30px), one
+   face (the .82em mono the family uses for controls), one radius. Before
+   this a filled .btn sat beside a .btn-sm that fell through to the shell's
+   default button, so one row wore two fonts and two heights (Chad, 20 Oct
+   2026: "font weirdness ... the load file and the other one are odd sizes").
+   Last in the file on purpose: it must outrank .config-picker .btn-sm. */
+.panel .btn, .panel .btn-sm, .panel .copy-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    line-height: 1;
+    padding: 0 11px;
+    border-radius: 7px;
+    font-size: 0.85em;
+    font-family: var(--font);      /* the page face: one font for every button, header or body */
+    background: transparent;
+    border: 1px solid var(--border-soft);
+    color: var(--text-soft);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+    .panel .btn-sm:hover, .panel .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .panel .btn { background: var(--accent); color: #0e0f13; border-color: var(--accent); font-weight: 600; }
+        .panel .btn:hover { background: var(--accent-2); border-color: var(--accent-2); }

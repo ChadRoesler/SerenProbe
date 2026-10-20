@@ -1458,7 +1458,8 @@ async function refreshConfig() {
     html += `<textarea id="probeconfig-yaml" rows="14" spellcheck="false">${escapeHtml(pcYaml)}</textarea>`;
     html += '<input type="file" id="probeconfig-file" accept=".yml,.yaml,.txt" style="display:none" onchange="loadProbeConfigFile(this)"/>';
     html += '<div class="ctrls-row">';
-    html += '<button class="btn" onclick="uploadProbeConfig()">✓ Validate &amp; Set Active</button>';
+    // Validate lives in the panel header only (the second one under the
+    // editor went on 20 Oct 2026: one primary action, one place).
     html += `<button class="btn-sm" onclick="document.getElementById('probeconfig-file').click()">📁 Load file…</button>`;
     html += '<button class="btn-sm" onclick="refreshConfig()">\u21bb Reload active</button>';
     // The lint can run to thousands of lines on a multi-tenant topology. Reading that
@@ -1703,16 +1704,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // Wire refresh-all
-  const refreshBtn = document.getElementById('refresh-all');
-  if (refreshBtn) {
-    refreshBtn.addEventListener('click', function() {
-      refreshEval();
-      refreshDocker();
-      refreshDockerConfig();
-      refreshConfig();
-    });
-  }
+  // The header ⟳ (header_aside.html) is reload(): the pill and the open
+  // panel, not every panel (20 Oct 2026, the family's shape).
 
   // Wire per-panel refresh buttons
   document.querySelectorAll('[data-refresh]').forEach(el => {
@@ -1726,6 +1719,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // the shell activates the first .view on DOMContentLoaded; load its data too
   lazyLoad(document.querySelector('.tabbar .tab')?.dataset?.tab);
+  refreshSummary();
 
   // ADOPT: the containers outlive the app process. Restarting SerenProbe used to
   // orphan a perfectly healthy fleet - app.state forgot it, so the operator rebuilt
@@ -1733,6 +1727,45 @@ document.addEventListener('DOMContentLoaded', function() {
   // (verified by `compose ps`, not just a state file), offer to attach to it.
   offerAdoption();
 });
+
+// The header pill: the active ProbeConfig in one line, lit in the accent
+// when it is valid, red when it is not, like the Callosum's fan pill and the
+// Hippocampus's model pill (20 Oct 2026).
+async function refreshSummary() {
+  const pill = document.getElementById('status-pill');
+  if (!pill) return;
+  try {
+    const pc = await api('/docker/probeconfig');
+    if (pc.errors && pc.errors.length) {
+      pill.className = 'head-pill bad';
+      pill.textContent = 'config: invalid';
+      pill.title = pc.errors.join('\n');
+    } else if (pc.summary) {
+      const s = pc.summary;
+      const n = (s.loci || []).length + (s.memory || []).length + (s.corpus || []).length;
+      pill.className = 'head-pill hot';
+      pill.textContent = `config: ${n} store${n === 1 ? '' : 's'}`;
+      pill.title = `${(s.loci || []).length} loci · ${(s.memory || []).length} memory · ${(s.corpus || []).length} corpus · ${pc.active ? 'uploaded' : 'shipped example'}`;
+    } else {
+      pill.className = 'head-pill';
+      pill.textContent = 'config: none';
+      pill.title = 'no ProbeConfig loaded - set one in the Config tab';
+    }
+  } catch (e) {
+    pill.className = 'head-pill bad';
+    pill.textContent = 'disconnected';
+    pill.title = e.message || String(e);
+  }
+}
+
+// The header ⟳: the pill and the panel that is open.
+function reload() {
+  refreshSummary();
+  const open = document.querySelector('.view.active')?.id;
+  if (open === 'eval') refreshEval();
+  else if (open === 'docker') { refreshDocker(); refreshDockerConfig(); }
+  else if (open === 'config') refreshConfig();
+}
 
 async function offerAdoption() {
   // Render into #adopt-host: a node OUTSIDE every .view, and the ONLY thing that
