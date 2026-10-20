@@ -59,7 +59,9 @@ live Seren port (7420–7424) in executable code. Both fail the build.
 3. **Ground truth must be re-resolvable from the live system.** A minted UUID held
    in the seeding process's RAM is not ground truth, it's a receipt. `expect_key`
    survived an adopted pod; `expect_ref` didn't, and reported a perfectly healthy
-   store as dead for a full day.
+   store as dead for a full day. And a receipt can be wrong from the start: until
+   19 Oct 2026 every long-tier ref was the id of the short-term copy that promote
+   had already replaced, so the FIRST run after a seed graded long refs against nothing.
 4. **Interlocks catch what discipline doesn't.** Six live-store hazards and eleven
    silent measurement bugs in one day. Discipline caught none of them. Every guard
    we built caught one - including two the guards found *after* we'd stopped looking.

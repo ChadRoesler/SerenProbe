@@ -49,6 +49,7 @@ import json
 import logging
 
 from ..core.metrics import compute_metrics_batch, normalize_text
+from ..core.edges import credit, hay, mean_surroundings, split_edges, surroundings
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +67,11 @@ _FED_KNOB = {"rrf_k": "k", "n_results": "n_results", "fetch_multiplier": "fetch_
              # Multi-hop. MUST be mapped here or configure_payload silently DROPS it,
              # sends an empty body, and every combo scores identically - the exact
              # "inert knob that reads as a ceiling" this harness exists to prevent.
-             "hops": "hops", "hop_terms": "hop_terms", "hop_budget": "hop_budget"}
+             "hops": "hops", "hop_terms": "hop_terms", "hop_budget": "hop_budget",
+             # The marked edges after the packet: topic neighbours (edges_*) and a
+             # core's satellites / superseded core (satellite_*).
+             "edges_enabled": "edges_enabled", "edge_budget": "edge_budget",
+             "satellite_edges_enabled": "satellite_edges_enabled", "satellite_budget": "satellite_budget"}
 _STORE_KNOB = {"loci_weight": "weight", "loci_floor": "floor",
                "mem_weight": "weight", "mem_floor": "floor"}
 # Which store KIND each store-knob targets, so loci_* land on EVERY loci member and
@@ -75,7 +80,8 @@ _STORE_KNOB = {"loci_weight": "weight", "loci_floor": "floor",
 _STORE_KNOB_KIND = {"loci_weight": "seren_loci", "loci_floor": "seren_loci",
                     "mem_weight": "seren_memory", "mem_floor": "seren_memory"}
 _READBACK = {"rrf_k", "n_results", "loci_weight", "loci_floor", "mem_weight", "mem_floor",
-             "hops", "hop_terms", "hop_budget"}   # GET /stores exposes these
+             "hops", "hop_terms", "hop_budget",
+             "satellite_edges_enabled", "satellite_budget"}   # GET /stores exposes these
 
 
 def _post(url, path, body, timeout=30.0):
@@ -187,19 +193,29 @@ def push_config(url: str, config: dict, store_kinds: dict[str, str]) -> None:
 
 def grade_corpus(hits: list, expected_content: list, k: int):
     """(retrieved, relevant, coverage, density) for one SCC packet vs a corpus
-    question - content coverage, same shape as live_eval's SCC grading."""
-    retrieved = [(h.get("id"), h.get("score", 0.0)) for h in hits]
+    question - content coverage, same shape as live_eval's SCC grading.
+
+    Edges are not ranks (core.edges). Until 19 Oct 2026 this ranked every marked
+    edge as a hit while the eval did not, so a sweep and an eval of the same config
+    disagreed: on a short packet the score-0.0 edges slid inside k and diluted
+    density. retrieved is the ranked packet; an answer an edge carries credits the
+    core it hangs off; content is read from a hit and the satellite it came through."""
+    packet, edges = split_edges(hits)
+    retrieved = [(h.get("id"), h.get("score", 0.0)) for h in packet]
     relevant: set = set()
     exp = [e for e in expected_content if normalize_text(e)]
     items_found = 0
     for e in exp:
         ne = normalize_text(e)
-        for h in hits:
-            if ne in normalize_text(str(h.get("content", ""))):
-                relevant.add(h.get("id")); items_found += 1; break
+        for h in packet + edges:
+            if ne in normalize_text(hay(h)):
+                if credit(h):
+                    relevant.add(credit(h))
+                items_found += 1
+                break
     dens = 0
-    for h in hits[:k]:
-        c = normalize_text(str(h.get("content", "")))
+    for h in packet[:k]:
+        c = normalize_text(hay(h))
         if any(normalize_text(e) in c for e in exp):
             dens += 1
     coverage = items_found / len(exp) if exp else 0.0
@@ -214,18 +230,27 @@ def _measure(scc_url: str, corpus_qs: list, n_results: int, k: int, on_q=None) -
     list -- twelve minutes on a wide fan -- so without it the corpus counter sits
     frozen for the entire combo and "working" is indistinguishable from "hung".
     """
-    results, covs, dens = [], [], []
+    results, covs, dens, surr = [], [], [], []
     total = len(corpus_qs)
     for i, q in enumerate(corpus_qs):
         resp = _post(scc_url, "/search", {"query": q["query"], "n_results": n_results})
         hits = resp.get("hits", []) if isinstance(resp, dict) else []
         retr, rel, cov, den = grade_corpus(hits, q["expected_content"], k)
         results.append((retr, rel)); covs.append(cov); dens.append(den)
+        surr.append(surroundings(hits, q["expected_content"], k))
         if on_q:
             on_q(i + 1, total)
     agg = compute_metrics_batch(results, k=k).aggregate()
     agg["docket_coverage"] = sum(covs) / len(covs) if covs else 0.0
     agg["docket_density"] = sum(dens) / len(dens) if dens else 0.0
+    # What a satellite / edge knob actually moves: the ranked packet's own coverage,
+    # and the rows and text the edges add on top of it.
+    s = mean_surroundings(surr)
+    if s:
+        agg["docket_coverage_packet"] = s.get("coverage_packet", 0.0)
+        agg["edge_rows"] = sum(v for f, v in s["rows"].items() if f != "packet")
+        agg["edge_chars"] = sum(v for f, v in s["chars"].items() if f != "packet")
+        agg["packet_chars"] = s["chars"]["packet"]
     return agg
 
 
@@ -237,7 +262,12 @@ def _measure(scc_url: str, corpus_qs: list, n_results: int, k: int, on_q=None) -
 #
 # This lives here rather than in the route because both engines and the router have to
 # agree on it; three copies of a rule is three chances to disagree.
-PACKET_COUPLED_KNOBS = frozenset({"hops", "hop_terms", "hop_budget"})
+PACKET_COUPLED_KNOBS = frozenset({"hops", "hop_terms", "hop_budget",
+                                  # The edges hang off the packet the fusion just made
+                                  # (its cores, its centre topics), and the replay runs
+                                  # with edges off: these sweep live only.
+                                  "edges_enabled", "edge_budget",
+                                  "satellite_edges_enabled", "satellite_budget"})
 
 
 def is_packet_coupled(rset) -> bool:

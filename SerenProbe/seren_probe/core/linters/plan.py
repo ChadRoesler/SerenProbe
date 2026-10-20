@@ -28,7 +28,7 @@ from .checks import (
     check_bait, check_existence, check_reachability,
     check_discriminability, check_content_rail,
 )
-from .adapters import _item_to_dict, _question_to_dict
+from .adapters import _item_dicts, _question_to_dict
 from .quiet import lint_quiet_targets
 
 
@@ -172,7 +172,7 @@ def lint_plan(topology, plan) -> LintReport:
                 continue
             if getattr(n, "negative_test", False):
                 continue        # a decoy's content must never count as answering a question
-            items = [_item_to_dict(i) for i in (plan.seed_by_store.get(m) or [])]
+            items = [d for i in (plan.seed_by_store.get(m) or []) for d in _item_dicts(i)]
             (li if m in loci_names else mi).extend(items)
 
         # Drop only the checks THIS scope cannot verify. A live member elsewhere in the

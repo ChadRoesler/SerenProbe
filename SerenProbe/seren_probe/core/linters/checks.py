@@ -56,6 +56,20 @@ def check_existence(q, label: str, corpus, rep, checks: set) -> None:
         if r_ident not in corpus.mem_refs:
             rep.errors.append(
                 f"{label}: expect_ref {r_ident!r} is NOT in the seed - unanswerable by any store.")
+    for r_ident in (q.get("stale_ref") or []) if "ref" in checks else []:
+        if r_ident not in corpus.mem_refs:
+            rep.errors.append(
+                f"{label}: stale_ref {r_ident!r} is NOT in the seed - the supersession test would "
+                f"pass by never finding it.")
+    for k_ident in (q.get("stale_key") or []) if "key" in checks else []:
+        if k_ident not in corpus.loci_idents:
+            rep.errors.append(
+                f"{label}: stale_key {k_ident!r} is NOT in the seed - the supersession test would "
+                f"pass by never finding it.")
+        elif k_ident not in getattr(corpus, "loci_changed", set()):
+            rep.errors.append(
+                f"{label}: stale_key {k_ident!r} has no history in the seed - the key never "
+                f"changed, so there is no old value to come back and the test passes by default.")
 
 
 def check_reachability(q, query: str, asks, label: str, rep, max_hops: int) -> None:

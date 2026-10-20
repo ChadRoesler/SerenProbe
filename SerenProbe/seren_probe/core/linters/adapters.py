@@ -40,12 +40,20 @@ def _item_to_dict(it):
     if isinstance(it, dict):
         return it
     d = {}
-    for attr in ("project", "key", "value", "why", "tier", "ref", "topic"):
+    for attr in ("project", "key", "value", "why", "tier", "ref", "topic", "history"):
         if hasattr(it, attr):
             d[attr] = getattr(it, attr)
     if hasattr(it, "text"):           # MemoryItem stores its document as .text
         d["content"] = getattr(it, "text")
     return d
+
+
+def _item_dicts(it):
+    """A seed item and each of its satellites, as the separate documents a store
+    indexes. A satellite's ref is as real an answer key as its core's, so a check
+    that only saw cores would call every satellite expectation unanswerable."""
+    sats = it.get("satellites") if isinstance(it, dict) else getattr(it, "satellites", None)
+    return [_item_to_dict(it)] + [_item_to_dict(s) for s in (sats or [])]
 
 
 def _question_to_dict(q):
@@ -67,4 +75,7 @@ def _question_to_dict(q):
         # class of bug: an annotation the author wrote, silently discarded on the way to
         # the check that reads it. (It was `hops`. Do not let it be `quiet_in`.)
         "quiet_in": list(getattr(q, "quiet_in", []) or []),
+        "stale_ref": list(getattr(q, "stale_ref", []) or []),
+        "stale_key": [_strip_store_qualifier(str(x))
+                      for x in (getattr(q, "stale_key", []) or [])],
     }

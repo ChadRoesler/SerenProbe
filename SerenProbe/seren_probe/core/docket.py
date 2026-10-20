@@ -121,6 +121,8 @@ def docket_comparison(report: dict, topology: Any = None) -> dict:
         for key in _CARRY_KEYS:
             if key in agg:
                 col[key] = agg[key]
+        if isinstance(snap, dict) and isinstance(snap.get("surroundings"), dict):
+            col["surroundings"] = snap["surroundings"]
         columns.append(col)
 
     columns.sort(key=lambda c: (_ORDER.get(c["flavor"], 9), c["name"]))
@@ -184,6 +186,21 @@ def format_docket_comparison(cmp: dict) -> str:
         lines.append(f"  {c['label']:<{labelw}}  {c['name']:<{namew}}   "
                      f"coverage {g(c, 'docket_coverage')}   density {g(c, 'docket_density')}   "
                      f"recall {g(c, 'recall')}")
+
+    # The Callosum's MARKED edges (satellites, superseded cores, topic neighbours) are
+    # a different thing from the vector "edges" above: rows hung after the ranked
+    # packet. What each family bought, and the text it added.
+    for c in cols:
+        s = c.get("surroundings") or {}
+        if "coverage_packet" not in s:
+            continue
+        bits = [f"packet {s['coverage_packet']:.4f} ({s['rows']['packet']:.1f} rows, "
+                f"{s['chars']['packet']:.0f} chars)"]
+        for fam, cov in s["coverage_with"].items():
+            if s["rows"].get(fam):
+                bits.append(f"+{fam.replace('-edge', '')} {cov:.4f} (+{s['rows'][fam]:.1f} rows, "
+                            f"+{s['chars'][fam]:.0f} chars)")
+        lines.append(f"  {'':<{labelw}}  {c['name']:<{namew}}   coverage: " + "  ".join(bits))
 
     for d in cmp.get("deltas", []):
         lines.append("  " + "\u2500" * (labelw + namew + 50))

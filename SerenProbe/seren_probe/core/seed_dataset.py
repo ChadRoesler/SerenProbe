@@ -7,8 +7,15 @@ resolved by seren_probe.resolve. This module just loads + validates the pieces
 and writes a resolved plan to the live stores.
 
 Item shapes are honest to the REAL write contracts:
-  Loci   item = {project?, key, value, why?}
+  Loci   item = {project?, key, value, why?, why_changed?, history?}
+    history: [{value, why?, why_changed?}]  the values this key held before, oldest
+                                            first; each is set, then superseded
+    why_changed: <text>                     why this value replaced the one before
+                                            (Loci keeps it on the row it retires)
   Memory item = {content|intent, topic?, tier?, ref?}  (tier short|near|long)
+    a long item may also carry
+      satellites: [{content, topic?, ref?}]   episodes attached to this core
+      supersedes: <ref>                       the earlier core this one replaces
 
 Validation is compassion-first: collect ALL problems, hard-stop where trust
 breaks, warn where recoverable.
@@ -32,8 +39,14 @@ VALID_ASKS = {"loci", "memory", "corpus"}
 # parser tells the author.
 KNOWN_QUESTION_KEYS = {
     "asks", "query", "expect_key", "expect_ref", "expect_content", "expect_empty",
-    "hops", "quiet_in",
+    "hops", "quiet_in", "stale_ref", "stale_key", "tags", "answer",
 }
+# The same rule for a memory seed item. A `satellites:` list that vanished on load
+# would seed a corpus with no surroundings and report the edges as doing nothing.
+KNOWN_MEMORY_KEYS = {"tier", "content", "intent", "topic", "ref", "satellites", "supersedes"}
+KNOWN_SATELLITE_KEYS = {"content", "topic", "ref"}
+KNOWN_LOCI_KEYS = {"project", "key", "value", "why", "why_changed", "history"}
+KNOWN_LOCI_VERSION_KEYS = {"value", "why", "why_changed"}
 
 
 class SeedError(Exception):
@@ -49,11 +62,31 @@ class SeedError(Exception):
 
 # ── resolved item types ─────────────────────────────────────────────────
 @dataclass
+class LociVersion:
+    value: str
+    why: str | None = None
+    why_changed: str | None = None   # why this value replaced the one before it
+
+
+@dataclass
 class LociItem:
     project: str
     key: str
     value: str
     why: str | None = None
+    # A fact changes by supersession: set the key again and the old value is kept as
+    # history, out of an ordinary search. A seed that could only say the current value
+    # could not build the corpus a 'what is it now' question needs. history is the
+    # values before this one, oldest first, written in order before it.
+    why_changed: str | None = None
+    history: list[LociVersion] = field(default_factory=list)
+
+
+@dataclass
+class SatelliteItem:
+    text: str                 # the episode
+    topic: str | None = None  # None -> the core's
+    ref: str | None = None
 
 
 @dataclass
@@ -62,6 +95,12 @@ class MemoryItem:
     text: str                 # content (short/long) or intent (near)
     topic: str | None = None
     ref: str | None = None    # uploader handle -> mapped to minted id at seed time
+    # Long-term is a core and its surroundings (Memory since Sept 2026). Recall
+    # returns cores; a satellite surfaces THROUGH its core (matched_via) or as a
+    # Callosum edge, never as a hit of its own. A corpus seeded with cores only
+    # cannot show any of that, so a long item may carry both.
+    satellites: list[SatelliteItem] = field(default_factory=list)
+    supersedes: str | None = None   # ref of an EARLIER long item in the same store
 
 
 @dataclass
@@ -74,6 +113,27 @@ class Question:
     expect_empty: bool = False   # a no-answer question: PASS = the store stays quiet
     needs_hops: int = 1          # DECLARED traversal depth. See below -- it is a CLAIM, not a setting.
     quiet_in: list[str] = field(default_factory=list)   # stores that must NOT surface this answer
+    stale_ref: list[str] = field(default_factory=list)  # superseded cores that must not come back as the answer
+    stale_key: list[str] = field(default_factory=list)  # Loci keys whose RETIRED values must not come back
+    # What kind of question this is (fact, detail, update, temporal, abstention, near-miss...)
+    # and the answer a reader should give. Retrieval grading reads neither; they are what an
+    # answer-level comparison reports by and grades against (punch list: probe-compare).
+    tags: list[str] = field(default_factory=list)
+    answer: str | None = None
+
+
+# stale_ref is the supersession test. "What is House Vayne's seat NOW?" has a right
+# answer (expect_ref: the current core) and a WRONG one that used to be right (the
+# core it superseded). Memory hides a superseded core from recall; the Callosum may
+# hang it after the packet as a marked supersedes-edge, which is history told as
+# history. So the two are counted apart: stale_in_packet (the old answer ranked as an
+# answer - the failure) and stale_as_edge (offered, marked as superseded).
+#
+# stale_key is the same test on the left brain. A Loci key that changed holds its old
+# values as retired rows (GET /fact/history); none of them may rank for a 'now'
+# question. A retired row is the same key with a different id, so expect_key alone
+# cannot tell the old answer from the new: stale_key names the key, and every retired
+# row under it counts against the store. The same stale_* counters report both.
 
 
 # NO `project` FIELD ON A QUESTION, DELIBERATELY. It was built, and then removed.
@@ -192,8 +252,37 @@ def _as_loci_item(d: dict, where: str, i: int, errors: list[str], warnings: list
     if "tier" in d:
         warnings.append(f"{where}[{i}]: 'tier' is meaningless for a loci item - ignoring "
                         f"(tiers are a Memory concept).")
-    return LociItem(project=str(d.get("project", "*")), key=str(d["key"]),
-                    value=str(d["value"]), why=(str(d["why"]) if d.get("why") is not None else None))
+    unknown = sorted(set(d) - KNOWN_LOCI_KEYS - {"tier"})
+    if unknown:
+        warnings.append(f"{where}[{i}]: unrecognized key(s) {unknown} -- IGNORED, not seeded.")
+
+    def _opt(m, k):
+        return str(m[k]) if m.get(k) is not None else None
+
+    raw_hist = d.get("history") or []
+    if not isinstance(raw_hist, list):
+        errors.append(f"{where}[{i}]: history must be a list of {{value, why?, why_changed?}}, oldest first.")
+        return None
+    history: list[LociVersion] = []
+    for j, h in enumerate(raw_hist):
+        if not isinstance(h, dict) or h.get("value") is None:
+            errors.append(f"{where}[{i}].history[{j}]: needs 'value'.")
+            continue
+        extra = sorted(set(h) - KNOWN_LOCI_VERSION_KEYS)
+        if extra:
+            warnings.append(f"{where}[{i}].history[{j}]: unrecognized key(s) {extra} -- IGNORED.")
+        if j == 0 and h.get("why_changed") is not None:
+            warnings.append(f"{where}[{i}].history[0]: 'why_changed' says why a value replaced the "
+                            f"one before it, and the oldest value replaced nothing - ignoring it.")
+        history.append(LociVersion(value=str(h["value"]), why=_opt(h, "why"),
+                                   why_changed=(_opt(h, "why_changed") if j else None)))
+    why_changed = _opt(d, "why_changed")
+    if why_changed is not None and not history:
+        warnings.append(f"{where}[{i}]: 'why_changed' with no history - there is no earlier value "
+                        f"for it to explain - ignoring it.")
+        why_changed = None
+    return LociItem(project=str(d.get("project", "*")), key=str(d["key"]), value=str(d["value"]),
+                    why=_opt(d, "why"), why_changed=why_changed, history=history)
 
 
 def _as_memory_item(d: dict, where: str, i: int, errors: list[str], warnings: list[str]) -> MemoryItem | None:
@@ -218,9 +307,47 @@ def _as_memory_item(d: dict, where: str, i: int, errors: list[str], warnings: li
         if text is None:
             errors.append(f"{where}[{i}]: {tier}-tier item needs 'content'.")
             return None
+    unknown = sorted(set(d) - KNOWN_MEMORY_KEYS)
+    if unknown:
+        warnings.append(f"{where}[{i}]: unrecognized key(s) {unknown} -- IGNORED, not seeded.")
+    satellites: list[SatelliteItem] = []
+    raw_sats = d.get("satellites") or []
+    supersedes = d.get("supersedes")
+    if tier != "long" and (raw_sats or supersedes is not None):
+        errors.append(f"{where}[{i}]: satellites and supersedes belong to a long-tier core, "
+                      f"not a {tier}-tier item.")
+        return None
+    if not isinstance(raw_sats, list):
+        errors.append(f"{where}[{i}]: satellites must be a list of {{content, topic?, ref?}}.")
+        return None
+    for j, s in enumerate(raw_sats):
+        if not isinstance(s, dict) or s.get("content") is None:
+            errors.append(f"{where}[{i}].satellites[{j}]: needs 'content'.")
+            continue
+        extra = sorted(set(s) - KNOWN_SATELLITE_KEYS)
+        if extra:
+            warnings.append(f"{where}[{i}].satellites[{j}]: unrecognized key(s) {extra} -- IGNORED.")
+        satellites.append(SatelliteItem(text=str(s["content"]),
+                                        topic=(str(s["topic"]) if s.get("topic") is not None else None),
+                                        ref=(str(s["ref"]) if s.get("ref") is not None else None)))
+    if supersedes is not None and (not isinstance(supersedes, str) or not supersedes.strip()):
+        errors.append(f"{where}[{i}]: supersedes must be the ref of an earlier long item.")
+        return None
     return MemoryItem(tier=tier, text=str(text),
                       topic=(str(d["topic"]) if d.get("topic") is not None else None),
-                      ref=(str(d["ref"]) if d.get("ref") is not None else None))
+                      ref=(str(d["ref"]) if d.get("ref") is not None else None),
+                      satellites=satellites, supersedes=supersedes)
+
+
+def memory_documents(items) -> list:
+    """Every separately-written memory document: each item, then its satellites.
+    What a reader that binds or checks refs walks - a satellite's ref is as real
+    an answer key as its core's."""
+    out = []
+    for it in items or []:
+        out.append(it)
+        out.extend(getattr(it, "satellites", None) or [])
+    return out
 
 
 def _is_ref_list(source) -> bool:
@@ -500,10 +627,33 @@ def _load_questions_one(source, warnings: list | None = None) -> list[Question]:
                 f"questions[{i}]: declares hops={needs_hops} AND quiet_in. Hops are meaningless "
                 f"to a quiet test -- you are checking for ABSENCE, and there is nothing to "
                 f"traverse toward. The quiet stores are graded at one pass regardless.")
+        stale = q.get("stale_ref") or []
+        if not isinstance(stale, list):
+            errors.append(f"questions[{i}]: stale_ref must be a list (got {type(stale).__name__}).")
+            stale = []
+        elif stale and not (er or ek or ec):
+            errors.append(f"questions[{i}]: stale_ref names the answer that USED to be right; it "
+                          f"needs the one that is right now (expect_ref, expect_key or expect_content).")
+        stale_key = q.get("stale_key") or []
+        if not isinstance(stale_key, list):
+            errors.append(f"questions[{i}]: stale_key must be a list (got {type(stale_key).__name__}).")
+            stale_key = []
+        elif stale_key and not (er or ek or ec):
+            errors.append(f"questions[{i}]: stale_key names a key whose OLD values must not come back; "
+                          f"it needs the answer that is right now (expect_key, expect_ref or "
+                          f"expect_content).")
+
+        tags = q.get("tags") or []
+        if not isinstance(tags, list) or not all(isinstance(t, str) for t in tags):
+            errors.append(f"questions[{i}]: tags must be a list of strings.")
+            tags = []
 
         out.append(Question(asks=asks or "", query=str(q.get("query", "")),
                             expect_key=list(ek), expect_ref=list(er), expect_content=list(ec),
-                            expect_empty=empty, needs_hops=needs_hops, quiet_in=quiet_in))
+                            expect_empty=empty, needs_hops=needs_hops, quiet_in=quiet_in,
+                            stale_ref=[str(s) for s in stale],
+                            stale_key=[str(s) for s in stale_key], tags=list(tags),
+                            answer=(str(q["answer"]) if q.get("answer") is not None else None)))
     if errors:
         raise SeedError(errors, warnings)
     return out
@@ -516,6 +666,7 @@ class SeedResult:
     memory_counts: dict[str, int]
     ref_to_id: dict[str, str]
     key_index: dict[str, list[str]]
+    notes: list[str] = field(default_factory=list)   # what the stores could not keep
 
 
 @dataclass
@@ -543,85 +694,181 @@ class _StorePartial:
     count: int = 0
     keys: list = field(default_factory=list)        # loci: "project/key"
     refs: list = field(default_factory=list)        # memory: (ref, minted_id)
+    reasons_dropped: int = 0                        # loci: why_changed the store did not keep
 
 
 def _seed_item_weight(kind: str, item) -> int:
     """Units of WORK one item costs, for progress totals -- not a count of items.
 
-    Loci and short/near memory items are one HTTP call each. A long-tier memory
-    item is THREE: POST /short (write it), POST /short/{id}/promote (promote it),
-    DELETE /short/{id} (clean up the now-superseded short copy). Counting it as 1
-    would make the progress bar visibly LIE for any corpus with long-tier items --
-    it would race ahead on short/near items, then crawl through long ones at a
-    third of the apparent rate for no visible reason.
+    Loci and short/near memory items are one HTTP call each, plus one per earlier
+    value a loci item's history writes. A long-tier item is one draft OPERATION,
+    plus one per satellite: long items land in batches (_land_long), and the bar
+    advances by the operations each review applied.
     """
     if kind == "loci":
-        return 1
-    return 3 if getattr(item, "tier", None) == "long" else 1
+        return 1 + len(getattr(item, "history", None) or [])
+    if getattr(item, "tier", None) == "long":
+        return 1 + len(getattr(item, "satellites", None) or [])
+    return 1
 
 
-def _seed_one_store(name: str, items: list, url: str, kind: str, post, delete, on_progress=None) -> _StorePartial:
+# Operations per seeding draft. One review embeds and writes every operation it
+# approves inside a single request, which has the same 30s budget as any other write
+# (live_eval.post); a few dozen keeps a cold CPU embedder well inside it.
+_SEED_DRAFT_OPS = 48
+
+
+def _seed_one_store(name: str, items: list, url: str, kind: str, post, on_progress=None) -> _StorePartial:
     """Seed ONE store, SERIALLY. Runs in its own worker thread.
 
     Writes stay in file order on purpose. Order is semantically load-bearing in a
-    memory store -- timestamps, tier progression, the short->promote->long dance --
-    and a store seeded out of order is not the store you would actually build. We
-    parallelise ACROSS stores (independent processes, independent databases) and
-    never WITHIN one. Wall clock goes from sum(store_times) to max(store_times);
-    the contents of each store are unchanged.
+    memory store -- timestamps, tier progression -- and a store seeded out of order
+    is not the store you would actually build. We parallelise ACROSS stores
+    (independent processes, independent databases) and never WITHIN one. Wall clock
+    goes from sum(store_times) to max(store_times); the contents of each store are
+    unchanged. A run of consecutive long items lands as one batch (_land_long), so
+    order holds there too: a short written after them is written after them.
 
-    on_progress(delta), if given, is called after EACH underlying HTTP call --
-    once for a loci fact, once for a short/near write, and once each for a long
-    item's write/promote/delete -- so the caller's X/Y advances by exactly the
-    same units _seed_item_weight counted into the total.
+    on_progress(delta), if given, advances by exactly the units _seed_item_weight
+    counted into the total: one per loci fact or short/near write, and one per
+    operation a seeding draft applied.
     """
     p = _StorePartial()
     if kind == "loci":
         for it in items:
-            post(url, "/fact", {"project": it.project, "key": it.key,
-                                "value": it.value, "why": it.why})
+            # The history first, oldest first, then the live value: each set_fact
+            # supersedes the one before, which is how a key's past is made.
+            for v in list(it.history) + [LociVersion(it.value, it.why, it.why_changed)]:
+                body = {"project": it.project, "key": it.key, "value": v.value, "why": v.why}
+                if v.why_changed is not None:
+                    body["why_changed"] = v.why_changed
+                r = post(url, "/fact", body)
+                # A Loci that keeps change reasons echoes the one it kept on the row this
+                # write retired. One that does not ignores the field, and the reason is gone.
+                if v.why_changed is not None and isinstance(r, dict) and r.get("why_changed") is None:
+                    p.reasons_dropped += 1
+                if on_progress:
+                    on_progress(1)
             p.keys.append(f"{it.project}/{it.key}")
             p.count += 1
-            if on_progress:
-                on_progress(1)
         return p
 
+    landed: dict[str, str] = {}        # this store's long refs -> ids, for supersedes
+    run: list = []                     # consecutive long items, up to _SEED_DRAFT_OPS operations
+
+    def _flush():
+        if run:
+            p.refs.extend(_land_long(url, run, landed, post, on_progress))
+            p.count += len(run)
+            run.clear()
+
     for it in items:
-        if it.tier == "near":
-            body = {"intent": it.text}
-            if it.topic:
-                body["topic"] = it.topic
-            resp = post(url, "/near", body)
-            if on_progress:
-                on_progress(1)
-        else:
-            body = {"content": it.text}
-            if it.topic:
-                body["topic"] = it.topic
-            resp = post(url, "/short", body)
-            if on_progress:
-                on_progress(1)
-            if it.tier == "long":
-                sid = (resp or {}).get("id", "")
-                if sid:
-                    post(url, f"/short/{sid}/promote", {})
-                    if delete is not None:
-                        delete(url, f"/short/{sid}")
-                # A long item is COUNTED as 3 units (write + promote + delete); bump the
-                # remaining 2 UNCONDITIONALLY. Gating these on `sid` was the stall: a
-                # /short write that returned no id skipped the whole block, so the item
-                # bumped 1 of its 3 counted units and the store's bar sat 2 short of
-                # total forever -- reading as 'still seeding the last memory' long after
-                # it finished, and making a reload look like the store was never seeded.
-                # We honor the 3-unit weight here regardless of whether sid came back or
-                # whether a delete callable was passed (delete-less callers still count 3).
-                if on_progress:
-                    on_progress(2)
+        if it.tier == "long":
+            if run and sum(_seed_item_weight("memory", x) for x in run) + _seed_item_weight("memory", it) > _SEED_DRAFT_OPS:
+                _flush()
+            run.append(it)
+            continue
+        _flush()
+        body = {"intent" if it.tier == "near" else "content": it.text}
+        if it.topic:
+            body["topic"] = it.topic
+        resp = post(url, "/near" if it.tier == "near" else "/short", body)
+        if on_progress:
+            on_progress(1)
         minted = (resp or {}).get("id", "")
         if it.ref and minted:
             p.refs.append((it.ref, minted))
         p.count += 1
+    _flush()
     return p
+
+
+def _land_long(url: str, run: list, landed: dict[str, str], post, on_progress=None) -> list[tuple[str, str]]:
+    """Write a run of long items the way long-term is actually written: through a
+    draft, approved. Returns (ref, id) for every core and satellite that has a ref.
+
+    WHY NOT /short + /promote. That was the seeder until 19 Oct 2026, and it bound
+    every long ref to a dead id: it recorded the /short id, but promote mints a NEW
+    long id and deletes the short itself. The ground-truth guard rehydrates only an
+    EMPTY ref map, which a fresh pod's never is, so the first eval after every seed
+    graded each long-tier expect_ref against nothing (runs 2+ rehydrated by text and
+    came out right). And promote can only make a core: Memory has no other route to
+    a satellite or a supersession. The review returns the id each operation became,
+    so the refs bind to rows that exist.
+
+    One draft per round. Round 1 holds each plain core as new_core with its
+    satellites as attach operations on it (target_op), and any item superseding a
+    core already in long-term (or a new_core in the same draft) as supersede. A
+    superseding item's own satellites, and a supersede of a core written in this
+    round by another supersede, wait for the next round, by id. A round that can
+    place nothing names a ref that never lands here, and that is said out loud: a
+    store missing half its supersession chain would score as a store that forgot.
+    """
+    out: list[tuple[str, str]] = []
+    ids: dict[int, str] = {}                       # id(item) -> the long id it became
+    waiting = list(run)
+    attaches: list[tuple] = []                     # (item, satellite) whose core landed earlier
+    while waiting or attaches:
+        ops: list[dict] = []
+        roles: list[tuple] = []                    # per op: ("core", item) | ("sat", item, satellite)
+        new_core_at: dict[str, int] = {}           # ref -> op index of a new_core in THIS draft
+        later: list = []
+        for it in waiting:
+            if it.supersedes is None:
+                at = len(ops)
+                if it.ref:
+                    new_core_at[it.ref] = at
+                ops.append({"kind": "new_core", "content": it.text, "topic": it.topic})
+                roles.append(("core", it))
+                for s in it.satellites:
+                    ops.append({"kind": "attach", "content": s.text, "topic": s.topic or it.topic,
+                                "target_op": at})
+                    roles.append(("sat", it, s))
+            elif it.supersedes in landed:
+                ops.append({"kind": "supersede", "content": it.text, "topic": it.topic,
+                            "target_core_id": landed[it.supersedes]})
+                roles.append(("core", it))
+                attaches.extend((it, s) for s in it.satellites)
+            elif it.supersedes in new_core_at:
+                ops.append({"kind": "supersede", "content": it.text, "topic": it.topic,
+                            "target_op": new_core_at[it.supersedes]})
+                roles.append(("core", it))
+                attaches.extend((it, s) for s in it.satellites)
+            else:
+                later.append(it)
+        ready = [x for x in attaches if id(x[0]) in ids]
+        attaches = [x for x in attaches if id(x[0]) not in ids]
+        for it, s in ready:
+            ops.append({"kind": "attach", "content": s.text, "topic": s.topic or it.topic,
+                        "target_core_id": ids[id(it)]})
+            roles.append(("sat", it, s))
+        if not ops:
+            if later:
+                missing = sorted({it.supersedes for it in later})
+                raise ValueError(f"{len(later)} long item(s) supersede a ref that is not an earlier long "
+                                 f"item in this store's seed: {', '.join(missing[:6])}")
+            raise ValueError(f"{len(attaches)} satellite(s) wait on a core the review returned no id for")
+        did = (post(url, "/drafts", {"summary": "seren-probe seed", "operations": ops}) or {}).get("id", "")
+        review = post(url, f"/drafts/{did}/review",
+                      {"decisions": [{"op": i, "verdict": "approve", "restate": False} for i in range(len(ops))]})
+        results = {int(r["op"]): r for r in (review or {}).get("results", []) if "op" in r}
+        for i, role in enumerate(roles):
+            r = results.get(i, {})
+            if role[0] == "core":
+                lid = str(r.get("long_term_id") or "")
+                if lid:
+                    ids[id(role[1])] = lid
+                    if role[1].ref:
+                        landed[role[1].ref] = lid
+                        out.append((role[1].ref, lid))
+            else:
+                sid = str(r.get("satellite_id") or "")
+                if sid and role[2].ref:
+                    out.append((role[2].ref, sid))
+        if on_progress:
+            on_progress(len(ops))
+        waiting = later
+    return out
 
 
 def seed_from_plan(topology: CompiledTopology, seed_by_store: dict, url_of: dict[str, str],
@@ -633,8 +880,12 @@ def seed_from_plan(topology: CompiledTopology, seed_by_store: dict, url_of: dict
     Items are already-validated dataclass instances, so no re-validation here.
 
       Loci   -> POST /fact
-      Memory -> POST /short | /near, with the long-tier promote+cleanup dance
+      Memory -> POST /short | /near; long items, their satellites and supersessions
+                through an approved draft (_land_long)
     Captures ref -> minted id (namespaced + bare) and a project/key index.
+
+    `delete` is accepted and unused: nothing is deleted since long items stopped
+    going through /short (19 Oct 2026). Kept so callers that pass it keep working.
 
     PARALLEL ACROSS STORES, SERIAL WITHIN ONE.
     Every store is a separate container, a separate process, a separate database --
@@ -650,9 +901,10 @@ def seed_from_plan(topology: CompiledTopology, seed_by_store: dict, url_of: dict
     of 8 is plenty for any realistic multi-brain layout and cheap to raise.
 
     report_progress publishes live X/Y counters to runtime.progress for the UI's
-    status column, keyed by store name, weighted by _seed_item_weight so a long
-    memory item (write+promote+delete = 3 calls) advances the bar three times as
-    much as a short/near item or a loci fact. False by default -- most callers
+    status column, keyed by store name, weighted by _seed_item_weight: one unit per
+    write, so a long item with three satellites (four draft operations) or a loci
+    fact with a history of three (four set_facts) moves the bar four times as far as
+    a single short. False by default -- most callers
     (tests, rehydration re-seeds) have no UI polling it and shouldn't pay the
     (tiny) locking cost or leave stale rows behind.
     """
@@ -702,7 +954,7 @@ def seed_from_plan(topology: CompiledTopology, seed_by_store: dict, url_of: dict
 
     def _seed_and_finish(name, items, url, kind):
         try:
-            return _seed_one_store(name, items, url, kind, post, delete, progress_bumps.get(name))
+            return _seed_one_store(name, items, url, kind, post, progress_bumps.get(name))
         finally:
             # finish() in a finally, so a store that RAISES still stops reporting a
             # half-filled bar forever. A stuck row reads as "still working" and there
@@ -734,6 +986,11 @@ def seed_from_plan(topology: CompiledTopology, seed_by_store: dict, url_of: dict
             res.loci_counts[name] = p.count
             for pk in p.keys:
                 res.key_index.setdefault(pk, []).append(name)
+            if p.reasons_dropped:
+                res.notes.append(
+                    f"{name}: {p.reasons_dropped} change reason(s) (`why_changed`) were not kept - "
+                    f"this Loci does not store why a fact changed. The values and their order "
+                    f"landed; a question about why a fact changed has nothing to find here.")
         else:
             res.memory_counts[name] = p.count
             for ref, minted in p.refs:
@@ -783,7 +1040,7 @@ def rehydrate_ref_map(topology: CompiledTopology, seed_by_store: dict, url_of: d
     mem_names = {n.name for n in topology.memory}
 
     def _rehydrate_one_store(name: str, items: list, url: str) -> tuple[dict[str, str], list[str]]:
-        refed = [it for it in items if getattr(it, "ref", None)]
+        refed = [it for it in memory_documents(items) if getattr(it, "ref", None)]
         if not refed:
             return {}, []
 
@@ -791,9 +1048,13 @@ def rehydrate_ref_map(topology: CompiledTopology, seed_by_store: dict, url_of: d
             """Returns (ref, want_text_marker, hit_id) -- hit_id '' means unresolved."""
             want = normalize_text(it.text)
             try:
+                # Satellites and superseded cores are left out of an ordinary recall, and
+                # a ref names whichever row it was written as - so this search asks for
+                # both, or their refs would never bind.
                 resp = post(url, "/search", {"query": it.text, "n_results": 50,
                                             "include_short": True, "include_near": True,
-                                            "include_long": True, "include_superseded": False})
+                                            "include_long": True, "include_superseded": True,
+                                            "include_satellites": True})
                 hits = resp.get("hits", []) if isinstance(resp, dict) else []
             except Exception:                      # noqa: BLE001
                 hits = []

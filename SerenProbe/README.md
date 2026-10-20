@@ -84,14 +84,34 @@ A full working `ProbeConfig.yml` ships in the package, plus a heavily-commented 
 
 The topology says *what stores* to stand up; **flat seed files** and a **question set** say what to put in them and what to ask — and you wire them into the ProbeConfig itself, so one config is self-contained. No separate dataset upload: hand SerenProbe the ProbeConfig and it seeds + scores from what the config points at.
 
-A **seed file** is a flat list of items (the store→data mapping lives in the config, not the file). Shapes are the real write contracts — Loci `{project?, key, value, why?}`, Memory `{content|intent, topic?, tier?, ref?}`:
+A **seed file** is a flat list of items (the store→data mapping lives in the config, not the file). Shapes are the real write contracts — Loci `{project?, key, value, why?, why_changed?, history?}`, Memory `{content|intent, topic?, tier?, ref?}`:
 
 ```yaml
 # meridian.loci.yaml
 - { project: meridian, key: api_port, value: "8080", why: "the REST API listens here" }
+# a fact that changed: its earlier values, oldest first, each set and then superseded
+- project: meridian
+  key: db_host
+  value: db-02.internal
+  why: "the primary since the March failover"
+  why_changed: "db-01 lost its disk"   # why this value replaced the one before
+  history:
+    - { value: db-01.internal, why: "the original primary" }
 # meridian.memory.yaml
 - { tier: short, ref: auth-incident, content: "auth threw 401s after a clock-skew bug", topic: auth }
+# a long item can carry its surroundings: satellites, and the earlier core it supersedes
+- { tier: long, ref: seat-1, content: "House Vayne holds its seat at Grimsgate" }
+- tier: long
+  ref: seat-2
+  supersedes: seat-1              # an earlier long item in the same store
+  content: "House Vayne moved its seat to Blackmere after the fire"
+  satellites:
+    - { ref: fire, content: "the fire at Grimsgate burned the great hall" }
 ```
+
+A Loci item's `history` is written first, in order, then its live value, so the store holds the past the way set_fact makes it: retired rows under the same key. Each `why_changed` rides with the write it explains, and Loci keeps it on the row that write retires. A Loci that keeps change reasons echoes `why_changed` in its answer; one that does not is named in the result's `ground_truth` notes instead of silently dropping them.
+
+Long items are written the way long-term is actually written: through an approved draft. Refs bind to the ids Memory returns, satellites land on their core, and a supersede demotes the core it names. An unknown key on an item is warned about, never silently dropped.
 
 Wire them into the ProbeConfig — a `DefaultQuestions` set (scored across every store unless a node names its own `Questions:`, which is how a multi-brain dataset points the right questions at the right brain), per-kind default seeds, and optional per-node `Seed` overrides:
 
@@ -112,6 +132,9 @@ A **question set** scores each query against honest ground truth — `expect_key
 ```yaml
 questions:
   - { asks: loci,   query: "what port does the API use?", expect_key: ["meridian/api_port"] }
+  - { asks: memory, query: "where is House Vayne's seat now?", expect_ref: [seat-2], stale_ref: [seat-1] }
+  - { asks: loci,   query: "which host is the database on?", expect_key: ["meridian/db_host"],
+      stale_key: ["meridian/db_host"] }
   - { asks: corpus, query: "brief me on the auth setup",
       expect_content: ["JWT bearer tokens", "15 minute", "100 requests per minute", "team-atlas"] }
 ```
@@ -164,7 +187,7 @@ per-store  Floor:/Weight:  (on the Stores entry)
    ←  the SCC's installed default
 ```
 
-`loci_floor` floors *every* loci member of the corpus (and leaves memory alone); `mem_floor` does the same for memory. A per-store `Floor:` on a `Stores` entry is the escape hatch that beats the shorthand for that one store. Federation-level knobs — `authority_margin`, `n_results`, `rrf_k`, `fusion_mode`, `min_per_store`, `hops` — live in `Config`/`DefaultConfig` and go straight onto the federation block.
+`loci_floor` floors *every* loci member of the corpus (and leaves memory alone); `mem_floor` does the same for memory. A per-store `Floor:` on a `Stores` entry is the escape hatch that beats the shorthand for that one store. Federation-level knobs — `authority_margin`, `n_results`, `rrf_k`, `fusion_mode`, `min_per_store`, `hops`, the edge knobs (`satellite_edges_enabled`, `satellite_budget`, `edges_enabled`, `edge_budget`) — live in `Config`/`DefaultConfig` and go straight onto the federation block.
 
 ```yaml
 Corpus:
@@ -201,6 +224,10 @@ Every store gets the standard retrieval battery, computed at top-*k*:
 | **PΩ@k** | Rank-weighted precision — top ranks count for more |
 
 SCC additionally reports **docket_coverage** (fraction of expected facts found *anywhere* in the packet — did the briefing cover the ground?) and **docket_density** (fraction of the top-k that carry expected content — how much of the packet is signal?). These are the metrics that actually reflect SCC's job.
+
+**Satellites and marked edges.** Memory's long-term is a core and its surroundings: recall returns cores, and a supporting episode (a *satellite*) surfaces through its core, which carries it as `matched_via`. The Callosum hangs a core's newest satellites, the core it superseded and topic neighbours after the ranked packet as marked edges (`satellite-edge`, `supersedes-edge`, `topic-edge`). An edge is never a rank: the @k metrics read the ranked packet, and an answer an edge carries credits the core it hangs off. A satellite's `expect_ref` is credited to the core that surfaced it. Coverage and the quiet test read everything returned, including the satellite text a core came through. A question with `stale_ref` (the answer that *used to be* right) reports **stale_rate** — how often the superseded core ranked inside the top-k as an answer — with `stale_as_edge` beside it for the times it came back marked as history. `stale_key` is the same test on Loci: a key's retired values (read live from `/fact/history`) must not rank for a "now" question. It counts in the same stale columns, and the linter refuses a `stale_key` the seed never gave a history.
+
+**What the edges bought, and what they cost.** `docket_coverage` reads everything returned, edges included, so every corpus column also carries `surroundings`: coverage of the ranked packet alone (`coverage_packet`), then with each edge family folded in (`coverage_with`), density the same way (`density_with`), and the rows and characters each family adds (`rows`, `chars`) — the reading cost a bigger satellite budget buys. The docket comparison prints it per column. The live knob sweep grades a packet exactly as the eval does (one module, `core/edges.py`), and the edge knobs are sweepable: `satellite_edges_enabled`, `satellite_budget`, `edges_enabled`, `edge_budget` (live only — edges hang off the packet the fusion just made; the capture replay runs every edge family off, so its `docket_coverage` is the packet's and is reported as `docket_coverage_packet` too).
 
 ### The docket comparison — with vs without edges
 

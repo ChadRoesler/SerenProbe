@@ -157,15 +157,29 @@ def _search_payload(kind: str, query: str, k: int) -> dict:
     return {"query": query, "n_results": k}   # corpus: the FAN is the scope
 
 
-def _loci_haystack(h: dict) -> str:
-    return " ".join([str(h.get("value", "")), str(h.get("why", "") or ""), str(h.get("key", ""))])
+# Satellites and marked edges: an edge is never a rank. The helpers live in
+# core/edges.py, shared with the knob sweep (regrade_live), so the graders agree.
+from ..core.edges import (  # noqa: E402
+    EDGE_SOURCES as _EDGE_SOURCES, hay as _hay, is_edge as _is_edge,
+    loci_haystack as _loci_haystack, mean_surroundings, split_edges as _split_edges,
+    surroundings as _surroundings, via as _via,
+)
 
 
 def _grade(hits, q, kind, resolve_key, resolve_ref, k):
     """(retrieved, relevant, coverage, density) for one query vs one store.
     Honest ground truth from expect_key (loci canonical id) + expect_ref (memory
-    minted id); content-match (relative) adds matched hit ids on top."""
-    retrieved = [(h["id"], h.get("score", 0.0)) for h in hits]
+    minted id); content-match (relative) adds matched hit ids on top.
+
+    retrieved is the RANKED PACKET: edges are left out of it (see _is_edge), and
+    an answer an edge carries is credited to the core it hangs off."""
+    packet, edges = _split_edges(hits)
+    retrieved = [(h["id"], h.get("score", 0.0)) for h in packet]
+
+    def _credit(h):
+        """The packet row an answer in this hit counts for."""
+        return (h.get("metadata") or {}).get("edge_of") if _is_edge(h) else h["id"]
+
     relevant: set[str] = set()
     for pk in q.expect_key:
         rid = resolve_key(pk)
@@ -173,30 +187,46 @@ def _grade(hits, q, kind, resolve_key, resolve_ref, k):
             relevant.add(rid)
     for ref in q.expect_ref:
         rid = resolve_ref(ref)
-        if rid:
-            relevant.add(rid)
+        if not rid:
+            continue
+        # A satellite's ref is answered by the core that surfaced it: reached through
+        # it (matched_via), or carrying it as an edge. Otherwise the ref stands as-is.
+        holder = next((h["id"] for h in packet if h["id"] == rid or _via(h).get("id") == rid), None)
+        if holder is None:
+            holder = next((_credit(h) for h in edges if h["id"] == rid and _credit(h)), None)
+        relevant.add(holder or rid)
     items_found = 0
     n_exp = len(q.expect_content)
     for exp in q.expect_content:
         ne = normalize_text(exp)
         if not ne:
             continue
-        for h in hits:
-            hay = _loci_haystack(h) if kind == "seren_loci" else str(h.get("content", ""))
-            if ne in normalize_text(hay):
-                relevant.add(h["id"])
+        for h in packet + edges:
+            if ne in normalize_text(_hay(h, kind)):
+                # Found counts for coverage either way; only a row that can rank (or
+                # the core an edge hangs off) joins `relevant`. A topic-edge has no
+                # core, and adding its id would ask recall for a row that never ranks.
+                if _credit(h):
+                    relevant.add(_credit(h))
                 items_found += 1
                 break
     density_hits = 0
     if q.expect_content:
-        for h in hits[:k]:
-            hay = _loci_haystack(h) if kind == "seren_loci" else str(h.get("content", ""))
-            nh = normalize_text(hay)
+        for h in packet[:k]:
+            nh = normalize_text(_hay(h, kind))
             if any(normalize_text(e) and normalize_text(e) in nh for e in q.expect_content):
                 density_hits += 1
     coverage = items_found / n_exp if n_exp > 0 else 0.0
     density = density_hits / min(k, len(retrieved)) if retrieved else 0.0
     return retrieved, relevant, coverage, density
+
+
+def _stale_seen(hits, stale_ids: set[str], k: int) -> tuple[bool, bool]:
+    """(in_packet, as_edge): did a superseded answer rank inside k, or come back as
+    a marked edge? See stale_ref in seed_dataset."""
+    packet, edges = _split_edges(hits)
+    return (any(h["id"] in stale_ids for h in packet[:k]),
+            any(h["id"] in stale_ids for h in edges))
 
 
 # ── Per-question detail capture (powers the viewer's store drill-down modal) ──
@@ -245,27 +275,36 @@ def _question_detail(q, hits, retrieved, relevant, kind, coverage, k):
         if hid in relevant:
             rank = i
             break
+    packet, edges = _split_edges(hits)
     rows = []
-    for h in hits[:k]:
+    for h in packet[:k]:
         hid = h.get("id")
-        rows.append({
+        row = {
             "id": hid,
             "score": round(float(h.get("score", 0.0) or 0.0), 4),
             "text": _clip(_hit_text(h, kind)),
             "expected": hid in relevant,
             "origin": _hit_origin(h),
-        })
-    return {
+        }
+        if _via(h):
+            row["via"] = _clip(_via(h).get("content", ""))
+        rows.append(row)
+    out = {
         "query": getattr(q, "query", ""),
         "rank": rank,
         "hit": rank is not None,
         "within_k": rank is not None and rank <= k,
         "has_gt": bool(relevant),
         "n_relevant": len(relevant),
-        "n_hits": len(hits),
+        "n_hits": len(packet),
         "coverage": round(coverage, 4) if kind == "corpus" else None,
         "hits": rows,
     }
+    if edges:
+        out["edges"] = [{"id": h.get("id"), "source": (h.get("metadata") or {}).get("source"),
+                         "edge_of": (h.get("metadata") or {}).get("edge_of"),
+                         "text": _clip(_hit_text(h, kind))} for h in edges[:k]]
+    return out
 
 
 def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
@@ -331,7 +370,7 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
                                      max_parallel_stores=max_parallel_stores,
                                      report_progress=report_progress)
     ref_to_id = seed_result.ref_to_id if seed_result else {}
-    gt_notes: list[str] = []
+    gt_notes: list[str] = list(getattr(seed_result, "notes", None) or [])
 
     # GROUND-TRUTH GUARD. expect_ref resolves through ref_to_id, which is minted at
     # SEED time and lives only in the seeding process's RAM. But a pod is flagged
@@ -345,7 +384,9 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
     # /fact. Ground truth that lives in a process is not ground truth, it's a receipt.
     # So: rebuild the map from the live store, and if we still can't, REFUSE TO SCORE.
     # A missing answer key is a broken harness -- never a failing store.
-    needed_refs = {r for q in questions for r in q.expect_ref}
+    # stale_ref too: a superseded answer that cannot be resolved would make the
+    # supersession test pass by never looking.
+    needed_refs = {r for q in questions for r in list(q.expect_ref) + list(getattr(q, "stale_ref", []) or [])}
 
     def _ref_resolves(ref: str) -> bool:
         """MIRROR resolve_ref EXACTLY. seed_from_plan records each ref twice -- once
@@ -510,6 +551,37 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
             _key_cache[pk] = rid
             return rid
 
+        _stale_cache: dict[str, set] = {}
+
+        def resolve_stale_key(pk):
+            """stale_key -> the ids of every RETIRED value of that key (GET /fact/history).
+
+            A retired value is the same (project, key) as the live one under a different
+            id, so this is the only way to tell the old answer from the new. Qualified
+            asks its store; bare asks every Loci the column fans, the same rule (and the
+            same ambiguity note) as resolve_key."""
+            if pk in _stale_cache:
+                return _stale_cache[pk]
+            store, bare = _split_qualified(pk)
+            project, key = bare.split("/", 1) if "/" in bare else ("*", bare)
+            if store is not None:
+                urls = [_fact_by_store[store]]
+            else:
+                urls = [u for _n, u in fact_urls]
+                if len(urls) > 1:
+                    _ambiguous_keys.add(pk)
+            ids: set[str] = set()
+            for furl in urls:
+                try:
+                    data = get_params(furl, "/fact/history", {"project": project, "key": key})
+                except Exception:
+                    continue
+                rows = data.get("history", []) if isinstance(data, dict) else []
+                ids |= {r["id"] for r in rows
+                        if isinstance(r, dict) and r.get("id") and r.get("superseded_at") is not None}
+            _stale_cache[pk] = ids
+            return ids
+
         def holds_key(pk):
             """Does THIS column hold that exact fact? QUALIFIED ONLY when it could
             be ambiguous -- never the first-member fallback.
@@ -647,6 +719,8 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
         normal_hits = _search_many(normal_qs)
         scored_qs = 0
         q_detail: list[dict] = []
+        surr: list[dict] = []            # corpus: what the marked edges bought, and cost
+        stale_asked = stale_packet = stale_edge = 0
         for q, hits in zip(normal_qs, normal_hits):
             # EXCLUDED, not zeroed. A question whose search never completed was never
             # actually asked, so it carries no evidence either way -- averaging it in as
@@ -664,11 +738,27 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
             retrieved, relevant, cov, den = _grade(hits, q, kind, resolve_key, resolve_ref, k)
             results.append((retrieved, relevant)); coverages.append(cov); densities.append(den)
             q_detail.append(_question_detail(q, hits, retrieved, relevant, kind, cov, k))
+            if kind == "corpus":
+                surr.append(_surroundings(hits, q.expect_content, k, kind))
+            stale_ids = {resolve_ref(r) for r in (getattr(q, "stale_ref", None) or [])} - {""}
+            for sk in (getattr(q, "stale_key", None) or []) if fact_urls else []:
+                stale_ids |= resolve_stale_key(sk)
+            if stale_ids:
+                in_packet, as_edge = _stale_seen(hits, stale_ids, k)
+                stale_asked += 1
+                stale_packet += in_packet
+                stale_edge += as_edge
+                q_detail[-1]["stale"] = "in_packet" if in_packet else ("as_edge" if as_edge else None)
         m = compute_metrics_batch(results, k=k)
         if kind == "corpus":
             m.docket_coverages = coverages
             m.docket_densities = densities
         snap = m.snapshot()
+        if surr:
+            # docket_coverage reads everything returned; this splits it: the ranked
+            # packet alone, then each edge family folded in, with the rows and text
+            # each one adds (punch list: probe-docket-eval).
+            snap["surroundings"] = mean_surroundings(surr)
         snap["kind"] = kind; snap["question_count"] = scored_qs; snap["k"] = k
         # Per-question drill-down (normal questions only -- the HR/MRR story). Stripped
         # off the /results wire by the routes; served on demand from /eval/detail.
@@ -678,6 +768,13 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
         # column that scored 3 of 28 should say so on the same line as its metrics.
         if len(normal_qs) != scored_qs:
             snap["unscored_normal"] = len(normal_qs) - scored_qs
+        # SUPERSESSION. stale_rate is the failure (the old answer ranked as an answer);
+        # an edge is the old answer offered marked as history, reported beside it.
+        if stale_asked:
+            snap["stale_count"] = stale_asked
+            snap["stale_in_packet"] = stale_packet
+            snap["stale_as_edge"] = stale_edge
+            snap["stale_rate"] = stale_packet / stale_asked
 
         # expect_empty (no-answer) questions: PASS = the store stays quiet (0 hits).
         # Scored SEPARATELY so a correct silence doesn't drag down hit_rate. A store
@@ -691,7 +788,9 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
                 if hits is None:
                     continue          # never asked; cannot have stayed quiet OR leaked
                 asked += 1
-                if not hits:
+                # Edges hang off packet rows, so an honest abstention has none; counted
+                # on the packet all the same, since an edge is never a rank.
+                if not _split_edges(hits)[0]:
                     passes += 1
             if asked:
                 snap["empty_count"] = asked
@@ -727,9 +826,12 @@ def run_topology_evaluation(topology, url_of, questions, *, seed_by_store=None,
                     continue
                 asked += 1
                 leaked = False
-                for h in hits[:k]:
-                    hay = _loci_haystack(h) if kind == "seren_loci" else str(h.get("content", ""))
-                    nh = normalize_text(hay)
+                # The top-k packet and every edge riding on it, each with the satellite
+                # it came through: all of it is in front of whoever reads the docket, so
+                # an answer in any of it has leaked.
+                packet, edges = _split_edges(hits)
+                for h in packet[:k] + edges:
+                    nh = normalize_text(_hay(h, kind))
                     if any(normalize_text(e) and normalize_text(e) in nh for e in q.expect_content):
                         leaked = True
                         break

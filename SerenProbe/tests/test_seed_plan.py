@@ -18,13 +18,33 @@ def _url_of(t):
 
 
 def _recorder():
+    """Speaks Memory's write contract: /short and /near mint ids, and a draft's
+    review returns the id each approved operation became (long_term_id for a core,
+    satellite_id for an attach)."""
     calls = []
     mint = {"n": 0}
+    drafts = {}
+    def _mint(prefix):
+        mint["n"] += 1
+        return f"{prefix}-{mint['n']}"
     def post(url, path, body):
         calls.append(("POST", url, path, body))
         if path in ("/short", "/near"):
-            mint["n"] += 1
-            return {"id": f"mint-{mint['n']}"}
+            return {"id": _mint("mint")}
+        if path == "/drafts":
+            did = _mint("draft")
+            drafts[did] = body["operations"]
+            return {"id": did}
+        if path.startswith("/drafts/") and path.endswith("/review"):
+            ops = drafts[path.split("/")[2]]
+            results = []
+            for d in body["decisions"]:
+                op = ops[d["op"]]
+                if op["kind"] == "attach":
+                    results.append({"op": d["op"], "satellite_id": _mint("sat")})
+                else:
+                    results.append({"op": d["op"], "long_term_id": _mint("long")})
+            return {"results": results}
         return {}
     def delete(url, path):
         calls.append(("DELETE", url, path, None))
@@ -48,23 +68,27 @@ def test_seed_from_plan_writes_loci_and_memory_with_tiers():
     assert len(facts) == 2 and facts[0][3] == {"project": "p", "key": "k1", "value": "v1", "why": "w"}
     assert facts[1][3]["project"] == "*"
     assert res.key_index["p/k1"] == ["la"]
-    # memory: one /near, two /short, one promote, one delete (long cleanup)
+    # memory: one /near, one /short, and the long item through an approved draft
     assert any(c[2] == "/near" and c[3]["intent"] == "do later" for c in calls)
-    assert sum(1 for c in calls if c[2] == "/short") == 2
-    assert any(c[2].endswith("/promote") for c in calls)
-    assert any(c[0] == "DELETE" and c[2].startswith("/short/") for c in calls)
-    # ref capture: namespaced + bare
+    assert sum(1 for c in calls if c[2] == "/short") == 1
+    assert [c[3]["operations"] for c in calls if c[2] == "/drafts"] == [
+        [{"kind": "new_core", "content": "durable fact", "topic": None}]]
+    assert not any(c[2].endswith("/promote") or c[0] == "DELETE" for c in calls)
+    # ref capture: namespaced + bare; the long ref is the id the review returned
     assert res.ref_to_id["m:r1"].startswith("mint-") and "r1" in res.ref_to_id
+    assert res.ref_to_id["m:r3"].startswith("long-")
 
 
-def test_seed_from_plan_long_without_delete_still_promotes():
+def test_a_long_ref_binds_the_id_the_review_returns_not_a_short_id():
+    """19 Oct 2026: the seeder recorded the /short id, promote minted a new one, and
+    the first eval after every seed graded long-tier refs against a dead id."""
     t = _topo()
     plan = {"la": [], "lb": [], "m": [MemoryItem("long", "x", ref="r")]}
     calls, post, _ = _recorder()
     res = seed_from_plan(t, plan, _url_of(t), post=post, delete=None)
     assert res.memory_counts["m"] == 1
-    assert any(c[2].endswith("/promote") for c in calls)
-    assert not any(c[0] == "DELETE" for c in calls)
+    assert res.ref_to_id["m:r"].startswith("long-")
+    assert not any(c[2] == "/short" for c in calls)
 
 
 def test_resolve_then_seed_from_plan_end_to_end():

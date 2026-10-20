@@ -22,7 +22,7 @@ from __future__ import annotations
 
 from ..seed_dataset import expand_quiet_target
 from .model import build_docs, LintReport
-from .adapters import _item_to_dict
+from .adapters import _item_dicts
 
 
 def lint_quiet_targets(questions, topology, plan, rep: LintReport) -> None:
@@ -78,7 +78,7 @@ def lint_quiet_targets(questions, topology, plan, rep: LintReport) -> None:
                 n = node_by_name.get(m)
                 if n is None:
                     continue
-                items = [_item_to_dict(x) for x in plan.seed_by_store.get(m, [])]
+                items = [d for x in plan.seed_by_store.get(m, []) for d in _item_dicts(x)]
                 (loci_items if n.kind == "seren_loci" else mem_items).extend(items)
 
             docs = build_docs(loci_items, mem_items)

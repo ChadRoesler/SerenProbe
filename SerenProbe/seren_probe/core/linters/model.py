@@ -91,6 +91,7 @@ class Corpus:
     docs: list[Doc]
     loci_idents: set[str]
     mem_refs: set[str]
+    loci_changed: set[str]          # keys seeded with a history: a stale_key target
     haystack: str
     doc_words: list[tuple[Doc, set[str]]]
     by_ident: dict[str, tuple[Doc, set[str]]]
@@ -102,13 +103,16 @@ def build_corpus(loci_items, memory_items) -> Corpus:
     docs = build_docs(loci_items, memory_items)
     loci_idents = {d.ident for d in docs if d.kind == "loci"}
     mem_refs = {d.ident for d in docs if d.kind == "memory" and d.ident}
+    loci_changed = {f"{f.get('project', '*')}/{f.get('key', '')}" for f in loci_items or []
+                    if f.get("history")}
     haystack = "\n".join(d.text for d in docs).lower()
     doc_words = [(d, _words(d.text)) for d in docs]
     by_ident = {d.ident: (d, w) for d, w in doc_words if d.ident}
     vocab: set[str] = set()
     for _d, _w in doc_words:
         vocab |= _w
-    return Corpus(docs=docs, loci_idents=loci_idents, mem_refs=mem_refs, haystack=haystack,
+    return Corpus(docs=docs, loci_idents=loci_idents, mem_refs=mem_refs, loci_changed=loci_changed,
+                  haystack=haystack,
                   doc_words=doc_words, by_ident=by_ident, vocab=vocab)
 
 

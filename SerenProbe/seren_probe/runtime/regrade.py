@@ -247,6 +247,20 @@ async def capture_stores(base_stores: list[StoreConfig], queries: list,
 
 
 # ── regrade (in-process, real Federation over the frozen capture) ────────────
+def edges_off() -> dict:
+    """FederationConfig kwargs that turn EVERY marked-edge family off.
+
+    The replay grades the fused packet and nothing hung after it. Topic edges need
+    the packet's own /by_topic call (packet-coupled), and satellite edges ride on the
+    captured hits' surroundings: left on, _fused_to_dicts flattens away the marker
+    and they come back as unmarked score-0.0 RANKS. Until 19 Oct 2026 only
+    edges_enabled was turned off here, while satellite_edges_enabled defaults ON.
+    A Callosum from before satellites has no such field, so only what exists is set."""
+    import dataclasses
+    names = {f.name for f in dataclasses.fields(FederationConfig)}
+    return {k: False for k in ("edges_enabled", "satellite_edges_enabled") if k in names}
+
+
 def build_fed_config(base_stores: list[StoreConfig], *, rrf_k: int,
                      loci_weight: float, loci_floor: float, authority: float,
                      min_per_store: int, fusion_mode: str,
@@ -267,7 +281,7 @@ def build_fed_config(base_stores: list[StoreConfig], *, rrf_k: int,
         stores=stores, k=rrf_k, n_results=n_results,
         fetch_multiplier=fetch_multiplier,
         fusion_mode=fusion_mode, authority_margin=authority,
-        min_per_store=min_per_store, edges_enabled=False,
+        min_per_store=min_per_store, **edges_off(),
     )
 
 
@@ -298,6 +312,9 @@ async def regrade_one(capture, fed_config: FederationConfig, queries,
     agg = compute_metrics_batch(results, k=eval_k).aggregate()
     agg["docket_coverage"] = sum(coverages) / len(coverages) if coverages else 0.0
     agg["docket_density"] = sum(densities) / len(densities) if densities else 0.0
+    # The replay has no edges, so its coverage IS the ranked packet's: the number to
+    # hold against the live engine's docket_coverage_packet, not its docket_coverage.
+    agg["docket_coverage_packet"] = agg["docket_coverage"]
     return agg, replay.misses
 
 
@@ -534,7 +551,7 @@ async def _regrade_one_corpus_async(corpus, base_stores: list[StoreConfig], rqs,
         kwargs: dict = {"stores": stores,
                         "k": combo.get("rrf_k", ref_k),
                         "n_results": combo.get("n_results", ref_n),
-                        "edges_enabled": False}
+                        **edges_off()}
         # Combo-named wins; else the DEPLOYED value (ref_extra); else omitted so
         # FederationConfig supplies its own default. This is what makes the baseline
         # and every unnamed-knob combo reflect the running deployment.

@@ -50,6 +50,12 @@ REGRADE_KNOBS: dict[str, type] = {
     # to refuse. A knob is only real if the compiler, the mapper, AND the SCC agree.
     "hop_terms": int,     # how many terms round-2 lifts from round-1 hit text
     "hop_budget": int,    # how many extra docs a hop may pull back
+    # The marked edges after the ranked packet. Never ranks (core.edges), but they are
+    # text the reader reads, so whether they pay for themselves is a sweep question:
+    # topic neighbours (edges_*), and a core's newest satellites and the core it
+    # superseded (satellite_*). Packet-coupled: live sweep only.
+    "edges_enabled": bool, "edge_budget": int,
+    "satellite_edges_enabled": bool, "satellite_budget": int,
 }
 
 # Knobs that need a CAPABILITY the SCC may not have. Sweeping one against an SCC
@@ -66,6 +72,10 @@ KNOBS_NEEDING_CAPABILITY: dict[str, str] = {
                   "can't hop can't steer a hop either, and would ignore this silently."),
     "hop_budget": ("multi-hop retrieval budget. Same capability as `hops`; an SCC without "
                    "multi-hop ignores it, yielding identical rows that read as a ceiling."),
+    "satellite_edges_enabled": ("satellite edges (a core's newest satellites and the core it "
+                                "superseded, marked after the packet). An SCC from before them "
+                                "ignores the field."),
+    "satellite_budget": ("the satellite-edge budget. Same capability as satellite_edges_enabled."),
 }
 
 
@@ -401,7 +411,7 @@ def _parse_regrades(raw, errors: list[str], warnings: list[str]) -> list[Regrade
             for v in vals:
                 if want is float and isinstance(v, int) and not isinstance(v, bool):
                     v = float(v)
-                if isinstance(v, bool) or not isinstance(v, want):
+                if (isinstance(v, bool) and want is not bool) or not isinstance(v, want):
                     errors.append(f"CorpusRegrades {name!r}: knob {key!r} wants {want.__name__} values "
                                   f"(got {v!r}).")
                     continue
@@ -424,6 +434,8 @@ FED_FIELD: dict[str, str] = {
     "authority_margin": "authority_margin", "min_per_store": "min_per_store",
     "fusion_mode": "fusion_mode", "per_store_timeout_s": "per_store_timeout_s",
     "hops": "hops", "hop_terms": "hop_terms", "hop_budget": "hop_budget",
+    "edges_enabled": "edges_enabled", "edge_budget": "edge_budget",
+    "satellite_edges_enabled": "satellite_edges_enabled", "satellite_budget": "satellite_budget",
 }
 # Knobs that are PER-STORE overrides on a member rather than federation-level.
 STORE_FIELD: dict[str, str] = {"loci_weight": "weight", "loci_floor": "floor",
@@ -496,7 +508,7 @@ def _parse_corpus_config(raw, cname: str, errors: list[str], warnings: list[str]
         want = REGRADE_KNOBS[key]
         if want is float and isinstance(val, int) and not isinstance(val, bool):
             val = float(val)
-        if isinstance(val, bool) or not isinstance(val, want):
+        if (isinstance(val, bool) and want is not bool) or not isinstance(val, want):
             errors.append(f"Corpus {cname!r}: Config knob {key!r} wants a {want.__name__} "
                           f"(got {val!r}).")
             continue
