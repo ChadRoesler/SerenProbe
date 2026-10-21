@@ -1459,7 +1459,7 @@ async function refreshConfig() {
     html += '<input type="file" id="probeconfig-file" accept=".yml,.yaml,.txt" style="display:none" onchange="loadProbeConfigFile(this)"/>';
     html += '<div class="ctrls-row">';
     // Under the editor there is one button. Validate, Load file and Reload
-    // live in the panel header and nowhere else (Chad, 20 Oct 2026: "remove
+    // live in the panel header and nowhere else (20 Oct 2026: "remove
     // all of the lower buttons but the copy validation button").
     // The lint can run to thousands of lines on a multi-tenant topology. Reading that
     // through a scrollbox and then SCREENSHOTTING it is not a workflow.

@@ -142,7 +142,7 @@ textarea {
             /* One size for every control in a panel header, the Workbench's
                (4px 11px, radius 7, .82em mono), with a fixed 30px height so a
                bold filled .btn, an emoji and a plain ⟳ all sit on one line
-               (Chad, 20 Oct 2026: "✓ Validate & Set Active is not sized right
+               (20 Oct 2026: "✓ Validate & Set Active is not sized right
                with the other buttons, the load file and the other one are odd
                sizes"). */
             .panel .panel-header .ctrls button {
@@ -158,7 +158,7 @@ textarea {
                 border-radius: 7px;
                 cursor: pointer;
                 font-size: 0.85em;
-                font-family: var(--font);      /* the page face, not mono (Chad, 20 Oct 2026: "make the font standard") */
+                font-family: var(--font);      /* the page face, not mono (20 Oct 2026: "make the font standard") */
                 transition: border-color 0.15s, color 0.15s;
             }
 
@@ -1359,7 +1359,7 @@ tr.neg-leaked td:first-child {
    same control as the ones in the panel header: one height (30px), one
    face (the .82em mono the family uses for controls), one radius. Before
    this a filled .btn sat beside a .btn-sm that fell through to the shell's
-   default button, so one row wore two fonts and two heights (Chad, 20 Oct
+   default button, so one row wore two fonts and two heights (20 Oct
    2026: "font weirdness ... the load file and the other one are odd sizes").
    Last in the file on purpose: it must outrank .config-picker .btn-sm. */
 .panel .btn, .panel .btn-sm, .panel .copy-btn {
