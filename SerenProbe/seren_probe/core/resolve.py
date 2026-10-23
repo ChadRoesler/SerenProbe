@@ -18,6 +18,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from .topology import CompiledTopology, ResolvedNode
+import functools
+
 from .seed_dataset import load_seed_items, load_questions, Question
 
 
@@ -41,11 +43,25 @@ def _seed_ref_for(node: ResolvedNode, default_for_kind: str | None) -> str | Non
     return default_for_kind
 
 
+def _based(topology, load_items, load_qs):
+    """A topology that came out of an inquisition bundle carries base_dir, and
+    its refs mean files inside that bundle. Only the DEFAULT loaders learn the
+    base: an injected loader (a test's fake) is the caller's business."""
+    base = getattr(topology, "base_dir", None)
+    if base:
+        if load_items is load_seed_items:
+            load_items = functools.partial(load_seed_items, base=base)
+        if load_qs is load_questions:
+            load_qs = functools.partial(load_questions, base=base)
+    return load_items, load_qs
+
+
 def resolve_plan(topology: CompiledTopology, *,
                  load_items=load_seed_items, load_qs=load_questions) -> ResolvedPlan:
     """Resolve every store's seed content + the shared questions off a compiled
     topology. load_items(ref, kind) / load_qs(ref) are injectable for testing;
     defaults resolve a path or inline YAML via the seed_dataset loaders."""
+    load_items, load_qs = _based(topology, load_items, load_qs)
     warnings: list[str] = []
     seed_by_store: dict[str, list] = {}
 
@@ -231,6 +247,7 @@ def resolve_eval_inputs(topology: CompiledTopology, body: dict | None = None, *,
     Raises SeedError (caught by the route -> 400) on any malformed ref/body.
     """
     body = body or {}
+    _, load_qs = _based(topology, load_seed_items, load_qs)
     plan = resolve(topology)
     questions = plan.questions
 

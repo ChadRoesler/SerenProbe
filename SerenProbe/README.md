@@ -229,25 +229,110 @@ SCC additionally reports **docket_coverage** (fraction of expected facts found *
 
 **What the edges bought, and what they cost.** `docket_coverage` reads everything returned, edges included, so every corpus column also carries `surroundings`: coverage of the ranked packet alone (`coverage_packet`), then with each edge family folded in (`coverage_with`), density the same way (`density_with`), and the rows and characters each family adds (`rows`, `chars`) — the reading cost a bigger satellite budget buys. The docket comparison prints it per column. The live knob sweep grades a packet exactly as the eval does (one module, `core/edges.py`), and the edge knobs are sweepable: `satellite_edges_enabled`, `satellite_budget`, `edges_enabled`, `edge_budget` (live only — edges hang off the packet the fusion just made; the capture replay runs every edge family off, so its `docket_coverage` is the packet's and is reported as `docket_coverage_packet` too).
 
-### The docket comparison — with vs without edges
+### The docket comparison — vector vs lexical Loci
 
-Run a topology with both a vector SCC and a lexical one (the canonical `scc-v` / `scc-nv` pair) and SerenProbe doesn't just score them independently — it **pairs them and reports the delta**, answering the question an SCC exists for: *when the callosum fans a vector Loci (semantic edges between nodes) instead of a lexical, FTS5-only one (no edges), does the assembled briefing carry more of the relevant info?*
+Run a topology with both a vector SCC and a lexical one (the canonical `scc-v` / `scc-nv` pair) and SerenProbe doesn't just score them independently — it **pairs them and reports the delta**, answering the question an SCC exists for: *when the callosum fans a vector Loci (embeddings) instead of a lexical, FTS5-only one, does the assembled briefing carry more of the relevant info?* (This was called "with vs without edges" until 22 Oct 2026, a name older than the Callosum's marked edges above and easily read as them. Each delta still carries `with_edges` / `without_edges` beside `vector` / `lexical`.)
 
 The comparison rides in every `/eval/run` result under `result["docket"]` and renders in the Eval tab as a side-by-side block:
 
 ```
-SCC Docket — with vs without edges     30 questions · k=10
-  without edges  scc-nv   coverage 0.5850   density 0.7033   recall 0.9544
-  with edges     scc-v    coverage 0.5331   density 0.6967   recall 0.9250
-  Δ edges (with − without)  coverage -0.0519 · density -0.0066 · recall -0.0294
-  → edges COST -0.0519 docket coverage
+SCC Docket — vector vs lexical Loci     30 questions · k=10
+  lexical Loci  scc-nv   coverage 0.5850   density 0.7033   recall 0.9544
+  vector Loci   scc-v    coverage 0.5331   density 0.6967   recall 0.9250
+  Δ vector − lexical  coverage -0.0519 · density -0.0066 · recall -0.0294
+  → the vector Loci COST -0.0519 docket coverage
 ```
 
-"Edges" is read authoritatively off the compiled topology — an SCC's flavor is whether the Loci it fans carries the `[vector]` flag — so the labels are never guessed. And mind the sign: in that run the semantic edges *hurt* coverage. Surfacing the delta is the whole point; two columns side by side make you do that subtraction in your head.
+The flavor is read authoritatively off the compiled topology — an SCC's flavor is whether the Loci it fans carries the `[vector]` flag — so the labels are never guessed. And mind the sign: in that run the vector Loci *hurt* coverage. Surfacing the delta is the whole point; two columns side by side make you do that subtraction in your head.
 
 > **On grading honesty:** content relevance is matched fuzzily (so `rate_limit`, `rate-limit`, and `rate limit` compare equal), which means the occasional false-positive on a shared phrase and false-negative on a paraphrase. Trust the *relative* numbers across configs; be cautious with absolutes. The harness never pretends to more precision than it has.
 
 ---
+
+## The inquisition bundle (.iqz)
+
+A ProbeConfig's `Seed` and `Questions` paths are opened by the Probe **process**,
+on its own box, relative to its working directory. The viewer can send a config
+from anywhere; the files it names do not travel with it. An `.iqz` bundle is the
+dataset and its configs together: Sinew's verified snapshot tar (one top folder,
+a `manifest.json` naming every file with its sha256) with a manifest of kind
+`probe` that lists one or more ProbeConfigs by name, each with a note. That is
+the grouping: a dataset's easy and hard configs side by side, or a before and an
+after over the same questions. Refs inside a bundled config are relative to the
+bundle's root and never reach outside it.
+
+    seren-probe bundle pack TestDatasets/aldermoor -o aldermoor.iqz --name aldermoor \
+        --probe-config before=ProbeConfig.before.yml::"146 cores, 20 Oct" \
+        --probe-config after=ProbeConfig.yml::"165 cores, retold"
+    seren-probe bundle inspect aldermoor.iqz
+
+`pack` carries the configs and every file they reference (`--all` for the whole
+folder) and refuses a config that does not compile or a ref that is missing or
+climbs out of the folder. Without `--probe-config`, every `ProbeConfig*.yml` at
+the top of the folder is carried, named by its suffix (`ProbeConfig_hard.yml` is
+`hard`; `ProbeConfig.yml` is `default`).
+
+| route | what |
+|---|---|
+| `POST /bundles` (the archive as the body) | validate, then install. The manifest is read out of the archive first, each config compiled, every ref checked against the archive's own file list; only then are bytes written, and every sha256 is verified before the folder is kept. A bad bundle costs one read and leaves nothing behind; 400 carries every problem. |
+| `POST /bundles/inspect` | the same checks, nothing written |
+| `GET /bundles` | what is installed, with how many runs in the ledger name each |
+| `GET /bundles/{id}` | one bundle, its configs compiled (store names, warnings, errors) |
+| `GET /bundles/{id}/configs/{name}` | a config's YAML and summary |
+| `POST /bundles/{id}/activate` `{"config": name}` | make that config the active ProbeConfig, exactly as an upload would, with the bundle's folder as the base for its refs; a running pod of the same structure is hot-swapped |
+| `DELETE /bundles/{id}?force=true` | refuses (409) while anything holds it, naming every holder with a reason: `running_pod` (a pod was started from it; Stop it), `active_config` (clear it with `DELETE /docker/probeconfig`), `runs` (they keep their numbers either way). `force` deletes anyway and clears the active config with it |
+| `DELETE /docker/probeconfig` | clear the active ProbeConfig (the **Clear** button on the Config tab): nothing is active and Start falls back to the shipped example. A running pod keeps the config it was started with until it is stopped |
+
+A bundle unpacks to `datasets/<name>-<hash8>/` under the state dir. The hash is
+over the content (every file's path and sha256, the config names), not the
+archive bytes, so the same dataset packed twice is one folder. Nothing is thrown
+away when a pod stops; only the upload's temp file is. Uploads are capped at
+512 MB. A run started from a bundled config names the bundle and the config in
+the ledger, and `/eval/runs?bundle=` lists them. In the viewer, the **Bundles**
+block on the Config tab does the same: inspect, upload, activate a config by
+name, delete (with the force path when runs name it). A bundled config that is
+active survives a Probe restart (the choice is kept beside the state, and the
+bundle is on disk); an uploaded config lives in the process, as before, until a
+pod is started on it.
+
+### Passing an inquisition on
+
+`GET /bundles/{id}/export` (the **Export** button on a bundle) packs the
+installed dataset and its configs again, plus every run in the ledger that
+names the bundle, as `runs/<id>.json`. Whoever installs that archive gets the
+same bundle id (the runs ride outside the content hash) and your runs in their
+ledger marked `baseline`, grouped with the config they ran on: install,
+activate the config, Start, Evaluate, and Compare theirs against yours. "Here
+is a baseline of a world; check it against your stores and fiddle with your
+knobs." Editing a bundled config in the editor and setting it active keeps it
+tied to the bundle (the checkbox under the editor): its paths still mean files
+inside the bundle, and its runs group as `<config> (edited)`, so the knobs
+change and the data they run on does not. The edited text survives a restart
+with the choice.
+
+## The run ledger
+
+Every eval and every regrade sweep is kept, not just the last one. A run lands
+as `runs/<stamp>-<id>.json` under the state dir with what makes it comparable
+later: the topology fingerprint, when the stores were seeded, the hash of the
+question set, the version pins, the Probe version, how long it took, and the
+results. `/eval/results` stays "latest" and now carries its `run_id`.
+
+| route | what |
+|---|---|
+| `GET /eval/runs` | newest first; filter by `kind` (eval / regrade), `question_hash`, `config`, `bundle` |
+| `GET /eval/runs/{id}` | one run, results leaned for the wire, with its per-tag table |
+| `DELETE /eval/runs/{id}` | throw one away |
+| `GET /eval/compare?a=&b=` | two runs side by side: per-store metric deltas, per-tag within-k deltas, the movers first, and whether the question sets match |
+
+The per-tag table comes from the questions' `tags`, which ride on every
+drill-down row. Editing the question set starts a new lineage on purpose: the
+hash is on every row, and a compare across hashes says so.
+
+In the viewer, the **Runs** tab is this ledger: filter by kind and bundle, group
+by config (a group lends its latest run to A or B with one click, so before
+against after is two clicks and Compare), see a run's own numbers, compare two
+and copy the compare as markdown, throw a run away.
 
 ## Tuning the callosum without a hundred restarts
 

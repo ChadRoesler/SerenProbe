@@ -40,6 +40,7 @@ from .config import SerenProbeConfig, load_config
 from .routes import eval as eval_routes
 from .routes import config as config_routes
 from .routes import docker as docker_routes
+from .routes import inquisition as bundle_routes   # the .iqz routes, named for the bundle (runtime/bundles.py holds the stem)
 
 from seren_meninges import get_version
 from seren_meninges.updates import updates_payload
@@ -71,6 +72,29 @@ def create_app(config: SerenProbeConfig | None = None) -> FastAPI:
         app.state.docker_state = {}
         app.state.docker_config_active = "default"
         app.state.docker_config_path = None
+        # The active ProbeConfig, when it came out of an inquisition bundle,
+        # survives a restart: the bundle is on disk, so the choice is re-read.
+        # (An uploaded text lives only in this process, as it always has, until
+        # a pod is started on it and the topology state carries it.)
+        app.state.probe_config_text = None
+        app.state.probe_config_source = None
+        try:
+            from .runtime.docker_env import load_active_config
+            from .runtime import bundles as _bundles
+            choice = load_active_config()
+            found = _bundles.config_text(choice["bundle"], str(choice.get("config_name") or "")) if choice else None
+            if found:
+                edited = bool(choice.get("edited")) and bool(choice.get("text"))
+                app.state.probe_config_text = choice["text"] if edited else found[0]
+                app.state.probe_config_source = {"bundle": choice["bundle"], "config_name": choice.get("config_name"),
+                                                 "base_dir": str(_bundles.bundle_dir(choice["bundle"])),
+                                                 "edited": edited}
+                log.info(f"[seren-probe] active config: {choice.get('config_name')} from bundle {choice['bundle']}")
+            elif choice:
+                log.warning(f"[seren-probe] the active config named bundle {choice['bundle']!r}, which is not installed; "
+                            f"starting with none")
+        except Exception as exc:  # noqa: BLE001
+            log.warning(f"[seren-probe] could not re-read the active config: {exc!r}")
         app.state.store_config = {
             "memory_url": cfg.stores.memory_url,
             "loci_nv_url": cfg.stores.loci_nv_url,
@@ -202,5 +226,6 @@ def create_app(config: SerenProbeConfig | None = None) -> FastAPI:
     app.include_router(eval_routes.router)
     app.include_router(config_routes.router)
     app.include_router(docker_routes.router)
+    app.include_router(bundle_routes.router)
 
     return app

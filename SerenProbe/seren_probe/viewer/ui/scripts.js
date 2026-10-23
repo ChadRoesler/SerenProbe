@@ -11,6 +11,7 @@
 let currentEval = null;
 let currentDocker = null;
 let currentConfig = null;
+let currentPc = null;       // the active ProbeConfig as /docker/probeconfig last described it
 let currentRegrade = null;
 
 // ── auth'd raw fetch ────────────────────────────────────────────────
@@ -54,7 +55,7 @@ function fallbackCopy(text) {
 function flashBtn(btn, ok) {
   if (!btn) return;
   if (!btn.dataset.orig) btn.dataset.orig = btn.textContent;
-  btn.textContent = ok ? '\u2713 copied' : '\u2717 copy failed';
+  btn.textContent = ok ? 'Copied' : 'Copy failed';
   btn.classList.toggle('copied', !!ok);
   setTimeout(() => {
     btn.textContent = btn.dataset.orig;
@@ -121,13 +122,13 @@ function evalMarkdown(data) {
 
   const d = data.docket;
   if (d && d.columns && d.columns.length) {
-    out.push('', '### SCC docket - with vs without edges');
-    out.push(mdTable(['Edges', 'SCC', 'Coverage', 'Density', 'Recall'],
+    out.push('', '### SCC docket - vector vs lexical Loci');
+    out.push(mdTable(['Loci', 'SCC', 'Coverage', 'Density', 'Recall'],
       d.columns.map(c => [
-        c.flavor === 'vector' ? 'with edges' : c.flavor === 'lexical' ? 'without edges' : (c.label || c.flavor),
+        _loci(c),
         c.name, _f3(c.docket_coverage), _f3(c.docket_density), _f3(c.recall)])));
     for (const dl of (d.deltas || [])) {
-      out.push('', `**\u0394 edges (with - without)** on ${dl.with_edges} vs ${dl.without_edges}: `
+      out.push('', `**\u0394 vector - lexical** on ${dl.vector || dl.with_edges} vs ${dl.lexical || dl.without_edges}: `
         + `coverage ${_f3(dl.docket_coverage)} \u00b7 density ${_f3(dl.docket_density)} \u00b7 recall ${_f3(dl.recall)}`);
     }
   }
@@ -194,6 +195,7 @@ function lazyLoad(id) {
   if (id === 'eval') refreshEval();
   else if (id === 'docker') { refreshDocker(); refreshDockerConfig(); }
   else if (id === 'config') refreshConfig();
+  else if (id === 'runs') refreshRuns();
 }
 
 // ── Eval ────────────────────────────────────────────────────────────
@@ -227,6 +229,7 @@ async function refreshEval() {
       info.textContent += ' \u00b7 evaluated ' + String(data.date).replace('T', ' ').slice(0, 16);
     }
     if (data.restored) info.textContent += ' \u00b7 \u21ba restored';
+    if (data.run_id) info.textContent += ' \u00b7 run ' + data.run_id;    // the ledger row this table came from
     // A DISCARD is not an empty state. "Nothing has been evaluated" and "an evaluation
     // existed and was thrown away because it no longer describes this pod" are
     // different facts, and rendering the second as the first is the same disease as
@@ -237,7 +240,7 @@ async function refreshEval() {
       if (host0) {
         host0.innerHTML = `<div class="note err"><span class="label">\u2717 previous results discarded:</span> `
           + `${escapeHtml(data.discarded)}. <span class="muted">They described a different pod, so they `
-          + `were dropped rather than shown with a caveat. Run \u25b6 Evaluate to score this one.</span></div>`;
+          + `were dropped rather than shown with a caveat. Run Evaluate to score this one.</span></div>`;
       }
       info.textContent = 'no results for this topology';
       return;
@@ -245,10 +248,10 @@ async function refreshEval() {
     // Clear rides the SAME row as Copy results (left of it), and only when there's a
     // restored run to clear. copy-row is right-aligned, so Copy results stays at the edge.
     const clearBtn = data.restored
-        ? '<button class="btn-sm copy-btn" onclick="clearEvalResults()">\u2715 Clear results</button>'
+        ? '<button class="btn-sm copy-btn" onclick="clearEvalResults()">Clear results</button>'
       : '';
     let html = '<div class="copy-row">' + clearBtn
-             + '<button class="btn-sm copy-btn" onclick="copyEval(this)">\u{1F4CB} Copy results</button></div>';
+             + '<button class="btn-sm copy-btn" onclick="copyEval(this)">Copy results</button></div>';
     if (data.restored) {
       // Scored-in-this-process and read-back-off-disk are different confidence
       // levels, so the table says which it is instead of presenting a rehydrated
@@ -257,7 +260,7 @@ async function refreshEval() {
             + 'these numbers were scored in an earlier session and read back from disk'
             + (data.restored_at ? ' (' + escapeHtml(String(data.restored_at).replace('T', ' ').slice(0, 16)) + ')' : '')
             + '. <span class="muted">This pod has already been evaluated - go straight to '
-            + '\u2699 Regrades. Re-run \u25b6 Evaluate only if the seed or the questions changed.</span></div>';
+            + 'Regrades. Re-run Evaluate only if the seed or the questions changed.</span></div>';
     }
     // GROUND TRUTH. Loud, at the top, above the numbers -- because a number graded
     // against a MISSING answer key is not a low score, it is a non-score, and the two
@@ -343,26 +346,35 @@ async function refreshEval() {
   }
 }
 
-// ── SCC docket comparison (with vs without edges) ──────────────────
+// ── SCC docket comparison (vector vs lexical Loci) ─────────────────
 // Renders data.docket (attached by run_topology_evaluation) as a side-by-side
-// coverage/density/recall table + the with−without-edges delta. "Edges" = the
-// vector/semantic flavor of the Loci an SCC fans. Returns '' when there are no
-// SCC columns, so it no-ops cleanly on loci/memory-only reports.
+// coverage/density/recall table + the vector - lexical delta: the same corpus
+// fanned through a Loci with embeddings and through one without. (Until 22 Oct
+// 2026 this said "with vs without edges", which predates the Callosum's real
+// edges - satellites, superseded cores, topic neighbours - and read as them.)
+// Returns '' when there are no SCC columns, so it no-ops cleanly on
+// loci/memory-only reports.
+// The flavor named by the viewer, not the stored label: runs recorded before
+// 22 Oct 2026 carry 'with edges' / 'without edges' inside them.
+function _loci(c) {
+  return ({vector: 'vector Loci', lexical: 'lexical Loci', mixed: 'mixed Loci', none: 'no loci'})[c.flavor]
+    || c.label || c.flavor;
+}
+
 function renderDocket(d) {
   if (!d || !d.columns || !d.columns.length) return '';
   const f3 = (v) => (v == null ? '-' : Number(v).toFixed(4));
   const sg = (v) => (v == null ? '-' : (v >= 0 ? '+' : '') + Number(v).toFixed(4));
-  let h = '<div class="note"><span class="label">SCC Docket - with vs without edges</span><br>';
+  let h = '<div class="note"><span class="label">SCC Docket - vector vs lexical Loci</span><br>';
   const meta = [];
   if (d.question_count != null) meta.push(d.question_count + ' questions');
   if (d.k != null) meta.push('k=' + d.k);
   if (d.corpus_size != null) meta.push('corpus_size=' + d.corpus_size);
   meta.push('flavor: ' + (d.flavor_source || '?'));
-  h += `<span class="label">edges = the vector/semantic flavor of the Loci an SCC fans.</span> ${escapeHtml(meta.join(' · '))}</div>`;
-  h += '<table class="store-table"><tr><th>Edges</th><th>SCC</th><th>Coverage</th><th>Density</th><th>Recall</th></tr>';
+  h += `<span class="label">each SCC fans the same Memory with a Loci that has embeddings (vector) or one that does not (lexical).</span> ${escapeHtml(meta.join(' · '))}</div>`;
+  h += '<table class="store-table"><tr><th>Loci</th><th>SCC</th><th>Coverage</th><th>Density</th><th>Recall</th></tr>';
   for (const c of d.columns) {
-    const tag = c.flavor === 'vector' ? 'with edges'
-              : c.flavor === 'lexical' ? 'without edges' : (c.label || c.flavor);
+    const tag = _loci(c);
     h += `<tr><td>${escapeHtml(tag)}</td><td class="sname">${escapeHtml(c.name)}</td>`
        + `<td class="mval">${f3(c.docket_coverage)}</td>`
        + `<td class="mval">${f3(c.docket_density)}</td>`
@@ -372,14 +384,14 @@ function renderDocket(d) {
   for (const dl of (d.deltas || [])) {
     const cov = dl.docket_coverage;
     const cls = cov == null ? '' : (cov > 0.0005 ? 'delta-pos' : (cov < -0.0005 ? 'delta-neg' : ''));
-    h += `<div class="docket-delta ${cls}"><span class="dl-label">Δ edges (with − without)</span> `
+    h += `<div class="docket-delta ${cls}"><span class="dl-label">Δ vector − lexical</span> `
        + `coverage ${sg(dl.docket_coverage)} · density ${sg(dl.docket_density)} · recall ${sg(dl.recall)}</div>`;
     if (cov != null) {
       let v;
-      if (cov > 0.0005) v = `edges ADDED ${sg(cov)} docket coverage`;
-      else if (cov < -0.0005) v = `edges COST ${sg(cov)} docket coverage`;
-      else v = 'edges made no meaningful coverage difference';
-      h += `<div class="docket-verdict ${cls}">→ ${escapeHtml(v)} (${escapeHtml(dl.with_edges)} vs ${escapeHtml(dl.without_edges)})</div>`;
+      if (cov > 0.0005) v = `the vector Loci ADDED ${sg(cov)} docket coverage`;
+      else if (cov < -0.0005) v = `the vector Loci COST ${sg(cov)} docket coverage`;
+      else v = 'vector and lexical made no meaningful coverage difference';
+      h += `<div class="docket-verdict ${cls}">→ ${escapeHtml(v)} (${escapeHtml(dl.vector || dl.with_edges)} vs ${escapeHtml(dl.lexical || dl.without_edges)})</div>`;
     }
   }
   if (d.note) h += `<div class="docket-meta">note: ${escapeHtml(d.note)}</div>`;
@@ -860,8 +872,8 @@ function _rgHeaderExtra(name, capMap) {
   // Names embedded in onclick are safe: corpus names are slug-safe ({name}-scc, no
   // quotes), and escapeHtml covers the rest of the attribute.
   return `${capCell}<span class="rg-actions">`
-    + `<button class="btn-xsm" title="capture just this corpus" onclick="runCapture('${escapeHtml(name)}')">\u{1F4F8}</button>`
-    + ` <button class="btn-xsm" title="regrade just this corpus" onclick="runRegrade('${escapeHtml(name)}')">\u2699</button></span>`;
+    + `<button class="btn-sm" title="capture just this corpus" onclick="runCapture('${escapeHtml(name)}')">Capture</button>`
+    + ` <button class="btn-sm" title="regrade just this corpus" onclick="runRegrade('${escapeHtml(name)}')">Regrade</button></span>`;
 }
 
 function _rgPlanCorpus(c, capMap, running) {
@@ -905,8 +917,8 @@ function renderRegradePlan(p, cap) {
   // (it's how you prime a sweep); Copy sweep only once there are results to copy.
   const hasResults = Object.keys(_rgResults).length;
   let h = '<div class="copy-row">'
-        + '<button class="btn-sm copy-btn" onclick="runCapture()">\u{1F4F8} Capture all</button>'
-        + (hasResults ? '<button class="btn-sm copy-btn" onclick="copyRegrade(this)">\u{1F4CB} Copy sweep</button>' : '')
+        + '<button class="btn-sm copy-btn" onclick="runCapture()">Capture all</button>'
+        + (hasResults ? '<button class="btn-sm copy-btn" onclick="copyRegrade(this)">Copy sweep</button>' : '')
         + '</div>';
   h += `<div class="note"><span class="label">\u2699 Regrade plan</span> - `
         + `${escapeHtml(swept + ' of ' + p.corpus_count + ' corpora')}, `
@@ -989,7 +1001,7 @@ function renderRegrade(data) {
   let h = `<div class="note"><span class="label">Regrade sweep</span> - winning config per set (bold) with EVERY combo it measured beneath it, Δ vs baseline. ${escapeHtml((data.question_count || 0) + ' corpus questions · sort: ' + (data.sort_by || 'docket_coverage'))}`
         + ` <span class="muted">Read <b>coverage</b>, not ndcg: on a corpus store the ground truth is derived from the hits, and ndcg scores an empty result as a perfect 1.000 - a combo that finds nothing looks flawless.</span></div>`;
   for (const c of data.corpora) h += _rgCorpusSection(c);
-  return '<div class="copy-row"><button class="btn-sm copy-btn" onclick="copyRegrade(this)">\u{1F4CB} Copy sweep</button></div>' + h;
+  return '<div class="copy-row"><button class="btn-sm copy-btn" onclick="copyRegrade(this)">Copy sweep</button></div>' + h;
 }
 
 // ONE corpus's regrade section, wrapped in an id'd div so the live partial painter
@@ -1202,7 +1214,7 @@ async function runRegrade(corpus) {
         const parts = Object.entries(stale).map(([n, r]) => `${escapeHtml(n)} (${escapeHtml(r)})`);
         html += `<div class="note err"><span class="label">\u26a0 stale capture:</span> `
               + `${parts.join(' \u00b7 ')} - excluded; those corpora captured FRESH for this sweep. `
-              + `<span class="muted">\u{1F4F8} Capture again to refresh the file.</span></div>`;
+              + `<span class="muted">Capture again to refresh the file.</span></div>`;
       }
       await refreshRegradePlan(true);
       if (host && html) host.innerHTML = html + host.innerHTML;
@@ -1296,7 +1308,7 @@ async function refreshDockerConfig() {
       html += '</ul>';
     }
     html += '</div>';
-    html += '<div class="note"><span class="label">▶ Start</span> compiles this topology into a docker-compose and builds each service from the shipped Dockerfiles. Bring-your-own prebuilt images via the start request\'s image_overrides (advanced).</div>';
+    html += '<div class="note"><span class="label">Start</span> compiles this topology into a docker-compose and builds each service from the shipped Dockerfiles. Bring-your-own prebuilt images via the start request\'s image_overrides (advanced).</div>';
     html += '</div>';
     body.innerHTML = html;
   } catch (e) {
@@ -1332,7 +1344,7 @@ async function refreshDocker() {
         body.innerHTML = html;
       } else {
         info.textContent = `topology "${escapeHtml(data.project_name)}" · stopped`;
-        body.innerHTML = '<div class="empty">Topology isn\'t running. Click ▶ Start to launch it.</div>';
+        body.innerHTML = '<div class="empty">Topology isn\'t running. Click Start to launch it.</div>';
       }
       return;
     }
@@ -1348,10 +1360,10 @@ async function refreshDocker() {
       body.innerHTML = html;
     } else if (data.managed && !data.running) {
       info.textContent = 'container exists but is stopped';
-      body.innerHTML = '<div class="empty">Container exists but is not running. Click ▶ Start to relaunch.</div>';
+      body.innerHTML = '<div class="empty">Container exists but is not running. Click Start to relaunch.</div>';
     } else {
       info.textContent = 'no container';
-      body.innerHTML = '<div class="empty">No Docker environment running. Click ▶ Start to launch one.</div>';
+      body.innerHTML = '<div class="empty">No Docker environment running. Click Start to launch one.</div>';
     }
   } catch (e) {
     body.innerHTML = `<div class="empty">Error: ${escapeHtml(e.message || e)}</div>`;
@@ -1384,7 +1396,7 @@ function renderEvalPlaceholder(loci, memory, corpus, seeded) {
   // from /docker/status now (a persistent flag that survives an app restart).
   if (info) {
     info.textContent = seeded
-      ? `${names.length} stores · already seeded, not yet evaluated — ▶ Evaluate to score`
+      ? `${names.length} stores · already seeded, not yet evaluated — Evaluate to score`
       : `${names.length} stores · not yet seeded/evaluated`;
   }
 }
@@ -1443,20 +1455,30 @@ async function refreshConfig() {
       api('/docker/probeconfig').catch(() => ({})),
     ]);
     currentConfig = cfg;
+    currentPc = pc;
     const info = document.getElementById('config-info');
     if (info) info.textContent = `${cfg.stores || 5} stores · v${cfg.version || '?'}`;
 
     // ── ProbeConfig (topology) - what ▶ Start spins up ──
     const pcYaml = pc.yaml || '';
-    const pcSource = pc.active ? 'uploaded (active)' : 'shipped example';
+    const pcSource = pc.source === 'bundle' ? `bundle ${pc.bundle} \u00b7 ${pc.config_name}${pc.edited ? ' (edited)' : ''} (active)`
+                   : (pc.active ? 'uploaded (active)' : 'shipped example');
     let html = '<div class="docker-config-section">';
     html += '<details open>';
     html += `<summary><b>ProbeConfig</b> - topology <span class="muted">source: ${escapeHtml(pcSource)}</span></summary>`;
     html += '<div class="docker-config-body">';
-    html += `<div class="note"><span class="label">tip:</span> declare X Loci / Y Memory / Z Corpus, then Set Active to make it the topology <b>▶ Start</b> builds.</div>`;
+    html += `<div class="note"><span class="label">tip:</span> declare X Loci / Y Memory / Z Corpus, then Set Active to make it the topology <b>Start</b> builds.</div>`;
     html += '<div class="upload-form">';
     html += `<textarea id="probeconfig-yaml" rows="14" spellcheck="false">${escapeHtml(pcYaml)}</textarea>`;
     html += '<input type="file" id="probeconfig-file" accept=".yml,.yaml,.txt" style="display:none" onchange="loadProbeConfigFile(this)"/>';
+    if (pc.bundle) {
+      // DERIVED FROM A BUNDLE. Ticked, Set Active keeps the text tied to the
+      // bundle: its paths mean files inside the bundle, and its runs group as
+      // "<config> (edited)". Untick to upload it as a plain config.
+      html += `<label class="keep-bundle" `
+            + `title="Set Active keeps this text tied to the bundle: its paths mean files inside the bundle, and its runs group as '${escapeHtml(pc.config_name)} (edited)'. Untick to upload it as a plain config with paths relative to the Probe's working directory.">`
+            + `<input type="checkbox" id="probeconfig-keep-bundle" checked> paths inside bundle ${escapeHtml(pc.bundle)} \u00b7 ${escapeHtml(pc.config_name)}</label>`;
+    }
     html += '<div class="ctrls-row">';
     // Under the editor there is one button. Validate, Load file and Reload
     // live in the panel header and nowhere else (20 Oct 2026: "remove
@@ -1467,6 +1489,14 @@ async function refreshConfig() {
     html += '</div>';
     html += '<div class="config-save-result" id="probeconfig-result"></div>';
     html += '</div></div></details></div>';
+
+    // ── Inquisition bundles - datasets that travel whole (21 Oct 2026) ──
+    // Rendered by refreshBundles() into #bundles-body once this shell is in the DOM.
+    html += '<div class="docker-config-section">';
+    html += '<details open>';
+    html += '<summary><b>Bundles</b> - datasets that travel whole <span class="muted" id="bundles-summary">loading\u2026</span></summary>';
+    html += '<div class="docker-config-body" id="bundles-body"><div class="loading">loading\u2026</div></div>';
+    html += '</details></div>';
 
     // ── Store endpoints - manual eval targeting (legacy) ──
     const fields = [
@@ -1488,14 +1518,89 @@ async function refreshConfig() {
       html += `<label>${escapeHtml(label)}:
         <input id="cfg-${key}" type="text" value="${escapeHtml(val)}"/></label>`;
     }
-    html += '<button class="btn" onclick="saveConfig()">💾 Save store config</button>';
+    html += '<button class="btn" onclick="saveConfig()">Save store config</button>';
     html += '<div class="config-save-result" id="config-save-result"></div>';
     html += '</div></div></details></div>';
 
     body.innerHTML = html;
+    refreshBundles();
   } catch (e) {
     body.innerHTML = `<div class="empty">Error: ${escapeHtml(e.message || e)}</div>`;
   }
+}
+
+// What an activation came back with, as the one message both doors show: the
+// summary, the hot-swap, the warnings and the whole question lint. Returns
+// [cls, text] for setResult. (Factored out of uploadProbeConfig on 21 Oct 2026
+// so a bundle's config says the same things when it is activated.)
+function _describeActivation(data) {
+  const s = data.summary || {};
+  const counts = `${(s.loci || []).length} loci · ${(s.memory || []).length} memory · ${(s.corpus || []).length} corpus`;
+  let msg = `✓ active - ${counts}`;
+  if (data.hot_swap) msg += `\n⚡ ${data.hot_swap}`;
+  if (data.warnings && data.warnings.length) msg += '\n⚠ ' + data.warnings.join('\n⚠ ');
+  // Reachability lint: can these questions actually be ANSWERED by the corpus
+  // they'll be graded against? An expectation the seed never contains is
+  // unanswerable at ANY fusion setting - and on the dashboard it looks exactly
+  // like a retrieval failure. Surface it here, before a container ever starts.
+  const L = data.lint;
+  if (L && L.skipped) {
+    msg += `\n· lint skipped: ${L.skipped}`;
+  } else if (L) {
+    const nq = L.checked || 0;
+    if (L.errors && L.errors.length) {
+      msg += `\n\n✗ QUESTION LINT - ${L.errors.length} unanswerable of ${nq}:`;
+      msg += '\n✗ ' + L.errors.join('\n✗ ');
+    } else {
+      msg += `\n✓ question lint: all ${nq} questions are answerable by the corpus`;
+    }
+    if (L.warnings && L.warnings.length) msg += '\n⚠ ' + L.warnings.join('\n⚠ ');
+    if (L.multihop && L.multihop.length) {
+      msg += `\n\nℹ ${L.multihop.length} RAILED 2-hop(s) - a bridge doc exists, so hops:2 SHOULD reach these:`;
+      for (const m of L.multihop)
+        msg += `\nℹ  "${m.expects}" on ${m.holder} - ${m.query}`;
+    }
+    if (L.unbridged && L.unbridged.length) {
+      msg += `\n\n⚠ ${L.unbridged.length} UNBRIDGED - no rail exists; UNANSWERABLE at any hop depth (dataset defect):`;
+      for (const u of L.unbridged)
+        msg += `\n⚠  "${u.expects}" on ${u.holder} - ${u.query}`;
+      msg += '\n⚠  Nothing (no knob, no hop) will move these. Regenerate the question or add the linking fact.';
+    }
+    // AMBIGUOUS -- Tier 4, the one that cost us a whole day. The expectation
+    // EXISTS and IS reachable; the query just can't SINGLE IT OUT. The store
+    // retrieves perfectly and scores near zero, which on a dashboard is
+    // indistinguishable from a dead store, a broken embedder, and a missing hop.
+    if (L.ambiguous && L.ambiguous.length) {
+      msg += `\n\n✗ ${L.ambiguous.length} AMBIGUOUS -- answer EXISTS and is REACHABLE, but the query can't single it out:`;
+      for (const a of L.ambiguous)
+        msg += `\n✗  "${a.expects}" (${a.kind}) -- ${a.rivals} other docs match this query just as well -- ${a.query}`;
+      msg += '\n✗  The store will retrieve CORRECTLY and still score near zero. On the dashboard that is';
+      msg += '\n✗  indistinguishable from a dead store, a broken embedder, and a missing hop.';
+      msg += '\n✗  Do NOT tune anything. The query names a category; the answer key names one member of it.';
+      msg += '\n✗  Add a term only the intended document carries.';
+    }
+    // UNREACHABLE -- Tier 5. The question DECLARES the depth it needs; no config
+    // you can run goes that deep. Scores zero in every row of every sweep, and
+    // flat rows read as a retrieval ceiling. This is the one that started it all.
+    if (L.unreachable && L.unreachable.length) {
+      msg += `\n\n✗ ${L.unreachable.length} UNREACHABLE - the question declares a traversal depth nothing you can run reaches:`;
+      for (const u of L.unreachable)
+        msg += `\n✗  needs hops=${u.needs}, deepest reachable is hops=${u.max} - ${u.query}`;
+      msg += '\n✗  Every combo in the sweep asks these at a depth they cannot be answered from.';
+      msg += '\n✗  They score ZERO in every row, and flat rows read as a retrieval CEILING.';
+      msg += '\n✗  The knob is not inert. It was never turned far enough.';
+      msg += '\n✗  Sweep hops deeper in a CorpusRegrades set, and confirm the SCC advertises it in GET /stores.';
+    }
+    if ((L.multihop && L.multihop.length) || (L.unbridged && L.unbridged.length)) {
+      msg += '\nℹ  Reshaping knobs (rrf_k/floor/weight) stay INERT on all of these - correct, not a bug.';
+    }
+    if (L.notes && L.notes.length) {
+      // the live-import / decoy skip notes (the per-expectation ones are covered above)
+      for (const n of L.notes)
+        if (n.indexOf('SKIPPED') >= 0 || n.indexOf('decoy') === 0) msg += `\n· ${n}`;
+    }
+  }
+  return [(L && L.errors && L.errors.length) ? 'err' : 'ok', msg];
 }
 
 async function uploadProbeConfig() {
@@ -1511,7 +1616,7 @@ async function uploadProbeConfig() {
     const tok = (typeof getToken === 'function') ? getToken() : '';
     if (tok) headers['Authorization'] = 'Bearer ' + tok;
     const resp = await fetch('/docker/probeconfig', {
-      method: 'POST', headers, body: JSON.stringify({ probe_config: yamlText }),
+      method: 'POST', headers, body: JSON.stringify(_withBundle({ probe_config: yamlText })),
     });
     const data = await resp.json().catch(() => ({}));
     if (resp.ok && data.ok) {
@@ -1526,73 +1631,8 @@ async function uploadProbeConfig() {
       // pins an old sweep's results -- and a config upload is exactly the moment the
       // intentions became the newer fact.
       if (typeof refreshRegradePlan === 'function') refreshRegradePlan(true);
-      const s = data.summary || {};
-      const counts = `${(s.loci || []).length} loci · ${(s.memory || []).length} memory · ${(s.corpus || []).length} corpus`;
-      let msg = `✓ active - ${counts}`;
-      if (data.hot_swap) msg += `\n⚡ ${data.hot_swap}`;
-      if (data.warnings && data.warnings.length) msg += '\n⚠ ' + data.warnings.join('\n⚠ ');
-      // Reachability lint: can these questions actually be ANSWERED by the corpus
-      // they'll be graded against? An expectation the seed never contains is
-      // unanswerable at ANY fusion setting - and on the dashboard it looks exactly
-      // like a retrieval failure. Surface it here, before a container ever starts.
-      const L = data.lint;
-      if (L && L.skipped) {
-        msg += `\n· lint skipped: ${L.skipped}`;
-      } else if (L) {
-        const nq = L.checked || 0;
-        if (L.errors && L.errors.length) {
-          msg += `\n\n✗ QUESTION LINT - ${L.errors.length} unanswerable of ${nq}:`;
-          msg += '\n✗ ' + L.errors.join('\n✗ ');
-        } else {
-          msg += `\n✓ question lint: all ${nq} questions are answerable by the corpus`;
-        }
-        if (L.warnings && L.warnings.length) msg += '\n⚠ ' + L.warnings.join('\n⚠ ');
-        if (L.multihop && L.multihop.length) {
-          msg += `\n\nℹ ${L.multihop.length} RAILED 2-hop(s) - a bridge doc exists, so hops:2 SHOULD reach these:`;
-          for (const m of L.multihop)
-            msg += `\nℹ  "${m.expects}" on ${m.holder} - ${m.query}`;
-        }
-        if (L.unbridged && L.unbridged.length) {
-          msg += `\n\n⚠ ${L.unbridged.length} UNBRIDGED - no rail exists; UNANSWERABLE at any hop depth (dataset defect):`;
-          for (const u of L.unbridged)
-            msg += `\n⚠  "${u.expects}" on ${u.holder} - ${u.query}`;
-          msg += '\n⚠  Nothing (no knob, no hop) will move these. Regenerate the question or add the linking fact.';
-        }
-        // AMBIGUOUS -- Tier 4, the one that cost us a whole day. The expectation
-        // EXISTS and IS reachable; the query just can't SINGLE IT OUT. The store
-        // retrieves perfectly and scores near zero, which on a dashboard is
-        // indistinguishable from a dead store, a broken embedder, and a missing hop.
-        if (L.ambiguous && L.ambiguous.length) {
-          msg += `\n\n✗ ${L.ambiguous.length} AMBIGUOUS -- answer EXISTS and is REACHABLE, but the query can't single it out:`;
-          for (const a of L.ambiguous)
-            msg += `\n✗  "${a.expects}" (${a.kind}) -- ${a.rivals} other docs match this query just as well -- ${a.query}`;
-          msg += '\n✗  The store will retrieve CORRECTLY and still score near zero. On the dashboard that is';
-          msg += '\n✗  indistinguishable from a dead store, a broken embedder, and a missing hop.';
-          msg += '\n✗  Do NOT tune anything. The query names a category; the answer key names one member of it.';
-          msg += '\n✗  Add a term only the intended document carries.';
-        }
-        // UNREACHABLE -- Tier 5. The question DECLARES the depth it needs; no config
-        // you can run goes that deep. Scores zero in every row of every sweep, and
-        // flat rows read as a retrieval ceiling. This is the one that started it all.
-        if (L.unreachable && L.unreachable.length) {
-          msg += `\n\n✗ ${L.unreachable.length} UNREACHABLE - the question declares a traversal depth nothing you can run reaches:`;
-          for (const u of L.unreachable)
-            msg += `\n✗  needs hops=${u.needs}, deepest reachable is hops=${u.max} - ${u.query}`;
-          msg += '\n✗  Every combo in the sweep asks these at a depth they cannot be answered from.';
-          msg += '\n✗  They score ZERO in every row, and flat rows read as a retrieval CEILING.';
-          msg += '\n✗  The knob is not inert. It was never turned far enough.';
-          msg += '\n✗  Sweep hops deeper in a CorpusRegrades set, and confirm the SCC advertises it in GET /stores.';
-        }
-        if ((L.multihop && L.multihop.length) || (L.unbridged && L.unbridged.length)) {
-          msg += '\nℹ  Reshaping knobs (rrf_k/floor/weight) stay INERT on all of these - correct, not a bug.';
-        }
-        if (L.notes && L.notes.length) {
-          // the live-import / decoy skip notes (the per-expectation ones are covered above)
-          for (const n of L.notes)
-            if (n.indexOf('SKIPPED') >= 0 || n.indexOf('decoy') === 0) msg += `\n· ${n}`;
-        }
-      }
-      setResult(result, (L && L.errors && L.errors.length) ? 'err' : 'ok', msg);
+      const [cls, msg] = _describeActivation(data);
+      setResult(result, cls, msg);
     } else {
       const detail = (data && data.detail) || data || {};
       const errs = detail.errors || [];
@@ -1604,6 +1644,17 @@ async function uploadProbeConfig() {
   } catch (e) {
     setResult(result, 'err', 'error: ' + (e.message || e));
   }
+}
+
+// The upload body, naming the bundle the editor's text came from when the
+// checkbox under the editor is ticked (see refreshConfig).
+function _withBundle(body) {
+  const keep = document.getElementById('probeconfig-keep-bundle');
+  if (keep && keep.checked && currentPc && currentPc.bundle) {
+    body.bundle = currentPc.bundle;
+    body.config_name = currentPc.config_name;
+  }
+  return body;
 }
 
 function loadProbeConfigFile(input) {
@@ -1668,6 +1719,16 @@ document.addEventListener('DOMContentLoaded', function() {
   const dockerStopBtn = document.getElementById('docker-stop');
   if (dockerStopBtn) dockerStopBtn.addEventListener('click', dockerStop);
 
+  // Wire the ledger's controls (Runs tab)
+  const cmpBtn = document.getElementById('runs-compare');
+  if (cmpBtn) cmpBtn.addEventListener('click', compareRuns);
+  for (const id of ['runs-kind', 'runs-bundle']) {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', refreshRuns);
+  }
+  const grp = document.getElementById('runs-group');
+  if (grp) grp.addEventListener('change', renderRuns);
+
   // ── Store drill-down modal wiring (all delegated: the rows it targets are
   // rendered dynamically, so one document-level listener beats re-binding on
   // every refresh) ──
@@ -1713,6 +1774,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (target === 'eval') refreshEval();
       else if (target === 'docker') { refreshDocker(); refreshDockerConfig(); }
       else if (target === 'config') refreshConfig();
+      else if (target === 'runs') refreshRuns();
     });
   });
 
@@ -1744,7 +1806,8 @@ async function refreshSummary() {
       const n = (s.loci || []).length + (s.memory || []).length + (s.corpus || []).length;
       pill.className = 'head-pill hot';
       pill.textContent = `config: ${n} store${n === 1 ? '' : 's'}`;
-      pill.title = `${(s.loci || []).length} loci · ${(s.memory || []).length} memory · ${(s.corpus || []).length} corpus · ${pc.active ? 'uploaded' : 'shipped example'}`;
+      const from = pc.source === 'bundle' ? `bundle ${pc.bundle} · ${pc.config_name}` : (pc.active ? 'uploaded' : 'shipped example');
+      pill.title = `${(s.loci || []).length} loci · ${(s.memory || []).length} memory · ${(s.corpus || []).length} corpus · ${from}`;
     } else {
       pill.className = 'head-pill';
       pill.textContent = 'config: none';
@@ -1764,6 +1827,7 @@ function reload() {
   if (open === 'eval') refreshEval();
   else if (open === 'docker') { refreshDocker(); refreshDockerConfig(); }
   else if (open === 'config') refreshConfig();
+  else if (open === 'runs') refreshRuns();
 }
 
 async function offerAdoption() {
@@ -1828,4 +1892,535 @@ async function offerAdoption() {
       bar.textContent = `✗ adopt failed: ${err}`;
     }
   });
+}
+
+// ── Inquisition bundles (.iqz): the dataset travels whole (21 Oct 2026) ──────
+// A ProbeConfig's Seed and Questions paths are opened by the Probe PROCESS on
+// its own box, so a config sent from the desktop found nothing on the nuc. A
+// bundle carries the configs and every file they reference; activating one of
+// its configs goes through the same door as Validate & Set Active, with the
+// bundle's folder as the base for its paths.
+let currentBundles = [];
+
+function _kb(n) {
+  n = n || 0;
+  return n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : (n / 1024).toFixed(0) + ' KB';
+}
+
+async function refreshBundles() {
+  const host = document.getElementById('bundles-body');
+  if (!host) return;
+  try {
+    const data = await api('/bundles');
+    currentBundles = data.bundles || [];
+  } catch (e) {
+    host.innerHTML = `<div class="empty">Error: ${escapeHtml(e.message || e)}</div>`;
+    return;
+  }
+  const sum = document.getElementById('bundles-summary');
+  if (sum) sum.textContent = `${currentBundles.length} installed`;
+  let html = '<div class="note"><span class="label">tip:</span> pack a dataset folder on the box it lives on '
+           + '(<code>seren-probe bundle pack FOLDER -o name.iqz</code>), then upload the .iqz here. '
+           + '<b>Inspect</b> says what it holds and whether it can be trusted, installing nothing; '
+           + '<b>Upload</b> validates, then installs. A bundle is kept by its content and is not thrown away when a pod stops.</div>';
+  html += '<div class="ctrls-row">'
+        + '<input type="file" id="bundle-file" accept=".iqz,.tar,.tar.gz,.tgz" style="display:none" onchange="bundleChosen(this)"/>'
+        + '<button class="btn-sm" onclick="document.getElementById(\'bundle-file\').click()">Choose bundle\u2026</button>'
+        + '<span class="muted bundle-file-name" id="bundle-file-name">no file chosen</span>'
+        + '<button class="btn-sm" onclick="sendBundle(false)">Inspect</button>'
+        + '<button class="btn" onclick="sendBundle(true)">Upload &amp; install</button>'
+        + '</div>'
+        + '<div class="config-save-result" id="bundle-result"></div>';
+  if (!currentBundles.length) {
+    html += '<div class="empty">no bundles installed yet</div>';
+  } else {
+    // Design note (22 Oct 2026): bundle, installed, size, runs, configs, then
+    // export and trash; each config carries its own play button.
+    html += '<table class="store-table bundle-table"><tr><th>Bundle</th><th>Installed</th><th>Size</th><th>Runs</th>'
+          + '<th>Configs</th><th></th><th></th></tr>';
+    const act = (currentPc && currentPc.bundle) ? currentPc : null;
+    for (const b of currentBundles) {
+      const cfgs = (b.configs || []).map(c => {
+        const on = act && act.bundle === b.id && act.config_name === c.name;
+        return `<div class="bundle-config${on ? ' active' : ''}"><span class="bc-name">${escapeHtml(c.name)}</span>`
+          + (on ? ` <span class="catch-tag" title="the active ProbeConfig${act.edited ? ', edited in the editor' : ''}">active${act.edited ? ', edited' : ''}</span>` : '')
+          + (c.note ? ` <span class="muted bc-note">${escapeHtml(c.note)}</span>` : '')
+          + `<button class="btn-sm icon-btn bc-play" onclick="activateBundleConfig('${escapeHtml(b.id)}', '${escapeHtml(c.name)}')" `
+          + `title="Make ${escapeHtml(c.name)} the active ProbeConfig" aria-label="Activate ${escapeHtml(c.name)}">${_icon('play')}</button></div>`;
+      }).join('');
+      html += `<tr><td><b>${escapeHtml(b.name)}</b><div class="muted mono">${escapeHtml(b.id)}</div>`
+            + (b.note ? `<div class="muted">${escapeHtml(b.note)}</div>` : '') + '</td>'
+            + `<td class="muted nowrap">${escapeHtml(String(b.installed_at || '').replace('T', ' ').slice(0, 16))}</td>`
+            + `<td class="muted nowrap">${b.files} files \u00b7 ${_kb(b.bytes)}</td>`
+            + `<td>${b.runs || 0}${b.baseline_runs ? ` <span class="muted" title="runs that came with the bundle, as a baseline">(${b.baseline_runs} came with it)</span>` : ''}</td>`
+            + `<td class="bc-cell">${cfgs}</td>`
+            + `<td><button class="btn-sm icon-btn" onclick="exportBundle('${escapeHtml(b.id)}')" title="Export: download this bundle with every run that names it, to hand on as a baseline" aria-label="Export ${escapeHtml(b.id)}">${_icon('export')}</button></td>`
+            + `<td><button class="btn-sm icon-btn danger" onclick="deleteBundle('${escapeHtml(b.id)}', false)" title="Delete this bundle (refused while runs name it)" aria-label="Delete ${escapeHtml(b.id)}">${_icon('trash')}</button></td></tr>`;
+    }
+    html += '</table>';
+  }
+  host.innerHTML = html;
+}
+
+// The picker is hidden behind a button (like Load file); choosing a file shows
+// its name and inspects it at once, which writes nothing.
+function bundleChosen(input) {
+  const file = input.files && input.files[0];
+  const label = document.getElementById('bundle-file-name');
+  if (label) label.textContent = file ? `${file.name} \u00b7 ${_kb(file.size)}` : 'no file chosen';
+  if (file) sendBundle(false);
+}
+
+async function sendBundle(install) {
+  const input = document.getElementById('bundle-file');
+  const result = document.getElementById('bundle-result');
+  const file = input && input.files && input.files[0];
+  if (!file) { setResult(result, 'err', 'choose an .iqz file first'); return; }
+  setResult(result, '', (install ? 'validating and installing ' : 'inspecting ') + file.name + '\u2026');
+  try {
+    // raw fetch: the body is the archive itself, and a 400 carries the problems
+    const resp = await authFetch(install ? '/bundles' : '/bundles/inspect', {
+      method: 'POST', headers: { 'Content-Type': 'application/octet-stream' }, body: file });
+    const data = await resp.json().catch(() => ({}));
+    if (!resp.ok) {
+      const d = data.detail || {};
+      const probs = d.problems || (typeof d === 'string' ? [d] : []);
+      setResult(result, 'err', probs.length ? '\u2717 ' + probs.join('\n\u2717 ') : `HTTP ${resp.status}`);
+      return;
+    }
+    const cfgs = (data.configs || []).map(c =>
+      `${c.name}: ${(c.loci || []).length} loci \u00b7 ${(c.memory || []).length} memory \u00b7 ${(c.corpus || []).length} corpus`
+      + (c.note ? ` - ${c.note}` : '') + (c.errors && c.errors.length ? ' \u2717 ' + c.errors[0] : '')).join('\n  ');
+    if (install) {
+      setResult(result, 'ok', (data.already ? `\u2713 already installed as ${data.id}` : `\u2713 installed as ${data.id}`)
+        + ` - ${data.files} files, ${_kb(data.bytes)}` + (data.note ? `\n${data.note}` : '')
+        + (data.runs_imported ? `\n${data.runs_imported} baseline run(s) came with it and are in the ledger: compare yours against them in the Runs tab` : '')
+        + (cfgs ? '\n  ' + cfgs : '')
+        + '\nActivate one of its configs below to make it the topology Start builds.');
+      input.value = '';
+      refreshBundles();
+    } else {
+      setResult(result, data.ok ? 'ok' : 'err',
+        (data.ok ? `\u2713 ${data.name} (${data.id}) can be trusted` : '\u2717 refused') + ` - ${data.files} files, ${_kb(data.bytes)}`
+        + (data.installed ? ' \u00b7 already installed' : '')
+        + (cfgs ? '\n  ' + cfgs : '')
+        + (data.problems && data.problems.length ? '\n\u2717 ' + data.problems.join('\n\u2717 ') : ''));
+    }
+  } catch (e) {
+    setResult(result, 'err', 'error: ' + (e.message || e));
+  }
+}
+
+async function exportBundle(id) {
+  const result = document.getElementById('bundle-result');
+  setResult(result, '', `packing ${id} with its runs\u2026`);
+  try {
+    const resp = await authFetch(`/bundles/${encodeURIComponent(id)}/export?runs=true`);
+    if (!resp.ok) { setResult(result, 'err', `export failed (HTTP ${resp.status})`); return; }
+    const blob = await resp.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${id}.iqz`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+    setResult(result, 'ok', `\u2713 ${id}.iqz (${_kb(blob.size)}) - the dataset, its configs and every run that names it. `
+      + 'Whoever installs it gets your runs as a baseline to compare theirs against.');
+  } catch (e) {
+    setResult(result, 'err', 'error: ' + (e.message || e));
+  }
+}
+
+async function activateBundleConfig(id, name) {
+  const result = document.getElementById('bundle-result');
+  setResult(result, '', `activating ${name} from ${id}\u2026`);
+  try {
+    const resp = await authFetch(`/bundles/${encodeURIComponent(id)}/activate`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ config: name }) });
+    const data = await resp.json().catch(() => ({}));
+    if (resp.ok && data.ok) {
+      if (typeof refreshRegradePlan === 'function') refreshRegradePlan(true);   // same reason as the upload
+      const [cls, msg] = _describeActivation(data);
+      await refreshConfig();                 // the editor now shows the bundled config
+      setResult(document.getElementById('probeconfig-result'), cls, `\u2713 ${name} from bundle ${id}\n` + msg);
+      refreshSummary();
+    } else {
+      const detail = (data && data.detail) || {};
+      const errs = detail.errors || (typeof detail === 'string' ? [detail] : []);
+      setResult(result, 'err', errs.length ? '\u2717 ' + errs.join('\n\u2717 ') : `activate failed (HTTP ${resp.status})`);
+    }
+  } catch (e) {
+    setResult(result, 'err', 'error: ' + (e.message || e));
+  }
+}
+
+// Clear the active ProbeConfig (22 Oct 2026, "we can't remove a bundle once
+// it's loaded"). An uploaded text lives only in this Probe, so that one asks
+// first; a bundled one can be activated again from its bundle.
+async function clearProbeConfig() {
+  if (currentPc && currentPc.source === 'uploaded'
+      && !confirm('Clear the uploaded config? It lives only in this Probe, so the text is gone unless you have a copy.')) {
+    return false;
+  }
+  try {
+    const resp = await authFetch('/docker/probeconfig', { method: 'DELETE' });
+    const data = await resp.json().catch(() => ({}));
+    if (!resp.ok) {
+      setResult(document.getElementById('probeconfig-result'), 'err', `clear failed (HTTP ${resp.status})`);
+      return false;
+    }
+    if (typeof refreshRegradePlan === 'function') refreshRegradePlan(true);
+    await refreshConfig();
+    refreshSummary();
+    const c = data.cleared;
+    const what = !c ? 'nothing was active' : (c.bundle ? `cleared ${c.config_name} from bundle ${c.bundle}` : 'cleared the uploaded config');
+    setResult(document.getElementById('probeconfig-result'), 'ok',
+      `\u2713 ${what} - nothing is active; Start would build the shipped example.` + (data.note ? `\n${data.note}` : ''));
+    return true;
+  } catch (e) {
+    setResult(document.getElementById('probeconfig-result'), 'err', 'error: ' + (e.message || e));
+    return false;
+  }
+}
+
+async function deleteBundle(id, force) {
+  const result = document.getElementById('bundle-result');
+  if (force && !confirm(`Delete bundle ${id} anyway? The active config is cleared with it if it came from here, `
+                        + 'runs that name it keep their numbers, and a pod started from it cannot Seed or Evaluate until stopped.')) return;
+  try {
+    const resp = await authFetch(`/bundles/${encodeURIComponent(id)}` + (force ? '?force=true' : ''), { method: 'DELETE' });
+    const data = await resp.json().catch(() => ({}));
+    if (resp.ok) {
+      if (data.config_cleared) { await refreshConfig(); refreshSummary(); }
+      else refreshBundles();
+      setResult(document.getElementById('bundle-result'), 'ok', `\u2713 deleted ${id}` + (data.note ? ` - ${data.note}` : ''));
+      return;
+    }
+    const detail = data.detail || {};
+    const probs = detail.problems || [];
+    const reasons = detail.reasons || [];
+    if (resp.status === 409) {
+      setResult(result, 'err', '\u2717 ' + probs.join('\n\u2717 ') + '\n');
+      // the way out for each holder, then the override
+      if (reasons.includes('active_config'))
+        result.insertAdjacentHTML('beforeend', `<button class="btn-sm" onclick="clearThenDelete('${escapeHtml(id)}')" title="Clear the active config, then delete the bundle">Clear config and delete</button> `);
+      if (reasons.includes('running_pod'))
+        result.insertAdjacentHTML('beforeend', `<button class="btn-sm" onclick="showTab('docker'); lazyLoad('docker');" title="The pod is stopped from the Docker tab">Go to Docker</button> `);
+      result.insertAdjacentHTML('beforeend', `<button class="btn-sm" onclick="deleteBundle('${escapeHtml(id)}', true)">Delete anyway</button>`);
+    } else {
+      setResult(result, 'err', `delete failed (HTTP ${resp.status})`);
+    }
+  } catch (e) {
+    setResult(result, 'err', 'error: ' + (e.message || e));
+  }
+}
+
+async function clearThenDelete(id) {
+  if (await clearProbeConfig()) deleteBundle(id, false);
+}
+
+// ── Runs: the ledger (21 Oct 2026) ───────────────────────────────────────────
+// Every eval and regrade sweep is a kept run. Two over the same question hash
+// compare per store (every metric both graded) and per question tag, movers
+// first; a differing hash is a different experiment and the page says so.
+let currentRuns = [];
+let runPick = [];          // run ids checked for compare, in click order: A then B
+let currentCompare = null;
+
+async function refreshRuns() {
+  const body = document.getElementById('runs-body');
+  if (!body) return;
+  body.innerHTML = '<div class="loading">loading\u2026</div>';
+  const kind = document.getElementById('runs-kind')?.value || '';
+  const bundle = document.getElementById('runs-bundle')?.value || '';
+  try {
+    const q = new URLSearchParams({ limit: '200' });
+    if (kind) q.set('kind', kind);
+    if (bundle) q.set('bundle', bundle);
+    const [data, bl] = await Promise.all([
+      api('/eval/runs?' + q.toString()),
+      api('/bundles').catch(() => ({ bundles: [] })),
+    ]);
+    currentRuns = data.runs || [];
+    _fillBundleFilter(bl.bundles || [], bundle);
+    const info = document.getElementById('runs-info');
+    if (info) info.textContent = `${data.count} run${data.count === 1 ? '' : 's'} kept`;
+    runPick = runPick.filter(id => currentRuns.some(r => r.id === id));
+    renderRuns();
+  } catch (e) {
+    body.innerHTML = `<div class="empty">Error: ${escapeHtml(e.message || e)}</div>`;
+  }
+}
+
+function _fillBundleFilter(bundles, selected) {
+  const sel = document.getElementById('runs-bundle');
+  if (!sel) return;
+  // the installed bundles plus every bundle a kept run names: a deleted bundle's runs still filter
+  const ids = new Set(bundles.map(b => b.id));
+  for (const r of currentRuns) if (r.bundle) ids.add(r.bundle);
+  let html = '<option value="">any bundle</option>';
+  for (const id of [...ids].sort()) html += `<option value="${escapeHtml(id)}"${id === selected ? ' selected' : ''}>${escapeHtml(id)}</option>`;
+  sel.innerHTML = html;
+}
+
+function _headlineCell(r) {
+  // one number per store: hit_rate when this build grades it, else the first metric
+  const parts = [];
+  for (const [name, m] of Object.entries(r.headline || {})) {
+    const k = ('hit_rate' in m) ? 'hit_rate' : Object.keys(m)[0];
+    if (k) parts.push(`${escapeHtml(name)} <b>${Number(m[k]).toFixed(3)}</b>`);
+  }
+  return parts.join(' \u00b7 ') || '<span class="muted">-</span>';
+}
+
+function _runTitle(r) {
+  const when = String(r.finished_at || '').replace('T', ' ').slice(0, 16);
+  const src = r.bundle ? `${r.bundle} \u00b7 ${r.config_name || '?'}${r.config_edited ? ' (edited)' : ''}`
+            : (r.config_name || r.project_name || 'uploaded config');
+  return `${r.id} - ${r.kind} \u00b7 ${when} \u00b7 ${src}${r.origin === 'imported' ? ' [baseline]' : ''}`;
+}
+
+// The group a run belongs to: its bundle and config (the before beside the
+// after), or the uploaded config's project when it came through the editor.
+function _groupKey(r) {
+  if (r.bundle) return `${r.bundle} \u00b7 ${r.config_name || '?'}${r.config_edited ? ' (edited)' : ''}`;
+  return r.config_name ? r.config_name : `uploaded \u00b7 ${r.project_name || '?'}`;
+}
+
+function renderRuns() {
+  const body = document.getElementById('runs-body');
+  if (!body) return;
+  const cmp = document.getElementById('runs-compare');
+  if (cmp) cmp.disabled = runPick.length !== 2;
+  if (!currentRuns.length) {
+    body.innerHTML = '<div class="empty">no runs kept yet - every Evaluate and Regrades lands here</div>';
+    return;
+  }
+  if (!document.getElementById('runs-group')?.checked) {
+    body.innerHTML = _runsTable(currentRuns);
+    return;
+  }
+  // GROUPS: one block per bundle \u00b7 config, newest group first (the runs come
+  // newest first, so first appearance is the order). A group lends its latest
+  // run to A or B with one click, so before \u2192 after is two clicks and Compare;
+  // and a group with two or more runs offers previous \u2192 latest directly.
+  const groups = new Map();
+  for (const r of currentRuns) {
+    const k = _groupKey(r);
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(r);
+  }
+  let html = '';
+  for (const [k, rs] of groups) {
+    const latest = rs[0], prev = rs[1];
+    html += `<div class="run-group-head"><b>${escapeHtml(k)}</b> <span class="muted">${rs.length} run${rs.length === 1 ? '' : 's'}</span>`
+          + ` <button class="btn-sm" onclick="pickLatest('${escapeHtml(latest.id)}', 0)" title="this config's latest run as A">Latest as A</button>`
+          + ` <button class="btn-sm" onclick="pickLatest('${escapeHtml(latest.id)}', 1)" title="this config's latest run as B">Latest as B</button>`
+          + (prev ? ` <button class="btn-sm" onclick="pickPair('${escapeHtml(prev.id)}', '${escapeHtml(latest.id)}')" title="the previous run as A, the latest as B, compared">Compare previous to latest</button>` : '')
+          + '</div>';
+    html += _runsTable(rs);
+  }
+  body.innerHTML = html;
+}
+
+function pickLatest(id, slot) {
+  const rest = runPick.filter(x => x !== id);
+  runPick = slot === 0 ? [id].concat(rest).slice(0, 2) : rest.slice(0, 1).concat([id]);
+  renderRuns();
+}
+
+function pickPair(a, b) {
+  runPick = [a, b];
+  renderRuns();
+  compareRuns();
+}
+
+function _runsTable(rows) {
+  let html = '<table class="store-table runs-table"><tr><th title="check two to compare: first A, then B">A/B</th>'
+           + '<th>When</th><th>Kind</th><th>Config</th><th>Questions</th><th>Headline</th><th>Took</th><th></th></tr>';
+  for (const r of rows) {
+    const pick = runPick.indexOf(r.id);
+    const tag = pick < 0 ? '' : (pick === 0 ? 'A' : 'B');
+    const when = String(r.finished_at || '').replace('T', ' ').slice(0, 16);
+    const cfg = r.bundle ? `${escapeHtml(r.bundle)} \u00b7 ${escapeHtml(r.config_name || '?')}${r.config_edited ? ' (edited)' : ''}`
+              : (r.config_name ? escapeHtml(r.config_name) : `<span class="muted">${escapeHtml(r.project_name || 'uploaded')}</span>`);
+    html += `<tr class="${tag ? 'picked' : ''}">`
+          + `<td><label class="pick"><input type="checkbox" ${pick >= 0 ? 'checked' : ''} onchange="pickRun('${escapeHtml(r.id)}', this.checked)"/> ${tag}</label></td>`
+          + `<td><a href="#" class="run-link" onclick="openRun('${escapeHtml(r.id)}'); return false;" title="${escapeHtml(r.id)}">${escapeHtml(when)}</a>`
+          + `<div class="muted mono">${escapeHtml(r.id)}</div></td>`
+          + `<td>${escapeHtml(r.kind)}${r.knobs && r.knobs.mode ? ` <span class="muted">${escapeHtml(r.knobs.mode)}</span>` : ''}`
+          + (r.origin === 'imported' ? ` <span class="catch-tag" title="came with bundle ${escapeHtml(r.imported_from || '')} as a baseline${r.imported_at ? ', imported ' + escapeHtml(String(r.imported_at).replace('T', ' ').slice(0, 16)) : ''}">baseline</span>` : '') + '</td>'
+          + `<td>${cfg}</td>`
+          + `<td title="question hash ${escapeHtml(r.question_hash || '')}">${r.question_count ?? '?'} <span class="muted mono">${escapeHtml(String(r.question_hash || '').slice(0, 8))}</span></td>`
+          + `<td>${_headlineCell(r)}</td>`
+          + `<td class="muted">${r.duration_seconds != null ? r.duration_seconds + 's' : '-'}</td>`
+          + `<td><button class="btn-sm icon-btn danger" onclick="deleteRun('${escapeHtml(r.id)}')" title="Delete this run" aria-label="Delete run ${escapeHtml(r.id)}">${_icon('trash')}</button></td></tr>`;
+  }
+  return html + '</table>';
+}
+
+function pickRun(id, on) {
+  runPick = runPick.filter(x => x !== id);
+  if (on) runPick.push(id);
+  if (runPick.length > 2) runPick = runPick.slice(-2);
+  renderRuns();
+}
+
+async function deleteRun(id) {
+  if (!confirm(`Delete run ${id}? Its numbers are gone for good.`)) return;
+  try {
+    const r = await authFetch(`/eval/runs/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    if (!r.ok) { alert(`delete failed (HTTP ${r.status})`); return; }
+    refreshRuns();
+  } catch (e) {
+    alert('delete failed: ' + (e.message || e));
+  }
+}
+
+function _num(v) {
+  if (v == null || v === '') return '<span class="muted">-</span>';
+  return Number.isInteger(v) ? String(v) : Number(v).toFixed(3);
+}
+
+function _delta(d) {
+  if (d == null) return '<span class="muted">-</span>';
+  const n = Number(d);
+  const cls = n > 1e-9 ? 'up' : (n < -1e-9 ? 'down' : '');
+  return `<span class="delta ${cls}">${n > 0 ? '+' : ''}${n.toFixed(3)}</span>`;
+}
+
+function _tagTable(byTag, open) {
+  const stores = Object.keys(byTag || {});
+  if (!stores.length) return '';
+  const tags = [...new Set(stores.flatMap(s => Object.keys(byTag[s])))].sort();
+  let html = `<details${open ? ' open' : ''}><summary><b>By question tag</b> <span class="muted">share found within k / questions carrying the tag</span></summary>`;
+  html += '<table class="store-table"><tr><th>Tag</th>' + stores.map(s => `<th>${escapeHtml(s)}</th>`).join('') + '</tr>';
+  for (const t of tags) {
+    html += `<tr><td>${escapeHtml(t)}</td>` + stores.map(s => {
+      const x = byTag[s][t];
+      return x ? `<td>${Number(x.within_k).toFixed(3)} <span class="muted">/${x.n}</span></td>` : '<td class="muted">-</td>';
+    }).join('') + '</tr>';
+  }
+  return html + '</table></details>';
+}
+
+async function openRun(id) {
+  const host = document.getElementById('compare-body');
+  if (!host) return;
+  host.innerHTML = '<div class="loading">loading\u2026</div>';
+  try {
+    const r = await api(`/eval/runs/${encodeURIComponent(id)}`);
+    let html = `<div class="panel-hr"></div><h3 class="run-title">${escapeHtml(_runTitle(r))}</h3>`;
+    const meta = [];
+    if (r.probe_version) meta.push(`probe ${r.probe_version}`);
+    for (const [k, v] of Object.entries(r.versions || {})) meta.push(`${k} ${v}`);
+    if (r.fingerprint) meta.push(`fingerprint ${String(r.fingerprint).slice(0, 12)}`);
+    if (r.seeded_at) meta.push(`seeded ${String(r.seeded_at).replace('T', ' ').slice(0, 16)}`);
+    if (r.question_hash) meta.push(`questions ${String(r.question_hash).slice(0, 12)} (${r.question_count ?? '?'})`);
+    if (r.note) meta.push(r.note);
+    html += `<div class="muted">${escapeHtml(meta.join(' \u00b7 '))}</div>`;
+    const stores = Object.keys(r.headline || {});
+    const metrics = [...new Set(stores.flatMap(s => Object.keys(r.headline[s])))].sort();
+    if (stores.length) {
+      html += '<table class="store-table"><tr><th>Metric</th>' + stores.map(s => `<th>${escapeHtml(s)}</th>`).join('') + '</tr>';
+      for (const m of metrics) html += `<tr><td>${escapeHtml(m)}</td>` + stores.map(s => `<td>${_num(r.headline[s][m])}</td>`).join('') + '</tr>';
+      html += '</table>';
+    }
+    html += _tagTable(r.by_tag, false);
+    host.innerHTML = html;
+  } catch (e) {
+    host.innerHTML = `<div class="empty">Error: ${escapeHtml(e.message || e)}</div>`;
+  }
+}
+
+async function compareRuns() {
+  if (runPick.length !== 2) return;
+  const host = document.getElementById('compare-body');
+  if (!host) return;
+  host.innerHTML = '<div class="loading">comparing\u2026</div>';
+  try {
+    const c = await api(`/eval/compare?a=${encodeURIComponent(runPick[0])}&b=${encodeURIComponent(runPick[1])}`);
+    currentCompare = c;
+    host.innerHTML = renderCompare(c);
+  } catch (e) {
+    host.innerHTML = `<div class="empty">Error: ${escapeHtml(e.message || e)}</div>`;
+  }
+}
+
+function renderCompare(c) {
+  let html = '<div class="panel-hr"></div>';
+  html += '<div class="copy-row"><button class="btn-sm copy-btn" onclick="copyCompare(this)">Copy compare</button></div>';
+  html += `<h3 class="run-title">A: ${escapeHtml(_runTitle(c.a))}</h3><h3 class="run-title">B: ${escapeHtml(_runTitle(c.b))}</h3>`;
+  if (!c.same_questions) {
+    html += '<div class="note err"><span class="label">\u26A0 different question sets:</span> these runs were graded on '
+          + 'different questions (the hashes differ), so the deltas describe two experiments, not one change. '
+          + '<span class="muted">Editing the questions starts a new lineage on purpose.</span></div>';
+  }
+  const moved = c.moved || [];
+  html += '<div class="note"><span class="label">movers:</span> '
+        + (moved.length ? moved.slice(0, 8).map(m => `${escapeHtml(m.store)} ${escapeHtml(m.metric)} ${_delta(m.delta)}`).join(' \u00b7 ')
+                        : '<span class="muted">nothing moved</span>') + '</div>';
+  for (const [store, row] of Object.entries(c.stores || {})) {
+    const metrics = Object.keys(row).sort();
+    if (!metrics.length) continue;
+    html += `<h4 class="run-store">${escapeHtml(store)}</h4><table class="store-table compare-table"><tr><th>Metric</th><th>A</th><th>B</th><th>\u0394</th></tr>`;
+    for (const m of metrics) html += `<tr><td>${escapeHtml(m)}</td><td>${_num(row[m].a)}</td><td>${_num(row[m].b)}</td><td>${_delta(row[m].delta)}</td></tr>`;
+    html += '</table>';
+  }
+  const tagStores = Object.keys(c.by_tag || {});
+  if (tagStores.length) {
+    html += '<details open><summary><b>By question tag</b> <span class="muted">share found within k, A \u2192 B, biggest movers first</span></summary>';
+    for (const store of tagStores) {
+      const row = c.by_tag[store];
+      const tags = Object.keys(row).sort((x, y) => Math.abs(row[y].delta) - Math.abs(row[x].delta));
+      html += `<h4 class="run-store">${escapeHtml(store)}</h4><table class="store-table compare-table"><tr><th>Tag</th><th>n</th><th>A</th><th>B</th><th>\u0394</th></tr>`;
+      for (const t of tags) {
+        const x = row[t];
+        const n = x.n_a === x.n_b ? String(x.n_a) : `${x.n_a}\u2192${x.n_b}`;
+        html += `<tr><td>${escapeHtml(t)}</td><td class="muted">${n}</td><td>${_num(x.a)}</td><td>${_num(x.b)}</td><td>${_delta(x.delta)}</td></tr>`;
+      }
+      html += '</table>';
+    }
+    html += '</details>';
+  }
+  return html;
+}
+
+function compareMarkdown(c) {
+  const sign = (d) => (d > 0 ? '+' : '') + Number(d).toFixed(3);
+  const lines = [`# Compare ${c.a.id} \u2192 ${c.b.id}`, '', `- A: ${_runTitle(c.a)}`, `- B: ${_runTitle(c.b)}`,
+                 `- same questions: ${c.same_questions ? 'yes' : 'NO (different hashes)'}`, ''];
+  for (const [store, row] of Object.entries(c.stores || {})) {
+    lines.push(`## ${store}`, '');
+    lines.push(mdTable(['metric', 'A', 'B', '\u0394'], Object.keys(row).sort().map(m =>
+      [m, Number(row[m].a).toFixed(3), Number(row[m].b).toFixed(3), sign(row[m].delta)])));
+    lines.push('');
+    const tags = (c.by_tag || {})[store];
+    if (tags) {
+      lines.push(`### ${store} by tag`, '');
+      lines.push(mdTable(['tag', 'n', 'A', 'B', '\u0394'], Object.keys(tags).sort().map(t =>
+        [t, String(tags[t].n_b), Number(tags[t].a).toFixed(3), Number(tags[t].b).toFixed(3), sign(tags[t].delta)])));
+      lines.push('');
+    }
+  }
+  return lines.join('\n');
+}
+
+function copyCompare(btn) {
+  if (currentCompare) copyToClipboard(compareMarkdown(currentCompare), btn);
+}
+
+// Line icons for the icon buttons (22 Oct 2026: play, export, trash), drawn
+// inline in currentColor like Lodestar's power symbol, so they follow the
+// theme and never fall back to an emoji font.
+function _icon(name) {
+  const paths = {
+    play: '<path d="M7 4.5v15l12.5-7.5z" fill="currentColor" stroke="none"/>',
+    export: '<path d="M12 15V3.5"/><path d="M7.5 8L12 3.5 16.5 8"/><path d="M4.5 13.5v5.5a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5v-5.5"/>',
+    trash: '<path d="M4 6.5h16"/><path d="M9.5 6.5V4.5h5v2"/><path d="M6.5 6.5l1 13a1.5 1.5 0 0 0 1.5 1.4h6a1.5 1.5 0 0 0 1.5-1.4l1-13"/><path d="M10 10.5v6.5M14 10.5v6.5"/>',
+  };
+  return `<svg class="icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" `
+       + `stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${paths[name] || ''}</svg>`;
 }

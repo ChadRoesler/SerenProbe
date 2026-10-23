@@ -1,20 +1,24 @@
 """
-seren_probe.docket - the SCC docket comparison ("with vs without edges").
+seren_probe.docket - the SCC docket comparison (vector vs lexical Loci).
 
 The topology eval scores docket_coverage / docket_density for every SCC (corpus)
 column on its own. What it doesn't do is PAIR those columns and show the delta -
 and that delta is the whole question a docket eval exists to answer: when an SCC
-fans a *vector* Loci (semantic edges between nodes) instead of a lexical,
-FTS5-only one (no edges), does the assembled briefing actually carry MORE of the
-relevant info, or not?
+fans a *vector* Loci (embeddings) instead of a lexical, FTS5-only one, does the
+assembled briefing actually carry MORE of the relevant info, or not?
 
-"Edges" here = the vector/semantic flavor of the Loci an SCC fans. An SCC over a
-[vector] Loci has semantic edges; over a lexical Loci it doesn't. This module
-reads each SCC column's docket metrics out of an eval report, labels each by that
-flavor (authoritatively off the compiled topology when it's handed one, else
-inferred from the store name), and computes the with-edges − without-edges delta
-on the docket metrics - plus recall, since "did the briefing have ALL the
-relevant info" is really a recall question too.
+An SCC's flavor is the Loci it fans: [vector] or lexical. This module reads each
+SCC column's docket metrics out of an eval report, labels each by that flavor
+(authoritatively off the compiled topology when it's handed one, else inferred
+from the store name), and computes the vector - lexical delta on the docket
+metrics - plus recall, since "did the briefing have ALL the relevant info" is
+really a recall question too.
+
+Until 22 Oct 2026 this comparison was called "with vs without edges". That name
+predates the Callosum's real edges (satellites, superseded cores and topic
+neighbours hung after the ranked packet, measured under `surroundings`), and
+read as them. The wire keeps `with_edges` / `without_edges` on each delta for
+anything that reads them, beside the plain `vector` / `lexical`.
 
 Pure + transport-free: it consumes an already-computed report dict, so it needs
 no live stores and is trivially testable.
@@ -31,14 +35,14 @@ _DELTA_KEYS = ("docket_coverage", "docket_density", "recall")
 _CARRY_KEYS = ("docket_coverage", "docket_density", "recall",
                "hit_rate", "mrr", "ndcg", "precision", "prec_omega", "iou")
 
-_LABEL = {"vector": "with edges", "lexical": "without edges",
-          "mixed": "mixed edges", "none": "no loci", "unknown": "unknown"}
+_LABEL = {"vector": "vector Loci", "lexical": "lexical Loci",
+          "mixed": "mixed Loci", "none": "no loci", "unknown": "unknown"}
 
-# lexical (no edges) first, then vector (edges): a delta reads "with − without".
+# lexical first, then vector: a delta reads "vector - lexical".
 _ORDER = {"lexical": 0, "vector": 1, "mixed": 2, "none": 3, "unknown": 4}
 
 deltaCharacter = "\u0394"  # Greek capital letter delta, for the deltas section header.
-minusCharacter = "\u2212"  # Unicode minus sign, for the "with − without" text.
+minusCharacter = "\u2212"  # Unicode minus sign, for the "vector − lexical" text.
 
 
 def _agg(snap: Any) -> dict:
@@ -60,7 +64,7 @@ def _is_docket_column(snap: Any) -> bool:
 def _flavor_from_topology(name: str, topology: Any) -> Optional[str]:
     """'vector' | 'lexical' | 'mixed' | 'none' read off the compiled topology, or
     None if this name isn't a corpus in it. An SCC's flavor IS its backing Loci's
-    vector-ness - that's precisely what 'edges' means here."""
+    vector-ness."""
     corpus = next((c for c in getattr(topology, "corpus", []) if c.name == name), None)
     if corpus is None:
         return None
@@ -94,7 +98,7 @@ def _flavor_from_name(name: str) -> str:
 
 def docket_comparison(report: dict, topology: Any = None) -> dict:
     """Pull the SCC columns out of an eval `report` and build the docket
-    with-vs-without-edges comparison.
+    vector-vs-lexical comparison.
 
     `report` is a run_topology_evaluation / run_live_evaluation result (needs
     report["stores"]). `topology` is the CompiledTopology it ran against - pass it
@@ -127,13 +131,14 @@ def docket_comparison(report: dict, topology: Any = None) -> dict:
 
     columns.sort(key=lambda c: (_ORDER.get(c["flavor"], 9), c["name"]))
 
-    # deltas: every vector (with-edges) column vs every lexical (without-edges) one.
+    # deltas: every vector column vs every lexical one.
     withs = [c for c in columns if c["flavor"] == "vector"]
     withouts = [c for c in columns if c["flavor"] == "lexical"]
     deltas: list[dict] = []
     for w in withs:
         for wo in withouts:
-            d: dict = {"with_edges": w["name"], "without_edges": wo["name"]}
+            d: dict = {"vector": w["name"], "lexical": wo["name"],
+                       "with_edges": w["name"], "without_edges": wo["name"]}   # the old names, kept for readers
             for key in _DELTA_KEYS:
                 if key in w and key in wo:
                     d[key] = round(w[key] - wo[key], 4)
@@ -152,15 +157,16 @@ def docket_comparison(report: dict, topology: Any = None) -> dict:
         out["note"] = "no SCC/docket columns in this report - nothing to compare."
     elif not deltas:
         got = ", ".join(f"{c['name']}({c['flavor']})" for c in columns)
-        out["note"] = ("need one vector (with-edges) and one lexical (without-edges) SCC to "
+        out["note"] = ("need one vector and one lexical SCC to "
                        f"compute a delta; got {got}.")
     return out
 
 
 def format_docket_comparison(cmp: dict) -> str:
     """Render the comparison as the readable side-by-side block - the shape you'd
-    paste into a ledger. Coverage / density / recall per SCC, then the edges
-    delta and a plain-language verdict on which way the edges moved coverage."""
+    paste into a ledger. Coverage / density / recall per SCC, then the
+    vector - lexical delta and a plain-language verdict on which way it moved
+    coverage."""
     lines: list[str] = []
     bits = []
     if cmp.get("k") is not None:
@@ -170,7 +176,7 @@ def format_docket_comparison(cmp: dict) -> str:
     if cmp.get("corpus_size") is not None:
         bits.append(f"corpus_size={cmp['corpus_size']}")
     suffix = f"   ({', '.join(bits)})" if bits else ""
-    lines.append(f"SCC Docket - with vs without edges{suffix}")
+    lines.append(f"SCC Docket - vector vs lexical Loci{suffix}")
     lines.append("")
 
     cols = cmp.get("columns") or []
@@ -187,9 +193,9 @@ def format_docket_comparison(cmp: dict) -> str:
                      f"coverage {g(c, 'docket_coverage')}   density {g(c, 'docket_density')}   "
                      f"recall {g(c, 'recall')}")
 
-    # The Callosum's MARKED edges (satellites, superseded cores, topic neighbours) are
-    # a different thing from the vector "edges" above: rows hung after the ranked
-    # packet. What each family bought, and the text it added.
+    # The Callosum's MARKED edges (satellites, superseded cores, topic neighbours):
+    # rows hung after the ranked packet. What each family bought, and the text it
+    # added.
     for c in cols:
         s = c.get("surroundings") or {}
         if "coverage_packet" not in s:
@@ -208,16 +214,16 @@ def format_docket_comparison(cmp: dict) -> str:
         def sg(v):
             return f"{v:+.4f}" if v is not None else "  -   "
         cov, den, rec = d.get("docket_coverage"), d.get("docket_density"), d.get("recall")
-        lines.append(f"  {deltaCharacter} edges (with {minusCharacter} without):<{labelw + namew + 2} "
+        lines.append(f"  {deltaCharacter} vector {minusCharacter} lexical:<{labelw + namew + 2} "
                      f"coverage {sg(cov)}   density {sg(den)}   recall {sg(rec)}")
         if cov is not None:
             if cov > 0.0005:
-                verdict = f"edges ADDED {cov:+.4f} docket coverage"
+                verdict = f"the vector Loci ADDED {cov:+.4f} docket coverage"
             elif cov < -0.0005:
-                verdict = f"edges COST {cov:+.4f} docket coverage"
+                verdict = f"the vector Loci COST {cov:+.4f} docket coverage"
             else:
-                verdict = "edges made no meaningful coverage difference"
-            lines.append(f"  \u2192 {verdict}  ({d['with_edges']} vs {d['without_edges']})")
+                verdict = "vector and lexical made no meaningful coverage difference"
+            lines.append(f"  \u2192 {verdict}  ({d['vector']} vs {d['lexical']})")
 
     if cmp.get("note"):
         lines.append("")

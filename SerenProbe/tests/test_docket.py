@@ -41,8 +41,8 @@ def test_topology_flavor_is_authoritative():
     cmp = docket_comparison(_report_from_pasted(), topo)
     assert cmp["flavor_source"] == "topology"
     by = {c["name"]: c for c in cmp["columns"]}
-    assert by["scc-v"]["flavor"] == "vector" and by["scc-v"]["label"] == "with edges"
-    assert by["scc-nv"]["flavor"] == "lexical" and by["scc-nv"]["label"] == "without edges"
+    assert by["scc-v"]["flavor"] == "vector" and by["scc-v"]["label"] == "vector Loci"
+    assert by["scc-nv"]["flavor"] == "lexical" and by["scc-nv"]["label"] == "lexical Loci"
     # lexical sorts first (delta reads with − without)
     assert cmp["columns"][0]["name"] == "scc-nv"
 
@@ -52,7 +52,8 @@ def test_delta_sign_matches_pasted_run():
     cmp = docket_comparison(_report_from_pasted(), topo)
     assert len(cmp["deltas"]) == 1
     d = cmp["deltas"][0]
-    assert d["with_edges"] == "scc-v" and d["without_edges"] == "scc-nv"
+    assert d["vector"] == "scc-v" and d["lexical"] == "scc-nv"
+    assert d["with_edges"] == "scc-v" and d["without_edges"] == "scc-nv", "the old wire names stay for readers"
     # edges (vector) LOST on coverage & density in that run - negative deltas
     assert d["docket_coverage"] == round(0.5331 - 0.5850, 4)
     assert d["docket_coverage"] < 0
@@ -63,8 +64,9 @@ def test_delta_sign_matches_pasted_run():
 def test_format_block_renders_verdict():
     topo = compile_topology(CFG)
     out = format_docket_comparison(docket_comparison(_report_from_pasted(), topo))
-    assert "with edges" in out and "without edges" in out
-    assert "edges COST" in out       # coverage went down with edges
+    assert "vector Loci" in out and "lexical Loci" in out
+    assert "vector Loci COST" in out       # coverage went down on the vector Loci
+    assert "with edges" not in out, "the old name read as the Callosum's edges"
     assert "scc-nv" in out and "scc-v" in out
 
 

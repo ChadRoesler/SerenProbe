@@ -88,6 +88,50 @@ async def get_eval_results(request: Request):
     return {"stores": {}, "query_count": 0, "date": ""}
 
 
+@router.get("/runs")
+async def list_runs(request: Request, kind: str | None = None, bundle: str | None = None,
+                    config: str | None = None, question_hash: str | None = None, limit: int = 100):
+    """The ledger, newest first: every eval and regrade sweep this Probe has
+    kept. Filters are exact. Each row is the run without its results; fetch one
+    by id for those."""
+    from ..runtime import ledger
+    rows = ledger.list_runs(kind=kind, bundle=bundle, config_name=config,
+                            question_hash=question_hash, limit=limit)
+    return {"count": len(rows), "runs": rows}
+
+
+@router.get("/runs/{run_id}")
+async def get_run(request: Request, run_id: str):
+    """One run: the record with its results leaned for the wire (the drill-down
+    rows stay on disk) and its per-tag table."""
+    from ..runtime import ledger
+    rec = ledger.load_run(run_id)
+    if rec is None:
+        raise HTTPException(status_code=404, detail=f"no run {run_id!r}")
+    return {**rec, "results": _lean(rec.get("results") or {})}
+
+
+@router.delete("/runs/{run_id}")
+async def delete_run(request: Request, run_id: str):
+    from ..runtime import ledger
+    if not ledger.delete_run(run_id):
+        raise HTTPException(status_code=404, detail=f"no run {run_id!r}")
+    return {"ok": True, "deleted": run_id}
+
+
+@router.get("/compare")
+async def compare_runs(request: Request, a: str, b: str):
+    """Two runs side by side: per-store metric deltas, per-tag within-k deltas,
+    the movers first, and whether the question sets match (if not, the numbers
+    describe different experiments and it says so)."""
+    from ..runtime import ledger
+    ra, rb = ledger.load_run(a), ledger.load_run(b)
+    missing = [x for x, r in ((a, ra), (b, rb)) if r is None]
+    if missing:
+        raise HTTPException(status_code=404, detail=f"no run {missing[0]!r}")
+    return ledger.compare_runs(ra, rb)
+
+
 @router.delete("/results")
 async def delete_eval_results(request: Request):
     """Throw the saved eval away on purpose.
@@ -502,6 +546,8 @@ async def run_regrade(request: Request):
     topology's corpora - a capture-once/replay-many SCC fusion sweep. Read-only on
     the eval containers; never touches live memory. 501 if SCC isn't importable
     host-side (regrade replays the REAL Federation to predict each knob combo)."""
+    import time as _time
+    _started_at = _time.time()
     ts = getattr(request.app.state, "topology_state", None)
     topo = getattr(request.app.state, "compiled_topology", None)
     if not (ts and topo):
@@ -744,4 +790,22 @@ async def run_regrade(request: Request):
         logger.error("Regrade failed: %s", exc)
         raise HTTPException(status_code=500, detail=str(exc))
     request.app.state.regrade_results = results
+    # THE LEDGER: a sweep is a run too, so it sits in the same list as the evals
+    # and compares on the same screen.
+    try:
+        from ..runtime import ledger
+        from ..core.topology import topology_fingerprint
+        from ..runtime import regrade as _rg
+        rec = ledger.record_run("regrade", results if isinstance(results, dict) else {"sweep": results},
+                                project_name=ts.get("project_name", ""),
+                                fingerprint=topology_fingerprint(topo), seeded_at=ts.get("seeded_at", ""),
+                                question_hash=_rg.corpus_question_hash(ei.questions),
+                                config_name=ts.get("config_name"), bundle=ts.get("bundle"),
+                                versions=getattr(topo, "versions", None), started_at=_started_at,
+                                knobs={"mode": str(body.get("mode", "auto")).lower()},
+                                config_edited=bool(ts.get("config_edited")))
+        if rec and isinstance(results, dict):
+            results["run_id"] = rec["id"]
+    except Exception as exc:     # noqa: BLE001
+        logger.warning("could not record the regrade run: %s", exc)
     return {"ok": True, "results": results}

@@ -371,7 +371,7 @@ def _is_ref_list(source) -> bool:
             and all(isinstance(s, str) for s in source))
 
 
-def _load_seed_items_many(sources: list, kind: str, warnings: list | None = None) -> list:
+def _load_seed_items_many(sources: list, kind: str, warnings: list | None = None, base=None) -> list:
     """Merge N seed sources into ONE store's items, in declaration order.
 
     This is what makes a multi-brain dataset maintainable: a character store is
@@ -401,7 +401,7 @@ def _load_seed_items_many(sources: list, kind: str, warnings: list | None = None
     seen: dict[str, str] = {}          # identity -> the source that first claimed it
     for src in sources:
         label = src if len(str(src)) <= 80 else f"{str(src)[:77]}..."
-        items = _load_seed_items_one(src, kind, warnings)
+        items = _load_seed_items_one(src, kind, warnings, base)
         for it in items:
             ident = f"{it.project}/{it.key}" if kind == "loci" else (it.ref or "")
             if not ident:
@@ -437,7 +437,7 @@ def _load_seed_items_many(sources: list, kind: str, warnings: list | None = None
     return out
 
 
-def load_seed_items(source, kind: str, warnings: list | None = None) -> list:
+def load_seed_items(source, kind: str, warnings: list | None = None, base=None) -> list:
     """Load a seed source: ONE ref (path / inline), or a LIST of refs merged in order.
 
     `warnings` is an optional out-param: pass a list and non-fatal problems are
@@ -447,11 +447,11 @@ def load_seed_items(source, kind: str, warnings: list | None = None) -> list:
     if kind not in ("loci", "memory"):
         raise SeedError([f"load_seed_items: kind must be 'loci' or 'memory' (got {kind!r})."])
     if _is_ref_list(source):
-        return _load_seed_items_many(source, kind, warnings)
-    return _load_seed_items_one(source, kind, warnings)
+        return _load_seed_items_many(source, kind, warnings, base)
+    return _load_seed_items_one(source, kind, warnings, base)
 
 
-def _load_seed_items_one(source, kind: str, warnings: list | None = None) -> list:
+def _load_seed_items_one(source, kind: str, warnings: list | None = None, base=None) -> list:
     """Load + validate a FLAT seed file - a bare list of items (or {items: [...]}) -
     as items of `kind` ('loci' or 'memory'). Returns [LociItem] | [MemoryItem].
 
@@ -460,7 +460,7 @@ def _load_seed_items_one(source, kind: str, warnings: list | None = None) -> lis
     """
     if kind not in ("loci", "memory"):
         raise SeedError([f"load_seed_items: kind must be 'loci' or 'memory' (got {kind!r})."])
-    data = _load_any(source)
+    data = _load_any(source, base)
     if isinstance(data, dict):
         # tolerate {items: [...]} or a kind-named key {loci: [...]}/{memory: [...]}
         data = data.get("items", data.get(kind))
@@ -481,7 +481,7 @@ def _load_seed_items_one(source, kind: str, warnings: list | None = None) -> lis
     return out
 
 
-def _load_questions_many(sources: list, warnings: list | None = None) -> list[Question]:
+def _load_questions_many(sources: list, warnings: list | None = None, base=None) -> list[Question]:
     """Merge N question files, in declaration order.
 
     A repeated query is a WARNING, not an error: scoring the same query twice does not
@@ -493,7 +493,7 @@ def _load_questions_many(sources: list, warnings: list | None = None) -> list[Qu
     seen: dict[str, str] = {}
     for src in sources:
         label = src if len(str(src)) <= 80 else f"{str(src)[:77]}..."
-        for q in _load_questions_one(src, warnings):
+        for q in _load_questions_one(src, warnings, base):
             key = normalize_text(q.query)
             if key and key in seen:
                 warnings.append(
@@ -505,7 +505,7 @@ def _load_questions_many(sources: list, warnings: list | None = None) -> list[Qu
     return out
 
 
-def load_questions(source, warnings: list | None = None) -> list[Question]:
+def load_questions(source, warnings: list | None = None, base=None) -> list[Question]:
     """Load questions: ONE ref (path / inline), or a LIST of refs merged in order.
 
     `warnings` is an optional out-param -- pass a list and non-fatal problems land in
@@ -519,13 +519,13 @@ def load_questions(source, warnings: list | None = None) -> list[Question]:
     The parser was telling the author a lie about a lie. Pass the list.
     """
     if _is_ref_list(source):
-        return _load_questions_many(source, warnings)
-    return _load_questions_one(source, warnings)
+        return _load_questions_many(source, warnings, base)
+    return _load_questions_one(source, warnings, base)
 
 
-def _load_questions_one(source, warnings: list | None = None) -> list[Question]:
+def _load_questions_one(source, warnings: list | None = None, base=None) -> list[Question]:
     """Parse + validate eval questions. Raises SeedError on anything unscoreable."""
-    data = _load_any(source)
+    data = _load_any(source, base)
     if isinstance(data, dict):
         data = data.get("questions", data)
     if not isinstance(data, list):
@@ -1116,8 +1116,41 @@ def _looks_like_a_path(source: str) -> bool:
     return ("\n" not in s) and s.lower().endswith((".yaml", ".yml", ".json"))
 
 
-def _load_any(source):
+def clean_relative(ref: str) -> str | None:
+    """An archive-relative path as a bundle means it, or None when the ref would
+    reach outside: absolute, drive-lettered, or climbing with `..`."""
+    s = str(ref or "").strip().replace("\\", "/")
+    if not s or s.startswith("/") or (len(s) > 1 and s[1] == ":" and s[0].isalpha()):
+        return None
+    parts = [p for p in s.split("/") if p not in ("", ".")]
+    if not parts or any(p == ".." for p in parts):
+        return None
+    return "/".join(parts)
+
+
+def _under(base, ref: str):
+    """The file a bundle's ref names, under `base` and only there. A ref that
+    reaches outside is a SeedError, not a file: a path in a bundle never means
+    anything outside it, or the bundle is not the dataset."""
+    from pathlib import Path as _Path
+    rel = clean_relative(ref)
+    root = _Path(base)
+    if rel is not None:
+        p = root / rel
+        try:
+            if p.resolve().is_relative_to(root.resolve()):
+                return p
+        except OSError:
+            return p
+    raise SeedError([f"seed/questions ref {ref!r} reaches outside its bundle. Refs are relative to the "
+                     f"bundle's root; absolute paths and '..' are refused."])
+
+
+def _load_any(source, base=None):
     """dict/list passthrough; else YAML/JSON from a path or an inline string.
+    `base`: the folder a bundle's refs are relative to. With it, a path-like ref
+    is opened under base and nowhere else (see _under). Without it, the old
+    rule: a relative path means the process's working directory.
 
     A MISSING FILE IS AN ERROR, said out loud. This used to fall through: if the
     path didn't exist, `text` stayed as the path STRING and we handed it to
@@ -1139,7 +1172,7 @@ def _load_any(source):
     text = source
     is_path_like = isinstance(source, str) and _looks_like_a_path(source)
     try:
-        p = _Path(str(source))
+        p = _under(base, source) if (base is not None and is_path_like) else _Path(str(source))
         if p.exists():
             text = p.read_text(encoding="utf-8")
         elif is_path_like:

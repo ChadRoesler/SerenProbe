@@ -96,6 +96,8 @@ async def run_topology_eval(state, body: dict | None = None) -> dict:
     from ..core.seed_dataset import SeedError
     from . import progress
 
+    import time as _time
+    started_at = _time.time()                    # the ledger's clock starts before the seed
     body = body if isinstance(body, dict) else {}
 
     # Config-first: seeds + questions come from the compiled ProbeConfig
@@ -204,14 +206,33 @@ async def run_topology_eval(state, body: dict | None = None) -> dict:
     # PERSIST, so the next process (or an adopt) knows this pod has been scored.
     # After the results are in app.state, so a write failure costs the
     # convenience and never the run.
+    fp = qh = ""
     try:
-        from .docker_env import save_eval_results
         from ..core.topology import topology_fingerprint
         from . import regrade as _rg
-        save_eval_results(ts.get("project_name", ""), results,
-                          fingerprint=topology_fingerprint(topo),
-                          seeded_at=ts.get("seeded_at", ""),
-                          question_hash=_rg.corpus_question_hash(ei.questions))
+        fp = topology_fingerprint(topo)
+        qh = _rg.corpus_question_hash(ei.questions)
+    except Exception as exc:     # noqa: BLE001 - unknown means "don't judge on it"
+        logger.warning("could not fingerprint the run: %s", exc)
+    # THE LEDGER FIRST. The record names the run and the results carry its id,
+    # so the "latest" file written below and the viewer's table both link to
+    # the row they came from (restored results included).
+    try:
+        from . import ledger
+        rec = ledger.record_run("eval", results, project_name=ts.get("project_name", ""),
+                                fingerprint=fp, seeded_at=ts.get("seeded_at", ""), question_hash=qh,
+                                config_name=ts.get("config_name"), bundle=ts.get("bundle"),
+                                config_edited=bool(ts.get("config_edited")),
+                                versions=getattr(topo, "versions", None), started_at=started_at)
+        if rec:
+            results = {**results, "run_id": rec["id"]}
+            state.eval_results = results
+    except Exception as exc:     # noqa: BLE001
+        logger.warning("could not record the run: %s", exc)
+    try:
+        from .docker_env import save_eval_results
+        save_eval_results(ts.get("project_name", ""), results, fingerprint=fp,
+                          seeded_at=ts.get("seeded_at", ""), question_hash=qh)
     except Exception as exc:     # noqa: BLE001
         logger.warning("could not persist eval results: %s", exc)
     return results

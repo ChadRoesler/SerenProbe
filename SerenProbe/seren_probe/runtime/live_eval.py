@@ -302,6 +302,7 @@ def _question_detail(q, hits, retrieved, relevant, kind, coverage, k):
         rows.append(row)
     out = {
         "query": getattr(q, "query", ""),
+        "tags": list(getattr(q, "tags", None) or []),      # the question's classes, for the ledger's per-tag compare
         "rank": rank,
         "hit": rank is not None,
         "within_k": rank is not None and rank <= k,

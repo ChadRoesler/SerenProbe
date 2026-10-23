@@ -192,6 +192,9 @@ class CompiledTopology:
     # changed. You then grade a build you think you upgraded and didn't. Pinning
     # busts the cache AND records what was actually tested.
     versions: dict = field(default_factory=dict)
+    # Set when the config came out of an inquisition bundle: the folder its Seed
+    # and Questions refs are relative to. None = the old rule, the process's cwd.
+    base_dir: str | None = None
 
     def summary(self) -> str:
         out: list[str] = []
@@ -837,12 +840,14 @@ def topology_fingerprint(topo: CompiledTopology) -> str:
     return hashlib.sha256(repr(structure_signature(topo)).encode()).hexdigest()[:16]
 
 
-def load_probe_config(source) -> CompiledTopology:
+def load_probe_config(source, base_dir=None) -> CompiledTopology:
     """Load a ProbeConfig from a YAML file PATH or a YAML STRING, then compile it.
 
     Raises TopologyError on an untrustworthy topology (same contract as
     compile_topology). PyYAML is a hard dep of seren-probe, so it's imported at
     call time only to keep this module import-light for pure-dict callers.
+    `base_dir`: the bundle folder the config's refs are relative to (see
+    runtime/bundles.py); the compiled topology carries it.
     """
     import yaml
     from pathlib import Path as _Path
@@ -856,7 +861,10 @@ def load_probe_config(source) -> CompiledTopology:
     data = yaml.safe_load(text)
     if not isinstance(data, dict):
         raise TopologyError([f"ProbeConfig YAML must parse to a mapping (got {type(data).__name__})."])
-    return compile_topology(data)
+    topo = compile_topology(data)
+    if base_dir:
+        topo.base_dir = str(base_dir)
+    return topo
 
 
 def structure_signature(topo: CompiledTopology) -> tuple:

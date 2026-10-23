@@ -50,11 +50,15 @@ async def docker_start(request: Request):
     # Source the ProbeConfig: request body wins, then the uploaded active config
     # (POST /docker/probeconfig), then the shipped example next to the package.
     probe_config = body.get("probe_config")
+    source: dict = {}
     if probe_config is None:
         probe_config = getattr(request.app.state, "probe_config_text", None)
+        # The active config may have come out of a bundle: its refs mean files
+        # inside that bundle, so the topology carries the bundle's folder.
+        source = getattr(request.app.state, "probe_config_source", None) or {}
     try:
         if probe_config is not None:
-            topology = load_probe_config(probe_config)     # YAML string or dict
+            topology = load_probe_config(probe_config, base_dir=source.get("base_dir"))   # YAML string or dict
         else:
             default_pc = Path(__file__).resolve().parent.parent / "ProbeConfig.yml"
             topology = load_probe_config(default_pc)
@@ -83,6 +87,10 @@ async def docker_start(request: Request):
         "project_name": env.project_name, "work_dir": env.work_dir, "url_of": env.url_of,
         "loci": env.loci, "memory": env.memory, "corpus": env.corpus,
         "seeded": False,       # fresh containers: empty stores, first eval seeds them
+        # Where the config came from, for the ledger (every run names its bundle
+        # and config) and for an adopt after a restart (the base its refs need).
+        "bundle": source.get("bundle"), "config_name": source.get("config_name"),
+        "base_dir": source.get("base_dir"), "config_edited": bool(source.get("edited")),
     }
     request.app.state.compiled_topology = topology
 
@@ -146,7 +154,7 @@ async def docker_adopt(request: Request):
                             detail=("A pod is running but its ProbeConfig wasn't saved, so its "
                                     "knobs/questions can't be restored. Stop it and Start fresh."))
     try:
-        topology = load_probe_config(pc_text)
+        topology = load_probe_config(pc_text, base_dir=st.get("base_dir"))
     except TopologyError as e:
         raise HTTPException(status_code=400, detail={
             "stage": "compile", "errors": e.errors, "warnings": e.warnings})
@@ -156,9 +164,15 @@ async def docker_adopt(request: Request):
         "url_of": st.get("url_of", {}), "loci": st.get("loci", []),
         "memory": st.get("memory", []), "corpus": st.get("corpus", []),
         "seeded": bool(st.get("seeded")), "adopted": True,
+        "bundle": st.get("bundle"), "config_name": st.get("config_name"), "base_dir": st.get("base_dir"),
+        "config_edited": bool(st.get("config_edited")),
     }
     request.app.state.compiled_topology = topology
     request.app.state.probe_config_text = pc_text
+    request.app.state.probe_config_source = (
+        {"bundle": st["bundle"], "config_name": st.get("config_name"), "base_dir": st.get("base_dir"),
+         "edited": bool(st.get("config_edited"))}
+        if st.get("bundle") else None)
 
     return {"ok": True, "adopted": st["project_name"], "stores": st.get("url_of", {}),
             "loci": st.get("loci", []), "memory": st.get("memory", []),
@@ -393,8 +407,10 @@ async def upload_probeconfig(request: Request):
     """Upload + validate a ProbeConfig (YAML string or object). Compiles it -
     surfacing errors/warnings compassion-first - and, if valid, stores it as the
     ACTIVE topology that /docker/start will use. This is how people swap in their
-    own eval topology to eval against their own stuff."""
-    from ..core.topology import load_probe_config, TopologyError
+    own eval topology to eval against their own stuff. An uploaded config's paths
+    are opened by THIS process, relative to its working directory; a dataset that
+    has to travel goes in a bundle (POST /bundles, then /bundles/{id}/activate),
+    which ends in the same activate below with the bundle's folder as the base."""
     try:
         body = await request.json()
     except Exception:
@@ -403,8 +419,37 @@ async def upload_probeconfig(request: Request):
     if pc is None:
         raise HTTPException(status_code=400,
                             detail="Provide 'probe_config' (a YAML string or a ProbeConfig object).")
+    # Keep the raw YAML so /start re-compiles it identically.
+    import yaml as _yaml
+    text = pc if isinstance(pc, str) else _yaml.safe_dump(pc, sort_keys=False)
+    # DERIVED FROM A BUNDLE: the editor can say the text came from a bundled
+    # config (body.bundle + body.config_name). Then its paths still mean files
+    # inside that bundle, and its runs group as "<config> (edited)": turning the
+    # knobs never loses the data they run on.
+    source = None
+    if isinstance(body, dict) and body.get("bundle"):
+        from ..runtime import bundles as _bundles
+        bid, cname = str(body["bundle"]), str(body.get("config_name") or "")
+        found = _bundles.config_text(bid, cname)
+        if found is None:
+            raise HTTPException(status_code=400,
+                                detail=f"bundle {bid!r} has no config {cname!r} to derive from; install it first, "
+                                       f"or upload without naming a bundle")
+        source = {"bundle": bid, "config_name": cname, "base_dir": str(_bundles.bundle_dir(bid)),
+                  "edited": found[0].strip() != text.strip()}
+    return await activate_probe_config(request, text, source=source)
+
+
+async def activate_probe_config(request: Request, text: str, *, source: dict | None = None) -> dict:
+    """Make `text` the ACTIVE ProbeConfig: compile (400 on errors), lint, remember
+    the text and where it came from, hot-swap into a running pod of the same
+    structure. `source` is {bundle, config_name, base_dir} for a config out of an
+    inquisition bundle (its refs then mean files inside that bundle) and None for
+    a plain upload. Both doors end here, so a config behaves the same whichever
+    it came through."""
+    from ..core.topology import load_probe_config, TopologyError
     try:
-        topo = load_probe_config(pc)
+        topo = load_probe_config(text, base_dir=(source or {}).get("base_dir"))
     except TopologyError as e:
         raise HTTPException(status_code=400, detail={
             "stage": "compile", "errors": e.errors, "warnings": e.warnings})
@@ -445,10 +490,12 @@ async def upload_probeconfig(request: Request):
     except Exception as exc:                       # noqa: BLE001
         lint_payload = {"ok": None, "skipped": f"could not lint: {exc}"}
 
-    # Persist the raw YAML so /start re-compiles it identically.
-    import yaml as _yaml
-    text = pc if isinstance(pc, str) else _yaml.safe_dump(pc, sort_keys=False)
+    # Persist the raw YAML so /start re-compiles it identically, and its source.
     request.app.state.probe_config_text = text
+    request.app.state.probe_config_source = dict(source) if source else None
+    from ..runtime.docker_env import save_active_config
+    # a bundled choice survives a restart (an edited text travels with it); a plain upload forgets it
+    save_active_config(source, text if (source or {}).get("edited") else None)
 
     # HOT-SWAP: if a topology is already running and the new config asks for the
     # SAME containers, don't make the operator tear down and reseed just to change
@@ -561,10 +608,38 @@ async def upload_probeconfig(request: Request):
                    "pod no longer matches this config. Stop and Start to rebuild.")
 
     return {"ok": True, "active": True, "warnings": topo.warnings, "lint": lint_payload,
-            "hot_swap": hot, "summary": {
+            "hot_swap": hot, "bundle": (source or {}).get("bundle"),
+            "config_name": (source or {}).get("config_name"), "edited": bool((source or {}).get("edited")),
+            "summary": {
         "loci": [n.name for n in topo.loci],
         "memory": [n.name for n in topo.memory],
         "corpus": [c.name for c in topo.corpus]}}
+
+
+@router.delete("/probeconfig")
+async def clear_probeconfig(request: Request):
+    """Clear the active ProbeConfig: nothing is active, /start falls back to the
+    shipped example, and a bundle it came from is free to delete. A running pod
+    keeps the config it was started with (it is compiled into the pod); Stop
+    ends that. An uploaded text lived only in this process, so clearing it is
+    the end of it; a bundled one can be activated again from its bundle."""
+    from ..runtime.docker_env import save_active_config
+    text = getattr(request.app.state, "probe_config_text", None)
+    src = getattr(request.app.state, "probe_config_source", None) or {}
+    cleared = None
+    if text is not None:
+        cleared = {"source": "bundle" if src.get("bundle") else "uploaded",
+                   "bundle": src.get("bundle"), "config_name": src.get("config_name")}
+    request.app.state.probe_config_text = None
+    request.app.state.probe_config_source = None
+    save_active_config(None)
+    ts = getattr(request.app.state, "topology_state", None) or {}
+    note = None
+    if ts:
+        note = (f"a pod is still running ({ts.get('project_name') or 'unnamed'}) with the config it was started "
+                f"with; Stop it to end that"
+                + (f" and free bundle {ts['bundle']}" if ts.get("bundle") else "") + ".")
+    return {"ok": True, "cleared": cleared, "pod_running": bool(ts), "note": note}
 
 
 @router.get("/probeconfig")
@@ -575,13 +650,15 @@ async def get_probeconfig(request: Request):
     yaml + the compile errors rather than 500-ing."""
     from ..core.topology import load_probe_config, TopologyError
     text = getattr(request.app.state, "probe_config_text", None)
+    src = getattr(request.app.state, "probe_config_source", None) or {}
     if text is not None:
-        source, active = "uploaded", True
+        source, active = ("bundle" if src.get("bundle") else "uploaded"), True
     else:
         default_pc = Path(__file__).resolve().parent.parent / "ProbeConfig.yml"
         text = default_pc.read_text(encoding="utf-8") if default_pc.exists() else ""
         source, active = "shipped-example", False
-    result = {"active": active, "source": source, "yaml": text}
+    result = {"active": active, "source": source, "yaml": text,
+              "bundle": src.get("bundle"), "config_name": src.get("config_name"), "edited": bool(src.get("edited"))}
     if text.strip():
         try:
             topo = load_probe_config(text)

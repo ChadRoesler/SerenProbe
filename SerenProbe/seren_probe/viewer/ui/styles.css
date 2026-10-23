@@ -752,7 +752,7 @@ textarea {
     color: #d0a94e;
 }
 
-/* ── SCC docket comparison (with vs without edges) ───────────── */
+/* ── SCC docket comparison (vector vs lexical Loci) ───────────── */
 .docket-section {
     background: var(--surface);
     border: 1px solid var(--border-soft);
@@ -1381,3 +1381,64 @@ tr.neg-leaked td:first-child {
     .panel .btn-sm:hover, .panel .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
     .panel .btn { background: var(--accent); color: #0e0f13; border-color: var(--accent); font-weight: 600; }
         .panel .btn:hover { background: var(--accent-2); border-color: var(--accent-2); }
+
+/* ── Runs (the ledger) and bundles, 21 Oct 2026 ───────────────────── */
+.runs-table td, .compare-table td, .bundle-table td { vertical-align: top; }
+.runs-table tr.picked td { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.runs-table .pick { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; cursor: pointer; }
+.run-link { color: var(--accent); text-decoration: none; }
+.run-link:hover { text-decoration: underline; }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.8em; }
+.run-title { font-size: 0.95em; margin: 10px 0 2px; }
+.run-store { font-size: 0.9em; margin: 12px 0 4px; color: var(--text-dim); }
+.delta.up { color: var(--ok); }
+.delta.down { color: var(--err); }
+.bundle-table .bundle-config { margin: 2px 0; }
+/* A select in a panel header is the same control as the buttons beside it:
+   30px, radius 7, the page face (22 Oct 2026: "ensure button size parity"). */
+.panel .panel-header .ctrls select {
+    height: 30px; padding: 0 8px; border-radius: 7px;
+    font-family: var(--font); font-size: 0.85em; line-height: 1;
+    background: var(--bg); color: var(--text-soft);
+    border: 1px solid var(--border-soft); cursor: pointer;
+}
+    .panel .panel-header .ctrls select:hover { border-color: var(--accent); }
+.bundle-file-name { font-size: 0.85em; align-self: center; }
+
+.run-group-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 14px 0 4px; }
+
+/* The checkbox under the editor (22 Oct 2026, "the checkbox running away"):
+   .upload-form gives every input width:100%, which stretched the box across
+   the form and threw its words to the far edge. */
+.upload-form input[type="checkbox"] { width: auto; margin: 0; padding: 0; }
+.keep-bundle {
+    display: inline-flex; align-items: center; gap: 6px; align-self: flex-start;
+    font-size: 0.85em; opacity: 0.85; cursor: pointer; user-select: none; margin: 4px 0;
+}
+    .keep-bundle input { cursor: pointer; }
+
+/* Icon buttons: the one 30px control, square. */
+.panel .btn-sm.icon-btn { width: 30px; padding: 0; }
+    .panel .btn-sm.icon-btn .icon { display: block; }
+    .panel .btn-sm.icon-btn.danger:hover { border-color: var(--err); color: var(--err); }
+.bundle-table td.bc-cell { min-width: 260px; }
+.bundle-config { display: flex; align-items: center; gap: 6px; margin: 2px 0; }
+    .bundle-config .bc-name { font-weight: 600; }
+    .bundle-config .bc-play { margin-left: auto; }
+.bundle-table td.nowrap { white-space: nowrap; }
+.bundle-config .bc-note { font-size: 0.85em; }
+/* Runs: the group heading sits inside the panel's gutter like the notes, and
+   every group's table shares one column layout so the groups line up. */
+.run-group-head { padding: 0 14px; }
+.runs-table { table-layout: fixed; width: 100%; }
+    .runs-table th:nth-child(1) { width: 56px; }
+    .runs-table th:nth-child(2) { width: 170px; }
+    .runs-table th:nth-child(3) { width: 100px; }
+    .runs-table th:nth-child(5) { width: 110px; }
+    .runs-table th:nth-child(7) { width: 70px; }
+    .runs-table th:nth-child(8) { width: 56px; }
+    .runs-table td { overflow-wrap: anywhere; }
+
+/* A result line that carries buttons (the bundle delete's ways out) wraps them
+   under the text instead of running them into it. */
+.config-save-result .btn-sm { margin-top: 6px; }

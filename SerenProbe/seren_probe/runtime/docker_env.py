@@ -117,6 +117,39 @@ def results_file() -> Path:
     return state_dir() / "eval_results.json"
 
 
+def active_config_file() -> Path:
+    return state_dir() / "active_config.json"
+
+
+def save_active_config(source: Optional[dict], text: Optional[str] = None) -> None:
+    """Which bundle and config are active, so a restart re-reads the choice:
+    the bundle is on disk, so nothing is lost by remembering it. None forgets
+    it (a plain upload took over, and an uploaded text was never persisted
+    without a pod). Best-effort, like every other state file here."""
+    p = active_config_file()
+    try:
+        if source and source.get("bundle"):
+            p.parent.mkdir(parents=True, exist_ok=True)
+            choice = {"bundle": source["bundle"], "config_name": source.get("config_name"),
+                      "edited": bool(source.get("edited"))}
+            if text and source.get("edited"):
+                choice["text"] = text            # the knobs as turned in the editor; the data is in the bundle
+            p.write_text(json.dumps(choice), encoding="utf-8")
+        elif p.exists():
+            p.unlink()
+    except OSError as exc:
+        logging.getLogger(__name__).warning("could not save the active config choice: %s", exc)
+
+
+def load_active_config() -> Optional[dict]:
+    p = active_config_file()
+    try:
+        d = json.loads(p.read_text(encoding="utf-8")) if p.is_file() else None
+    except (OSError, ValueError):
+        return None
+    return d if isinstance(d, dict) and d.get("bundle") else None
+
+
 def captures_file() -> Path:
     return state_dir() / "corpus_captures.json"
 
@@ -1094,7 +1127,19 @@ def _run_docker_streamed(*args: str, timeout: int = 600) -> list[str]:
 
 
 def compose_up(work_dir: Path, project_name: str, build: bool = True) -> None:
-    args = ["compose", "-p", project_name, "-f", str(work_dir / "docker-compose.yml"), "up", "-d"]
+    """Bring the topology up under its project name, REPLACING whatever pod held
+    that name before.
+
+    --remove-orphans, because every pod shares one project name and one work
+    dir. Without it (until 22 Oct 2026) a second ProbeConfig started over a
+    running first one created its own services and left the first one's running
+    as orphans of the same project: a 'before' pod stayed up beside
+    'after', Stop (which reads the current compose file) took only 'after' down,
+    and five 'before' containers ran for twelve hours where nothing in the Probe
+    could see or stop them, while compose ps counted them as this pod running.
+    """
+    args = ["compose", "-p", project_name, "-f", str(work_dir / "docker-compose.yml"), "up", "-d",
+            "--remove-orphans"]
     if build:
         args.append("--build")
     # Streamed, not captured: this is the ten-minute one. The operator watching the
@@ -1124,10 +1169,13 @@ def compose_down(work_dir, project_name: str) -> None:
     that affects a score. Keeping it is free; re-fetching it is not.
 
     To reclaim the space deliberately:  docker volume rm seren-probe-model-cache
+
+    --remove-orphans: Stop takes down every container under the project name,
+    not only the services in the current compose file (see compose_up).
     """
     try:
         _run_docker("compose", "-p", project_name,
-                    "-f", str(Path(work_dir) / "docker-compose.yml"), "down", timeout=120)
+                    "-f", str(Path(work_dir) / "docker-compose.yml"), "down", "--remove-orphans", timeout=120)
     except Exception as e:
         logger.warning("compose down: %s", e)
 
