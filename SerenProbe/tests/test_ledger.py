@@ -93,8 +93,11 @@ def test_two_runs_compare_per_store_and_per_tag_with_movers_first(state_in_tmp):
 def test_a_bad_kind_is_refused_and_a_failed_write_is_not_fatal(state_in_tmp, monkeypatch):
     with pytest.raises(ValueError):
         ledger.record_run("sweep", {"stores": {}})
-    monkeypatch.setattr(ledger, "runs_dir", lambda: Path("Z:/nowhere/that/exists") if Path("Z:/").exists() is False
-                        else Path("/dev/null/nope"))
+    # A folder under an ordinary file can't be made on any OS. ("Z:/nowhere" was
+    # relative on Linux, so CI's mkdir made it and the write went through.)
+    blocker = state_in_tmp.parent / "a-file"
+    blocker.write_text("not a folder")
+    monkeypatch.setattr(ledger, "runs_dir", lambda: blocker / "runs")
     assert ledger.record_run("eval", {"stores": {}}) is None
 
 
