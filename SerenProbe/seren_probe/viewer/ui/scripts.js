@@ -484,7 +484,7 @@ function renderQdList() {
     }
     h += `<div class="qd-q" data-qi="${i}">`
        + `<div class="qd-qhead">`
-       + `<span class="qd-caret">▶</span>`
+       + `<span class="qd-caret seren-chev"></span>`
        + `<span class="qd-flag ${flag.cls}">${flag.label}</span>`
        + `<span class="qd-qtext">${escapeHtml(q.query || '(no query text)')}</span>`
        + `</div>`
@@ -1470,7 +1470,6 @@ async function refreshConfig() {
     html += `<div class="note"><span class="label">tip:</span> declare X Loci / Y Memory / Z Corpus, then Set Active to make it the topology <b>Start</b> builds.</div>`;
     html += '<div class="upload-form">';
     html += `<textarea id="probeconfig-yaml" rows="14" spellcheck="false">${escapeHtml(pcYaml)}</textarea>`;
-    html += '<input type="file" id="probeconfig-file" accept=".yml,.yaml,.txt" style="display:none" onchange="loadProbeConfigFile(this)"/>';
     if (pc.bundle) {
       // DERIVED FROM A BUNDLE. Ticked, Set Active keeps the text tied to the
       // bundle: its paths mean files inside the bundle, and its runs group as
@@ -1924,9 +1923,8 @@ async function refreshBundles() {
            + '<b>Inspect</b> says what it holds and whether it can be trusted, installing nothing; '
            + '<b>Upload</b> validates, then installs. A bundle is kept by its content and is not thrown away when a pod stops.</div>';
   html += '<div class="ctrls-row">'
-        + '<input type="file" id="bundle-file" accept=".iqz,.tar,.tar.gz,.tgz" style="display:none" onchange="bundleChosen(this)"/>'
-        + '<button class="btn-sm" onclick="document.getElementById(\'bundle-file\').click()">Choose bundle\u2026</button>'
-        + '<span class="muted bundle-file-name" id="bundle-file-name">no file chosen</span>'
+        + '<input type="file" id="bundle-file" accept=".iqz,.tar,.tar.gz,.tgz" title="Choose a bundle" onchange="bundleChosen(this)"/>'
+        + '<span class="muted bundle-file-name" id="bundle-file-name"></span>'
         + '<button class="btn-sm" onclick="sendBundle(false)">Inspect</button>'
         + '<button class="btn" onclick="sendBundle(true)">Upload &amp; install</button>'
         + '</div>'
@@ -1962,12 +1960,12 @@ async function refreshBundles() {
   host.innerHTML = html;
 }
 
-// The picker is hidden behind a button (like Load file); choosing a file shows
-// its name and inspects it at once, which writes nothing.
+// The picker is the family's file field, in sight (25 Oct 2026); choosing a file shows
+// its size beside it and inspects it at once, which writes nothing.
 function bundleChosen(input) {
   const file = input.files && input.files[0];
   const label = document.getElementById('bundle-file-name');
-  if (label) label.textContent = file ? `${file.name} \u00b7 ${_kb(file.size)}` : 'no file chosen';
+  if (label) label.textContent = file ? _kb(file.size) : '';
   if (file) sendBundle(false);
 }
 

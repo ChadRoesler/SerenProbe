@@ -73,7 +73,9 @@
       <div class="info" id="config-info">-</div>
       <div class="ctrls">
         <button class="btn" onclick="uploadProbeConfig()">Validate &amp; Set Active</button>
-        <button class="btn-sm" onclick="document.getElementById('probeconfig-file').click()">Load file…</button>
+        <!-- the family's file picker, in sight (seren_meninges tokens.css, 25 Oct 2026): it says
+             which file was chosen, where a button that clicked a hidden input said nothing -->
+        <input type="file" id="probeconfig-file" accept=".yml,.yaml,.txt" title="Load a ProbeConfig from a file" onchange="loadProbeConfigFile(this)"/>
         <button class="btn-sm" onclick="refreshConfig()">Reload active</button>
         <button class="btn-sm" onclick="clearProbeConfig()" title="Clear the active ProbeConfig: nothing is active, Start falls back to the shipped example, and the bundle it came from can be deleted">Clear</button>
         <button data-refresh="config">↻</button>

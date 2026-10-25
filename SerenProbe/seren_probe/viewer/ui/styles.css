@@ -1260,14 +1260,13 @@ tr.neg-leaked td:first-child {
     user-select: none;
 }
     .qd-qhead:hover { background: rgba(255, 255, 255, 0.03); }
+/* the family's one chevron (seren-chev, from the shell) */
 .qd-caret {
     flex: 0 0 auto;
     color: var(--text-dim);
-    font-size: 0.8em;
-    width: 10px;
     transition: transform 0.12s ease;
 }
-.qd-q.open .qd-caret { transform: rotate(90deg); }
+.qd-q.open .qd-caret { transform: rotate(45deg); }
 .qd-flag {
     flex: 0 0 auto;
     font-family: var(--mono);
