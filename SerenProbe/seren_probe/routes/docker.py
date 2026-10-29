@@ -80,7 +80,11 @@ async def docker_start(request: Request):
             image_overrides=image_overrides)
     except Exception as exc:
         logger.error("Topology spin-up failed: %s", exc)
-        raise HTTPException(status_code=500, detail={"stage": "spin_up", "error": str(exc)})
+        # A pod that came up and never answered its health gate has been taken
+        # down again (docker_env.spin_up_topology); its last log lines ride
+        # along so the operator sees why without docker at hand.
+        raise HTTPException(status_code=500, detail={"stage": "spin_up", "error": str(exc),
+                                                     "logs": list(getattr(exc, "logs", None) or [])})
 
     # Stash for the eval + teardown. url_of maps EVERY store -> host URL.
     request.app.state.topology_state = {
@@ -204,7 +208,23 @@ async def docker_stop(request: Request):
     # Legacy single-container fallback.
     ds = request.app.state.docker_state
     if not ds or not ds.get("container_id"):
-        return {"ok": False, "error": "Nothing running"}
+        # No record of a pod. Docker may still hold one under the project
+        # name (a spin-up that failed before the state was kept, a Probe
+        # restarted without adopting): look, and say what was found.
+        from ..runtime.docker_env import DEFAULT_CONTAINER_NAME, compose_down_project, find_pod_containers
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        project = (body.get("project_name") if isinstance(body, dict) else None) or DEFAULT_CONTAINER_NAME
+        found = await run_in_threadpool(find_pod_containers, project)
+        if not found:
+            return {"ok": False, "error": "Nothing running", "looked_for": project}
+        await run_in_threadpool(compose_down_project, project)
+        left = await run_in_threadpool(find_pod_containers, project)
+        return {"ok": not left, "torn_down": project, "found": found, "left": left,
+                "note": "containers under the project name with no record of them in this Probe "
+                        "(a spin-up that failed, or a Probe that restarted without adopting); taken down by their label"}
     try:
         from ..runtime.docker_env import stop_container as _stop
         await run_in_threadpool(_stop, ds)

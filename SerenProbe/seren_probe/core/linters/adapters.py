@@ -78,4 +78,10 @@ def _question_to_dict(q):
         "stale_ref": list(getattr(q, "stale_ref", []) or []),
         "stale_key": [_strip_store_qualifier(str(x))
                       for x in (getattr(q, "stale_key", []) or [])],
+        # tags and lexical -> the paraphrase skip in check_discriminability. The
+        # same rule again (28 Oct 2026): dropped here, a question tagged
+        # `paraphrase` was still called AMBIGUOUS on the plan path while the
+        # flat path let it through.
+        "tags": list(getattr(q, "tags", []) or []),
+        "lexical": bool(getattr(q, "lexical", True)),
     }

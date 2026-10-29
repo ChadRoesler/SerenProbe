@@ -39,7 +39,7 @@ VALID_ASKS = {"loci", "memory", "corpus"}
 # parser tells the author.
 KNOWN_QUESTION_KEYS = {
     "asks", "query", "expect_key", "expect_ref", "expect_content", "expect_empty",
-    "hops", "quiet_in", "stale_ref", "stale_key", "tags", "answer",
+    "hops", "quiet_in", "stale_ref", "stale_key", "tags", "answer", "lexical",
 }
 # The same rule for a memory seed item. A `satellites:` list that vanished on load
 # would seed a corpus with no surroundings and report the edges as doing nothing.
@@ -120,6 +120,10 @@ class Question:
     # answer-level comparison reports by and grades against (punch list: probe-compare).
     tags: list[str] = field(default_factory=list)
     answer: str | None = None
+    # False: the query shares no words with its answer on purpose (a paraphrase),
+    # so the linter's lexical discriminability count does not apply. The
+    # `paraphrase` tag says the same.
+    lexical: bool = True
 
 
 # stale_ref is the supersession test. "What is House Vayne's seat NOW?" has a right
@@ -653,7 +657,8 @@ def _load_questions_one(source, warnings: list | None = None, base=None) -> list
                             expect_empty=empty, needs_hops=needs_hops, quiet_in=quiet_in,
                             stale_ref=[str(s) for s in stale],
                             stale_key=[str(s) for s in stale_key], tags=list(tags),
-                            answer=(str(q["answer"]) if q.get("answer") is not None else None)))
+                            answer=(str(q["answer"]) if q.get("answer") is not None else None),
+                            lexical=(q.get("lexical") is not False)))
     if errors:
         raise SeedError(errors, warnings)
     return out

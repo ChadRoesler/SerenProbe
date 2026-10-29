@@ -130,6 +130,18 @@ def check_discriminability(q, query: str, qw: set, label: str, corpus, rep, k: i
     k -> hit_rate@k is capped below 1 no matter how good retrieval is. A DATASET
     DEFECT, not a score.
     """
+    # A PARAPHRASED question shares no words with its answer ON PURPOSE: it is
+    # what a vector store is for, and the only thing this lexical count can say
+    # about it is 'ambiguous' - which it did for 33 of the wren dataset's 92
+    # questions (20 Oct 2026), nearly all the paraphrased ones, and the lint's
+    # errors stopped meaning 'fix the dataset'. Tagged `paraphrase`, or marked
+    # `lexical: false`, the question is noted and the count is not taken.
+    tags = {str(t) for t in (q.get("tags") or [])}
+    if "paraphrase" in tags or q.get("lexical") is False:
+        rep.notes.append(f"{label}: paraphrase - the query shares no words with its answer by design, "
+                         f"so lexical discriminability is not checked (a vector lane has to find it).")
+        return
+
     def _discriminability(ident: str, kind: str):
         """(query-term overlap of the expected doc, list of rival idents)."""
         hit = corpus.by_ident.get(ident)

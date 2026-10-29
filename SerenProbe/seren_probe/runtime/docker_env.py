@@ -1180,6 +1180,56 @@ def compose_down(work_dir, project_name: str) -> None:
         logger.warning("compose down: %s", e)
 
 
+class SpinUpError(RuntimeError):
+    """A spin-up that got as far as a pod and no further. The pod has been
+    taken down; `logs` is the tail of what its containers said."""
+
+    def __init__(self, message: str, logs: list[str] | None = None):
+        super().__init__(message)
+        self.logs = logs or []
+
+
+def compose_logs(work_dir, project_name: str, tail: int = 20) -> list[str]:
+    """The last `tail` lines the pod's containers wrote; [] when docker will
+    not say. Never raises."""
+    try:
+        raw = _run_docker("compose", "-p", project_name,
+                          "-f", str(Path(work_dir) / "docker-compose.yml"), "logs", "--tail", str(tail), timeout=30)
+        return raw.stdout.decode(errors="replace").strip().splitlines()[-tail:]
+    except Exception:
+        return []
+
+
+def find_pod_containers(project_name: str) -> list[dict]:
+    """Every container docker holds under a compose project name, running or
+    not, as [{name, state}] - found by the label compose stamps on them, so a
+    pod this process has no record of (a spin-up that failed before the
+    state was kept, a Probe that restarted) is still found. [] when docker
+    will not say. Never raises."""
+    try:
+        raw = _run_docker("ps", "-a", "--filter", f"label=com.docker.compose.project={project_name}",
+                          "--format", "{{.Names}}\t{{.State}}", timeout=30)
+    except Exception as e:
+        logger.warning("docker ps for %s: %s", project_name, e)
+        return []
+    out = []
+    for line in raw.stdout.decode(errors="replace").splitlines():
+        name, _, state = line.strip().partition("\t")
+        if name:
+            out.append({"name": name, "state": state or "?"})
+    return out
+
+
+def compose_down_project(project_name: str) -> None:
+    """Take down everything under a compose project NAME, with no compose
+    file: compose finds the containers by their project label. For a pod
+    whose work dir is gone or was never recorded. Never raises."""
+    try:
+        _run_docker("compose", "-p", project_name, "down", "--remove-orphans", timeout=300)
+    except Exception as e:
+        logger.warning("compose down %s (by name): %s", project_name, e)
+
+
 def compose_ps(work_dir, project_name: str) -> dict:
     """Best-effort liveness for the project's compose services. Returns
     {ok, running, total, services:[{name,state}]}. NEVER raises - on any docker
@@ -1232,14 +1282,19 @@ def spin_up_topology(topology, project_name: str = DEFAULT_CONTAINER_NAME,
     write_compose(emitted, work_dir)
     compose_up(work_dir, project_name, build=build)
     url_of = host_url_map(topology)
-    wait_for_topology_healthy(url_of, timeout=health_timeout)
-    logs: list[str] = []
     try:
-        raw = _run_docker("compose", "-p", project_name,
-                          "-f", str(work_dir / "docker-compose.yml"), "logs", "--tail", "20", timeout=30)
-        logs = raw.stdout.decode(errors="replace").strip().splitlines()[-20:]
-    except Exception:
-        pass
+        wait_for_topology_healthy(url_of, timeout=health_timeout)
+    except Exception as gate:
+        # The pod is up and a store never answered. Until 28 Oct 2026 this
+        # raised straight through: the route answered 500 before any state
+        # was kept, so nothing knew the containers existed, /docker/stop said
+        # 'Nothing running', and four containers held their ports until
+        # someone found them by their compose label (19 Oct). Now the logs
+        # are taken, the pod is taken down, and the error says both.
+        logs = compose_logs(work_dir, project_name, tail=40)
+        compose_down(work_dir, project_name)
+        raise SpinUpError(f"{gate}; the pod '{project_name}' was taken down again", logs=logs) from gate
+    logs = compose_logs(work_dir, project_name, tail=20)
     return TopologyEnvState(project_name=project_name, work_dir=str(work_dir), url_of=url_of,
                             loci=[n.name for n in topology.loci],
                             memory=[n.name for n in topology.memory],
