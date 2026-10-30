@@ -209,6 +209,32 @@ The boot config the container mounts **and** the live `/configure` a regrade swe
 
 ---
 
+## Which build of each store: `Versions:` and a node's own `Version:`
+
+`pip install seren-loci` inside a Dockerfile is a **cached layer**: publish a new version and rebuild, and Docker reuses the layer that installed the old one, because the instruction text never changed. You then grade a build you think you upgraded and didn't. A top-level `Versions:` pins the package per kind, busts the cache, and is written into every run's ledger record. A bare number is an exact pin (`5.2.0` → `==5.2.0`); an operator is kept as written (`>=5.2`).
+
+A node may carry its own `Version:`, which wins over its kind's pin. The version is part of the image signature, so two nodes at two versions build two images and share nothing — which is how **one run grades a store at two versions side by side**, on the same seed and the same questions:
+
+```yaml
+Versions:
+  loci: 5.1.4                          # every Loci, unless it says otherwise
+  corpus: 1.4.0
+Loci:
+  LociCount: 2
+  LociConfigs:
+    - { Name: loci-514, Port: 7521 }                   # the kind pin
+    - { Name: loci-520, Port: 7522, Version: 5.2.0 }   # its own: a second image, a second column
+Corpus:
+  CorpusCount: 2
+  CorpusConfigs:
+    - { Name: scc-514, Port: 7527, Stores: [{ Store: loci-514 }] }
+    - { Name: scc-520, Port: 7528, Stores: [{ Store: loci-520 }] }
+```
+
+A changed pin is a changed structure (a new pod, not a hot swap), and the run record keeps both the kind pins and, under `versions.nodes`, each node's own — so a compare in the ledger says which build each column was.
+
+---
+
 ## What the numbers mean
 
 Every store gets the standard retrieval battery, computed at top-*k*:

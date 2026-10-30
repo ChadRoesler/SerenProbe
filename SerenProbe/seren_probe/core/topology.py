@@ -98,6 +98,22 @@ def _as_ref(val, label: str, errors: list[str]):
     return None
 
 
+def _version_spec(val, label: str, errors: list[str]) -> str:
+    """A pip version spec for a store's package. A bare '5.2.0' (or the YAML
+    number 5.4) means exactly that build: '==5.2.0'. One with an operator
+    ('>=5.2', '~=5.4.0') is kept as written. Postel on the way in; the pin
+    that lands in the compose and the run record is always explicit."""
+    if val is None:
+        return ""
+    if isinstance(val, bool) or not isinstance(val, (str, int, float)):
+        errors.append(f"{label} must be a version ('5.2.0', '==5.2.0', '>=5.2'), got {type(val).__name__}.")
+        return ""
+    spec = str(val).strip()
+    if spec and spec[0] not in "=<>!~":
+        spec = "==" + spec
+    return spec
+
+
 class TopologyError(Exception):
     """Raised when a topology can't be trusted. Carries ALL errors at once
     (no fix-run-fix-run whack-a-mole) plus any warnings gathered so far."""
@@ -126,6 +142,10 @@ class ResolvedNode:
     # AND pushed to a running container on hot-swap, so "what it boots at" and "what it
     # is running" cannot drift apart without someone saying so.
     config: dict = field(default_factory=dict)  # the set this store is expected to ANSWER; None => DefaultQuestions
+    # This node's OWN package version pin ('==5.2.0'), winning over the kind-wide
+    # `Versions:` pin. Two nodes at two versions are two images and two columns:
+    # loci-514 beside loci-520 on one seed and one question set, apples to apples.
+    version: str = ""
 
 
 @dataclass
@@ -166,6 +186,7 @@ class ResolvedCorpus:
     # not all fourteen" is the difference between a coffee and an afternoon.
     config: dict = field(default_factory=dict)  # the knobs this corpus BOOTS at, from its `Config:` block
     regrades: list | None = None
+    version: str = ""                           # this corpus's own callosum pin; wins over Versions: corpus
 
 
 @dataclass
@@ -226,6 +247,7 @@ class _Pending:
     live_url: str | None = None
     questions_ref: str | list | None = None
     node_config: dict | None = None   # Loci/Memory per-node Config (partial service yaml)
+    version: str = ""                 # the node's own Version: pin, normalised
 
 
 def _deep_merge(base: dict, over: dict) -> dict:
@@ -307,6 +329,9 @@ def _parse_section(pc: dict, section: str, count_key: str, cfg_key: str,
             else:
                 warnings.append(f"{section}: flag {fl!r} isn't valid for {section} "
                                 f"(valid: {sorted(VALID_FLAGS[short])}) - ignoring it on {name!r}.")
+        # A node's own package version. The kind-wide `Versions:` pin gives every
+        # Loci the same build; this is how ONE run grades 5.1.4 beside 5.2.0.
+        version = _version_spec(entry.get("Version"), f"{section}: node {name!r} Version", errors)
 
         # data plumbing: Seed + NegativeTest are per-store on Loci/Memory; a
         # corpus has neither (it fans already-seeded stores).
@@ -353,7 +378,7 @@ def _parse_section(pc: dict, section: str, count_key: str, cfg_key: str,
         pend.append(_Pending(name=name, port=port, flags=flags, generated=False,
                              stores=entry.get("Stores") if is_corpus else None, idx=i,
                              seed_ref=seed_ref, negative_test=negative_test, live_url=live_url,
-                             questions_ref=questions_ref, node_config=node_config))
+                             questions_ref=questions_ref, node_config=node_config, version=version))
 
     # Pass 1: bounds  Count-1 <= len <= Count
     if count is not None:
@@ -571,10 +596,7 @@ def compile_topology(probe_config: dict) -> CompiledTopology:
             if k not in ("loci", "memory", "corpus"):
                 warnings.append(f"Versions: unknown kind {kind!r} - ignoring (use loci/memory/corpus).")
                 continue
-            spec = str(spec).strip()
-            if spec and spec[0] not in "=<>!~":
-                spec = "==" + spec          # bare '1.4.0' -> '==1.4.0'; lenient parse, Postel
-            versions[k] = spec
+            versions[k] = _version_spec(spec, f"Versions: {kind}", errors)   # bare '1.4.0' -> '==1.4.0'
     elif versions_raw:
         warnings.append("Versions: must be a mapping of kind -> version spec - ignoring.")
     default_loci_seed = _as_ref(pc.get("DefaultLociSeed"), "DefaultLociSeed", errors)
@@ -696,10 +718,12 @@ def compile_topology(probe_config: dict) -> CompiledTopology:
     # container boots on its installed defaults.
     loci = [ResolvedNode(p.name, KIND["loci"], p.port, p.flags, p.generated, p.seed_ref,
                          p.negative_test, p.live_url, p.questions_ref,
-                         config=_deep_merge(loci_default_cfg, p.node_config or {})) for p in loci_p]
+                         config=_deep_merge(loci_default_cfg, p.node_config or {}), version=p.version)
+            for p in loci_p]
     memory = [ResolvedNode(p.name, KIND["memory"], p.port, p.flags, p.generated, p.seed_ref,
                            p.negative_test, p.live_url, p.questions_ref,
-                           config=_deep_merge(mem_default_cfg, p.node_config or {})) for p in mem_p]
+                           config=_deep_merge(mem_default_cfg, p.node_config or {}), version=p.version)
+              for p in mem_p]
     name_kind = {n.name: n.kind for n in loci + memory}
     corpus_names = {p.name for p in corp_p}
     negative_names = {n.name for n in loci + memory if n.negative_test}
@@ -714,7 +738,7 @@ def compile_topology(probe_config: dict) -> CompiledTopology:
         merged_cfg = {**corpus_default_config, **(per_corpus_config.get(p.name) or {})}
         rc = ResolvedCorpus(name=p.name, port=p.port, flags=p.flags,
                             questions_ref=p.questions_ref,
-                            config=merged_cfg,
+                            config=merged_cfg, version=p.version,
                             # regrades .get() -> None when the key was absent, which is
                             # exactly the INHERIT signal regrade_live.sets_for_corpus wants.
                             regrades=per_corpus_regrades.get(p.name))
@@ -882,11 +906,24 @@ def structure_signature(topo: CompiledTopology) -> tuple:
     """
     def node(n):
         return (n.name, n.port, n.kind, tuple(sorted(n.flags)), bool(n.negative_test),
-                n.live_url or "")
+                n.live_url or "", getattr(n, "version", "") or "")
     return (
         tuple(node(n) for n in topo.loci),
         tuple(node(n) for n in topo.memory),
         tuple((c.name, c.port, tuple(sorted(s.name for s in c.stores)),
-               tuple(sorted(c.flags))) for c in topo.corpus),
+               tuple(sorted(c.flags)), getattr(c, "version", "") or "") for c in topo.corpus),
         tuple(sorted((getattr(topo, "versions", None) or {}).items())),
     )
+
+
+def pinned_versions(topo: CompiledTopology) -> dict:
+    """What a run's record keeps of the pins: the kind-wide `Versions:`, and
+    under `nodes` every node that pinned its own. Memory 5.3 and 5.4 are
+    different experiments, and a record that said only "memory: ==5.4" could
+    not tell two Memory nodes at two versions apart. Empty when nothing is
+    pinned - then the record says what it always said: whatever pip resolved."""
+    out = dict(getattr(topo, "versions", None) or {})
+    nodes = {n.name: n.version for n in topo.loci + topo.memory + topo.corpus if getattr(n, "version", "")}
+    if nodes:
+        out["nodes"] = nodes
+    return out

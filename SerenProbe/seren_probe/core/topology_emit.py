@@ -273,8 +273,10 @@ def _node_service(n: ResolvedNode, embedder: str, image_overrides: dict,
     if volumes:
         svc["volumes"] = volumes
     kind_key = "loci" if n.kind == "seren_loci" else "memory"
+    # The node's own pin wins over the kind-wide one: the version is in the image
+    # signature, so loci-514 and loci-520 build two images and share nothing.
     svc.update(_build_or_image(n.kind, n.flags, image_overrides, n.name,
-                               (versions or {}).get(kind_key, ""), claimed))
+                               getattr(n, "version", "") or (versions or {}).get(kind_key, ""), claimed))
     return n.name, svc, config_file
 
 
@@ -315,7 +317,7 @@ def _corpus_service(c: ResolvedCorpus, image_overrides: dict,
         "healthcheck": _healthcheck(c.port),
     }
     svc.update(_build_or_image("corpus", c.flags, image_overrides, c.name,
-                               (versions or {}).get("corpus", ""), claimed))
+                               getattr(c, "version", "") or (versions or {}).get("corpus", ""), claimed))
     return c.name, svc
 
 

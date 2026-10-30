@@ -219,11 +219,12 @@ async def run_topology_eval(state, body: dict | None = None) -> dict:
     # the row they came from (restored results included).
     try:
         from . import ledger
+        from ..core.topology import pinned_versions
         rec = ledger.record_run("eval", results, project_name=ts.get("project_name", ""),
                                 fingerprint=fp, seeded_at=ts.get("seeded_at", ""), question_hash=qh,
                                 config_name=ts.get("config_name"), bundle=ts.get("bundle"),
                                 config_edited=bool(ts.get("config_edited")),
-                                versions=getattr(topo, "versions", None), started_at=started_at)
+                                versions=pinned_versions(topo), started_at=started_at)
         if rec:
             results = {**results, "run_id": rec["id"]}
             state.eval_results = results

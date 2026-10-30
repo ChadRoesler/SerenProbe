@@ -38,6 +38,21 @@ ProbeConfig:
   DefaultLociSeed:   examples/meridian.loci.yaml
   DefaultMemorySeed: examples/meridian.memory.yaml
 
+  # ── Which build of each store ──────────────────────────────────────────
+  # Pin the package version per kind, else pip resolves the newest - and a
+  # rebuild at the same instruction text reuses Docker's cached pip layer, so
+  # an unpinned run can grade a build you think you upgraded and didn't. A
+  # bare number is an exact pin (==5.2.0); an operator is kept (>=5.2).
+  # A node's own `Version:` wins over its kind's pin, so ONE run can grade a
+  # store at two versions side by side on the same seed and questions:
+  #   LociConfigs:
+  #     - { Name: loci-514, Port: 7521 }                   # Versions: loci
+  #     - { Name: loci-520, Port: 7522, Version: 5.2.0 }   # its own
+  # Versions:
+  #   loci: 5.1.4
+  #   memory: 5.4.0
+  #   corpus: 1.4.0
+
   # ── The episodic "right brain" (three-tier vector store) ───────────────
   Memory:
     MemoryCount: 1

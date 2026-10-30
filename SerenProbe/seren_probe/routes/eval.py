@@ -794,14 +794,14 @@ async def run_regrade(request: Request):
     # and compares on the same screen.
     try:
         from ..runtime import ledger
-        from ..core.topology import topology_fingerprint
+        from ..core.topology import pinned_versions, topology_fingerprint
         from ..runtime import regrade as _rg
         rec = ledger.record_run("regrade", results if isinstance(results, dict) else {"sweep": results},
                                 project_name=ts.get("project_name", ""),
                                 fingerprint=topology_fingerprint(topo), seeded_at=ts.get("seeded_at", ""),
                                 question_hash=_rg.corpus_question_hash(ei.questions),
                                 config_name=ts.get("config_name"), bundle=ts.get("bundle"),
-                                versions=getattr(topo, "versions", None), started_at=_started_at,
+                                versions=pinned_versions(topo), started_at=_started_at,
                                 knobs={"mode": str(body.get("mode", "auto")).lower()},
                                 config_edited=bool(ts.get("config_edited")))
         if rec and isinstance(results, dict):
