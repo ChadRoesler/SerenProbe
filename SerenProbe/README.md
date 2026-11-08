@@ -193,7 +193,7 @@ per-store  Floor:/Weight:  (on the Stores entry)
 Corpus:
   CorpusCount: 1
   DefaultConfig:                       # every corpus inherits these
-    authority_margin: 0.035
+    min_per_store: 2
     loci_floor: 0.5                    # all loci members, unless overridden
   CorpusConfigs:
     - Name: big-scc

@@ -34,7 +34,7 @@ REGRADE_KNOBS: dict[str, type] = {
     # memory members independently of its loci members (loci answer facts, memory
     # answers episodes - they don't want the same floor).
     "mem_weight": float, "mem_floor": float,
-    "authority_margin": float, "min_per_store": int, "fusion_mode": str,
+    "min_per_store": int, "fusion_mode": str,
     "n_results": int, "fetch_multiplier": int,
     # Per-store fan timeout. The SCC drops a store that doesn't answer within this and
     # returns a 200 with a sparse docket - so a wide cold fan (All-scc: 22 vector stores
@@ -459,7 +459,7 @@ def _parse_regrades(raw, errors: list[str], warnings: list[str]) -> list[Regrade
 # gets swept at another, and nothing anywhere would say so.
 FED_FIELD: dict[str, str] = {
     "rrf_k": "k", "n_results": "n_results", "fetch_multiplier": "fetch_multiplier",
-    "authority_margin": "authority_margin", "min_per_store": "min_per_store",
+    "min_per_store": "min_per_store",
     "fusion_mode": "fusion_mode", "per_store_timeout_s": "per_store_timeout_s",
     "hops": "hops", "hop_terms": "hop_terms", "hop_budget": "hop_budget",
     "edges_enabled": "edges_enabled", "edge_budget": "edge_budget",

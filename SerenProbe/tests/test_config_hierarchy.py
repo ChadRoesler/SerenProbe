@@ -58,9 +58,9 @@ def test_mem_floor_is_independent_of_loci_floor():
 # ── the emit boundary: only-what's-set, no hardcoded 0.0 ─────────────────────
 
 def test_emit_omits_unset_floor_and_carries_federation_knobs():
-    topo = compile_topology(_pc(corpus_default={"authority_margin": 0.035, "loci_floor": 0.5}))
+    topo = compile_topology(_pc(corpus_default={"min_per_store": 2, "loci_floor": 0.5}))
     fed = emit_compose(topo).corpus_files["S.corpus.yaml"]["federation"]
-    assert fed["authority_margin"] == 0.035           # federation knob emitted
+    assert fed["min_per_store"] == 2                  # federation knob emitted
     by = {s["name"]: s for s in fed["stores"]}
     assert by["A-loci"]["floor"] == 0.5
     assert "floor" not in by["A-mem"]                 # unspecified -> OMITTED, not 0.0

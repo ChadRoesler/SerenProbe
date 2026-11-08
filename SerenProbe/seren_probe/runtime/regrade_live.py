@@ -58,11 +58,11 @@ _METRICS = ("ndcg", "docket_coverage", "docket_density", "recall",
 
 # our CorpusRegrades knob name -> how it lands on SCC's /configure. Federation
 # knobs go top-level; loci_weight/loci_floor are PER-STORE overrides on the loci
-# store. (fusion_mode/authority_margin/min_per_store/fetch_multiplier are settable
+# store. (fusion_mode/min_per_store/fetch_multiplier are settable
 # but NOT read back by GET /stores - the default sets avoid them so restore stays
 # exact; a custom set using them gets a best-effort restore + a note.)
 _FED_KNOB = {"rrf_k": "k", "n_results": "n_results", "fetch_multiplier": "fetch_multiplier",
-             "authority_margin": "authority_margin", "min_per_store": "min_per_store",
+             "min_per_store": "min_per_store",
              "fusion_mode": "fusion_mode", "per_store_timeout_s": "per_store_timeout_s",
              # Multi-hop. MUST be mapped here or configure_payload silently DROPS it,
              # sends an empty body, and every combo scores identically - the exact
@@ -363,7 +363,7 @@ def _regrade_one_corpus(corpus, scc_url: str, corpus_qs: list, regrades: list,
     if captured:
         baseline_cfg["stores"] = captured
     # DEPLOYED CONFIG for the knobs /configure accepts but GET /stores can't read back
-    # (authority_margin, fusion_mode, min_per_store, fetch_multiplier). Fold them into
+    # (fusion_mode, min_per_store, fetch_multiplier). Fold them into
     # baseline_cfg from this corpus's EMITTED Config so (a) the 'current' row measures
     # what you shipped instead of FederationConfig defaults, and (b) every combo RESETS
     # them -- full_config_body starts from baseline_cfg, and a knob absent from it leaks
@@ -372,7 +372,7 @@ def _regrade_one_corpus(corpus, scc_url: str, corpus_qs: list, regrades: list,
     # only fills the four /stores is blind to.
     deployed = dict(getattr(corpus, "config", {}) or {})
     _hidden_params: dict = {}
-    for _knob in ("authority_margin", "fusion_mode", "min_per_store", "fetch_multiplier"):
+    for _knob in ("fusion_mode", "min_per_store", "fetch_multiplier"):
         if _knob in deployed:
             baseline_cfg[_FED_KNOB[_knob]] = deployed[_knob]
             _hidden_params[_knob] = deployed[_knob]

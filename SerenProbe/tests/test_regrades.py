@@ -11,10 +11,18 @@ def _cfg(regrades):
         "Memory": {"MemoryCount": 1, "MemoryConfigs": [{"Name": "m", "Port": 7425}]}}}
 
 
+def test_the_removed_authority_knob_is_warned_about_and_not_swept():
+    # authority_margin left with the Callosum knob on 7 Nov 2026; an old config
+    # naming it gets the unknown-knob warning and sweeps the defaults, not a crash.
+    t = compile_topology(_cfg([{"Name": "old", "authority_margin": [0.1]}]))
+    assert any("authority_margin" in w for w in t.warnings)
+    assert t.corpus_regrades[0].overrides == {}
+
+
 def test_valid_regrades_parse_with_defaults():
     t = compile_topology(_cfg([
         {"Name": "baseline"},
-        {"Name": "tight", "loci_floor": [0.3], "authority_margin": [0.1]},
+        {"Name": "tight", "loci_floor": [0.3], "min_per_store": [2]},
         {"Name": "big", "n_results": [20, 30], "fetch_multiplier": [3]},
     ]))
     assert t.warnings == []

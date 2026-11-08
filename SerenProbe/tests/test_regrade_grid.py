@@ -40,15 +40,15 @@ def test_empty_overrides_is_full_grid():
 
 
 def test_override_narrows_named_knobs_only():
-    g = build_grid({"loci_floor": [0.3], "authority_margin": [0.1]})
+    g = build_grid({"loci_floor": [0.3], "min_per_store": [2]})
     assert g["loci_floor"] == [0.3]
-    assert g["authority_margin"] == [0.1]
+    assert g["min_per_store"] == [2]
     assert g["rrf_k"] == DEFAULT_GRID["rrf_k"]           # untouched knob keeps default
 
 
 def test_override_shrinks_combo_count():
     full = _ncombos(DEFAULT_GRID)
-    narrowed = _ncombos(build_grid({"loci_floor": [0.3], "authority_margin": [0.1]}))
+    narrowed = _ncombos(build_grid({"loci_floor": [0.3], "min_per_store": [2]}))
     assert narrowed < full
 
 

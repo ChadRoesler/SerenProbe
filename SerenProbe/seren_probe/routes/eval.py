@@ -618,7 +618,7 @@ async def run_regrade(request: Request):
         #             Seconds instead of hours, same fusion code, same hits.
         #
         # Capture-replay is faithful for every knob that only RE-FUSES candidates the
-        # stores already returned: rrf_k, loci_weight, loci_floor, authority_margin,
+        # stores already returned: rrf_k, loci_weight, loci_floor,
         # min_per_store, fusion_mode, and n_results/fetch_multiplier up to capture_n.
         # It CANNOT reproduce hops/edges -- the /by_topic call depends on the regraded
         # packet's own ids and centre topics, so it is packet-coupled and a single

@@ -3,7 +3,7 @@ seren_probe.regrade
 =================
 Capture-once / regrade-many SCC tuning.
 
-The fusion knobs - RRF k, per-store weight, per-store floor, authority_margin,
+The fusion knobs - RRF k, per-store weight, per-store floor,
 min_per_store, fusion_mode - ALL operate on the candidates the stores already
 returned. The stores hand back the same hits no matter how you fuse them. So we
 query each store ONCE per query, freeze the raw responses (the "trace"), and then
@@ -123,7 +123,8 @@ def _require_scc() -> None:
 RRF_KS            = [30, 60, 100]
 LOCI_WEIGHTS      = [0.3, 0.5, 0.7, 1.0]
 LOCI_FLOORS       = [0.0, 0.1, 0.3]
-AUTHORITY_MARGINS = [0.0, 0.035, 0.1]   # 0.0 = authority promotion off
+# authority_margin left the grid on 7 Nov 2026 with the Callosum knob itself: 1,152
+# combinations on five corpora never moved a packet, so it is not a knob any more.
 MIN_PER_STORES    = [0, 1, 2]           # 0 = pure top-n (no diversity floor)
 FUSION_MODES      = ["rrf"]             # add "rrf_pct"/"percentile" to sweep N-store modes
 # Packet-size + candidate-pool: the ONLY levers that move docket_coverage. The
@@ -145,12 +146,12 @@ EVAL_K    = 10      # metric depth (top-k) - FIXED across the n_results sweep so
 # REGRADE_KNOBS in topology.py - keep the three in sync).
 DEFAULT_GRID: dict[str, list] = {
     "rrf_k": RRF_KS, "loci_weight": LOCI_WEIGHTS, "loci_floor": LOCI_FLOORS,
-    "authority_margin": AUTHORITY_MARGINS, "min_per_store": MIN_PER_STORES,
+    "min_per_store": MIN_PER_STORES,
     "fusion_mode": FUSION_MODES, "n_results": N_RESULTS_GRID,
     "fetch_multiplier": FETCH_MULTIPLIERS,
 }
 # the product order sweep() unpacks - MUST match the tuple unpacking in its loop
-_GRID_ORDER = ["rrf_k", "loci_weight", "loci_floor", "authority_margin",
+_GRID_ORDER = ["rrf_k", "loci_weight", "loci_floor",
                "min_per_store", "fusion_mode", "n_results", "fetch_multiplier"]
 
 
@@ -262,7 +263,7 @@ def edges_off() -> dict:
 
 
 def build_fed_config(base_stores: list[StoreConfig], *, rrf_k: int,
-                     loci_weight: float, loci_floor: float, authority: float,
+                     loci_weight: float, loci_floor: float,
                      min_per_store: int, fusion_mode: str,
                      n_results: int, fetch_multiplier: int) -> FederationConfig:
     """A FederationConfig for one grid point. Memory stays weight 1.0 / floor 0.0
@@ -280,7 +281,7 @@ def build_fed_config(base_stores: list[StoreConfig], *, rrf_k: int,
     return FederationConfig(
         stores=stores, k=rrf_k, n_results=n_results,
         fetch_multiplier=fetch_multiplier,
-        fusion_mode=fusion_mode, authority_margin=authority,
+        fusion_mode=fusion_mode,
         min_per_store=min_per_store, **edges_off(),
     )
 
@@ -329,15 +330,15 @@ async def sweep(capture, base_stores: list[StoreConfig], queries,
     combos = list(itertools.product(*(g[k] for k in _GRID_ORDER)))
     rows: list[dict] = []
     total_misses = 0
-    for rrf_k, w, fl, auth, mps, mode, n_res, fmult in combos:
+    for rrf_k, w, fl, mps, mode, n_res, fmult in combos:
         cfg = build_fed_config(
             base_stores, rrf_k=rrf_k, loci_weight=w, loci_floor=fl,
-            authority=auth, min_per_store=mps, fusion_mode=mode,
+            min_per_store=mps, fusion_mode=mode,
             n_results=n_res, fetch_multiplier=fmult)
         agg, misses = await regrade_one(capture, cfg, queries, eval_k)
         total_misses += misses
         agg["params"] = {"rrf_k": rrf_k, "weight": w, "floor": fl,
-                         "authority_margin": auth, "min_per_store": mps,
+                         "min_per_store": mps,
                          "fusion_mode": mode, "n_results": n_res,
                          "fetch_mult": fmult}
         rows.append(agg)
@@ -448,7 +449,7 @@ async def _regrade_one_corpus_async(corpus, base_stores: list[StoreConfig], rqs,
     PARITY WITH THE LIVE ENGINE IS THE CONTRACT. This used to sweep build_grid(),
     which keeps the FULL default sweep for every knob a set does not name -- so
     `weight-sweep`, naming loci_weight with 8 values, expanded to rrf_k(3) x
-    weight(8) x floor(3) x authority(3) x min_per_store(3) x n_results(4) x
+    weight(8) x floor(3) x min_per_store(3) x n_results(4) x
     fetch_mult(2) = 5,184 combos. The live engine runs the SAME set as 8. Two
     engines answering different questions is worse than one slow engine, and it is
     invisible -- both produce a full, confident table.
@@ -459,8 +460,8 @@ async def _regrade_one_corpus_async(corpus, base_stores: list[StoreConfig], rqs,
     reference point, comparable deltas.
 
     CAVEAT, named because it cannot be fixed from here: GET /stores exposes k,
-    n_results, per-store weight/floor and the hop knobs -- NOT authority_margin,
-    min_per_store, fusion_mode or fetch_multiplier. The live engine cannot reset
+    n_results, per-store weight/floor and the hop knobs -- NOT min_per_store,
+    fusion_mode or fetch_multiplier. The live engine cannot reset
     those either (its baseline_cfg has no field for them), so both leave them
     wherever the container sits; here that means SCC's FederationConfig defaults.
     A set that sweeps one of those is still measured correctly -- every combo sets
@@ -495,8 +496,8 @@ async def _regrade_one_corpus_async(corpus, base_stores: list[StoreConfig], rqs,
             logger.warning("could not read %s/stores for baseline, using defaults: %s",
                            scc_url, exc)
 
-    # DEPLOYED CONFIG IS AUTHORITATIVE for the four knobs GET /stores cannot read
-    # back (authority_margin, fusion_mode, min_per_store, fetch_multiplier). The probe
+    # DEPLOYED CONFIG IS AUTHORITATIVE for the three knobs GET /stores cannot read
+    # back (fusion_mode, min_per_store, fetch_multiplier). The probe
     # EMITTED this corpus's Config, so it -- not FederationConfig's constructor
     # defaults -- is what the 'current' baseline and every unnamed-knob combo should
     # sit at. Without this the baseline measured a config you never shipped: observed
@@ -512,7 +513,7 @@ async def _regrade_one_corpus_async(corpus, base_stores: list[StoreConfig], rqs,
     ref_mem_w = deployed.get("mem_weight", cur_mem_weight)
     ref_mem_f = deployed.get("mem_floor", cur_mem_floor)
     ref_extra = {kb: deployed[kb] for kb in
-                 ("authority_margin", "min_per_store", "fusion_mode", "fetch_multiplier")
+                 ("min_per_store", "fusion_mode", "fetch_multiplier")
                  if kb in deployed}
 
     async with sem:
@@ -555,8 +556,7 @@ async def _regrade_one_corpus_async(corpus, base_stores: list[StoreConfig], rqs,
         # Combo-named wins; else the DEPLOYED value (ref_extra); else omitted so
         # FederationConfig supplies its own default. This is what makes the baseline
         # and every unnamed-knob combo reflect the running deployment.
-        for knob in ("authority_margin", "min_per_store", "fusion_mode",
-                     "fetch_multiplier"):
+        for knob in ("min_per_store", "fusion_mode", "fetch_multiplier"):
             if knob in combo:
                 kwargs[knob] = combo[knob]
             elif knob in ref_extra:

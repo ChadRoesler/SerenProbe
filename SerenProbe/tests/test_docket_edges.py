@@ -156,7 +156,7 @@ def test_the_capture_replay_hangs_no_edges_on_its_packet():
            "surroundings": {"satellites": 1, "recent": [{"id": "s1", "content": "the fire burned the great hall",
                                                          "created_at": 1.0}]}}
     cfg = build_fed_config([StoreConfig(name="m", type="seren_memory", url=url)], rrf_k=60, loci_weight=1.0,
-                           loci_floor=0.0, authority=0.0, min_per_store=0, fusion_mode="rrf",
+                           loci_floor=0.0, min_per_store=0, fusion_mode="rrf",
                            n_results=10, fetch_multiplier=1)
     assert cfg.satellite_edges_enabled is False and cfg.edges_enabled is False
     q = SimpleNamespace(query="seat", expected_content=["Blackmere", "great hall"], expected_ids=[])
