@@ -194,3 +194,48 @@ def test_backward_compat_no_new_fields():
     assert t.loci[0].seed_ref is None and t.loci[0].negative_test is False
     assert t.loci[0].questions_ref is None and t.corpus[0].questions_ref is None
     assert t.warnings == []
+
+
+# ── Standalone: a store scored on its own on purpose ──────────────────
+# worldgen's Loci-shape A/B (the same claims atomic and fat, vector and floor) is
+# four Loci no corpus may fan: duplicate world facts and ballast would blur the fan.
+# Until 23 Nov 2026 the only sanctioned loner was a NegativeTest decoy, so every
+# shape store drew "reference it or drop it".
+
+def _solo(shape_entry: dict, corpus_count: int = 1, extra_stores: list | None = None):
+    return _wrap({
+        "StartingPort": 7520,   # a generated catch-all needs a floor to allocate its port from
+        "Loci": {"LociCount": 3, "LociConfigs": [
+            {"Name": "L", "Port": 7521}, {"Name": "shape", "Port": 7522, **shape_entry},
+            {"Name": "loner", "Port": 7523}]},
+        "Memory": {"MemoryCount": 1, "MemoryConfigs": [{"Name": "m", "Port": 7525}]},
+        "Corpus": {"CorpusCount": corpus_count, "CorpusConfigs": [
+            {"Name": "c", "Port": 7527, "Stores": [{"Store": "L"}, {"Store": "m"}, *(extra_stores or [])]}]},
+    })
+
+
+def test_standalone_store_sits_out_without_a_warning():
+    t = compile_topology(_solo({"Standalone": True}))
+    by = {n.name: n for n in t.loci}
+    assert by["shape"].standalone is True and by["L"].standalone is False
+    assert not any("'shape'" in w for w in t.warnings)
+    assert any("'loner'" in w and "Standalone: true" in w for w in t.warnings), \
+        "an unmarked loner still warns, and the warning names the way to say it's on purpose"
+
+
+def test_standalone_stays_out_of_the_catch_all():
+    t = compile_topology(_solo({"Standalone": True}, corpus_count=2))
+    [catch] = [c for c in t.corpus if c.is_catchall]
+    fanned = {s.name for s in catch.stores}
+    assert "loner" in fanned and "shape" not in fanned
+
+
+def test_a_standalone_store_a_corpus_fans_is_warned_about():
+    t = compile_topology(_solo({"Standalone": True}, extra_stores=[{"Store": "shape"}]))
+    assert any("'shape' is marked Standalone but a corpus fans it" in w for w in t.warnings)
+
+
+def test_standalone_must_be_true_or_false():
+    with pytest.raises(TopologyError) as e:
+        compile_topology(_solo({"Standalone": "yes"}))
+    assert any("Standalone must be true/false" in err for err in e.value.errors)

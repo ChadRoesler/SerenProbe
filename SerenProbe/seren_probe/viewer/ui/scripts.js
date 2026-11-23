@@ -196,6 +196,7 @@ function lazyLoad(id) {
   else if (id === 'docker') { refreshDocker(); refreshDockerConfig(); }
   else if (id === 'config') refreshConfig();
   else if (id === 'runs') refreshRuns();
+  else if (id === 'keys') refreshKeys();
 }
 
 // ── Eval ────────────────────────────────────────────────────────────
@@ -1774,6 +1775,7 @@ document.addEventListener('DOMContentLoaded', function() {
       else if (target === 'docker') { refreshDocker(); refreshDockerConfig(); }
       else if (target === 'config') refreshConfig();
       else if (target === 'runs') refreshRuns();
+      else if (target === 'keys') refreshKeys();
     });
   });
 
@@ -1827,6 +1829,7 @@ function reload() {
   else if (open === 'docker') { refreshDocker(); refreshDockerConfig(); }
   else if (open === 'config') refreshConfig();
   else if (open === 'runs') refreshRuns();
+  else if (open === 'keys') refreshKeys();
 }
 
 async function offerAdoption() {
@@ -1958,6 +1961,102 @@ async function refreshBundles() {
     html += '</table>';
   }
   host.innerHTML = html;
+}
+
+// ── Keys - for outside models (23 Nov 2026) ─────────────────────────
+// WRITE-ONLY. A key is pasted, sent, and wiped from the page; nothing Probe answers
+// carries a value back, so nothing here could show one. The table lists where each
+// key lives and an 8-hex fingerprint (sha256 prefix) to tell two keys apart.
+const KEY_NAME_RE = /^[a-z0-9][a-z0-9._-]{0,63}$/;
+
+async function refreshKeys() {
+  const host = document.getElementById('keys-body');
+  if (!host) return;
+  let rows;
+  try {
+    rows = (await api('/keys')).keys || [];
+  } catch (e) {
+    host.innerHTML = `<div class="empty">Error: ${escapeHtml(e.message || e)}</div>`;
+    return;
+  }
+  const sum = document.getElementById('keys-summary');
+  if (sum) sum.textContent = `${rows.filter(r => r.set).length} held`;
+  let html = '<div class="note"><span class="label">write-only:</span> a key goes in and is never shown again, here or anywhere. '
+           + 'Runs use a key by its name; the fingerprint tells two apart. A key named in seren-probe.yaml '
+           + '(<code>keys: NAME: {key_env: VAR}</code>) is read-only here. No key ever travels in a bundle.</div>';
+  // the form sits in the panel's gutter, as the note above it and the table below do
+  html += '<div class="keys-form"><div class="ctrls-row">'
+        + '<input type="text" id="key-name" placeholder="name, e.g. anthropic" autocomplete="off" spellcheck="false"/>'
+        + '<input type="password" id="key-value" placeholder="paste the key" autocomplete="new-password" spellcheck="false"/>'
+        + '<input type="text" id="key-note" placeholder="note (optional)" autocomplete="off"/>'
+        + '<button class="btn" onclick="saveKey()">Hold key</button>'
+        + '</div>'
+        + '<div class="config-save-result" id="key-result"></div></div>';
+  if (!rows.length) {
+    html += '<div class="empty">no keys held yet</div>';
+  } else {
+    html += '<table class="store-table"><tr><th>Name</th><th>Lives in</th><th>Set</th><th>Fingerprint</th><th>Note</th><th></th></tr>';
+    for (const r of rows) {
+      const where = r.source === 'config'
+        ? `seren-probe.yaml · ${escapeHtml(r.via)}` + (r.pointer && r.via !== 'inline' ? ` <span class="mono">${escapeHtml(r.pointer)}</span>` : '')
+        : 'Probe’s key file';
+      const set = !r.set ? '<span class="muted">not set</span>'
+        : (r.set_at ? escapeHtml(String(r.set_at).replace('T', ' ').slice(0, 16)) : 'yes');
+      html += `<tr><td><b>${escapeHtml(r.name)}</b>`
+            + (r.shadowed ? ' <span class="muted" title="seren-probe.yaml names the same key; the yaml’s is the one used">(shadowed)</span>' : '') + '</td>'
+            + `<td class="muted">${where}</td><td class="nowrap">${set}</td>`
+            + `<td class="mono">${escapeHtml(r.fingerprint || '-')}</td><td class="muted">${escapeHtml(r.note || '')}</td>`
+            + (r.editable
+              ? `<td><button class="btn-sm icon-btn danger" onclick="deleteKey('${escapeHtml(r.name)}')" title="Let go of this key" aria-label="Let go of ${escapeHtml(r.name)}">${_icon('trash')}</button></td>`
+              : '<td></td>')
+            + '</tr>';
+    }
+    html += '</table>';
+  }
+  host.innerHTML = html;
+}
+
+async function saveKey() {
+  const nameEl = document.getElementById('key-name');
+  const valueEl = document.getElementById('key-value');
+  const noteEl = document.getElementById('key-note');
+  const result = document.getElementById('key-result');
+  const name = (nameEl.value || '').trim();
+  if (!KEY_NAME_RE.test(name)) {
+    setResult(result, 'err', 'a key name is 1-64 characters of a-z, 0-9, ".", "_" or "-"');
+    return;
+  }
+  if (!valueEl.value.trim()) { setResult(result, 'err', 'paste the key first'); return; }
+  const body = JSON.stringify({ value: valueEl.value, note: (noteEl.value || '').trim() });
+  valueEl.value = '';   // out of the page the moment it is on its way
+  let msg, ok = false;
+  try {
+    const resp = await authFetch('/keys/' + encodeURIComponent(name), {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' }, body });
+    const data = await resp.json().catch(() => ({}));
+    ok = resp.ok;
+    msg = ok ? `✓ holding ${data.key.name} (fingerprint ${data.key.fingerprint})`
+             : '✗ ' + (typeof data.detail === 'string' ? data.detail : `HTTP ${resp.status}`) + ' - paste the key again';
+  } catch (e) {
+    msg = '✗ ' + (e.message || e) + ' - paste the key again';
+  }
+  if (ok) await refreshKeys();
+  setResult(document.getElementById('key-result'), ok ? 'ok' : 'err', msg);
+}
+
+async function deleteKey(name) {
+  if (!confirm(`Let go of the key ${name}? A run that names it can't use it until it is held again.`)) return;
+  let msg, ok = false;
+  try {
+    const resp = await authFetch('/keys/' + encodeURIComponent(name), { method: 'DELETE' });
+    const data = await resp.json().catch(() => ({}));
+    ok = resp.ok;
+    msg = ok ? `✓ let go of ${name}` : '✗ ' + (typeof data.detail === 'string' ? data.detail : `HTTP ${resp.status}`);
+  } catch (e) {
+    msg = '✗ ' + (e.message || e);
+  }
+  await refreshKeys();
+  setResult(document.getElementById('key-result'), ok ? 'ok' : 'err', msg);
 }
 
 // The picker is the family's file field, in sight (25 Oct 2026); choosing a file shows

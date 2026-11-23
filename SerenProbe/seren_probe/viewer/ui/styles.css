@@ -1441,3 +1441,17 @@ tr.neg-leaked td:first-child {
 /* A result line that carries buttons (the bundle delete's ways out) wraps them
    under the text instead of running them into it. */
 .config-save-result .btn-sm { margin-top: 6px; }
+
+/* ── Keys tab (23 Nov 2026) ──────────────────────────────── */
+/* The form row and its result line sit in the panel's 14px gutter, as the note above
+   them and the table below do; lifted out of Config's padded sections into a tab of
+   their own, they had been flush against the panel's edge. */
+.keys-form {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border-soft);
+}
+    .keys-form .ctrls-row { margin-top: 0; flex-wrap: wrap; }
+    .keys-form .ctrls-row input { flex: 1 1 160px; min-width: 0; }
+    .keys-form .ctrls-row #key-value { flex-grow: 2; }
+    .keys-form .config-save-result:empty { display: none; }
+    .keys-form .config-save-result { margin-top: 8px; }

@@ -143,6 +143,8 @@ The **corpus** questions are where docket coverage earns its keep: give each *se
 
 **Negative (decoy) stores.** Mark a store `NegativeTest: true` and give it an unrelated `Seed`, and it's seeded with *only* that decoy — never the defaults — so you can prove a store *stays quiet* on questions it shouldn't answer. It's kept out of the catch-all, and the Eval tab reads it as ✓ *stayed quiet* / ✗ *leaked* instead of a bare zero.
 
+**Standalone stores.** A store no corpus fans normally draws a warning, because usually it was forgotten. Mark it `Standalone: true` when it's on its own *on purpose*, an A/B of the store itself (worldgen's atomic-vs-fat Loci shapes, each with the vector and on the floor), scored as its own column against its own `Questions`. It's kept out of the catch-all and the warning goes quiet; a corpus that fans it anyway is warned about instead.
+
 A complete, validated example ships in [`examples/`](examples/): `meridian.loci.yaml` + `meridian.memory.yaml` + `meridian.questions.yaml` — a small interlocking fictional stack with three multi-fact briefing questions — plus `unrelated.yaml`, an off-topic seed for a decoy store. The test suite loads them, so they cannot quietly stop being true. Point the ProbeConfig's `Default*Seed` / `DefaultQuestions` at them (or inline the content for a fully self-contained upload), then just `POST /eval/run` with an empty body.
 
 Validation is **compassion-first**, same as the compiler: an item with the wrong shape, a question with no way to score it, a negative store with no decoy — each fails loud and kind, all at once, naming the fix.
@@ -359,6 +361,60 @@ In the viewer, the **Runs** tab is this ledger: filter by kind and bundle, group
 by config (a group lends its latest run to A or B with one click, so before
 against after is two clicks and Compare), see a run's own numbers, compare two
 and copy the compare as markdown, throw a run away.
+
+## Keys for outside models
+
+Some runs need a key: a hosted model answering questions or judging answers, or
+a store in the pod that drafts with one. Probe holds keys **by name**, and
+nothing it answers ever carries a value back.
+
+A key comes from one of two places:
+
+- **`seren-probe.yaml`**, by pointer, resolved the way every bearer in the
+  family is (`seren_meninges.resolve_token`). Read-only from Probe's side.
+
+  ```yaml
+  keys:
+    anthropic:
+      key_env: ANTHROPIC_PROBE_KEY       # the NAME of an environment variable
+      # key_keyring: seren-probe/anthropic   (the OS keychain)
+      # key: <the key>                       (plaintext: keep the yaml chmod 600)
+      note: hosted answerers and the judge
+  ```
+
+- **Probe's key file**, `<state_dir>/keys.json` (mode 0600), filled from the
+  **Keys** tab or `PUT /keys/{name}` with `{"value": "...", "note": "..."}`.
+
+| route | what |
+|---|---|
+| `GET /keys` | every key: name, where it lives, set or not, an 8-hex fingerprint (sha256 prefix) to tell two apart. No values. |
+| `PUT /keys/{name}` | hold a key; replaces one held under that name. A name the yaml holds is refused (409). |
+| `DELETE /keys/{name}` | let a held key go. |
+
+A name in the yaml wins and can't be shadowed from here. A key is never logged,
+never in an error, never in a run record (a run names its key), and never in a
+bundle: the key file sits beside `datasets/`, and bundles are built from
+`datasets/` alone.
+
+**Handing a key to the pod.** Any node or corpus can ask for keys as
+environment variables, and a section can ask for all its nodes
+(`DefaultKeys:`, which a node's own `Keys:` lays over):
+
+```yaml
+Memory:
+  DefaultKeys: {ANTHROPIC_API_KEY: anthropic}
+  MemoryConfigs:
+    - Name: mem-hosted
+      Keys: {OPENAI_API_KEY: openai-probe}
+```
+
+The generated `docker-compose.yml` carries only an interpolation
+(`ANTHROPIC_API_KEY: ${SEREN_PROBE_KEY_ANTHROPIC}`), the way `HF_TOKEN` already
+travels. **Start** resolves every name before anything is written or started and
+hands the values to the `docker compose up` process alone; a key Probe doesn't
+hold refuses the start with a 400 naming it. `SEREN_*` and the variables Probe
+sets itself can't carry a key. The value does live in the running container's
+environment, where `docker inspect` can read it, as with any container env.
 
 ## Tuning the callosum without a hundred restarts
 

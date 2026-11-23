@@ -39,6 +39,7 @@ async def docker_start(request: Request):
     naming node/rule/fix, without a container ever starting)."""
     from ..core.topology import load_probe_config, TopologyError
     from ..runtime.docker_env import spin_up_topology
+    from ..runtime.keys import KeysError
 
     try:
         body = await request.json()
@@ -77,7 +78,12 @@ async def docker_start(request: Request):
         # request log keeps flowing, so a long build is VISIBLE instead of a freeze.
         env = await run_in_threadpool(
             spin_up_topology, topology, project_name=project, build=build,
-            image_overrides=image_overrides)
+            image_overrides=image_overrides, config=getattr(request.app.state, "config", None))
+    except KeysError as exc:
+        # A node asked for a key Probe doesn't hold. Refused before anything was
+        # written or started, so there is no pod to take down; the message names
+        # the key, never a value.
+        raise HTTPException(status_code=exc.status, detail={"stage": "keys", "error": str(exc)})
     except Exception as exc:
         logger.error("Topology spin-up failed: %s", exc)
         # A pod that came up and never answered its health gate has been taken

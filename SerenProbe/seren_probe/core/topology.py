@@ -18,6 +18,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from .keynames import parse_keys
+
 VALID_FLAGS: dict[str, set[str]] = {
     "loci":   {"vector", "mcp"},
     "memory": {"mcp"},
@@ -146,6 +148,14 @@ class ResolvedNode:
     # `Versions:` pin. Two nodes at two versions are two images and two columns:
     # loci-514 beside loci-520 on one seed and one question set, apples to apples.
     version: str = ""
+    # Keys the container is handed, ENV_VAR -> the name of a key Probe holds
+    # (section DefaultKeys with the node's own Keys over it). Names only; the
+    # emitter writes an interpolation and spin-up supplies the value (core/keynames.py).
+    keys: dict = field(default_factory=dict)
+    # Scored on its own ON PURPOSE (an A/B of the store itself, like worldgen's
+    # atomic-vs-fat Loci shapes): kept out of the catch-all, and its sitting out of
+    # every fan is not warned about. NegativeTest stands alone the same way.
+    standalone: bool = False
 
 
 @dataclass
@@ -187,6 +197,7 @@ class ResolvedCorpus:
     config: dict = field(default_factory=dict)  # the knobs this corpus BOOTS at, from its `Config:` block
     regrades: list | None = None
     version: str = ""                           # this corpus's own callosum pin; wins over Versions: corpus
+    keys: dict = field(default_factory=dict)    # ENV_VAR -> key name, as on a ResolvedNode
 
 
 @dataclass
@@ -248,6 +259,8 @@ class _Pending:
     questions_ref: str | list | None = None
     node_config: dict | None = None   # Loci/Memory per-node Config (partial service yaml)
     version: str = ""                 # the node's own Version: pin, normalised
+    keys: dict | None = None          # ENV_VAR -> key name: section DefaultKeys with the node's Keys over it
+    standalone: bool = False          # Loci/Memory: scored on its own on purpose, never fanned
 
 
 def _deep_merge(base: dict, over: dict) -> dict:
@@ -301,6 +314,9 @@ def _parse_section(pc: dict, section: str, count_key: str, cfg_key: str,
             errors.append(f"{section}: DefaultConfig must be a mapping (got {type(dc).__name__}).")
         elif isinstance(dc, dict):
             section_default_config = dc
+    # Keys every node in the section is handed (all three kinds); a node's own Keys
+    # lay over these. Names of keys Probe holds, never values (core/keynames.py).
+    section_keys = parse_keys(raw.get("DefaultKeys"), f"{section}: DefaultKeys", errors)
     pend: list[_Pending] = []
     for i, entry in enumerate(cfgs):
         if not isinstance(entry, dict):
@@ -344,8 +360,9 @@ def _parse_section(pc: dict, section: str, count_key: str, cfg_key: str,
         # Questions are the CROSS-STORE ones, the questions no single fanned store can
         # answer alone. Absent, a node inherits DefaultQuestions.
         questions_ref = _as_ref(entry.get("Questions"), f"{section}: node {name!r} Questions", errors)
+        standalone = False
         if is_corpus:
-            for stray in ("Seed", "NegativeTest", "LiveStoreUrl"):
+            for stray in ("Seed", "NegativeTest", "LiveStoreUrl", "Standalone"):
                 if stray in entry:
                     warnings.append(f"{section}: node {name!r} has {stray!r}, which does nothing on a "
                                     f"corpus - corpora fan already-seeded stores. Remove it.")
@@ -356,6 +373,11 @@ def _parse_section(pc: dict, section: str, count_key: str, cfg_key: str,
                 errors.append(f"{section}: node {name!r} NegativeTest must be true/false (got {neg_raw!r}).")
             else:
                 negative_test = neg_raw
+            solo_raw = entry.get("Standalone", False)
+            if not isinstance(solo_raw, bool):
+                errors.append(f"{section}: node {name!r} Standalone must be true/false (got {solo_raw!r}).")
+            else:
+                standalone = solo_raw
             live_raw = entry.get("LiveStoreUrl")
             if live_raw is not None:
                 if not isinstance(live_raw, str) or not live_raw.strip():
@@ -375,10 +397,13 @@ def _parse_section(pc: dict, section: str, count_key: str, cfg_key: str,
             elif isinstance(nc, dict):
                 node_config = nc
 
+        node_keys = {**section_keys, **parse_keys(entry.get("Keys"), f"{section}: node {name!r} Keys", errors)}
+
         pend.append(_Pending(name=name, port=port, flags=flags, generated=False,
                              stores=entry.get("Stores") if is_corpus else None, idx=i,
                              seed_ref=seed_ref, negative_test=negative_test, live_url=live_url,
-                             questions_ref=questions_ref, node_config=node_config, version=version))
+                             questions_ref=questions_ref, node_config=node_config, version=version,
+                             keys=node_keys, standalone=standalone))
 
     # Pass 1: bounds  Count-1 <= len <= Count
     if count is not None:
@@ -392,7 +417,7 @@ def _parse_section(pc: dict, section: str, count_key: str, cfg_key: str,
         else:
             for _ in range(count - n):   # 0 or 1 auto-generated remainder
                 pend.append(_Pending(name=None, port=None, flags=[], generated=True,
-                                     stores=None, idx=len(pend)))
+                                     stores=None, idx=len(pend), keys=dict(section_keys)))
     return count, pend, section_default_config
 
 
@@ -718,15 +743,18 @@ def compile_topology(probe_config: dict) -> CompiledTopology:
     # container boots on its installed defaults.
     loci = [ResolvedNode(p.name, KIND["loci"], p.port, p.flags, p.generated, p.seed_ref,
                          p.negative_test, p.live_url, p.questions_ref,
-                         config=_deep_merge(loci_default_cfg, p.node_config or {}), version=p.version)
+                         config=_deep_merge(loci_default_cfg, p.node_config or {}), version=p.version,
+                         keys=dict(p.keys or {}), standalone=p.standalone)
             for p in loci_p]
     memory = [ResolvedNode(p.name, KIND["memory"], p.port, p.flags, p.generated, p.seed_ref,
                            p.negative_test, p.live_url, p.questions_ref,
-                           config=_deep_merge(mem_default_cfg, p.node_config or {}), version=p.version)
+                           config=_deep_merge(mem_default_cfg, p.node_config or {}), version=p.version,
+                           keys=dict(p.keys or {}), standalone=p.standalone)
               for p in mem_p]
     name_kind = {n.name: n.kind for n in loci + memory}
     corpus_names = {p.name for p in corp_p}
     negative_names = {n.name for n in loci + memory if n.negative_test}
+    standalone_names = {n.name for n in loci + memory if n.standalone}
 
     # ── Pass 5: corpus wiring ──────────────────────────────────────
     resolved_corpus: list[ResolvedCorpus] = []
@@ -738,7 +766,7 @@ def compile_topology(probe_config: dict) -> CompiledTopology:
         merged_cfg = {**corpus_default_config, **(per_corpus_config.get(p.name) or {})}
         rc = ResolvedCorpus(name=p.name, port=p.port, flags=p.flags,
                             questions_ref=p.questions_ref,
-                            config=merged_cfg, version=p.version,
+                            config=merged_cfg, version=p.version, keys=dict(p.keys or {}),
                             # regrades .get() -> None when the key was absent, which is
                             # exactly the INHERIT signal regrade_live.sets_for_corpus wants.
                             regrades=per_corpus_regrades.get(p.name))
@@ -780,17 +808,25 @@ def compile_topology(probe_config: dict) -> CompiledTopology:
     auto_corpora = [c for c in corp_p if c.generated]
     # negative-test stores stand alone by design - they're evaluated as their own
     # column, never swept into the catch-all (a decoy in the fan would poison it).
-    unreferenced = [n for n in name_kind if n not in referenced and n not in negative_names]
+    # So does a store marked Standalone: an A/B of the store itself, which a fan
+    # would only blur. Either one fanned on purpose by a corpus says so, below.
+    unreferenced = [n for n in name_kind if n not in referenced and n not in negative_names
+                    and n not in standalone_names]
+    for sname in sorted(standalone_names & referenced):
+        warnings.append(f"store {sname!r} is marked Standalone but a corpus fans it - drop Standalone, "
+                        f"or take it out of that corpus's Stores.")
     if auto_corpora:
         cat = auto_corpora[0]
-        rc = ResolvedCorpus(name=cat.name, port=cat.port, flags=[], generated=True, is_catchall=True)
+        rc = ResolvedCorpus(name=cat.name, port=cat.port, flags=[], generated=True, is_catchall=True,
+                            keys=dict(cat.keys or {}))     # Corpus DefaultKeys reach the catch-all too
         for sname in unreferenced:
             rc.stores.append(ResolvedStore(sname, name_kind[sname], 1.0, via_catchall=True))
         resolved_corpus.append(rc)
     else:
         for sname in unreferenced:
             warnings.append(f"store {sname!r} isn't referenced by any corpus and there's no catch-all - "
-                            f"it'll spin up and sit out every fan. Reference it or drop it.")
+                            f"it'll spin up and sit out every fan. Reference it or drop it, or mark it "
+                            f"Standalone: true if it is meant to be scored on its own.")
     if errors:
         raise TopologyError(errors, warnings)
 

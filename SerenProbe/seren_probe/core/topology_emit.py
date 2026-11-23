@@ -32,7 +32,8 @@ from __future__ import annotations
 
 import os
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from .keynames import interp_var
 from .topology import CompiledTopology, ResolvedNode, ResolvedCorpus, FED_FIELD
 
 DEFAULT_EMBEDDER = "all-MiniLM-L6-v2"   # what a 'vector' Loci gets unless overridden
@@ -251,6 +252,7 @@ def _node_service(n: ResolvedNode, embedder: str, image_overrides: dict,
     if n.config:
         env[f"SEREN_{short.upper()}_CONFIG"] = f"/etc/seren/seren-{short}.yaml"
         config_file = (f"{n.name}.{short}.yaml", n.config)
+    _key_env(env, n.name, getattr(n, "keys", None))
     svc = {
         "container_name": n.name,
         "environment": dict(sorted(env.items())),
@@ -305,12 +307,32 @@ def _corpus_yaml(c: ResolvedCorpus, port_of: dict[str, int]) -> dict:
     return {"server": {"host": IN_CONTAINER_HOST, "port": c.port}, "federation": federation}
 
 
+def _key_env(env: dict, owner: str, keys: dict | None) -> None:
+    """A node's Keys into its environment as INTERPOLATIONS, never values: compose
+    fills ${SEREN_PROBE_KEY_<NAME>} from the `up` process's environment, which spin-up
+    builds from the keys Probe holds (runtime/keys.env_for). The compile already
+    refused reserved names; a clash here is a bug, so it is loud."""
+    for var, name in sorted((keys or {}).items()):
+        if var in env:
+            raise ValueError(f"{owner}: Keys sets {var}, which the emitter already set")
+        env[var] = "${" + interp_var(name) + "}"
+
+
+def _key_refs(topo: CompiledTopology) -> dict[str, str]:
+    """Every key the pod asks for: interpolation variable -> key name."""
+    names = {name for n in list(topo.loci) + list(topo.memory) + list(topo.corpus)
+             for name in (getattr(n, "keys", None) or {}).values()}
+    return {interp_var(name): name for name in sorted(names)}
+
+
 def _corpus_service(c: ResolvedCorpus, image_overrides: dict,
                     versions: dict | None = None, claimed: set | None = None) -> tuple[str, dict]:
+    env = {"PYTHONUTF8": "1", "SEREN_SCC_CONFIG": "/etc/seren/seren-corpus-callosum.yaml",
+           **_listen_env("SEREN_SCC")}
+    _key_env(env, c.name, getattr(c, "keys", None))
     svc = {
         "container_name": c.name,
-        "environment": {"PYTHONUTF8": "1", "SEREN_SCC_CONFIG": "/etc/seren/seren-corpus-callosum.yaml",
-                        **_listen_env("SEREN_SCC")},
+        "environment": env,
         "volumes": [f"./{c.name}.corpus.yaml:/etc/seren/seren-corpus-callosum.yaml:ro"],
         "ports": _published(c.port),
         "depends_on": {s.name: {"condition": "service_healthy"} for s in c.stores},
@@ -325,6 +347,9 @@ def _corpus_service(c: ResolvedCorpus, image_overrides: dict,
 class EmittedCompose:
     compose: dict                    # the docker-compose.yml as a dict
     corpus_files: dict[str, dict]    # {"<corpus>.corpus.yaml": yaml-dict}
+    # The keys the pod asks for, interpolation variable -> key name. Names only:
+    # spin-up resolves them into the `up` process's environment (runtime/keys.py).
+    key_refs: dict[str, str] = field(default_factory=dict)
 
 
 def emit_compose(topo: CompiledTopology, image_overrides: dict | None = None) -> EmittedCompose:
@@ -354,4 +379,4 @@ def emit_compose(topo: CompiledTopology, image_overrides: dict | None = None) ->
         "networks": {"default": {"name": "seren-probe-net"}},
         "volumes": {MODEL_CACHE_VOLUME: {}},
     }
-    return EmittedCompose(compose=compose, corpus_files=corpus_files)
+    return EmittedCompose(compose=compose, corpus_files=corpus_files, key_refs=_key_refs(topo))

@@ -41,6 +41,7 @@ from .routes import eval as eval_routes
 from .routes import config as config_routes
 from .routes import docker as docker_routes
 from .routes import inquisition as bundle_routes   # the .iqz routes, named for the bundle (runtime/bundles.py holds the stem)
+from .routes import locksmith as key_routes        # the /keys routes, named for the locksmith (runtime/keys.py holds the stem)
 
 from seren_meninges import get_version
 from seren_meninges.updates import updates_payload
@@ -227,5 +228,6 @@ def create_app(config: SerenProbeConfig | None = None) -> FastAPI:
     app.include_router(config_routes.router)
     app.include_router(docker_routes.router)
     app.include_router(bundle_routes.router)
+    app.include_router(key_routes.router)
 
     return app

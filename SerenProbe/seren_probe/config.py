@@ -128,13 +128,41 @@ class StorageConfig:
 
 
 @dataclass
+class KeyRef:
+    """A key for an outside model, named under `keys:` and held by POINTER, the
+    way every bearer in the family is (seren_meninges.resolve_token):
+
+        keys:
+          anthropic:
+            key_env: ANTHROPIC_PROBE_KEY    # the NAME of an environment variable
+            # key_keyring: seren-probe/anthropic   (the OS keychain)
+            # key: <the key itself>                (plaintext: keep the yaml chmod 600)
+            note: hosted answerers and the judge
+
+    A key named here is read-only to Probe; runtime/keys.py also holds keys of
+    its own, dropped in through the viewer. Runs refer to a key by its name.
+    """
+    key: str = ""
+    key_env: str = ""
+    key_keyring: str = ""
+    note: str = ""
+
+    @classmethod
+    def from_dict(cls, d: Optional[dict[str, Any]]) -> "KeyRef":
+        d = d or {}
+        return cls(key=str(d.get("key") or ""), key_env=str(d.get("key_env") or ""),
+                   key_keyring=str(d.get("key_keyring") or ""), note=str(d.get("note") or ""))
+
+
+@dataclass
 class SerenProbeConfig:
-    """The whole service: server + tls + store URLs + where state lives."""
+    """The whole service: server + tls + store URLs + where state lives + keys."""
     server: ServerConfig = field(default_factory=lambda: ServerConfig(port=7430))
     tls: TlsConfig = field(default_factory=TlsConfig)
     updates: UpdatesConfig = field(default_factory=UpdatesConfig)
     stores: StoreUrlsConfig = field(default_factory=StoreUrlsConfig)
     storage: StorageConfig = field(default_factory=StorageConfig)
+    keys: dict[str, KeyRef] = field(default_factory=dict)
 
 
 def _apply_env_overrides(cfg: SerenProbeConfig) -> SerenProbeConfig:
@@ -204,7 +232,9 @@ def load_config(path: Optional[str] = None) -> SerenProbeConfig:
     updates = UpdatesConfig.from_dict(data.get("updates"))
     stores = StoreUrlsConfig.from_dict(data.get("stores"))
     storage = StorageConfig.from_dict(data.get("storage"))
+    raw_keys = data.get("keys") if isinstance(data.get("keys"), dict) else {}
+    keys = {str(name): KeyRef.from_dict(ref) for name, ref in raw_keys.items() if isinstance(ref, dict)}
 
     cfg = SerenProbeConfig(server=server, tls=tls, stores=stores, updates=updates,
-                           storage=storage)
+                           storage=storage, keys=keys)
     return _apply_env_overrides(cfg)

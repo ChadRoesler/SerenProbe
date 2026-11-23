@@ -1068,7 +1068,7 @@ def write_compose(emitted, work_dir: Path) -> Path:
     return compose_path
 
 
-def _run_docker_streamed(*args: str, timeout: int = 600) -> list[str]:
+def _run_docker_streamed(*args: str, timeout: int = 600, env: dict | None = None) -> list[str]:
     """Run a docker CLI command and STREAM its output to the log as it happens.
 
     _run_docker captures everything and hands it back only on completion. For a
@@ -1081,6 +1081,10 @@ def _run_docker_streamed(*args: str, timeout: int = 600) -> list[str]:
     The timeout is enforced by a watchdog thread rather than the read loop, because
     a build that hangs producing NO output would never reach a deadline check that
     only runs per-line -- the exact case the timeout exists to catch.
+
+    `env` is laid over this process's environment for the docker process alone:
+    how a pod's keys reach compose's ${SEREN_PROBE_KEY_*} interpolations without
+    touching the file, the command line or this process's own environment.
     """
     cmd = ["docker", *args]
     logger.info("docker: %s", " ".join(cmd))
@@ -1095,7 +1099,7 @@ def _run_docker_streamed(*args: str, timeout: int = 600) -> list[str]:
         text=True,
         errors="replace",
         bufsize=1,
-        env={**os.environ, "BUILDKIT_PROGRESS": "plain"},
+        env={**os.environ, "BUILDKIT_PROGRESS": "plain", **(env or {})},
     )
     timed_out: list[bool] = []
 
@@ -1126,7 +1130,7 @@ def _run_docker_streamed(*args: str, timeout: int = 600) -> list[str]:
     return lines
 
 
-def compose_up(work_dir: Path, project_name: str, build: bool = True) -> None:
+def compose_up(work_dir: Path, project_name: str, build: bool = True, env: dict | None = None) -> None:
     """Bring the topology up under its project name, REPLACING whatever pod held
     that name before.
 
@@ -1143,8 +1147,9 @@ def compose_up(work_dir: Path, project_name: str, build: bool = True) -> None:
     if build:
         args.append("--build")
     # Streamed, not captured: this is the ten-minute one. The operator watching the
-    # probe log should see layers pulling, not a blinking cursor.
-    _run_docker_streamed(*args, timeout=1800)
+    # probe log should see layers pulling, not a blinking cursor. `env` carries the
+    # pod's keys for compose to interpolate (spin_up_topology builds it).
+    _run_docker_streamed(*args, timeout=1800, env=env)
 
 
 def compose_down(work_dir, project_name: str) -> None:
@@ -1271,16 +1276,25 @@ def wait_for_topology_healthy(url_of: dict[str, str], timeout: float = HEALTH_CH
 
 def spin_up_topology(topology, project_name: str = DEFAULT_CONTAINER_NAME,
                      build: bool = True, health_timeout: float = HEALTH_CHECK_TIMEOUT,
-                     image_overrides: dict | None = None) -> "TopologyEnvState":
-    """emit -> write -> compose up -> health-gate -> state. `topology` is an
+                     image_overrides: dict | None = None, config=None) -> "TopologyEnvState":
+    """emit -> keys -> write -> compose up -> health-gate -> state. `topology` is an
     already-compiled CompiledTopology (compile at the route so errors surface to
     the operator before Docker ever runs). image_overrides (node-name or kind ->
-    prebuilt image) skips the build for those services (bring-your-own)."""
+    prebuilt image) skips the build for those services (bring-your-own).
+
+    Keys a node asks for (its Keys:) are resolved from the keys Probe holds
+    (`config` names the yaml's) BEFORE anything is written or started: one that
+    isn't held refuses the spin-up by name (keys.KeysError), with no pod to tear
+    down. The values go to the `up` process's environment and nowhere else."""
     from ..core.topology_emit import emit_compose
+    from .keys import env_for
     emitted = emit_compose(topology, image_overrides=image_overrides)
+    key_refs = getattr(emitted, "key_refs", None) or {}
+    key_env = env_for(key_refs, config) if key_refs else {}
     work_dir = topology_work_dir(project_name)
     write_compose(emitted, work_dir)
-    compose_up(work_dir, project_name, build=build)
+    # A pod that asks for no key is brought up exactly as before: no env is passed at all.
+    compose_up(work_dir, project_name, build=build, **({"env": key_env} if key_env else {}))
     url_of = host_url_map(topology)
     try:
         wait_for_topology_healthy(url_of, timeout=health_timeout)
