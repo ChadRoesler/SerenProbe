@@ -202,15 +202,64 @@ class CapturingTransport:
         return resp
 
 
+def surroundings_as_asked(hit: dict, n: int, by: str) -> dict:
+    """One captured Memory hit, its inline satellites cut down to what a request
+    asked for (surroundings_n, surroundings_by), as Memory would have answered it.
+
+    The capture has to be GENEROUS for this to be exact: taken with
+    surroundings_by "match" and a surroundings_n at least every core's satellite
+    count, so each core hit carries ALL its satellites, in match order, each with
+    created_at and raw_distance. Then
+      match   is a prefix of what was captured (Memory's match order at n is the
+              first n of its order at any larger n)
+      recent  is rebuilt as Memory builds it (routes/search.py _attach_surroundings):
+              the n newest, the episode the core was found through moved to the
+              front, no raw_distance on the rows
+    A hit with no inline surroundings (a short, a fact, a capture taken without
+    them) comes back untouched."""
+    sur = hit.get("surroundings")
+    if not isinstance(sur, dict) or not isinstance(sur.get("recent"), list):
+        return hit
+    rows = [r for r in sur["recent"] if isinstance(r, dict)]
+    via = hit.get("matched_via") if isinstance(hit.get("matched_via"), dict) else None
+    if n <= 0:
+        out: list[dict] = []
+    elif by == "match":
+        out = [dict(r) for r in rows[:n]]
+    else:
+        vid = via.get("id") if via else None
+        # a core found through a SHORT in its orbit carries that short first; it is not one of the satellites
+        sats = [r for r in rows if not (vid and r.get("id") == vid and via.get("tier") != "long")]
+        newest = sorted(sats, key=lambda r: (float(r.get("created_at") or 0), str(r.get("id"))), reverse=True)[:n]
+        out = [{"id": r.get("id"), "content": r.get("content"), "created_at": r.get("created_at")} for r in newest]
+        if via:
+            rest = [r for r in out if r["id"] != vid]
+            out = [{"id": vid, "content": via.get("content"), "created_at": via.get("created_at")}] + rest[:max(0, n - 1)]
+    return {**hit, "surroundings": {**sur, "recent": out}}
+
+
 class ReplayTransport:
     """Replays a frozen capture. Keyed by (base_url, query); trims hits to the n
     the caller asks for, so replay is faithful to any n <= capture_n. A genuine
     miss (url+query never captured) returns empty AND is counted - so the harness
-    flags capture gaps instead of silently skewing the metrics."""
+    flags capture gaps instead of silently skewing the metrics.
 
-    def __init__(self, capture: dict[str, dict[str, Any]]):
+    surroundings=True says the capture is a GENEROUS one (see
+    surroundings_as_asked): each replayed Memory hit's inline satellites are cut
+    down to the surroundings_n / surroundings_by of the request being replayed
+    (3 and "recent" when it names neither, as Memory reads it), so one capture
+    serves a sweep of the Callosum's satellites_per_core and satellite_order.
+    False (the default) hands the captured surroundings back as they are.
+
+    WHAT A TRIM CANNOT REBUILD: Memory lifts a core by the satellites inside its
+    fetch window, and the window is n_results x 2 rows. The first 50 hits of an
+    answer captured at 200 are therefore NOT the answer to an ask of 50. A sweep
+    over Memory's row ceiling needs a capture per ceiling."""
+
+    def __init__(self, capture: dict[str, dict[str, Any]], surroundings: bool = False):
         self.capture = capture
         self.misses = 0
+        self.surroundings = surroundings
 
     async def post_json(self, url, payload, headers=None):
         base = url.rsplit("/", 1)[0]
@@ -224,6 +273,10 @@ class ReplayTransport:
         hits = resp.get("hits", [])
         if isinstance(n, int) and n >= 0:
             hits = hits[:n]
+        if self.surroundings:
+            per_core = payload.get("surroundings_n", 3)
+            by = payload.get("surroundings_by", "recent")
+            hits = [surroundings_as_asked(h, int(per_core), str(by)) for h in hits]
         return {**resp, "hits": hits}
 
 
@@ -256,10 +309,13 @@ def edges_off() -> dict:
     captured hits' surroundings: left on, _fused_to_dicts flattens away the marker
     and they come back as unmarked score-0.0 RANKS. Until 19 Oct 2026 only
     edges_enabled was turned off here, while satellite_edges_enabled defaults ON.
-    A Callosum from before satellites has no such field, so only what exists is set."""
+    Citation edges (a fact's reasons, riding on a Loci hit's rests_on) are the same
+    case and default ON since 24 Nov 2026, so they are turned off here too.
+    A Callosum from before satellites or citations has no such field, so only what
+    exists is set."""
     import dataclasses
     names = {f.name for f in dataclasses.fields(FederationConfig)}
-    return {k: False for k in ("edges_enabled", "satellite_edges_enabled") if k in names}
+    return {k: False for k in ("edges_enabled", "satellite_edges_enabled", "citation_edges_enabled") if k in names}
 
 
 def build_fed_config(base_stores: list[StoreConfig], *, rrf_k: int,

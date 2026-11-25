@@ -22,7 +22,7 @@ from __future__ import annotations
 
 from .metrics import normalize_text
 
-EDGE_SOURCES = ("satellite-edge", "supersedes-edge", "topic-edge")
+EDGE_SOURCES = ("satellite-edge", "supersedes-edge", "citation-edge", "topic-edge")
 
 
 def edge_family(h: dict):

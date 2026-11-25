@@ -45,7 +45,7 @@ KNOWN_QUESTION_KEYS = {
 # would seed a corpus with no surroundings and report the edges as doing nothing.
 KNOWN_MEMORY_KEYS = {"tier", "content", "intent", "topic", "ref", "satellites", "supersedes"}
 KNOWN_SATELLITE_KEYS = {"content", "topic", "ref"}
-KNOWN_LOCI_KEYS = {"project", "key", "value", "why", "why_changed", "history"}
+KNOWN_LOCI_KEYS = {"project", "key", "value", "why", "why_changed", "history", "cites"}
 KNOWN_LOCI_VERSION_KEYS = {"value", "why", "why_changed"}
 
 
@@ -80,6 +80,9 @@ class LociItem:
     # values before this one, oldest first, written in order before it.
     why_changed: str | None = None
     history: list[LociVersion] = field(default_factory=list)
+    # What this fact rests on (Loci citations, 24 Nov 2026): (on_project, on_key, why).
+    # Written once every fact of the store exists, since a citation needs both ends live.
+    cites: list[tuple[str, str, str | None]] = field(default_factory=list)
 
 
 @dataclass
@@ -285,8 +288,29 @@ def _as_loci_item(d: dict, where: str, i: int, errors: list[str], warnings: list
         warnings.append(f"{where}[{i}]: 'why_changed' with no history - there is no earlier value "
                         f"for it to explain - ignoring it.")
         why_changed = None
-    return LociItem(project=str(d.get("project", "*")), key=str(d["key"]), value=str(d["value"]),
-                    why=_opt(d, "why"), why_changed=why_changed, history=history)
+    project = str(d.get("project", "*"))
+    # cites: [ "key" | "project/key" | {address: "key"|"project/key", why: "..."} ]  - what this
+    # fact rests on; a bare key means the same project. Dependency only ("this holds because
+    # that does"), as Loci means it. (Not `on:` - YAML 1.1 reads that key as the boolean
+    # true; a mapping that used it anyway is still understood.)
+    raw_cites = d.get("cites") or []
+    if not isinstance(raw_cites, list):
+        errors.append(f"{where}[{i}]: cites must be a list of addresses (\"key\" or \"project/key\").")
+        raw_cites = []
+    cites: list[tuple[str, str, str | None]] = []
+    for j, c in enumerate(raw_cites):
+        on, cwhy = ((c.get("address") or c.get("on") or c.get(True), _opt(c, "why"))
+                    if isinstance(c, dict) else (c, None))
+        if not isinstance(on, str) or not on.strip():
+            errors.append(f"{where}[{i}].cites[{j}]: needs an address, \"key\" or \"project/key\".")
+            continue
+        op, _, ok = on.strip().rpartition("/")
+        if (op or project, ok) == (project, str(d["key"])):
+            errors.append(f"{where}[{i}].cites[{j}]: a fact cannot rest on itself.")
+            continue
+        cites.append((op or project, ok, cwhy))
+    return LociItem(project=project, key=str(d["key"]), value=str(d["value"]),
+                    why=_opt(d, "why"), why_changed=why_changed, history=history, cites=cites)
 
 
 def _as_memory_item(d: dict, where: str, i: int, errors: list[str], warnings: list[str]) -> MemoryItem | None:
@@ -700,6 +724,8 @@ class _StorePartial:
     keys: list = field(default_factory=list)        # loci: "project/key"
     refs: list = field(default_factory=list)        # memory: (ref, minted_id)
     reasons_dropped: int = 0                        # loci: why_changed the store did not keep
+    cites: int = 0                                  # loci: citations written
+    cites_refused: list = field(default_factory=list)   # loci: "a/b -> c/d: why" the store refused
 
 
 def _seed_item_weight(kind: str, item) -> int:
@@ -711,7 +737,7 @@ def _seed_item_weight(kind: str, item) -> int:
     advances by the operations each review applied.
     """
     if kind == "loci":
-        return 1 + len(getattr(item, "history", None) or [])
+        return 1 + len(getattr(item, "history", None) or []) + len(getattr(item, "cites", None) or [])
     if getattr(item, "tier", None) == "long":
         return 1 + len(getattr(item, "satellites", None) or [])
     return 1
@@ -756,6 +782,25 @@ def _seed_one_store(name: str, items: list, url: str, kind: str, post, on_progre
                     on_progress(1)
             p.keys.append(f"{it.project}/{it.key}")
             p.count += 1
+        # Citations last: each needs both ends live, and the fact it rests on may come
+        # later in the file. A refusal (an address the store does not hold) is a note on
+        # the seed, not a failed seed: the dataset is still what it says, less one skyway.
+        for it in items:
+            for on_project, on_key, cwhy in getattr(it, "cites", None) or []:
+                body = {"project": it.project, "key": it.key, "on_project": on_project, "on_key": on_key}
+                if cwhy:
+                    body["why"] = cwhy
+                try:
+                    r = post(url, "/fact/cite", body)
+                    ok = not isinstance(r, dict) or r.get("ok", True)
+                except Exception as exc:  # noqa: BLE001 - one refused citation must not sink the seed
+                    ok, r = False, str(exc)[:160]
+                if ok:
+                    p.cites += 1
+                else:
+                    p.cites_refused.append(f"{it.project}/{it.key} -> {on_project}/{on_key}: {r}")
+                if on_progress:
+                    on_progress(1)
         return p
 
     landed: dict[str, str] = {}        # this store's long refs -> ids, for supersedes
@@ -996,6 +1041,10 @@ def seed_from_plan(topology: CompiledTopology, seed_by_store: dict, url_of: dict
                     f"{name}: {p.reasons_dropped} change reason(s) (`why_changed`) were not kept - "
                     f"this Loci does not store why a fact changed. The values and their order "
                     f"landed; a question about why a fact changed has nothing to find here.")
+            if p.cites_refused:
+                res.notes.append(
+                    f"{name}: {len(p.cites_refused)} citation(s) were refused (of {p.cites + len(p.cites_refused)}); "
+                    f"the facts landed without those skyways. First: {p.cites_refused[0]}")
         else:
             res.memory_counts[name] = p.count
             for ref, minted in p.refs:

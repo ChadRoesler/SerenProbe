@@ -50,7 +50,7 @@ def test_surroundings_splits_coverage_by_edge_family():
     # density: relevant / rows over the top-k packet plus that family
     assert s["density_with"]["satellite-edge"] == pytest.approx((1 + 1) / (2 + 1))
     assert s["density_with"]["supersedes-edge"] == pytest.approx((1 + 0) / (2 + 1))
-    assert s["rows"] == {"packet": 2, "satellite-edge": 1, "supersedes-edge": 1, "topic-edge": 1}
+    assert s["rows"] == {"packet": 2, "satellite-edge": 1, "supersedes-edge": 1, "citation-edge": 0, "topic-edge": 1}
     assert s["chars"]["satellite-edge"] == len(SAT["content"]) + 1    # content + empty via, joined
 
 
